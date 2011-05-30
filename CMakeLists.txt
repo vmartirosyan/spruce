@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 2.4)
 
 project (Spruce)
 
+add_subdirectory (bin)
 add_subdirectory (doc)
+add_subdirectory (lib)
+add_subdirectory (src)
+add_subdirectory (tests)
 
 # Uninstall the system
 configure_file(
