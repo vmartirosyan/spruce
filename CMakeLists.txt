@@ -4,6 +4,7 @@ project (Spruce)
 
 add_subdirectory (bin)
 add_subdirectory (doc)
+add_subdirectory (include)
 add_subdirectory (lib)
 add_subdirectory (src)
 add_subdirectory (tests)
