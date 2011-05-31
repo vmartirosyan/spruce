@@ -1,7 +1,18 @@
 cmake_minimum_required(VERSION 2.4)
 
-
 project (Spruce)
+
+SET (LIBRARY_OUTPUT_PATH
+ ${PROJECT_BINARY_DIR}/lib
+ CACHE PATH
+ "Directory for all Libraries"
+ )
+ 
+SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY
+ ${PROJECT_BINARY_DIR}/bin
+ CACHE PATH
+ "Directory for all Binaries"
+ )
 
 add_subdirectory (bin)
 add_subdirectory (doc)

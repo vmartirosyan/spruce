@@ -4,4 +4,4 @@ message("Configuring project documentation.")
 
 project (Spruce)
 
-install (FILES index.html DESTINATION share/doc/spruce)
+install (FILES ${CMAKE_SOURCE_DIR}/doc/index.html DESTINATION share/doc/spruce)
