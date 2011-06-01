@@ -2,6 +2,7 @@
 
 TestResultCollection IoctlTest::Run()
 {
+	_operations.push_back(pair<int, string>(SetVersionGetVersion, "" ));
 	_operations.push_back(pair<int, string>(SetFlagsGetFlags, "" ));
 	
 	return TestBase::Run();
@@ -13,6 +14,8 @@ Status IoctlTest::RealRun(int operation, string args)
 	{
 		case SetFlagsGetFlags:
 			return TestSetFlagsGetFlags();
+		case SetVersionGetVersion:
+			return TestSetVersionGetVersion();
 		default:
 			cerr << "Unsupported operation.";	
 			return Unres;
@@ -70,6 +73,59 @@ Status IoctlTest::TestSetFlagsGetFlags()
 	else
 	{
 		cerr << "Set and Get flags match";
+		return Success;
+	}
+}
+
+Status IoctlTest::TestSetVersionGetVersion()
+{
+	if ( _file == -1 )
+	{
+		cerr << "The file descriptor is invalid: " << strerror(errno);
+		return Unres;
+	}
+	
+	int set_version = 10; 
+	int get_version = 0;
+	
+	// Backup the old version just in case
+	int old_version;
+	if ( ioctl(_file, EXT4_IOC_GETVERSION, &old_version) == -1 )
+	{
+		cerr << "Error backing up old version. " << strerror(errno);
+		return Unres;
+	}
+	
+	// Set our testing version value
+	if ( ioctl(_file, EXT4_IOC_SETVERSION, &set_version) == -1 )
+	{
+		cerr << "Error setting new version values. " << strerror(errno);
+		return Unres;
+	}
+	
+	// Get the version back
+	if ( ioctl(_file, EXT4_IOC_GETVERSION, &get_version) == -1 )
+	{
+		cerr << "Error getting version value back. " << strerror(errno);
+		return Unres;
+	}
+	
+	// Restore the original version
+	if ( ioctl(_file, EXT4_IOC_SETVERSION, &old_version) == -1 )
+	{
+		cerr << "Error restoring old version value. " << strerror(errno);
+		return Unres;
+	}
+	
+	// Compare them
+	if ( get_version != set_version )
+	{
+		cerr << "Set and Get version mismatch";
+		return Fail;
+	}
+	else
+	{
+		cerr << "Set and Get versions match";
 		return Success;
 	}
 }

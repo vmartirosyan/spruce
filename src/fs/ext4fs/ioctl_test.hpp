@@ -27,12 +27,13 @@ public:
 			unlink("ioctl_file");
 		}
 	}
-protected:
 	virtual TestResultCollection Run();
+protected:	
 	virtual Status RealRun(int operation, string args);
 private:
 	int _file;
 	Status TestSetFlagsGetFlags();
+	Status TestSetVersionGetVersion();
 };
 
 #endif /* IOCTL_TEST_H */

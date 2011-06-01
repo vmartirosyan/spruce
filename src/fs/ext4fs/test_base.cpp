@@ -58,18 +58,18 @@ TestResultCollection TestBase::Run()
 			int bytes = read(fds[0], buf, 1024);
 			buf[bytes] = 0;
 			
-			// Restore the stdin, stdout and stderr descriptors
-			close(fds[0]);
-			close(fds[1]);
-			close(error_stream);		
-			dup(_stdin);
-			dup(_stdout);
-			dup(_stderr);
 			
 			// Return what we have got from the child process
 			Results.AddResult((Status)status, (string)buf, "test operation", _operations[index].second);
 		}
 	}
+	// Restore the stdin, stdout and stderr descriptors
+	close(fds[0]);
+	close(fds[1]);
+	close(error_stream);
+	dup(_stdin);
+	dup(_stdout);
+	dup(_stderr);
 	
 	return Results;
 }
