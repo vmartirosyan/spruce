@@ -60,7 +60,7 @@ public:
 	{
 		string result = "";
 		for ( vector<TestResult>::iterator i = _results.begin(); i != _results.end(); ++i )
-			result += i->ToXML();
+			result += i->ToXML() + "\n";
 			
 		return result;
 	}
