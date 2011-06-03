@@ -18,8 +18,8 @@
  *
  * @configure_input@
  */
-#ifndef __XFS_PLATFORM_DEFS_H__
-#define __XFS_PLATFORM_DEFS_H__
+#ifndef __EXT4_PLATFORM_DEFS_H__
+#define __EXT4_PLATFORM_DEFS_H__
 
 #include <stdio.h>
 #include <errno.h>
@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include <sys/types.h>
 
-#include <uuid/uuid.h>
 #include <sys/vfs.h>
 #include <sys/ioctl.h>
 #include <sys/param.h>
@@ -77,19 +76,6 @@ typedef __u64	__bitwise	__le64;
 
 typedef struct filldir		filldir_t;
 
-#if defined(__linux__)
-#include <xfs/linux.h>
-#elif defined(__FreeBSD__)
-#include <xfs/freebsd.h>
-#elif defined(__FreeBSD_kernel__)
-#include <xfs/gnukfreebsd.h>
-#elif defined(__APPLE__)
-#include <xfs/darwin.h>
-#elif defined(__sgi__) || defined(__sgi)
-#include <xfs/irix.h>
-#else
-# error unknown platform... have fun porting!
-#endif
 
 /* long and pointer must be either 32 bit or 64 bit */
 #define HAVE_32BIT_LONG 1
@@ -186,4 +172,4 @@ typedef unsigned long long __psunsigned_t;
 #define __arch_pack
 #endif
 
-#endif	/* __XFS_PLATFORM_DEFS_H__ */
+#endif	/* __EXT4_PLATFORM_DEFS_H__ */
