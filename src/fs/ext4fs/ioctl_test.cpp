@@ -1,12 +1,5 @@
 #include "ioctl_test.hpp"
 
-TestResultCollection IoctlTest::Run()
-{
-	_operations.push_back(pair<int, string>(SetVersionGetVersion, "" ));
-	_operations.push_back(pair<int, string>(SetFlagsGetFlags, "" ));
-	
-	return TestBase::Run();
-}
 
 Status IoctlTest::RealRun(int operation, string args)
 {
@@ -14,6 +7,10 @@ Status IoctlTest::RealRun(int operation, string args)
 	{
 		case SetFlagsGetFlags:
 			return TestSetFlagsGetFlags();
+		case ClearExtentsFlags:
+			return TestClearExtentsFlags();
+		case SetFlagsNotOwner:
+			return TestSetFlagsNotOwner();
 		case SetVersionGetVersion:
 			return TestSetVersionGetVersion();
 		default:
@@ -73,6 +70,78 @@ Status IoctlTest::TestSetFlagsGetFlags()
 	else
 	{
 		cerr << "Set and Get flags match";
+		return Success;
+	}
+}
+
+Status IoctlTest::TestClearExtentsFlags()
+{
+	if ( _file == -1 )
+	{
+		cerr << "The file descriptor is invalid: " << strerror(errno);
+		return Unres;
+	}
+	
+	int non_permitted_flags = 1; // We may NOT clear the extents flag... but we shall try!
+	int result = 0;
+	
+	// Try to set the non-permitted flag
+	if ( ( result = ioctl(_file, EXT4_IOC_SETFLAGS, &non_permitted_flags ) ) != -EOPNOTSUPP )
+	{
+		cerr << "It was permitted to set non-permitted flag!. " << strerror(errno);
+		return Fail;
+	}
+	else 
+	{
+		cerr << "It was NOT permitted to set non-permitted flag!. " << strerror(errno);
+		return Success;
+	}
+}
+
+#include <sys/capability.h>
+
+Status IoctlTest::TestSetFlagsNotOwner()
+{
+	if ( _file == -1 )
+	{
+		cerr << "The file descriptor is invalid: " << strerror(errno);
+		return Unres;
+	}
+	
+	int flags = 1;
+	int result = 0;
+	
+	cap_user_header_t header = new __user_cap_header_struct;
+	cap_user_data_t data = new __user_cap_data_struct;
+	
+	header->version = _LINUX_CAPABILITY_VERSION_3;
+	header->pid = getpid();
+	
+	data->permitted |= CAP_CHOWN;
+	data->inheritable |= CAP_CHOWN;
+	data->effective |= CAP_CHOWN;
+	
+	if ( capset( header, data ) )
+	{
+		cerr << "Cannot set file capabilities: " <<  strerror(errno);
+		return Unres;
+	}
+	
+	if ( fchown(_file, 0, 0) )
+	{
+		cerr << "Cannot change the file owner: " <<  strerror(errno);
+		return Unres;
+	}
+	
+	// Try to set the non-permitted flag
+	if ( ( result = ioctl(_file, EXT4_IOC_SETFLAGS, &flags ) ) != -EACCES )
+	{
+		cerr << "It was permitted to set the flag not being file owner!. " << strerror(errno);
+		return Fail;
+	}
+	else 
+	{
+		cerr << "It was NOT permitted to set flag not being file owner!. " << strerror(errno);
 		return Success;
 	}
 }
