@@ -1,8 +1,15 @@
 cmake_minimum_required(VERSION 2.4)
-
 message("Configuring EXT4 specific sources.")
 
+include (CheckIncludeFiles)
+
 project (Spruce)
+
+message("Checking for libcapability.")
+check_include_files(sys/capability.h capability_exists)
+if ( NOT capability_exists EQUAL "1" )
+	message(FATAL_ERROR "The library libcapability is required for the Ext4FS checker subsystem.")
+endif()
 
 add_executable(ext4fs_plugin ext4fs.cpp ${CMAKE_SOURCE_DIR}/src/test_base.cpp ioctl_test.cpp )
 

@@ -36,7 +36,7 @@ public:
 		}
 	}	
 protected:	
-	virtual Status RealRun(int operation, string args);
+	virtual Status RealRun(Mode mode, int operation, string args);
 private:
 	int _file;
 	Status TestSetFlagsGetFlags();

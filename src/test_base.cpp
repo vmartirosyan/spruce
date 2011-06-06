@@ -4,7 +4,16 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-TestResultCollection TestBase::Run()
+char * StatusMessages[] = {
+	(char * )"Success",
+	(char * )"Failed",
+	(char * )"Unresolved",
+	(char * )"Timeout",
+	(char * )"Signaled",
+	(char * )"Unknown"
+	};
+
+TestResultCollection TestBase::Run(Mode mode)
 {
 	TestResultCollection Results;
 		
@@ -42,7 +51,7 @@ TestResultCollection TestBase::Run()
 		
 		if ( ChildId == 0 ) // Child process. Run the real test
 		{
-			_exit(RealRun(_operations[index].first, _operations[index].second));
+			_exit(RealRun(mode, _operations[index].first, _operations[index].second));
 		}
 		else // Parent process. Wait for the child
 		{
@@ -74,7 +83,15 @@ TestResultCollection TestBase::Run()
 	return Results;
 }
 
+string TestResult::StatusToString(Status s)
+{
+	if ( s >= Success && s <= Unknown )
+		return (string)StatusMessages[s];
+	else
+		return (string)StatusMessages[Unknown];
+}
+
 string TestResult::ToXML()
 {
-	return _error + " : " + _operation + " : " + _arguments;
+	return StatusToString(_status) + " : " + _error + " : " + _operation + " : " + _arguments;
 }

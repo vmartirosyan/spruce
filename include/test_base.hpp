@@ -13,13 +13,19 @@ using std::pair;
 
 typedef pair<int, string> Operation;
 
+enum Mode
+{
+	Normal,
+	FaultSimulation
+};
+
 enum Status
 {
 	Success,
 	Fail,
 	Unres,
 	Timeout,
-	Signalled,
+	Signaled,
 	Unknown
 };
 
@@ -42,6 +48,7 @@ private:
 	string _error;
 	string _operation;
 	string _arguments;	
+	string StatusToString(Status s);
 };
 
 class TestResultCollection 
@@ -70,10 +77,10 @@ private:
 class TestBase
 {
 public:
-	virtual TestResultCollection Run();
+	virtual TestResultCollection Run(Mode mode);
 	virtual ~TestBase() {};
 protected:
-	virtual Status RealRun(int operation, string args) = 0;
+	virtual Status RealRun(Mode mode, int operation, string args) = 0;
 	vector<Operation> _operations;
 };
 

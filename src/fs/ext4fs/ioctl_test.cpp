@@ -1,21 +1,25 @@
 #include "ioctl_test.hpp"
+#include <sys/capability.h>
 
 
-Status IoctlTest::RealRun(int operation, string args)
+Status IoctlTest::RealRun(Mode mode, int operation, string args)
 {
-	switch (operation)
+	if ( mode == Normal )
 	{
-		case SetFlagsGetFlags:
-			return TestSetFlagsGetFlags();
-		case ClearExtentsFlags:
-			return TestClearExtentsFlags();
-		case SetFlagsNotOwner:
-			return TestSetFlagsNotOwner();
-		case SetVersionGetVersion:
-			return TestSetVersionGetVersion();
-		default:
-			cerr << "Unsupported operation.";	
-			return Unres;
+		switch (operation)
+		{
+			case SetFlagsGetFlags:
+				return TestSetFlagsGetFlags();
+			case ClearExtentsFlags:
+				return TestClearExtentsFlags();
+			case SetFlagsNotOwner:
+				return TestSetFlagsNotOwner();
+			case SetVersionGetVersion:
+				return TestSetVersionGetVersion();
+			default:
+				cerr << "Unsupported operation.";	
+				return Unres;
+		}
 	}
 	cerr << "Test was successful";	
 	return Success;
@@ -97,8 +101,6 @@ Status IoctlTest::TestClearExtentsFlags()
 		return Success;
 	}
 }
-
-#include <sys/capability.h>
 
 Status IoctlTest::TestSetFlagsNotOwner()
 {
