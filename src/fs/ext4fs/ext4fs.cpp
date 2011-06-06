@@ -4,7 +4,7 @@
 int main(int argc, char ** argv)
 {
 	TestBase * test = new IoctlTest();
-	TestResultCollection res = test->Run();
+	TestResultCollection res = test->Run(Normal);
 	delete test;
 	
 	cout << res.ToXML() << endl;
