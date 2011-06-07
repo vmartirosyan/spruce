@@ -12,6 +12,8 @@
  *
  *  Copyright (C) 1991, 1992  Linus Torvalds
  */
+ 
+#define CONFIG_JBD2_DEBUG 1
 
 #ifndef _EXT4_H
 #define _EXT4_H
