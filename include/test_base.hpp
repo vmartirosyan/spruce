@@ -1,87 +1,92 @@
 #ifndef TEST_BASE_H
 #define TEST_BASE_H
 
-#include <string>
-#include <iostream>
-#include <vector>
-using std::string;
-using std::cout;
-using std::cerr;
-using std::endl;
-using std::vector;
-using std::pair;
+#include "common.hpp"
+#include "process.hpp"
 
-typedef pair<int, string> Operation;
-
-enum Mode
-{
-	Normal,
-	FaultSimulation
-};
-
-enum Status
-{
-	Success,
-	Fail,
-	Unres,
-	Timeout,
-	Signaled,
-	Unknown
-};
-
-class TestResult
+class TestResult : public ProcessResult
 {
 public:
 	TestResult():
-		_status(Unknown),
-		_error("Unknown result"),
-		_operation("Empty operation"),
+		ProcessResult(Unknown, "No output"),
+		_operation(0),
 		_arguments("No arguments provided") {}
-	TestResult(Status s, string err, string op, string args):
-		_status(s),
-		_error(err),
+	TestResult(ProcessResult pr, int op, string args):
+		ProcessResult(pr),
 		_operation(op),
 		_arguments(args) {}
-	string ToXML();
+	TestResult(Status s, string output, int op, string args):
+		ProcessResult((int)s, output),
+		_operation(op),
+		_arguments(args) {}
+	virtual string ToXML();
+protected:
+	int _operation;
+	string _arguments;
 private:
-	Status _status;
-	string _error;
-	string _operation;
-	string _arguments;	
-	string StatusToString(Status s);
+	string StatusToString();
 };
 
 class TestResultCollection 
 {
 public:
-	void AddResult(Status s, string err, string op, string args)
+	void AddResult(Status s, string output, int op, string args)
 	{
-		_results.push_back(TestResult(s,err,op,args));
+		TestResult * tmp = new TestResult(s,output,op,args);
+		_results.push_back(tmp);
 	}
-	void AddResult(const TestResult & result)
+	void AddResult(TestResult * result)
 	{
 		_results.push_back(result);
 	}
 	string ToXML()
 	{
 		string result = "";
-		for ( vector<TestResult>::iterator i = _results.begin(); i != _results.end(); ++i )
-			result += i->ToXML() + "\n";
+		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
+			result += (*i)->ToXML() + "\n";
 			
 		return result;
 	}
+	~TestResultCollection()
+	{
+		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
+			delete (*i);
+	}
 private:
-	vector<TestResult> _results;
+	vector<TestResult*> _results;
 };
 
-class TestBase
+class Test : public Process
+{
+public:	
+	Test(Mode m, int op, string a):
+		_mode(m),
+		_operation(op),
+		_args(a) {}
+	ProcessResult * Execute();
+	virtual ~Test() {}
+protected:
+	virtual Status Main() = 0;
+	Mode _mode;
+	int _operation;
+	string _args;
+};
+
+class TestCollection
 {
 public:
-	virtual TestResultCollection Run(Mode mode);
-	virtual ~TestBase() {};
-protected:
-	virtual Status RealRun(Mode mode, int operation, string args) = 0;
-	vector<Operation> _operations;
+	TestResultCollection Run();
+	void AddTest(Test * t)
+	{
+		_tests.push_back(t);
+	}
+	~TestCollection()
+	{
+		for ( vector<Test *>::iterator i = _tests.begin(); i != _tests.end(); ++i )
+			delete (*i);
+	}	
+private:
+	vector<Test *> _tests;
 };
 
 #endif /* TEST_BASE_H */

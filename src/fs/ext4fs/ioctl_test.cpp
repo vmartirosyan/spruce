@@ -2,11 +2,11 @@
 #include <sys/capability.h>
 
 
-Status IoctlTest::RealRun(Mode mode, int operation, string args)
+Status IoctlTest::Main()
 {
-	if ( mode == Normal )
+	if ( _mode == Normal )
 	{
-		switch (operation)
+		switch (_operation)
 		{
 			case SetFlagsGetFlags:
 				return TestSetFlagsGetFlags();
@@ -16,6 +16,12 @@ Status IoctlTest::RealRun(Mode mode, int operation, string args)
 				return TestSetFlagsNotOwner();
 			case SetVersionGetVersion:
 				return TestSetVersionGetVersion();
+			case WaitForReadonly:
+				return TestWaitForReadonly();
+			case GroupExtend:
+				return TestGroupExtend();
+			case MoveExtent:
+				return TestMoveExtent();
 			default:
 				cerr << "Unsupported operation.";	
 				return Unres;
@@ -197,6 +203,84 @@ Status IoctlTest::TestSetVersionGetVersion()
 	else
 	{
 		cerr << "Set and Get versions match";
+		return Success;
+	}
+}
+
+Status IoctlTest::TestWaitForReadonly()
+{
+
+	if ( _file == -1 )
+	{
+		cerr << "The file descriptor is invalid: " << strerror(errno);
+		return Unres;
+	}
+	
+	if ( ioctl(_file, EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1 )
+	{
+		cerr << "Error waiting for readonly. " << strerror(errno);
+		return Fail;
+	}
+	else
+	{
+		cerr << "Wait for readonly was successful. " << strerror(errno);
+		return Success;
+	}
+}
+
+
+Status IoctlTest::TestGroupExtend()
+{
+
+	if ( _file == -1 )
+	{
+		cerr << "The file descriptor is invalid: " << strerror(errno);
+		return Unres;
+	}
+	
+	unsigned int BlockCount = 1;
+	
+	if ( ioctl(_file, EXT4_IOC_GROUP_EXTEND, &BlockCount) == -1 )
+	{
+		cerr << "Error extending group. " << strerror(errno);
+		return Fail;
+	}
+	else
+	{
+		cerr << "Group extention was successful. " << strerror(errno);
+		return Success;
+	}
+}
+
+Status IoctlTest::TestMoveExtent()
+{
+
+	if ( _file == -1 || _file_donor == -1 )
+	{
+		cerr << "The file descriptor is invalid: " << strerror(errno);
+		return Unres;
+	}
+	
+	unsigned int BlockCount = 1;
+	
+	struct move_extent me;
+	memset(&me, 0, sizeof(me));
+	me.donor_fd = _file_donor;
+	me.len = 1;
+	
+	char TestData = 'A';
+	
+	write(_file, &TestData, 1);
+	write(_file_donor, &TestData, 1);
+	
+	if ( ioctl(_file, EXT4_IOC_MOVE_EXT, &me) == -1 )
+	{
+		cerr << "Error moving extent. " << strerror(errno);
+		return Fail;
+	}
+	else
+	{
+		cerr << "Move extent was successful. " << strerror(errno);
 		return Success;
 	}
 }

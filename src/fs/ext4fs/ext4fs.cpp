@@ -3,9 +3,12 @@
 
 int main(int argc, char ** argv)
 {
-	TestBase * test = new IoctlTest();
-	TestResultCollection res = test->Run(Normal);
-	delete test;
+	TestCollection tests;
+	
+	tests.AddTest(new IoctlTest(Normal, SetFlagsGetFlags, ""));
+	
+	TestResultCollection res = tests.Run();
+	
 	
 	cout << res.ToXML() << endl;
 }
