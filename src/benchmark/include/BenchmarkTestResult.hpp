@@ -1,7 +1,8 @@
 #ifndef BENCHMARK_TEST_RESULT_HPP
 #define BENCHMARK_TEST_RESULT_HPP
 
-#include "test_base.hpp"
+#include <stdio.h>
+#include "test.hpp"
 
 class BenchmarkTestResult : public TestResult
 {
@@ -22,7 +23,10 @@ public:
 	
 	virtual string ToXML()
 	{
-		return _output + " : " + _arguments + " : " + " our time";
+		char strToTime[100];
+		sprintf(strToTime, "%.2f", timestamp);
+		
+		return _output + " : " + _arguments + " : " + (string)strToTime;
 	}
 protected:
 	double timestamp;
