@@ -42,6 +42,7 @@ ProcessResult * Process::Execute()
 	
 	if ( ChildId == 0 ) // Child process. Run the main method
 	{
+		cerr << "Executing child process..." << endl;
 		_exit(Main());
 	}
 	
