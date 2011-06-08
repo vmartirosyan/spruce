@@ -1,33 +1,31 @@
 #ifndef CREATOR_H
 #define CREATOR_H
 
-#include "test_base.hpp"
+#include "BenchmarkTest.hpp"
 
 enum Creator_Operations
 {
 	MultipleFilesCreation
 };
 
-class CreatorTest : public TestBase
+class CreatorTest : public BenchmarkTest
 {
-public:	
-	CreatorTest()
+public:
+		
+	CreatorTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
 		filesNumber = "10";
 		fileSize = "1M";
-		timestamp = 0.0;
 	}
 		
-	virtual ~CreatorTest()
+	~CreatorTest()
 	{
 	}
-	virtual TestResultCollection Run();
-protected:	
-	virtual Status RealRun(int operation, string args);
+	
+	Status Main();
 private:
 	string filesNumber;
 	string fileSize;
-	double timestamp;
 	Status MultipleFilesCreationFunc();
 	string CreateCommand();
 };

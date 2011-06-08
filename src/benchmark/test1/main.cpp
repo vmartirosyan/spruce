@@ -2,9 +2,10 @@
 
 int main(int argc, char ** argv)
 {
-	TestBase *test = new CreatorTest();
-	TestResultCollection res = test->Run();
-	delete test;
+	TestCollection tests;	
+	tests.AddTest(new CreatorTest(Normal, MultipleFilesCreation, ""));
 	
+	TestResultCollection res = tests.Run();
+		
 	cout << res.ToXML() << endl;
 }
