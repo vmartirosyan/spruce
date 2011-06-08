@@ -1,7 +1,7 @@
 #ifndef IOCTL_TEST_H
 #define IOCTL_TEST_H
 
-#include "test_base.hpp"
+#include "test.hpp"
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include "ext4.h"
@@ -14,7 +14,12 @@ enum IoctlOperations
 	SetVersionGetVersion,
 	WaitForReadonly,
 	GroupExtend,
-	MoveExtent
+	MoveExtent,
+	GroupAdd,
+	Migrate,
+	AllocDABlocks,
+	Fitrim,
+	Unsupported	
 };
 
 class IoctlTest : public Test
@@ -23,16 +28,10 @@ public:
 	IoctlTest(Mode m, int op, string a):
 		Test(m, op, a)
 	{
-		_file = open("ioctl_file", O_CREAT | O_RDWR );
-		_file_donor = open("ioctl_donor_file", O_CREAT | O_RDWR );
-		
-		/*_operations.push_back(pair<int, string>(SetFlagsGetFlags, "" ));
-		_operations.push_back(pair<int, string>(ClearExtentsFlags, "" ));
-		//_operations.push_back(pair<int, string>(SetFlagsNotOwner, "" ));
-		_operations.push_back(pair<int, string>(SetVersionGetVersion, "" ));
-		_operations.push_back(pair<int, string>(WaitForReadonly, "" ));
-		_operations.push_back(pair<int, string>(GroupExtend, "" ));
-		_operations.push_back(pair<int, string>(MoveExtent, "" ));*/
+		if ( _file == -1 )
+			_file = open("ioctl_file", O_CREAT | O_RDWR );
+		if ( _file_donor == -1 )
+			_file_donor = open("ioctl_donor_file", O_CREAT | O_RDWR );
 	}
 		
 	virtual ~IoctlTest()
@@ -52,8 +51,8 @@ public:
 protected:	
 	virtual Status Main();
 private:
-	int _file;
-	int _file_donor;
+	static int _file;
+	static int _file_donor;
 	Status TestSetFlagsGetFlags();
 	Status TestClearExtentsFlags();
 	Status TestSetFlagsNotOwner();
@@ -61,6 +60,12 @@ private:
 	Status TestWaitForReadonly();
 	Status TestGroupExtend();
 	Status TestMoveExtent();
+	Status TestGroupAdd();
+	Status TestMigrate();
+	Status TestAllocDABlocks();
+	Status TestFitrim();
+	Status TestUnsupported();
 };
+
 
 #endif /* IOCTL_TEST_H */
