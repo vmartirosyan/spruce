@@ -1,6 +1,9 @@
 #include "ioctl_test.hpp"
 #include <sys/capability.h>
 
+int IoctlTest::_file = -1;	
+int IoctlTest::_file_donor = -1;	
+
 
 Status IoctlTest::Main()
 {
@@ -22,6 +25,16 @@ Status IoctlTest::Main()
 				return TestGroupExtend();
 			case MoveExtent:
 				return TestMoveExtent();
+			case GroupAdd:
+				return TestGroupAdd();
+			case Migrate:
+				return TestMigrate();
+			case AllocDABlocks:
+				return TestAllocDABlocks();
+			case Fitrim:
+				return TestFitrim();
+			case Unsupported:
+				return TestUnsupported();
 			default:
 				cerr << "Unsupported operation.";	
 				return Unres;
@@ -283,4 +296,118 @@ Status IoctlTest::TestMoveExtent()
 		cerr << "Move extent was successful. " << strerror(errno);
 		return Success;
 	}
+}
+
+Status IoctlTest::TestGroupAdd()
+{
+	cerr << "Adding group";
+	if ( _file == -1 )
+	{
+		cerr << "The file descriptor is invalid: " << strerror(errno);
+		return Unres;
+	}
+	
+	struct ext4_new_group_data input;
+	
+	if ( ioctl(_file, EXT4_IOC_GROUP_ADD, &input) == -1 )
+	{
+		cerr << "Error adding group. " << strerror(errno);
+		return Fail;
+	}
+	else
+	{
+		cerr << "Group was added successful. " << strerror(errno);
+		return Success;
+	}
+	return Unknown;
+}
+
+Status IoctlTest::TestMigrate()
+{
+	cerr << "Migrating";
+	if ( _file == -1 )
+	{
+		cerr << "The file descriptor is invalid: " << strerror(errno);
+		return Unres;
+	}
+	
+	if ( ioctl(_file, EXT4_IOC_MIGRATE, 0) == -1 )
+	{
+		cerr << "Error migrating. " << strerror(errno);
+		return Fail;
+	}
+	else
+	{
+		cerr << "Migration was successful. " << strerror(errno);
+		return Success;
+	}
+	return Unknown;
+}
+
+Status IoctlTest::TestAllocDABlocks()
+{
+	cerr << "AllocDABlocks";
+	if ( _file == -1 )
+	{
+		cerr << "The file descriptor is invalid: " << strerror(errno);
+		return Unres;
+	}
+	
+	if ( ioctl(_file, EXT4_IOC_ALLOC_DA_BLKS, 0) == -1 )
+	{
+		cerr << "Error allocating DA blocks. " << strerror(errno);
+		return Fail;
+	}
+	else
+	{
+		cerr << "DA blocks allocation was successful. " << strerror(errno);
+		return Success;
+	}
+	return Unknown;
+}
+
+Status IoctlTest::TestFitrim()
+{
+	cerr << "Fitrim???";
+#ifdef FITRIM	
+	if ( _file == -1 )
+	{
+		cerr << "The file descriptor is invalid: " << strerror(errno);
+		return Unres;
+	}
+	
+	if ( ioctl(_file, FITRIM, 0) == -1 )
+	{
+		cerr << "Error FITRIM. " << strerror(errno);
+		return Fail;
+	}
+	else
+	{
+		cerr << "FITRIM was successful. " << strerror(errno);
+		return Success;
+	}
+#else
+	return Unres;
+#endif
+}
+Status IoctlTest::TestUnsupported()
+{
+	cerr << "Unsupported...";
+	if ( _file == -1 )
+	{
+		cerr << "The file descriptor is invalid: " << strerror(errno);
+		return Unres;
+	}
+	
+	if ( ioctl(_file, -100, 0) != -ENOTTY )
+	{
+		cerr << "Error on unsupported command. " << strerror(errno);
+		return Fail;
+	}
+	else
+	{
+		cerr << "Unsupported command was processed successfully. " << strerror(errno);
+		return Success;
+	}
+	return Unknown;
 }
