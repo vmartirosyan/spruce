@@ -5,7 +5,7 @@ ProcessResult::~ProcessResult()
 }
 
 
-ProcessResult * Process::Execute()
+ProcessResult * Process::Execute(vector<string> args)
 {
 	// Duplicate the stdin/stdout/stderr descriptors
 	int _stdin = dup(0);
@@ -42,8 +42,8 @@ ProcessResult * Process::Execute()
 	
 	if ( ChildId == 0 ) // Child process. Run the main method
 	{
-		cerr << "Executing child process..." << endl;
-		_exit(Main());
+		cerr << " " << endl;
+		_exit(Main(args));
 	}
 	
 	// Parent process...
@@ -66,5 +66,5 @@ ProcessResult * Process::Execute()
 	dup(_stdout);
 	dup(_stderr);
 	
-	return new ProcessResult(status, (string)buf);
+	return new ProcessResult(WEXITSTATUS(status), (string)buf);
 }

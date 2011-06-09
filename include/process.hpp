@@ -22,11 +22,11 @@ protected:
 class Process
 {
 public:	
-	virtual ProcessResult * Execute();
+	virtual ProcessResult * Execute(vector<string> args = vector<string>());
 	
 	virtual ~Process() {}
 protected:
-	virtual Status Main() = 0;
+	virtual Status Main(vector<string> args) = 0;
 	
 };
 

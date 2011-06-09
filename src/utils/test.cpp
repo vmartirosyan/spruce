@@ -13,9 +13,9 @@ char * StatusMessages[] = {
 	(char * )"Unknown"
 	};
 	
-ProcessResult * Test::Execute()
+ProcessResult * Test::Execute(vector<string> args)
 {
-	ProcessResult * p_res = Process::Execute();
+	ProcessResult * p_res = Process::Execute(args);
 	
 	TestResult * t_res = new TestResult(*p_res, _operation, _args);
 	
