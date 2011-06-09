@@ -1,9 +1,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
-MESSAGE("Configuring MultipleFileCreation benchmark test")
+MESSAGE("Configuring MultipleFilesCreation benchmark test")
 PROJECT (Spruce)
 
-SET(TEST_NAME MultipleFileCreation)
+SET(TEST_NAME MultipleFilesCreation)
 
 ADD_LIBRARY(${TEST_NAME}.a STATIC Creator.cpp)
 
