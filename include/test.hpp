@@ -63,10 +63,10 @@ public:
 		_mode(m),
 		_operation(op),
 		_args(a) {}
-	ProcessResult * Execute();
+	ProcessResult * Execute(vector<string> args = vector<string>());
 	virtual ~Test() {}
 protected:
-	virtual Status Main() = 0;
+	virtual Status Main(vector<string> args) = 0;
 	Mode _mode;
 	int _operation;
 	string _args;
