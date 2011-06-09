@@ -5,7 +5,7 @@ PROJECT (Spruce)
 
 SET(TEST_NAME MultipleFilesDeletion)
 
-ADD_LIBRARY(${TEST_NAME}.a STATIC Deleter.cpp)
+ADD_LIBRARY(${TEST_NAME} STATIC Deleter.cpp)
 
 INSTALL(
 		FILES ${CMAKE_BINARY_DIR}/bin/${TEST_NAME}

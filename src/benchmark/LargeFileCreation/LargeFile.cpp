@@ -1,14 +1,14 @@
 #include <stdlib.h>
-#include "Creator.hpp"
+#include "LargeFile.hpp"
 
-Status CreatorTest::Main()
+Status LargeFileTest::Main()
 {
 	if ( _mode == Normal )
 	{	
 		switch (_operation)
 		{
-			case MultipleFilesCreation:
-				return MultipleFilesCreationFunc();
+			case LargeFileCreation:
+				return LargeFileCreationFunc();
 			default:
 				cerr << "Unsupported operation.";	
 				return Unres;		
@@ -18,7 +18,7 @@ Status CreatorTest::Main()
 	return Success;		
 }
 
-Status CreatorTest::MultipleFilesCreationFunc()
+Status LargeFileTest::LargeFileCreationFunc()
 {
 	string command = CreateCommand();
     system(command.c_str());   
@@ -26,7 +26,7 @@ Status CreatorTest::MultipleFilesCreationFunc()
     return Success;
 }
 
-string CreatorTest::CreateCommand()
+string LargeFileTest::CreateCommand()
 {
 	string command = (string)"./LargeFileCreation.sh" + (string)" " + filesNumber + (string)" " + fileSize;
 	return command;

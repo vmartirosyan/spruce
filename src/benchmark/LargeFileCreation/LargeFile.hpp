@@ -1,24 +1,24 @@
-#ifndef CREATOR_H
-#define CREATOR_H
+#ifndef LARGE_FILE_CREATOR_H
+#define LARGE_FILE_CREATOR_H
 
 #include "BenchmarkTest.hpp"
 
-enum Creator_Operations
+enum LargeFileOperations
 {
 	LargeFileCreation
 };
 
-class CreatorTest : public BenchmarkTest
+class LargeFileTest : public BenchmarkTest
 {
 public:
 		
-	CreatorTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
+	LargeFileTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
 		filesNumber = "1";
 		fileSize = "150M";
 	}
 		
-	~CreatorTest()
+	~LargeFileTest()
 	{
 	}
 	
@@ -26,8 +26,8 @@ public:
 private:
 	string filesNumber;
 	string fileSize;
-	Status MultipleFilesCreationFunc();
+	Status LargeFileCreationFunc();
 	string CreateCommand();
 };
 
-#endif /* CREATOR_H */
+#endif
