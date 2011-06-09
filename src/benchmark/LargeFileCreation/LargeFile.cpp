@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "LargeFile.hpp"
 
-Status LargeFileTest::Main()
+Status LargeFileTest::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{	

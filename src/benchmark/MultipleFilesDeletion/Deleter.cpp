@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "Deleter.hpp"
 
-Status DeleterTest::Main()
+Status DeleterTest::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{	
