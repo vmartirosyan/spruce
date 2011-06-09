@@ -8,15 +8,18 @@ ADD_SUBDIRECTORY(utils)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/include)
 
-ADD_SUBDIRECTORY(MultipleFileCreation)
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFileCreation)
+ADD_SUBDIRECTORY(MultipleFilesCreation)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFilesCreation)
+
+ADD_SUBDIRECTORY(LargeFileCreation)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/LargeFileCreation)
 
 ADD_SUBDIRECTORY(MultipleFilesDeletion)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFilesDeletion)
 
-ADD_SUBDIRECTORY(MultipleFileCompression)
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFileCompression)
+ADD_SUBDIRECTORY(MultipleFilesCompression)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFilesCompression)
 
 ADD_EXECUTABLE(Benchmark main.cpp)
-TARGET_LINK_LIBRARIES(Benchmark utils MultipleFileCreation.a MultipleFilesDeletion.a MultipleFileCompression.a)
+TARGET_LINK_LIBRARIES(Benchmark utils MultipleFilesCreation.a LargeFileCreation.a MultipleFilesDeletion.a MultipleFilesCompression.a)
 

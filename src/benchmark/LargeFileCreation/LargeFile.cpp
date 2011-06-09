@@ -28,6 +28,6 @@ Status CreatorTest::MultipleFilesCreationFunc()
 
 string CreatorTest::CreateCommand()
 {
-	string command = (string)"./MultipleFilesCreation.sh" + (string)" " + filesNumber + (string)" " + fileSize;
+	string command = (string)"./LargeFileCreation.sh" + (string)" " + filesNumber + (string)" " + fileSize;
 	return command;
 }
