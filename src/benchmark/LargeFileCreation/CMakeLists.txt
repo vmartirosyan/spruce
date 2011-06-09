@@ -5,7 +5,7 @@ PROJECT (Spruce)
 
 SET(TEST_NAME LargeFileCreation)
 
-ADD_LIBRARY(${TEST_NAME}.a STATIC LargeFile.cpp)
+ADD_LIBRARY(${TEST_NAME} STATIC LargeFile.cpp)
 
 INSTALL(
 		FILES ${CMAKE_BINARY_DIR}/bin/${TEST_NAME}

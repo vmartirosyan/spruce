@@ -3,7 +3,7 @@
 
 #include "BenchmarkTest.hpp"
 
-enum Compress_Operations
+enum CompressOperations
 {
 	MultipleFilesCompression
 };

@@ -5,7 +5,7 @@ PROJECT (Spruce)
 
 SET(TEST_NAME MultipleFilesCreation)
 
-ADD_LIBRARY(${TEST_NAME}.a STATIC Creator.cpp)
+ADD_LIBRARY(${TEST_NAME} STATIC Creator.cpp)
 
 INSTALL(
 		FILES ${CMAKE_BINARY_DIR}/bin/${TEST_NAME}

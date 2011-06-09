@@ -21,5 +21,5 @@ ADD_SUBDIRECTORY(MultipleFilesCompression)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFilesCompression)
 
 ADD_EXECUTABLE(Benchmark main.cpp)
-TARGET_LINK_LIBRARIES(Benchmark utils MultipleFilesCreation.a LargeFileCreation.a MultipleFilesDeletion.a MultipleFilesCompression.a)
+TARGET_LINK_LIBRARIES(Benchmark utils MultipleFilesCreation MultipleFilesDeletion MultipleFilesCompression LargeFileCreation)
 

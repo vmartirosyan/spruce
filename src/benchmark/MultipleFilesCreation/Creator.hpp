@@ -3,7 +3,7 @@
 
 #include "BenchmarkTest.hpp"
 
-enum Creator_Operations
+enum CreatorOperations
 {
 	MultipleFilesCreation
 };
