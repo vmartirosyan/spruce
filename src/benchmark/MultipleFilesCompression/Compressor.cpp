@@ -28,6 +28,6 @@ Status CompressTest::MultipleFilesCompressionFunc()
 
 string CompressTest::CreateCommand()
 {
-	string command = (string)"./MultipleFileCompression.sh" + (string)" " + directory;
+	string command = (string)"./MultipleFilesCompression.sh" + (string)" " + directory;
 	return command;
 }
