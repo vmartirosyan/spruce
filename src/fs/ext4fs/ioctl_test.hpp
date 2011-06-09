@@ -49,7 +49,7 @@ public:
 		unlink("ioctl_file_donor");
 	}	
 protected:	
-	virtual Status Main();
+	virtual Status Main(vector<string> args);
 private:
 	static int _file;
 	static int _file_donor;
