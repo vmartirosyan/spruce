@@ -1,29 +1,18 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
-MESSAGE("Configuring project benchmark sources.")
-
+MESSAGE("Configuring project benchmark sources")
 PROJECT (Spruce)
+
+ADD_SUBDIRECTORY(utils)
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/include)
 
-SET (TEST_NAME MultipleFileCreation)
-SET (EXE_NAME Benchmark)
+ADD_SUBDIRECTORY(MultipleFileCreation)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFileCreation)
 
-ADD_EXECUTABLE(createfile ${TEST_NAME}/file.cpp)
-ADD_EXECUTABLE(${EXE_NAME} ${TEST_NAME}/main.cpp ${TEST_NAME}/Creator.cpp )
-TARGET_LINK_LIBRARIES(${EXE_NAME} utils)
+ADD_SUBDIRECTORY(MultipleFileCompression)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFileCompression)
 
-INSTALL(
-		FILES ${CMAKE_BINARY_DIR}/bin/${TEST_NAME}
-		DESTINATION bin
-		PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
-)
-
-FILE(
-	INSTALL ${CMAKE_SOURCE_DIR}/src/benchmark/${TEST_NAME}/${TEST_NAME}.sh
-	DESTINATION ${CMAKE_BINARY_DIR}/bin
-	NO_SOURCE_PERMISSIONS
-)
-
-EXECUTE_PROCESS(COMMAND chmod +x ${CMAKE_BINARY_DIR}/bin/${TEST_NAME}.sh)
+ADD_EXECUTABLE(Benchmark main.cpp)
+TARGET_LINK_LIBRARIES(Benchmark utils MultipleFileCreation.a MultipleFileCompression.a)
