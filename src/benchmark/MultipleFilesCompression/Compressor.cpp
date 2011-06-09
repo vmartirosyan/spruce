@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "Compressor.hpp"
 
-Status CompressTest::Main()
+Status CompressTest::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{	

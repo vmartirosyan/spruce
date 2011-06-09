@@ -39,7 +39,7 @@ public:
 	}	
 	
 protected:
-	virtual Status Main() = 0;
+	virtual Status Main(vector<string>) = 0;
 };
 
 #endif
