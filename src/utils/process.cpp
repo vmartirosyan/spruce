@@ -42,7 +42,7 @@ ProcessResult * Process::Execute(vector<string> args)
 	
 	if ( ChildId == 0 ) // Child process. Run the main method
 	{
-		cerr << " " << endl;
+		cerr << " ";
 		_exit(Main(args));
 	}
 	

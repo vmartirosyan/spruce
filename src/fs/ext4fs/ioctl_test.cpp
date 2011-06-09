@@ -5,7 +5,7 @@ int IoctlTest::_file = -1;
 int IoctlTest::_file_donor = -1;	
 
 
-Status IoctlTest::Main()
+Status IoctlTest::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{
@@ -105,11 +105,20 @@ Status IoctlTest::TestClearExtentsFlags()
 		return Unres;
 	}
 	
-	int non_permitted_flags = 1; // We may NOT clear the extents flag... but we shall try!
 	int result = 0;
 	
+	// Backup the old values just in case
+	int old_flags;
+	if ( ioctl(_file, EXT4_IOC_GETFLAGS, &old_flags) == -1 )
+	{
+		cerr << "Error backing up old values. " << strerror(errno);
+		return Unres;
+	}
+	
+	int non_permitted_flags = old_flags & ~EXT4_EXTENTS_FL; // We may NOT clear the extents flag... but we shall try!
+	
 	// Try to set the non-permitted flag
-	if ( ( result = ioctl(_file, EXT4_IOC_SETFLAGS, &non_permitted_flags ) ) != -EOPNOTSUPP )
+	if ( ( result = ioctl(_file, EXT4_IOC_SETFLAGS, &non_permitted_flags ) ) == 0  )
 	{
 		cerr << "It was permitted to set non-permitted flag!. " << strerror(errno);
 		return Fail;
