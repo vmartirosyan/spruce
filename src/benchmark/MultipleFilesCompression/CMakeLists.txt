@@ -1,9 +1,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
-MESSAGE("Configuring MultipleFileCompression benchmark test")
+MESSAGE("Configuring MultipleFilesCompression benchmark test")
 PROJECT (Spruce)
 
-SET(TEST_NAME MultipleFileCompression)
+SET(TEST_NAME MultipleFilesCompression)
 
 ADD_LIBRARY(${TEST_NAME}.a STATIC Compressor.cpp)
 
