@@ -16,7 +16,7 @@ public:
 	{
 	}
 	
-	ProcessResult* Execute()
+	ProcessResult* Execute(vector<string>)
 	{
 		struct timeval start, end;
 		double seconds, useconds;
@@ -36,7 +36,7 @@ public:
 		delete p_res;
 
 		return bench_test_res;
-	}	
+	}
 	
 protected:
 	virtual int Main(vector<string>) = 0;

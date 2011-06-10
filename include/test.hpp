@@ -23,7 +23,6 @@ public:
 protected:
 	int _operation;
 	string _arguments;
-private:
 	string StatusToString();
 };
 
