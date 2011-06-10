@@ -5,6 +5,9 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include "ext4.h"
+#include <fstream>
+
+using std::ifstream;
 
 enum IoctlOperations
 {
@@ -28,11 +31,22 @@ public:
 	IoctlTest(Mode m, int op, string a):
 		Test(m, op, a)
 	{
-		//if ( _file == -1 )
-			//_file = open("ioctl_file", O_CREAT | O_RDWR );
-		//if ( _file_donor == -1 )
-			//_file_donor = open("ioctl_donor_file", O_CREAT | O_RDWR );
+		Init();
 	}
+	
+	IoctlTest(Mode m, int op, string a, string dev, string mtpt):
+		_DeviceName(dev),
+		_MountPoint(mtpt),
+		Test(m,op,a)
+		{
+			Init();
+			// Get the partition size.
+			string ParentDev = _DeviceName.substr(5, 3);
+			ifstream inf( ("/sys/block/" + ParentDev + "/" + _DeviceName.substr(5, 4) + "/size").c_str());
+			int SizeInBytes = 0;
+			inf >> SizeInBytes;
+			_PartitionSizeInBlocks = SizeInBytes / 8;
+		}
 		
 	virtual ~IoctlTest()
 	{
@@ -53,6 +67,16 @@ protected:
 private:
 	static int _file;
 	static int _file_donor;
+	int _PartitionSizeInBlocks; // Each 4096 byte
+	string _DeviceName;
+	string _MountPoint;
+	void Init()
+	{
+		if ( _file == -1 )
+			_file = open("ioctl_file", O_CREAT | O_RDWR );
+		if ( _file_donor == -1 )
+			_file_donor = open("ioctl_donor_file", O_CREAT | O_RDWR );
+	}
 	Status TestSetFlagsGetFlags();
 	Status TestClearExtentsFlags();
 	Status TestSetFlagsNotOwner();
