@@ -1,5 +1,6 @@
 #include "ioctl_test.hpp"
 #include <sys/capability.h>
+#include <sys/mount.h>
 
 int IoctlTest::_file = -1;	
 int IoctlTest::_file_donor = -1;	
@@ -255,13 +256,13 @@ extern string MountPoint;
 
 Status IoctlTest::TestGroupExtend()
 {	
-	/*if ( _file == -1 )
+	if ( _file == -1 )
 	{
 		cerr << "The file descriptor is invalid: " << strerror(errno);
 		return Unres;
 	}
 	close(_file);
-	unlink("ioctl_file");*/
+	unlink("ioctl_file");
 	_file = open(MountPoint.c_str(), O_RDONLY);
 	
 	if ( _file == -1 )
@@ -270,23 +271,22 @@ Status IoctlTest::TestGroupExtend()
 		return Unres;
 	}
 	
-	unsigned int BlockCount = 7679070;
 	Status status;
 	
-	if ( ioctl(_file, EXT4_IOC_GROUP_EXTEND, &BlockCount) == -1 )
+	if ( ioctl(_file, EXT4_IOC_GROUP_EXTEND, &_PartitionSizeInBlocks) == -1 )
 	{
-		cerr << "Error extending group. " << strerror(errno);
+		cerr << "Error during online resize. " << strerror(errno);
 		status = Fail;
 	}
 	else
 	{
-		cerr << "Group extention was successful. " << strerror(errno);
+		cerr << "Online resize was successful. " << strerror(errno);
 		status = Success;
 	}
 	
 out:
 	close(_file);
-	//_file = open("ioctl_file", O_RDWR);
+	_file = open("ioctl_file", O_RDWR);
 	return status;
 }
 
@@ -299,17 +299,32 @@ Status IoctlTest::TestMoveExtent()
 		return Unres;
 	}
 	
+	unlink("ioctl_file_donor");
+	
+	if ( fallocate(_file_donor, 0, 0, 10*4096) ) // 10 blocks
+	{
+		cerr << "Cannot allocate space for donor file: " << strerror(errno);
+		return Unres;
+	}
+	
+	
+	if ( fallocate(_file, 0, 0, 10*4096) ) // 10 blocks
+	{
+		cerr << "Cannot allocate space for original file: " << strerror(errno);
+		return Unres;
+	}
+	
 	unsigned int BlockCount = 1;
 	
 	struct move_extent me;
 	memset(&me, 0, sizeof(me));
+	//me.orig_fd = _file;
 	me.donor_fd = _file_donor;
-	me.len = 1;
+	me.orig_start = 0;
+	me.donor_start = 0;
+	me.len = 10;
+	me.moved_len = 10;
 	
-	char TestData = 'A';
-	
-	write(_file, &TestData, 1);
-	write(_file_donor, &TestData, 1);
 	
 	if ( ioctl(_file, EXT4_IOC_MOVE_EXT, &me) == -1 )
 	{
@@ -318,7 +333,7 @@ Status IoctlTest::TestMoveExtent()
 	}
 	else
 	{
-		cerr << "Move extent was successful. " << strerror(errno);
+		cerr << "Move extent was successful. " ;
 		return Success;
 	}
 }
@@ -332,6 +347,7 @@ Status IoctlTest::TestGroupAdd()
 	}
 	
 	struct ext4_new_group_data input;
+	memset(&input, 0, sizeof(input));
 	
 	if ( ioctl(_file, EXT4_IOC_GROUP_ADD, &input) == -1 )
 	{
@@ -353,6 +369,14 @@ Status IoctlTest::TestMigrate()
 		cerr << "The file descriptor is invalid: " << strerror(errno);
 		return Unres;
 	}
+	close(_file);
+	
+	
+	//umount( (_MountPoint).c_str());
+	//cerr << ("mkfs.ext2 " + _DeviceName).c_str() << endl;
+	//system(("mkfs.ext2 " + _DeviceName).c_str());
+	//mount(_MountPoint.c_str(), _DeviceName.c_str(), "ext2", 0, 0);
+	_file = open(_MountPoint.c_str(), O_RDONLY);
 	
 	if ( ioctl(_file, EXT4_IOC_MIGRATE, 0) == -1 )
 	{
@@ -361,7 +385,7 @@ Status IoctlTest::TestMigrate()
 	}
 	else
 	{
-		cerr << "Migration was successful. " << strerror(errno);
+		cerr << "Migration was successful. ";
 		return Success;
 	}
 	return Unknown;
