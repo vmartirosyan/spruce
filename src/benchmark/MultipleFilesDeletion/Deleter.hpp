@@ -19,7 +19,7 @@ public:
 		
 	~DeleterTest() {}
 	
-	Status Main(vector<string>);
+	int Main(vector<string>);
 private:
 	string dirName;
 	Status MultipleFilesDeletionFunc();

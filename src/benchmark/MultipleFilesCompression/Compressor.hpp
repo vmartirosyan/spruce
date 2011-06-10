@@ -21,7 +21,7 @@ public:
 	{
 	}
 	
-	Status Main(vector<string>);
+	int Main(vector<string>);
 private:
 	string directory;
 	Status MultipleFilesCompressionFunc();

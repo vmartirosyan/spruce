@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "FindFile.hpp"
 
-Status FindFileTest::Main(vector<string>)
+int FindFileTest::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{	

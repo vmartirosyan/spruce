@@ -22,7 +22,7 @@ public:
 	{
 	}
 	
-	Status Main(vector<string>);
+	int Main(vector<string>);
 private:
 	string filesNumber;
 	string fileSize;

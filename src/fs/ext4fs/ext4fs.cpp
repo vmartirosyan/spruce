@@ -1,5 +1,8 @@
 #include "ext4.h"
 #include "ioctl_test.hpp"
+#include <sys/mount.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 string DeviceName = "";
 string MountPoint = "";
@@ -26,23 +29,23 @@ int main(int argc, char ** argv)
 	DeviceName = argv[2];
 	MountPoint = argv[3];
 	
-	system(("mkdir " + MountPoint).c_str());
-	system(("mount " + DeviceName + " " + MountPoint).c_str());
+	mkdir( MountPoint.c_str(), 0x0777 );
+	mount ( DeviceName.c_str(), MountPoint.c_str(), "ext4", 0 ,0);
 	
 	TestCollection tests;
 	
-	//tests.AddTest(new IoctlTest(Normal, SetFlagsGetFlags, ""));
-	//tests.AddTest(new IoctlTest(Normal, ClearExtentsFlags, ""));
-	//tests.AddTest(new IoctlTest(Normal, SetFlagsNotOwner, ""));
-	//tests.AddTest(new IoctlTest(Normal, SetVersionGetVersion, ""));
+	tests.AddTest(new IoctlTest(Normal, SetFlagsGetFlags, ""));
+	tests.AddTest(new IoctlTest(Normal, ClearExtentsFlags, ""));
+	tests.AddTest(new IoctlTest(Normal, SetFlagsNotOwner, ""));
+	tests.AddTest(new IoctlTest(Normal, SetVersionGetVersion, ""));
 	//tests.AddTest(new IoctlTest(Normal, WaitForReadonly, ""));
-	tests.AddTest(new IoctlTest(Normal, GroupExtend, ""));
-	//tests.AddTest(new IoctlTest(Normal, MoveExtent, ""));
-	//tests.AddTest(new IoctlTest(Normal, GroupAdd, ""));
-	//tests.AddTest(new IoctlTest(Normal, Migrate, ""));
-	//tests.AddTest(new IoctlTest(Normal, AllocDABlocks, ""));
+	tests.AddTest(new IoctlTest(Normal, GroupExtend, "", DeviceName, MountPoint));
+	tests.AddTest(new IoctlTest(Normal, MoveExtent, ""));
+	tests.AddTest(new IoctlTest(Normal, GroupAdd, ""));
+	tests.AddTest(new IoctlTest(Normal, Migrate, "", DeviceName, MountPoint));
+	tests.AddTest(new IoctlTest(Normal, AllocDABlocks, ""));
 	//tests.AddTest(new IoctlTest(Normal, Fitrim, ""));
-	//tests.AddTest(new IoctlTest(Normal, Unsupported, ""));
+	tests.AddTest(new IoctlTest(Normal, Unsupported, ""));
 	
 	TestResultCollection res = tests.Run();
 	
