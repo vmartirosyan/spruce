@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "Creator.hpp"
 
-Status CreatorTest::Main(vector<string>)
+int CreatorTest::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{	
