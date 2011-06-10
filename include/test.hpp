@@ -66,7 +66,7 @@ public:
 	ProcessResult * Execute(vector<string> args = vector<string>());
 	virtual ~Test() {}
 protected:
-	virtual Status Main(vector<string> args) = 0;
+	virtual int Main(vector<string> args) = 0;
 	Mode _mode;
 	int _operation;
 	string _args;

@@ -14,6 +14,14 @@ public:
 		_status(s),
 		_output(output) {}	
 	virtual ~ProcessResult();
+	int GetStatus()
+	{
+		return _status;
+	}
+	string GetOutput()
+	{
+		return _output;
+	}		
 protected:
 	int _status;
 	string _output;
@@ -26,8 +34,7 @@ public:
 	
 	virtual ~Process() {}
 protected:
-	virtual Status Main(vector<string> args) = 0;
-	
+	virtual int Main(vector<string> args) = 0;	
 };
 
 #endif /* PROCESS_HPP */
