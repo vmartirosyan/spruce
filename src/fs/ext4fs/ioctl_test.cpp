@@ -250,28 +250,44 @@ Status IoctlTest::TestWaitForReadonly()
 	}
 }
 
+extern string MountPoint;
+
 
 Status IoctlTest::TestGroupExtend()
-{
-
+{	
+	/*if ( _file == -1 )
+	{
+		cerr << "The file descriptor is invalid: " << strerror(errno);
+		return Unres;
+	}
+	close(_file);
+	unlink("ioctl_file");*/
+	_file = open(MountPoint.c_str(), O_RDONLY);
+	
 	if ( _file == -1 )
 	{
 		cerr << "The file descriptor is invalid: " << strerror(errno);
 		return Unres;
 	}
 	
-	unsigned int BlockCount = 1;
+	unsigned int BlockCount = 7679070;
+	Status status;
 	
 	if ( ioctl(_file, EXT4_IOC_GROUP_EXTEND, &BlockCount) == -1 )
 	{
 		cerr << "Error extending group. " << strerror(errno);
-		return Fail;
+		status = Fail;
 	}
 	else
 	{
 		cerr << "Group extention was successful. " << strerror(errno);
-		return Success;
+		status = Success;
 	}
+	
+out:
+	close(_file);
+	//_file = open("ioctl_file", O_RDWR);
+	return status;
 }
 
 Status IoctlTest::TestMoveExtent()
@@ -309,7 +325,6 @@ Status IoctlTest::TestMoveExtent()
 
 Status IoctlTest::TestGroupAdd()
 {
-	cerr << "Adding group";
 	if ( _file == -1 )
 	{
 		cerr << "The file descriptor is invalid: " << strerror(errno);
@@ -333,7 +348,6 @@ Status IoctlTest::TestGroupAdd()
 
 Status IoctlTest::TestMigrate()
 {
-	cerr << "Migrating";
 	if ( _file == -1 )
 	{
 		cerr << "The file descriptor is invalid: " << strerror(errno);
@@ -355,7 +369,6 @@ Status IoctlTest::TestMigrate()
 
 Status IoctlTest::TestAllocDABlocks()
 {
-	cerr << "AllocDABlocks";
 	if ( _file == -1 )
 	{
 		cerr << "The file descriptor is invalid: " << strerror(errno);
@@ -408,15 +421,15 @@ Status IoctlTest::TestUnsupported()
 		return Unres;
 	}
 	
-	if ( ioctl(_file, -100, 0) != -ENOTTY )
-	{
-		cerr << "Error on unsupported command. " << strerror(errno);
-		return Fail;
-	}
-	else
+	if ( ( ioctl(_file, -100, 0) == -1 ) && ( errno == ENOTTY ) )
 	{
 		cerr << "Unsupported command was processed successfully. " << strerror(errno);
 		return Success;
+	}
+	else
+	{
+		cerr << "Error on unsupported command. " << strerror(errno);
+		return Fail;
 	}
 	return Unknown;
 }

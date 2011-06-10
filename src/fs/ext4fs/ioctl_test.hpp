@@ -28,10 +28,10 @@ public:
 	IoctlTest(Mode m, int op, string a):
 		Test(m, op, a)
 	{
-		if ( _file == -1 )
-			_file = open("ioctl_file", O_CREAT | O_RDWR );
-		if ( _file_donor == -1 )
-			_file_donor = open("ioctl_donor_file", O_CREAT | O_RDWR );
+		//if ( _file == -1 )
+			//_file = open("ioctl_file", O_CREAT | O_RDWR );
+		//if ( _file_donor == -1 )
+			//_file_donor = open("ioctl_donor_file", O_CREAT | O_RDWR );
 	}
 		
 	virtual ~IoctlTest()
