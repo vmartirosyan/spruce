@@ -18,8 +18,8 @@
 //      MA 02110-1301, USA.
 #ifndef UNIX_COMMAND_H
 #define UNIX_COMMAND_H
+#include <process.hpp>
 
-#include <test.hpp>
 #include <string>
 #include <vector>
 #include <unistd.h>
