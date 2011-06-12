@@ -1,6 +1,6 @@
 //      UnixCommand.hpp
 //      
-//      Copyright  Narek Saribekyan <narek.saribekyan@gmail.com>
+//      Copyright 2011 Narek Saribekyan <narek.saribekyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
 //      MA 02110-1301, USA.
 #ifndef UNIX_COMMAND_H
 #define UNIX_COMMAND_H
-#include <process.hpp>
 
+#include <process.hpp>
 #include <string>
 #include <vector>
 #include <unistd.h>
