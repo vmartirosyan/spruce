@@ -1,4 +1,4 @@
-//      UnixCommand.hpp
+//      DupFileDescriptor.cpp
 //      
 //      Copyright 2011 Narek Saribekyan <narek.saribekyan@gmail.com>
 //      
@@ -16,36 +16,17 @@
 //      along with this program; if not, write to the Free Software
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
-#ifndef UNIX_COMMAND_H
-#define UNIX_COMMAND_H
+#include "DupFileDescriptor.hpp"
 
-#include <process.hpp>
-#include <string>
-#include <vector>
-#include <unistd.h>
- 
-// Class representing a UNIX command.  
-//
-// Example usage:	
-// 		UnixCommand uc("ls");
-// 		ProcessResult* pr = uc.Execute();
-// 		cout << pr->GetOutput()<< endl;
-class UnixCommand : public Process
+int DupFileDescriptorTest::Main(vector<string> args)
 {
-public:	
-	UnixCommand(string name) : _name(name) {}
-	~UnixCommand() {}
-protected:
-	int Main(vector<string> args) 
-	{
-		char** argv = new char*[args.size() + 2];
-		argv[0] = (char*)_name.c_str();
-		for (int i = 0; i < args.size(); i++)
-			argv[i + 1] = (char*)args[i].c_str();
-		argv[args.size() + 1] = (char*)0;
-		execvp(argv[0], argv);
+	// TODO: Write test for dup/dup2/dup3 system call
+	
+	if (_mode == Normal)
+	{		
 	}
-protected:
-	string _name;
-};
-#endif /* UNIX_COMMAND_H */
+	else
+	{		
+	}
+	return 0;
+}

@@ -1,4 +1,4 @@
-//      UnixCommand.hpp
+//      DupFileDescriptor.hpp
 //      
 //      Copyright 2011 Narek Saribekyan <narek.saribekyan@gmail.com>
 //      
@@ -16,36 +16,28 @@
 //      along with this program; if not, write to the Free Software
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
-#ifndef UNIX_COMMAND_H
-#define UNIX_COMMAND_H
 
-#include <process.hpp>
-#include <string>
-#include <vector>
-#include <unistd.h>
- 
-// Class representing a UNIX command.  
-//
-// Example usage:	
-// 		UnixCommand uc("ls");
-// 		ProcessResult* pr = uc.Execute();
-// 		cout << pr->GetOutput()<< endl;
-class UnixCommand : public Process
+#ifndef DUP_FILE_DESCRIPTOR_H
+#define DUP_FILE_DESCRIPTOR_H
+
+#include "SyscallTest.hpp"
+
+enum DupFileDescriptorSyscalls
 {
-public:	
-	UnixCommand(string name) : _name(name) {}
-	~UnixCommand() {}
-protected:
-	int Main(vector<string> args) 
-	{
-		char** argv = new char*[args.size() + 2];
-		argv[0] = (char*)_name.c_str();
-		for (int i = 0; i < args.size(); i++)
-			argv[i + 1] = (char*)args[i].c_str();
-		argv[args.size() + 1] = (char*)0;
-		execvp(argv[0], argv);
-	}
-protected:
-	string _name;
+	Dup,
+	Dup2,
+	Dup3
 };
-#endif /* UNIX_COMMAND_H */
+
+class DupFileDescriptorTest : public SyscallTest
+{			
+public:	
+	DupFileDescriptorTest(Mode mode, int operation, string arguments = "") :
+		SyscallTest(mode, operation, arguments, "dup")
+	{			
+	}
+	virtual ~DupFileDescriptorTest() {}	
+protected:
+	virtual int Main(vector<string> args);	
+};
+#endif /* DUP_TEST_H */
