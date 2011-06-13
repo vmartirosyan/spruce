@@ -7,10 +7,10 @@
 class TestResult : public ProcessResult
 {
 public:
-	TestResult():
+	/*TestResult():
 		ProcessResult(Unknown, "No output"),
 		_operation(0),
-		_arguments("No arguments provided") {}
+		_arguments("No arguments provided") {}*/
 	TestResult(ProcessResult pr, int op, string args):
 		ProcessResult(pr),
 		_operation(op),
@@ -19,6 +19,11 @@ public:
 		ProcessResult((int)s, output),
 		_operation(op),
 		_arguments(args) {}
+	TestResult(TestResult const & tr) : ProcessResult(tr),
+	 _operation(tr._operation),
+	 _arguments(tr._arguments) 
+	 {}
+	 	 	 
 	virtual string ToXML();
 protected:
 	int _operation;

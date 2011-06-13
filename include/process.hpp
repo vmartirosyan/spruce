@@ -11,9 +11,13 @@ class ProcessResult
 {
 public:
 	ProcessResult(int s, string output):
-		_status(s),
-		_output(output) {}	
+		_status(s),	_output(output) {}
+								
+	ProcessResult(ProcessResult const & pr) :
+		_status(pr._status), _output(pr._output) {}
+	
 	virtual ~ProcessResult();
+	
 	int GetStatus()
 	{
 		return _status;
@@ -34,7 +38,7 @@ public:
 	
 	virtual ~Process() {}
 protected:
-	virtual int Main(vector<string> args) = 0;	
+	virtual int Main(vector<string> args) = 0;
 };
 
 #endif /* PROCESS_HPP */
