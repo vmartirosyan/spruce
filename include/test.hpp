@@ -48,6 +48,10 @@ protected:
 	int _operation;
 	string _arguments;
 	string StatusToString();
+	virtual string OperationToString()
+	{
+		return "";
+	};
 };
 
 class TestResultCollection 
