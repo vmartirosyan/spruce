@@ -1,4 +1,4 @@
-//      DupFileDescriptor.hpp
+//      exception.hpp
 //      
 //      Copyright 2011 Narek Saribekyan <narek.saribekyan@gmail.com>
 //      
@@ -16,32 +16,23 @@
 //      along with this program; if not, write to the Free Software
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
+#ifndef EXCEPTION_H
+#define EXCEPTION_H
 
-#ifndef DUP_FILE_DESCRIPTOR_H
-#define DUP_FILE_DESCRIPTOR_H
+#include <string>
+using std::string;
 
-#include "SyscallTest.hpp"
-
-enum DupFileDescriptorSyscalls
+class Exception 
 {
-	Dup,
-	Dup2,
-	Dup3
-};
-
-class DupFileDescriptorTest : public SyscallTest
-{			
-public:	
-	DupFileDescriptorTest(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "dup")
-	{			
-	}
-	virtual ~DupFileDescriptorTest() {}	
-protected:
-	virtual int Main(vector<string> args);			
+public:
+	Exception(string message) : _message(message) {}
+	Exception(Exception const & other) : _message(other._message) {}
+		
+	virtual string GetMessage() const 
+	{
+		return _message;
+	}	
 private:
-	int DupTest(vector<string> args);
-	int Dup2Test(vector<string> args);
-	int Dup3Test(vector<string> args);
+	string _message;
 };
-#endif /* DUP_TEST_H */
+#endif /* EXCEPTION_H */

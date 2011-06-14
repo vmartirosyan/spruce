@@ -17,16 +17,61 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 #include "DupFileDescriptor.hpp"
+#include "File.hpp"
+#include <unistd.h>
+#include <errno.h>
 
 int DupFileDescriptorTest::Main(vector<string> args)
 {
-	// TODO: Write test for dup/dup2/dup3 system call
-	
+	// TODO: Write test for dup/dup2/dup3 system call	
 	if (_mode == Normal)
 	{		
+		switch (_operation)
+		{		
+			case Dup:
+				return DupTest(args);
+			case Dup2:
+				return Dup2Test(args);
+			case Dup3:			
+				return Dup3Test(args);
+			default:
+				return Unknown; 
+		}
 	}
 	else
 	{		
 	}
+	return 0;
+} 
+
+int DupFileDescriptorTest::DupTest(vector<string> args)
+{
+	try 
+	{		
+		File file("newfile");
+		int fd = file.GetFileDescriptor();		
+		int newfd = dup(fd);
+				
+		if (newfd == -1)
+		{				
+			cerr << "System call dup failed: "<< strerror(errno);
+			return Fail; 
+		}								
+	}
+	catch (Exception ex) 
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}	
+	return Success;
+}
+
+int DupFileDescriptorTest::Dup2Test(vector<string> args)
+{
+	return 0;
+}
+
+int DupFileDescriptorTest::Dup3Test(vector<string> args)
+{
 	return 0;
 }
