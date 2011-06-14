@@ -20,7 +20,7 @@
 #ifndef IOCTL_TEST_H
 #define IOCTL_TEST_H
 
-#include "test.hpp"
+#include "ext4fs_test.hpp"
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include "ext4.h"
@@ -44,11 +44,11 @@ enum IoctlOperations
 	Unsupported	
 };
 
-class IoctlTest : public Test
+class IoctlTest : public Ext4fsTest
 {
 public:	
 	IoctlTest(Mode m, int op, string a):
-		Test(m, op, a)
+		Ext4fsTest(m, op, a)
 	{
 		Init();
 	}
@@ -56,7 +56,7 @@ public:
 	IoctlTest(Mode m, int op, string a, string dev, string mtpt):
 		_DeviceName(dev),
 		_MountPoint(mtpt),
-		Test(m,op,a)
+		Ext4fsTest(m,op,a)
 		{
 			Init();
 			// Get the partition size.
@@ -83,6 +83,7 @@ public:
 	}	
 protected:	
 	virtual int Main(vector<string> args);
+	virtual string OperationToString();
 private:
 	static int _file;
 	static int _file_donor;

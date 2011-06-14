@@ -65,5 +65,5 @@ string TestResult::StatusToString()
 
 string TestResult::ToXML()
 {
-	return StatusToString() + " : " + _output + " : " /* + _operation + " : " */ + _arguments;
+	return StatusToString() + " : " + _output + " : " + OperationToString() + " : " + _arguments;
 }

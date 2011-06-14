@@ -476,3 +476,35 @@ Status IoctlTest::TestUnsupported()
 	}
 	return Unknown;
 }
+
+string IoctlTest::OperationToString()
+{
+	switch (_operation)
+		{
+			case SetFlagsGetFlags:
+				return "SetFlagsGetFlags";
+			case ClearExtentsFlags:
+				return "ClearExtentsFlags";
+			case SetFlagsNotOwner:
+				return "SetFlagsNotOwner";
+			case SetVersionGetVersion:
+				return "SetVersionGetVersion";
+			case WaitForReadonly:
+				return "WaitForReadonly";
+			case GroupExtend:
+				return "OnlineResize";
+			case MoveExtent:
+				return "MoveExtent";
+			case GroupAdd:
+				return "GroupAdd";
+			case Migrate:
+				return "Migrate";
+			case AllocDABlocks:
+				return "AllocDABlocks";
+			case Fitrim:
+				return "Fitrim";
+			case Unsupported:
+			default:
+				return "Unsupported";			
+		}
+}
