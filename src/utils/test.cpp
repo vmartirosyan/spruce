@@ -56,7 +56,7 @@ TestResultCollection TestCollection::Run()
 }
 
 string TestResult::StatusToString()
-{
+{ 
 	if ( _status >= Success && _status <= Unknown )
 		return (string)StatusMessages[_status];
 	else
@@ -65,5 +65,5 @@ string TestResult::StatusToString()
 
 string TestResult::ToXML()
 {
-	return StatusToString() + " : " + _output + " : " + OperationToString() + " : " + _arguments;
+	return OperationToString() + " : " + StatusToString() + " : " + _output + " : Arguments: " + _arguments;
 }
