@@ -1,12 +1,14 @@
-cmake_minimum_required(VERSION 2.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
-message("Configuring syscall checker module.")
+MESSAGE("Configuring project benchmark sources")
+PROJECT (Spruce)
 
-project (Spruce)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/syscall/include)
 
-add_executable(syscall main.cpp DupFileDescriptor.cpp) 
-target_link_libraries(syscall utils)
+ADD_SUBDIRECTORY(dup)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/syscall/dup)
 
-install (	FILES "${CMAKE_BINARY_DIR}/bin/syscall"
-			DESTINATION bin
-			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
+ADD_EXECUTABLE(syscall main.cpp)
+TARGET_LINK_LIBRARIES(syscall utils dup)
+
