@@ -24,6 +24,16 @@
 int IoctlTest::_file = -1;	
 int IoctlTest::_file_donor = -1;	
 
+ProcessResult * IoctlTest::Execute(vector<string> args)
+{
+	ProcessResult * p_res = Ext4fsTest::Execute(args);
+	
+	TestResult * t_res = new IoctlTestResult(*p_res, _operation, _args);
+	
+	delete p_res;
+	
+	return t_res;
+}
 
 int IoctlTest::Main(vector<string>)
 {
@@ -477,7 +487,7 @@ Status IoctlTest::TestUnsupported()
 	return Unknown;
 }
 
-string IoctlTest::OperationToString()
+string IoctlTestResult::OperationToString()
 {
 	switch (_operation)
 		{

@@ -44,6 +44,15 @@ enum IoctlOperations
 	Unsupported	
 };
 
+class IoctlTestResult : public Ext4fsTestResult
+{
+public:
+	IoctlTestResult(ProcessResult pr, int op, string args):
+		Ext4fsTestResult(pr, op, args) {}
+protected:
+	virtual string OperationToString();
+};
+
 class IoctlTest : public Ext4fsTest
 {
 public:	
@@ -82,8 +91,8 @@ public:
 		unlink("ioctl_file_donor");
 	}	
 protected:	
+	virtual ProcessResult * Execute(vector<string> args);
 	virtual int Main(vector<string> args);
-	virtual string OperationToString();
 private:
 	static int _file;
 	static int _file_donor;

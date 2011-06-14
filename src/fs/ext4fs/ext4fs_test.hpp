@@ -22,6 +22,13 @@
 
 #include "test.hpp"
 
+class Ext4fsTestResult : public TestResult
+{
+public:
+	Ext4fsTestResult(ProcessResult pr, int op, string args):
+		TestResult(pr, op, args) {}
+};
+
 class Ext4fsTest : public Test
 {
 public:
