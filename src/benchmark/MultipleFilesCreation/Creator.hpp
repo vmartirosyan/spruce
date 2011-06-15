@@ -46,7 +46,7 @@ private:
 	string filesNumber;
 	string fileSize;
 	Status MultipleFilesCreationFunc();
-	string CreateCommand();
+	vector<string> CreateArguments();
 };
 
 #endif /* CREATOR_H */

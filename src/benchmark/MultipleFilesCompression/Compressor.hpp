@@ -44,7 +44,6 @@ public:
 private:
 	string directory;
 	Status MultipleFilesCompressionFunc();
-	string CreateCommand();
-};
+	vector<string> CreateArguments();};
 
 #endif

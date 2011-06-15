@@ -33,6 +33,7 @@ public:
 		
 	LargeFileTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
+		filename = "largefile";
 		fileSize = "150M";
 	}
 		
@@ -42,9 +43,10 @@ public:
 	
 	int Main(vector<string>);
 private:
+	string filename;
 	string fileSize;
 	Status LargeFileCreationFunc();
-	string CreateCommand();
+	vector<string> CreateArguments();
 };
 
 #endif
