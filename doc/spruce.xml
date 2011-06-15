@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<article lang="en">
+	<articleinfo>
+		<title>Spruce</title>
+		<author>
+			<firstname>Vahram</firstname>
+			<surname>Martirosyan</surname>
+		</author>		
+		<copyright>
+			<year>2011</year>
+			<holder>Vahram Martirosyan</holder>
+		</copyright>
+	</articleinfo>
+	<para>
+		Spruce is a Linux filesystem checker
+	</para>	
+</article>
