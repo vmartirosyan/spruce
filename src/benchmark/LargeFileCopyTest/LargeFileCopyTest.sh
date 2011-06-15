@@ -1,4 +1,4 @@
-#      MultipleFilesDeletion.sh
+#      LargeFileCopyTest.sh
 #      
 #      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
 #      
@@ -19,11 +19,14 @@
 
 #!/bin/bash
 
-# Deleting the specified directory
+# Copying the large file $3 times
 
 if [ -d $1 ]
-then 
-	rm -rf $1
+then
+	for i in `seq 1 $3` 
+	do 
+		cp $2 $1/$i
+	done
 else
 	echo "The directory you specified does not exist."
 fi

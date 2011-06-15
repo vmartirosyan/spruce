@@ -1,5 +1,5 @@
 /**
-//      Deleter.cpp
+//      LargeFileCopyTest.cpp
 //      
 //      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
 //      
@@ -20,16 +20,17 @@
 */
 
 #include <stdlib.h>
-#include "Deleter.hpp"
+#include <sstream>
+#include "LargeFileCopyTest.hpp"
 
-int DeleterTest::Main(vector<string>)
+int LargeFileCopyTest::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{	
 		switch (_operation)
 		{
-			case MultipleFilesDeletion:
-				return MultipleFilesDeletionFunc();
+			case LargeFileCopying:
+				return LargeFileCopyFunc();
 			default:
 				cerr << "Unsupported operation.";	
 				return Unres;		
@@ -40,7 +41,7 @@ int DeleterTest::Main(vector<string>)
 	return Success;		
 }
 
-Status DeleterTest::MultipleFilesDeletionFunc()
+Status LargeFileCopyTest::LargeFileCopyFunc()
 {
 	string command = CreateCommand();
     system(command.c_str());   
@@ -48,8 +49,11 @@ Status DeleterTest::MultipleFilesDeletionFunc()
     return Success;
 }
 
-string DeleterTest::CreateCommand()
+string LargeFileCopyTest::CreateCommand()
 {
-	string command = (string)"./MultipleFilesDeletion.sh" + (string)" " + dirName;
+	std::stringstream ss;
+	ss << numOfCopies;
+
+	string command = (string)"./LargeFileCopyTest.sh " + dirName + (string)" " + fileName + (string)" " + ss.str();
 	return command;
 }

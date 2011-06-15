@@ -1,5 +1,5 @@
 /**
-//      Deleter.cpp
+//      LargeFileCopyTest.hpp
 //      
 //      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
 //      
@@ -19,37 +19,36 @@
 //      MA 02110-1301, USA.
 */
 
-#include <stdlib.h>
-#include "Deleter.hpp"
+#ifndef COPY_H
+#define COPY_H
 
-int DeleterTest::Main(vector<string>)
+#include "BenchmarkTest.hpp"
+
+enum CopyOperations
 {
-	if ( _mode == Normal )
-	{	
-		switch (_operation)
-		{
-			case MultipleFilesDeletion:
-				return MultipleFilesDeletionFunc();
-			default:
-				cerr << "Unsupported operation.";	
-				return Unres;		
-		}
+	LargeFileCopying
+};
+
+class LargeFileCopyTest : public BenchmarkTest
+{
+public:
+		
+	LargeFileCopyTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
+	{
+		dirName = "results";
+		fileName = "largefile";
+		numOfCopies = 3; 
 	}
+		
+	~LargeFileCopyTest() {}
 	
-	cerr << "Test was successful";	
-	return Success;		
-}
+	int Main(vector<string>);
+private:
+	string dirName;
+	string fileName;
+	unsigned int numOfCopies; 
+	Status LargeFileCopyFunc();
+	string CreateCommand();
+};
 
-Status DeleterTest::MultipleFilesDeletionFunc()
-{
-	string command = CreateCommand();
-    system(command.c_str());   
-    
-    return Success;
-}
-
-string DeleterTest::CreateCommand()
-{
-	string command = (string)"./MultipleFilesDeletion.sh" + (string)" " + dirName;
-	return command;
-}
+#endif /* COPY_H */
