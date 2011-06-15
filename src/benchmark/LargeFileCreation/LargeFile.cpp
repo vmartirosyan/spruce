@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include "LargeFile.hpp"
+#include "UnixCommand.hpp"
 
 int LargeFileTest::Main(vector<string>)
 {
@@ -39,14 +40,17 @@ int LargeFileTest::Main(vector<string>)
 
 Status LargeFileTest::LargeFileCreationFunc()
 {
-	string command = CreateCommand();
-    int status = system(command.c_str());   
+	UnixCommand command("./LargeFileCreation.sh");
+    ProcessResult *result = command.Execute(CreateArguments());
+    cerr << result->GetOutput() << " ";
     
-    return (Status)status;
+    return (Status)result->GetStatus();
 }
 
-string LargeFileTest::CreateCommand()
+vector<string> LargeFileTest::CreateArguments()
 {
-	string command = (string)"./LargeFileCreation.sh" + (string)" " + fileSize;
+	vector<string> command;
+	command.push_back(filename);
+	command.push_back(fileSize);
 	return command;
 }

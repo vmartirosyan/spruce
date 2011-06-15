@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include "Creator.hpp"
+#include "UnixCommand.hpp"
 
 int CreatorTest::Main(vector<string>)
 {
@@ -39,14 +40,17 @@ int CreatorTest::Main(vector<string>)
 
 Status CreatorTest::MultipleFilesCreationFunc()
 {
-	string command = CreateCommand();
-    int status = system(command.c_str());
+    UnixCommand command("./MultipleFilesCreation.sh");
+    ProcessResult *result = command.Execute(CreateArguments());
+    cerr << result->GetOutput() << " ";
     
-    return (Status)status;
+    return (Status)result->GetStatus();
 }
 
-string CreatorTest::CreateCommand()
+vector<string> CreatorTest::CreateArguments()
 {
-	string command = (string)"./MultipleFilesCreation.sh" + (string)" " + filesNumber + (string)" " + fileSize;
+	vector<string> command;
+	command.push_back(filesNumber);
+	command.push_back(fileSize);
 	return command;
 }

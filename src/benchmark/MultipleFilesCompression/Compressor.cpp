@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include "Compressor.hpp"
+#include "UnixCommand.hpp"
 
 int CompressTest::Main(vector<string>)
 {
@@ -39,14 +40,16 @@ int CompressTest::Main(vector<string>)
 
 Status CompressTest::MultipleFilesCompressionFunc()
 {
-	string command = CreateCommand();
-    system(command.c_str());
+	UnixCommand command("./MultipleFilesCompression.sh");
+    ProcessResult *result = command.Execute(CreateArguments());
+    cerr << result->GetOutput() << " ";
     
-    return Success;
+    return (Status)result->GetStatus();
 }
 
-string CompressTest::CreateCommand()
+vector<string> CompressTest::CreateArguments()
 {
-	string command = (string)"./MultipleFilesCompression.sh" + (string)" " + directory;
+	vector<string> command;
+	command.push_back(directory);
 	return command;
 }
