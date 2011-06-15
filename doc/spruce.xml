@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
-<article lang="en">
-	<articleinfo>
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" id="spruce">
+	<bookinfo>
 		<title>Spruce</title>
 		<author>
 			<firstname>Vahram</firstname>
@@ -11,8 +11,9 @@
 			<year>2011</year>
 			<holder>Vahram Martirosyan</holder>
 		</copyright>
-	</articleinfo>
+	</bookinfo>
 	<para>
-		Spruce is a Linux filesystem checker
+		Spruce is a Linux filesystem checker. It consists of the following modules:
+		<olink targetdoc="main" >Main module</olink>
 	</para>	
-</article>
+</book>
