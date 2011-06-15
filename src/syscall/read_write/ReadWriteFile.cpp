@@ -51,5 +51,7 @@ Status ReadWriteFileTest::ReadBadFileDescriptorTest()
 		return Fail;
 	}
 	
+	close(fd);
+	
 	return Success;
 }

@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 #include "FindFile.hpp"
+#include "UnixCommand.hpp"
 
 int FindFileTest::Main(vector<string>)
 {
@@ -28,7 +29,7 @@ int FindFileTest::Main(vector<string>)
 		switch (_operation)
 		{
 			case FindFile:
-				return FindFileCreationFunc();
+				return FindFileFunc();
 			default:
 				cerr << "Unsupported operation.";	
 				return Unres;		
@@ -38,16 +39,19 @@ int FindFileTest::Main(vector<string>)
 	return Success;		
 }
 
-Status FindFileTest::FindFileCreationFunc()
+Status FindFileTest::FindFileFunc()
 {
-	string command = CreateCommand();
-    int status = system(command.c_str());   
+	UnixCommand command("./FindFile.sh");
+    ProcessResult *result = command.Execute(CreateArguments());
+    cerr << result->GetOutput() << " ";
     
-    return (Status)status;
+    return (Status)result->GetStatus();
 }
 
-string FindFileTest::CreateCommand()
+vector<string> FindFileTest::CreateArguments()
 {
-	string command = (string)"./FindFile.sh" + (string)" " + directoryName + (string)" " + fileName;
+	vector<string> command;
+	command.push_back(directoryName);
+	command.push_back(fileName);
 	return command;
 }

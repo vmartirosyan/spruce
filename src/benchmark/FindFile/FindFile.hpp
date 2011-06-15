@@ -45,8 +45,8 @@ public:
 private:
 	string fileName;
 	string directoryName;
-	Status FindFileCreationFunc();
-	string CreateCommand();
+	Status FindFileFunc();
+	vector<string> CreateArguments();
 };
 
 #endif
