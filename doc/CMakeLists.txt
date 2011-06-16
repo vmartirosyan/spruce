@@ -6,12 +6,17 @@ project (Spruce)
 
 execute_process(COMMAND echo "Generating documentation")
 
-execute_process(COMMAND bash -c "file ${CMAKE_SOURCE_DIR}/doc/index.html > /dev/null 2>&1 && (echo 'Copying documentation' && cp ${CMAKE_SOURCE_DIR}/doc/index.html ${CMAKE_BINARY_DIR}/doc/) || xsltproc --output ${CMAKE_BINARY_DIR}/doc/index.html /usr/share/xml/docbook/stylesheet/docbook-xsl/html/docbook.xsl spruce.xml  > /dev/null 2>&1 "
+execute_process(COMMAND ${CMAKE_SOURCE_DIR}/doc/generate.sh ${CMAKE_BINARY_DIR} 2>/dev/null )
+
+execute_process(COMMAND echo "Copying documentation")
+
+execute_process(COMMAND bash -c "cp -r ${CMAKE_SOURCE_DIR}/doc/*.html ${CMAKE_BINARY_DIR}/doc/"
 				WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc)
 				
-execute_process(COMMAND bash -c "file ${CMAKE_SOURCE_DIR}/doc/main/index.html > /dev/null 2>&1  && (echo 'Copying Main documentation' && mkdir ${CMAKE_BINARY_DIR}/doc/main && cp ${CMAKE_SOURCE_DIR}/doc/main/*.html ${CMAKE_BINARY_DIR}/doc/main) || xsltproc --output ${CMAKE_BINARY_DIR}/doc/main/ /usr/share/xml/docbook/stylesheet/docbook-xsl/html/chunk.xsl main.xml  > /dev/null 2>&1 "
-				WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc)
 
 install (FILES ${CMAKE_BINARY_DIR}/doc/index.html DESTINATION share/doc/spruce)
 install (FILES ${CMAKE_BINARY_DIR}/doc/main/index.html ${CMAKE_BINARY_DIR}/doc/main/ch01.html DESTINATION share/doc/spruce/main)
+install (FILES ${CMAKE_BINARY_DIR}/doc/syscall/index.html ${CMAKE_BINARY_DIR}/doc/syscall/ch01.html DESTINATION share/doc/spruce/syscall)
+install (FILES ${CMAKE_BINARY_DIR}/doc/common/index.html ${CMAKE_BINARY_DIR}/doc/common/ch01.html DESTINATION share/doc/spruce/common)
+install (FILES ${CMAKE_BINARY_DIR}/doc/benchmark/index.html ${CMAKE_BINARY_DIR}/doc/benchmark/ch01.html DESTINATION share/doc/spruce/benchmark)
 

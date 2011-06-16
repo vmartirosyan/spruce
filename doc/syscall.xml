@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
-<book xmlns="http://docbook.org/ns/docbook" version="5.0" id="main">
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" id="syscall">
 	<bookinfo>
-		<title>Spruce : Main module</title>
+		<title>Spruce : Syscall checker</title>
 		<authorgroup>
 			<author>
 				<firstname>Vahram</firstname>
@@ -10,14 +10,14 @@
 			</author>	
 			<author>
 				<firstname>Suren</firstname>
-				<surname>Grigoryan</surname>
+				<surname>Gishyan</surname>
 			</author>	
 		</authorgroup>	
 		
 	</bookinfo>
 	<chapter id="overview" name="Overview">
 		<para>
-			This is the Main module documentaion of the Spruce system
+			This is the Syscall checker module documentaion of the Spruce system
 		</para>	
 	</chapter>
 </book>
