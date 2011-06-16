@@ -30,8 +30,6 @@
 # creating 'number' of files
 number=$1
 
-echo -n "It's a pity, Narek is going away"
-
 parent_folder="results"
 mkdir -p $parent_folder
 cd $parent_folder

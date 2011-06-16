@@ -26,7 +26,9 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFilesCompression)
 ADD_SUBDIRECTORY(LargeFileCopyTest)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/LargeFileCopyTest)
 
+ADD_SUBDIRECTORY(MultipleFilesDecompression)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFilesDecompression)
+
 ADD_EXECUTABLE(Benchmark main.cpp)
 TARGET_LINK_LIBRARIES(Benchmark utils MultipleFilesCreation MultipleFilesDeletion 
-	MultipleFilesCompression LargeFileCreation FindFile LargeFileCopyTest)
-
+	MultipleFilesCompression LargeFileCreation FindFile LargeFileCopyTest MultipleFilesDecompression)

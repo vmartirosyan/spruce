@@ -1,11 +1,11 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
-MESSAGE("Configuring MultipleFilesDeletion benchmark test")
+MESSAGE("Configuring MultipleFilesDecompression benchmark test")
 PROJECT (Spruce)
 
-SET(TEST_NAME MultipleFilesDeletion)
+SET(TEST_NAME MultipleFilesDecompression)
 
-ADD_LIBRARY(${TEST_NAME} STATIC Deleter.cpp)
+ADD_LIBRARY(${TEST_NAME} STATIC Decompressor.cpp)
 
 INSTALL(
 		FILES ${CMAKE_BINARY_DIR}/bin/${TEST_NAME}.sh
