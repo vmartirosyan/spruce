@@ -1,4 +1,4 @@
-#      LargeFileCopyTest.sh
+#      MultipleFilesCopy.sh
 #      
 #      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
 #      
@@ -19,14 +19,19 @@
 
 #!/bin/bash
 
-# Copying the large file into the given directory given number of times
+# Multiple files copying from a given directory to another
+
+dest_folder="destFolder"
+mkdir -p $dest_folder
 
 if [ -d $1 ]
 then
 	cd $1
-	for i in `seq 1 $3` 
-	do 
-		cp $2 $i
+	files=`ls`
+	cd ../
+	for i in $files
+	do
+		cp -r $1/$i $dest_folder
 	done
 else
 	echo -n "The directory you specified does not exist."
