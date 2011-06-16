@@ -1,12 +1,13 @@
-#      LargeFileCopyTest.sh
+#!/bin/bash
+#      MultipleFilesDecompression.sh
 #      
-#      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
+#      Copyright 2011 Eduard Bagrov <ebagrov@gmail.com>
 #      
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
 #      the Free Software Foundation; either version 2 of the License, or
 #      (at your option) any later version.
-#     
+#      
 #      This program is distributed in the hope that it will be useful,
 #      but WITHOUT ANY WARRANTY; without even the implied warranty of
 #      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -17,18 +18,20 @@
 #      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #      MA 02110-1301, USA.
 
-#!/bin/bash
 
-# Copying the large file $3 times
+# multiple file decompressing in the given directory
+# arguments 
+# - directory name
 
 if [ -d $1 ]
 then
 	cd $1
-	for i in `seq 1 $3` 
-	do 
-		cp $2 $1/$i
+	for i in `ls | grep .tar`
+	do
+		echo $i
+		tar xf $i
 	done
 else
-	echo -n "The directory you specified does not exist."
+	echo -n "There is no input directory"
 	exit 2
 fi
