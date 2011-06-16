@@ -19,14 +19,14 @@
 
 #!/bin/bash
 
-# Copying the large file $3 times
+# Copying the large file into the given directory given number of times
 
 if [ -d $1 ]
 then
 	cd $1
 	for i in `seq 1 $3` 
 	do 
-		cp $2 $1/$i
+		cp $2 $i
 	done
 else
 	echo -n "The directory you specified does not exist."

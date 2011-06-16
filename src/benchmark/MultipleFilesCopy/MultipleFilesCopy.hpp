@@ -1,5 +1,5 @@
 /**
-//      Deleter.cpp
+//      MultipleFilesCopy.hpp
 //      
 //      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
 //      
@@ -19,41 +19,34 @@
 //      MA 02110-1301, USA.
 */
 
-#include <stdlib.h>
-#include <memory>
-#include "UnixCommand.hpp"
-#include "Deleter.hpp"
+#ifndef MULTIPLE_FILES_COPY_H
+#define MULTIPLE_FILES_COPY_H
 
-int DeleterTest::Main(vector<string>)
+#include "BenchmarkTest.hpp"
+
+enum MultipleFilesCopyOperations
 {
-	if ( _mode == Normal )
-	{	
-		switch (_operation)
-		{
-			case MultipleFilesDeletion:
-				return MultipleFilesDeletionFunc();
-			default:
-				cerr << "Unsupported operation.";	
-				return Unres;		
-		}
+	MultipleFilesCopyOp
+};
+
+class MultipleFilesCopy : public BenchmarkTest
+{
+public:
+		
+	MultipleFilesCopy(Mode m, int op, string a) : BenchmarkTest (m, op, a)
+	{
+		dirName = "results";
+		destDirName = "largefile";
 	}
+		
+	~MultipleFilesCopy() {}
 	
-	cerr << "Test was successful";	
-	return Success;		
-}
+	int Main(vector<string>);
+private:
+	string dirName;
+	string destDirName;
+	Status MultipleFilesCopyFunc();
+	vector<string> CreateArguments();
+};
 
-Status DeleterTest::MultipleFilesDeletionFunc()
-{
-	UnixCommand command("./MultipleFilesDeletion.sh");
-    std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
-    cerr << result->GetOutput() << " ";
-    
-    return (Status)result->GetStatus();
-}
-vector<string> DeleterTest::CreateArguments()
-{
-	vector<string> command;
-	command.push_back(dirName);
-	
-	return command;
-}
+#endif /* MULTIPLE_FILES_COPY_H */

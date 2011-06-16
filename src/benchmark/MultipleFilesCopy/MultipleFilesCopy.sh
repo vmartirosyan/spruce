@@ -1,4 +1,4 @@
-#      MultipleFilesDeletion.sh
+#      MultipleFilesCopy.sh
 #      
 #      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
 #      
@@ -19,11 +19,20 @@
 
 #!/bin/bash
 
-# Deleting the specified directory
+# Multiple files copying from a given directory to another
+
+dest_folder="destFolder"
+mkdir -p $dest_folder
 
 if [ -d $1 ]
-then 
-	rm -rf $1
+then
+	cd $1
+	files=`ls`
+	cd ../
+	for i in $files
+	do
+		cp -r $1/$i $dest_folder
+	done
 else
 	echo -n "The directory you specified does not exist."
 	exit 2

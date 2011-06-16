@@ -48,7 +48,7 @@ private:
 	string fileName;
 	unsigned int numOfCopies; 
 	Status LargeFileCopyFunc();
-	string CreateCommand();
+	vector<string> CreateArguments();
 };
 
 #endif /* COPY_H */

@@ -1,5 +1,5 @@
 /**
-//      Deleter.cpp
+//      MultipleFilesCopy.cpp
 //      
 //      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
 //      
@@ -22,16 +22,16 @@
 #include <stdlib.h>
 #include <memory>
 #include "UnixCommand.hpp"
-#include "Deleter.hpp"
+#include "MultipleFilesCopy.hpp"
 
-int DeleterTest::Main(vector<string>)
+int MultipleFilesCopy::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{	
 		switch (_operation)
 		{
-			case MultipleFilesDeletion:
-				return MultipleFilesDeletionFunc();
+			case MultipleFilesCopyOp:
+				return MultipleFilesCopyFunc();
 			default:
 				cerr << "Unsupported operation.";	
 				return Unres;		
@@ -42,18 +42,20 @@ int DeleterTest::Main(vector<string>)
 	return Success;		
 }
 
-Status DeleterTest::MultipleFilesDeletionFunc()
+Status MultipleFilesCopy::MultipleFilesCopyFunc()
 {
-	UnixCommand command("./MultipleFilesDeletion.sh");
+	UnixCommand command("./MultipleFilesCopy.sh");
     std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
     return (Status)result->GetStatus();
 }
-vector<string> DeleterTest::CreateArguments()
+
+vector<string> MultipleFilesCopy::CreateArguments()
 {
 	vector<string> command;
 	command.push_back(dirName);
+	command.push_back(destDirName);
 	
 	return command;
 }
