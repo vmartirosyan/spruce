@@ -25,5 +25,6 @@ if [ -d $1 ]
 then 
 	rm -rf $1
 else
-	echo "The directory you specified does not exist."
+	echo -n "The directory you specified does not exist."
+	exit 2
 fi

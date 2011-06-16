@@ -20,6 +20,8 @@
 */
 
 #include <stdlib.h>
+#include <memory>
+#include "UnixCommand.hpp"
 #include "Deleter.hpp"
 
 int DeleterTest::Main(vector<string>)
@@ -42,14 +44,16 @@ int DeleterTest::Main(vector<string>)
 
 Status DeleterTest::MultipleFilesDeletionFunc()
 {
-	string command = CreateCommand();
-    system(command.c_str());   
+	UnixCommand command("./MultipleFilesDeletion.sh");
+    std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
+    cerr << result->GetOutput() << " ";
     
-    return Success;
+    return (Status)result->GetStatus();
 }
-
-string DeleterTest::CreateCommand()
+vector<string> DeleterTest::CreateArguments()
 {
-	string command = (string)"./MultipleFilesDeletion.sh" + (string)" " + dirName;
+	vector<string> command;
+	command.push_back(dirName);
+	
 	return command;
 }
