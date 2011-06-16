@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
-<book xmlns="http://docbook.org/ns/docbook" version="5.0" id="main">
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" id="common">
 	<bookinfo>
-		<title>Spruce : Main module</title>
+		<title>Spruce : Common operations</title>
 		<authorgroup>
 			<author>
 				<firstname>Vahram</firstname>
@@ -17,7 +17,7 @@
 	</bookinfo>
 	<chapter id="overview" name="Overview">
 		<para>
-			This is the Main module documentaion of the Spruce system
+			This is the Common operations module documentaion of the Spruce system
 		</para>	
 	</chapter>
 </book>

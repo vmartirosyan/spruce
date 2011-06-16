@@ -15,5 +15,8 @@
 	<para>
 		Spruce is a Linux filesystem checker. It consists of the following modules:
 		<olink targetdoc="main" >Main module</olink>
+		<olink targetdoc="syscall" >Syscall checker module</olink>
+		<olink targetdoc="common" >Common operations module</olink>
+		<olink targetdoc="benchmark" >Benchmark module</olink>
 	</para>	
 </book>
