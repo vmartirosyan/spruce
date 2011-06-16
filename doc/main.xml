@@ -3,10 +3,16 @@
 <book xmlns="http://docbook.org/ns/docbook" version="5.0" id="main">
 	<bookinfo>
 		<title>Spruce</title>
-		<author>
-			<firstname>Vahram</firstname>
-			<surname>Martirosyan</surname>
-		</author>		
+		<authorgroup>
+			<author>
+				<firstname>Vahram</firstname>
+				<surname>Martirosyan</surname>
+			</author>	
+			<author>
+				<firstname>Suren</firstname>
+				<surname>Grigoryan</surname>
+			</author>	
+		</authorgroup>	
 		<copyright>
 			<year>2011</year>
 			<holder>Vahram Martirosyan</holder>

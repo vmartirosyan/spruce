@@ -3,6 +3,8 @@ include (ExternalProject)
 
 project (Spruce)
 
+SET(${CAKE_INSTALL_PREFIX}, "/opt/spruce" )
+
 SET (LIBRARY_OUTPUT_PATH
  ${PROJECT_BINARY_DIR}/lib
  CACHE PATH
@@ -16,11 +18,11 @@ SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY
  )
 
 add_subdirectory (bin)
-add_subdirectory (doc)
 add_subdirectory (include)
 add_subdirectory (lib)
 add_subdirectory (src)
 add_subdirectory (tests)
+add_subdirectory (doc)
 
 # Uninstall the system
 configure_file(
