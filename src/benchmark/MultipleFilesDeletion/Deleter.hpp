@@ -44,7 +44,7 @@ public:
 private:
 	string dirName;
 	Status MultipleFilesDeletionFunc();
-	string CreateCommand();
+	vector<string> CreateArguments();
 };
 
 #endif /* DELETER_H */
