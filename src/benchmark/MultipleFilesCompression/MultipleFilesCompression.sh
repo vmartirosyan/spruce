@@ -31,7 +31,7 @@ then
 		tar czf $i.tar $i
 	done
 else
-	echo "There is no input folder, in which the files should be compressed"
+	echo -n "There is no input folder, in which the files should be compressed"
 	exit 2
 fi
 
