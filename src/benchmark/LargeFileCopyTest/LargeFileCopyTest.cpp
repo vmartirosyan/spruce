@@ -21,6 +21,8 @@
 
 #include <stdlib.h>
 #include <sstream>
+#include <memory>
+#include "UnixCommand.hpp"
 #include "LargeFileCopyTest.hpp"
 
 int LargeFileCopyTest::Main(vector<string>)
@@ -43,17 +45,22 @@ int LargeFileCopyTest::Main(vector<string>)
 
 Status LargeFileCopyTest::LargeFileCopyFunc()
 {
-	string command = CreateCommand();
-    system(command.c_str());   
+	UnixCommand command("./LargeFileCopyTest.sh");
+    std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
+    cerr << result->GetOutput() << " ";
     
-    return Success;
+    return (Status)result->GetStatus();
 }
 
-string LargeFileCopyTest::CreateCommand()
+vector<string> LargeFileCopyTest::CreateArguments()
 {
 	std::stringstream ss;
 	ss << numOfCopies;
-
-	string command = (string)"./LargeFileCopyTest.sh " + dirName + (string)" " + fileName + (string)" " + ss.str();
+	
+	vector<string> command;
+	command.push_back(dirName);
+	command.push_back(fileName);
+	command.push_back(ss.str());
+	
 	return command;
 }
