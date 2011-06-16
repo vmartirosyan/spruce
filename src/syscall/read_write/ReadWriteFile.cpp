@@ -17,9 +17,10 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include "ReadWriteFile.hpp"
 #include <unistd.h>
 #include <fcntl.h>
+#include "ReadWriteFile.hpp"
+#include "File.hpp"
 
 int ReadWriteFileTest::Main(vector<string>)
 {
@@ -28,7 +29,7 @@ int ReadWriteFileTest::Main(vector<string>)
 		switch (_operation)
 		{
 			case ReadBadFileDescriptor:
-				return ReadBadFileDescriptorTest();
+				return ReadBadFileDescriptorTest1();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -38,20 +39,45 @@ int ReadWriteFileTest::Main(vector<string>)
 	return Success;
 }
 
-Status ReadWriteFileTest::ReadBadFileDescriptorTest()
+Status ReadWriteFileTest::ReadBadFileDescriptorTest1()
 {
-	char buf[1024];
-	size_t count = 10;
-	
-	size_t fd = open("testfile.txt", O_WRONLY | O_CREAT);
-	
-	ssize_t status = read(fd, buf, count);
-	if (errno != EBADF)
+	try
 	{
+		File file("testfile.txt", S_IWUSR);
+		
+		char buf[1024];
+		size_t count = 10;
+
+		size_t fd = open("testfile.txt", O_WRONLY);
+
+		ssize_t status = read(fd, buf, count);
+		if (errno != EBADF)
+		{
+			cerr << "Expected to get bad file descriptor";
+			return Fail;
+		}
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
 		return Fail;
 	}
 	
-	close(fd);
+	return Success;
+}
+
+Status ReadWriteFileTest::ReadBadFileDescriptorTest2()
+{
+	char buf[1024];
+	size_t count = 10;
+
+	ssize_t status = read(-1, buf, count);
+	if (errno != EBADF)
+	{
+		cerr << "Expected to get bad file descriptor";
+		return Fail;
+	}
 	
 	return Success;
 }
+

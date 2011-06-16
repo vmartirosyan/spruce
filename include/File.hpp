@@ -45,7 +45,7 @@ class File
 			if (_fd == -1)
 			{								
 				throw Exception("Cannot create file " + _pathname + 
-				": errno = " + (string)strerror(errno));
+				": error = " + (string)strerror(errno));
 			}
 		}
 		~File()
@@ -55,13 +55,11 @@ class File
 				if (unlink(_pathname.c_str()) != 0)
 				{
 					throw Exception("Cannot delete file " + _pathname + 
-					": errno = " + (string)strerror(errno));
+					": error = " + (string)strerror(errno));
 				}
 			}
-			catch (Exception ex)
+			catch (...)
 			{
-				cerr << ex.GetMessage();
-				exit(Unknown);				
 			}
 		}
 		string GetPathname() const 

@@ -21,6 +21,8 @@
 #define READ_FILE_H
 
 #include "SyscallTest.hpp"
+#include "File.hpp"
+
 
 enum ReadFileDescriptorSyscalls
 {
@@ -32,10 +34,14 @@ class ReadWriteFileTest : public SyscallTest
 public:	
 	ReadWriteFileTest(Mode mode, int operation, string arguments = "") :
 		SyscallTest(mode, operation, arguments, "read")
-	{			
+	{
+		
 	}
-	virtual ~ReadWriteFileTest() {}	
-	Status ReadBadFileDescriptorTest();
+	virtual ~ReadWriteFileTest() 
+	{		
+	}	
+	Status ReadBadFileDescriptorTest1();
+	Status ReadBadFileDescriptorTest2();
 protected:
 	virtual int Main(vector<string> args);	
 };

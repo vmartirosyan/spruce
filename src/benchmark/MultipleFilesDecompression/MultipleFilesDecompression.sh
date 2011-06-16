@@ -28,8 +28,8 @@ then
 	cd $1
 	for i in `ls | grep .tar`
 	do
-		echo $i
-		tar xf $i
+		#echo $i
+		tar xf $i > /dev/null 2>&1
 	done
 else
 	echo -n "There is no input directory"
