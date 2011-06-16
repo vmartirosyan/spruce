@@ -3,7 +3,8 @@ include (ExternalProject)
 
 project (Spruce)
 
-SET(${CAKE_INSTALL_PREFIX}, "/opt/spruce" )
+# Let's install Spruce in /opt/spruce
+SET( CMAKE_INSTALL_PREFIX "/opt/spruce/")
 
 SET (LIBRARY_OUTPUT_PATH
  ${PROJECT_BINARY_DIR}/lib
