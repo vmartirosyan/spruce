@@ -114,6 +114,6 @@ Status ReadWriteFileTest::ReadEinvalErrorTest()
 		cerr << "Expecting to get EINVAL error";
 		return Fail;
 	}
-		
+	
 	return Success;
 }
