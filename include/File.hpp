@@ -49,12 +49,17 @@ class File
 			}
 		}
 		~File()
-		{					
-			try 
+		{			
+			try
 			{
 				if (unlink(_pathname.c_str()) != 0)
 				{
 					throw Exception("Cannot delete file " + _pathname + 
+					": error = " + (string)strerror(errno));
+				}
+				if (close(_fd) != 0)
+				{
+					throw Exception("Cannot close file descriptor for " + _pathname + 
 					": error = " + (string)strerror(errno));
 				}
 			}
