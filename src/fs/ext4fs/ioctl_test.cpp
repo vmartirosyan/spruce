@@ -430,12 +430,12 @@ Status IoctlTest::TestAllocDABlocks()
 	
 	if ( ioctl(_file, EXT4_IOC_ALLOC_DA_BLKS, 0) == -1 )
 	{
-		cerr << "Error allocating DA blocks. " << strerror(errno);
+		cerr << "Error during delayed allocation of blocks. " << strerror(errno);
 		return Fail;
 	}
 	else
 	{
-		cerr << "DA blocks allocation was successful. " << strerror(errno);
+		cerr << "Blocks delayed allocation was successful. " << strerror(errno);
 		return Success;
 	}
 	return Unknown;

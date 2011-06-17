@@ -6,6 +6,7 @@
 <!ENTITY syscalltargets SYSTEM "syscall.db"> 
 <!ENTITY commontargets SYSTEM "common.db"> 
 <!ENTITY benchmarktargets SYSTEM "benchmark.db"> 
+<!ENTITY ext4fstargets SYSTEM "ext4fs.db"> 
  
 ]>
 <targetset> 
@@ -25,6 +26,8 @@
     <document targetdoc="common" baseuri="common/">&commontargets;</document>
     
     <document targetdoc="benchmark" baseuri="benchmark/">&benchmarktargets;</document>
+    
+    <document targetdoc="ext4fs" baseuri="ext4fs/">&ext4fstargets;</document>
         
   </sitemap>
 </targetset>

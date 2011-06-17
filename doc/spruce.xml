@@ -14,9 +14,18 @@
 	</bookinfo>
 	<para>
 		Spruce is a Linux filesystem checker. It consists of the following modules:
-		<olink targetdoc="main" >Main module</olink>
-		<olink targetdoc="syscall" >Syscall checker module</olink>
-		<olink targetdoc="common" >Common operations module</olink>
-		<olink targetdoc="benchmark" >Benchmark module</olink>
+		<itemizedlist mark="square">
+			<listitem><olink targetdoc="main" >Main module</olink> </listitem>
+			<listitem><olink targetdoc="syscall" >Syscall checker module</olink> </listitem>
+			<listitem><olink targetdoc="common" >Common operations module</olink> </listitem>
+			<listitem><olink targetdoc="benchmark" >Benchmark module</olink>  </listitem>
+			<listitem><olink targetdoc="main" >Main module</olink> </listitem>
+			<listitem>and a set of file system specific modules: 
+				<itemizedlist>
+					<listitem><olink targetdoc="ext4fs" >Ext4 FS module</olink></listitem>
+					<listitem><olink targetdoc="btrfs" >BTRFS module</olink></listitem>
+				</itemizedlist>
+			</listitem>
+		</itemizedlist>
 	</para>	
 </book>

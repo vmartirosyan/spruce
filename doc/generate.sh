@@ -7,7 +7,7 @@ if [[ $@<3 ]]
 fi
 
 # Generates the html documentation out of the xml files
-files=(spruce main syscall common benchmark)
+files=(spruce main syscall common benchmark ext4fs)
 
 function copy_htmls()
 {
