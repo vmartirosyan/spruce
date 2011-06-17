@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" id="spruce">
+	<bookinfo>
+		<title>Spruce</title>
+		<author>
+			<firstname>Vahram</firstname>
+			<surname>Martirosyan</surname>
+		</author>		
+		<copyright>
+			<year>2011</year>
+			<holder>Vahram Martirosyan</holder>
+		</copyright>
+	</bookinfo>
+	<para>
+		Spruce is a Linux filesystem checker. It consists of the following modules:
+		<olink targetdoc="main" >Main module</olink>
+		<olink targetdoc="syscall" >Syscall checker module</olink>
+		<olink targetdoc="common" >Common operations module</olink>
+		<olink targetdoc="benchmark" >Benchmark module</olink>
+	</para>	
+</book>
