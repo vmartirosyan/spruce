@@ -17,8 +17,10 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
+#include <sys/timerfd.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <time.h>
 #include "ReadWriteFile.hpp"
 #include "File.hpp"
 
@@ -28,8 +30,12 @@ int ReadWriteFileTest::Main(vector<string>)
 	{	
 		switch (_operation)
 		{
-			case ReadBadFileDescriptor:
+			case ReadBadFileDescriptor1:
 				return ReadBadFileDescriptorTest1();
+			case ReadBadFileDescriptor2:
+				return ReadBadFileDescriptorTest2();
+			case ReadEinvalError:
+				return ReadEinvalErrorTest();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -39,6 +45,7 @@ int ReadWriteFileTest::Main(vector<string>)
 	return Success;
 }
 
+// attempt to read from a file, which was opened in write mode
 Status ReadWriteFileTest::ReadBadFileDescriptorTest1()
 {
 	try
@@ -66,6 +73,7 @@ Status ReadWriteFileTest::ReadBadFileDescriptorTest1()
 	return Success;
 }
 
+// attempt to read from -1 file descriptor
 Status ReadWriteFileTest::ReadBadFileDescriptorTest2()
 {
 	char buf[1024];
@@ -81,3 +89,31 @@ Status ReadWriteFileTest::ReadBadFileDescriptorTest2()
 	return Success;
 }
 
+// attempt to read 0 bytes from file descriptor created by timerfd_create()
+Status ReadWriteFileTest::ReadEinvalErrorTest()
+{	
+	int fd = timerfd_create(CLOCK_REALTIME, 0);
+    if (fd == -1)
+        cerr << strerror(errno);
+               
+    struct timespec now;
+    clock_gettime(CLOCK_REALTIME, &now);
+       
+    struct itimerspec new_value;
+    new_value.it_value.tv_sec = now.tv_sec;
+    new_value.it_value.tv_nsec = now.tv_nsec;
+    if (timerfd_settime(fd, TFD_TIMER_ABSTIME, &new_value, NULL) == -1) 
+		cerr << strerror(errno);
+    
+    char buf[1024];
+	size_t count = 0;
+    ssize_t status = read(fd, buf, 0);
+             
+    if (errno != EINVAL)
+    {
+		cerr << "Expecting to get EINVAL error";
+		return Fail;
+	}
+		
+	return Success;
+}
