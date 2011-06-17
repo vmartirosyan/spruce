@@ -18,6 +18,7 @@
 //      MA 02110-1301, USA.
 
 #include <sys/timerfd.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
@@ -36,6 +37,10 @@ int ReadWriteFileTest::Main(vector<string>)
 				return ReadBadFileDescriptorTest2();
 			case ReadEinvalError:
 				return ReadEinvalErrorTest();
+			case ReadIsdirError:
+				return ReadIsdirErrorTest();
+			case proba:
+				return probaTest();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -67,7 +72,7 @@ Status ReadWriteFileTest::ReadBadFileDescriptorTest1()
 	catch (Exception ex)
 	{
 		cerr << ex.GetMessage();
-		return Fail;
+		return Unres;
 	}
 	
 	return Success;
@@ -94,7 +99,10 @@ Status ReadWriteFileTest::ReadEinvalErrorTest()
 {	
 	int fd = timerfd_create(CLOCK_REALTIME, 0);
     if (fd == -1)
-        cerr << strerror(errno);
+    {
+		cerr << strerror(errno);
+		return Unres;
+	}
                
     struct timespec now;
     clock_gettime(CLOCK_REALTIME, &now);
@@ -102,18 +110,63 @@ Status ReadWriteFileTest::ReadEinvalErrorTest()
     struct itimerspec new_value;
     new_value.it_value.tv_sec = now.tv_sec;
     new_value.it_value.tv_nsec = now.tv_nsec;
-    if (timerfd_settime(fd, TFD_TIMER_ABSTIME, &new_value, NULL) == -1) 
+    if (timerfd_settime(fd, TFD_TIMER_ABSTIME, &new_value, NULL) == -1)
+	{
 		cerr << strerror(errno);
+		return Unres;
+	}
     
     char buf[1024];
 	size_t count = 0;
     ssize_t status = read(fd, buf, 0);
-             
+    
     if (errno != EINVAL)
     {
 		cerr << "Expecting to get EINVAL error";
 		return Fail;
 	}
 	
+	return Success;
+}
+
+Status ReadWriteFileTest::ReadIsdirErrorTest()
+{
+	int dir = mkdir("directory", 777);
+	if (dir == -1)
+	{
+		cerr << strerror(errno);
+		return Unres;
+	}
+	
+	size_t fd = open("directory", O_DIRECTORY);
+	if (fd == -1)
+	{
+		cerr << strerror(errno);
+		rmdir("directory");
+		return Unres;
+	}
+	
+	char buf[1024];
+	size_t count = 10;
+
+	ssize_t status = read(fd, buf, count);
+	if (errno != EISDIR)
+	{
+		cerr << "Expecting to get EISDIR error";
+		rmdir("directory");
+		return Fail;
+	}
+		
+	int rmstatus = rmdir("directory");
+	if (rmstatus == -1)
+	{
+		return Unknown;
+	}
+	
+	return Success;
+}
+
+Status ReadWriteFileTest::probaTest()
+{
 	return Success;
 }
