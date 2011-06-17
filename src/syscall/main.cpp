@@ -1,6 +1,7 @@
 #include "SyscallTest.hpp"
 #include "DupFileDescriptor.hpp"
 #include "ReadWriteFile.hpp"
+#include "Close.hpp"
 
 int main(int argc, char ** argv)
 {
@@ -10,6 +11,10 @@ int main(int argc, char ** argv)
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadBadFileDescriptor1, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadBadFileDescriptor2, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadEinvalError, ""));
+	tests.AddTest(new Close(Normal, BadFileDescriptor, ""));
+	tests.AddTest(new Close(Normal, CorrectDescriptor, ""));
+	tests.AddTest(new Close(Normal, CorrectDescriptorUnlink, ""));
+	
 	
 	TestResultCollection res = tests.Run();
 	
