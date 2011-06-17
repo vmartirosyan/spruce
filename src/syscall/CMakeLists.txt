@@ -12,13 +12,11 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/syscall/dup)
 ADD_SUBDIRECTORY(read_write)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/syscall/read_write)
 
-
 ADD_SUBDIRECTORY(close)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/syscall/close)
 
 ADD_EXECUTABLE(syscall main.cpp)
 TARGET_LINK_LIBRARIES(syscall utils dup close)
-
 
 TARGET_LINK_LIBRARIES(syscall utils dup read_write)
 TARGET_LINK_LIBRARIES(syscall rt)
