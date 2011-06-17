@@ -28,7 +28,9 @@ enum ReadFileDescriptorSyscalls
 {
 	ReadBadFileDescriptor1,
 	ReadBadFileDescriptor2,
-	ReadEinvalError
+	ReadEinvalError,
+	ReadIsdirError,
+	proba
 };
 
 class ReadWriteFileTest : public SyscallTest
@@ -45,6 +47,8 @@ public:
 	Status ReadBadFileDescriptorTest1();
 	Status ReadBadFileDescriptorTest2();
 	Status ReadEinvalErrorTest();
+	Status ReadIsdirErrorTest();
+	Status probaTest();
 protected:
 	virtual int Main(vector<string> args);	
 };
