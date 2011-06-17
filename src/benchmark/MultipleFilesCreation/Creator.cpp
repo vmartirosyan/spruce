@@ -18,8 +18,11 @@
 //      MA 02110-1301, USA.
 
 #include <stdlib.h>
+#include <memory>
 #include "Creator.hpp"
 #include "UnixCommand.hpp"
+
+using std::auto_ptr;
 
 int CreatorTest::Main(vector<string>)
 {
@@ -41,7 +44,7 @@ int CreatorTest::Main(vector<string>)
 Status CreatorTest::MultipleFilesCreationFunc()
 {
     UnixCommand command("./MultipleFilesCreation.sh");
-    ProcessResult *result = command.Execute(CreateArguments());
+    auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
     return (Status)result->GetStatus();

@@ -19,8 +19,11 @@
 
 
 #include <stdlib.h>
+#include <memory>
 #include "FindFile.hpp"
 #include "UnixCommand.hpp"
+
+using std::auto_ptr;
 
 int FindFileTest::Main(vector<string>)
 {
@@ -42,7 +45,7 @@ int FindFileTest::Main(vector<string>)
 Status FindFileTest::FindFileFunc()
 {
 	UnixCommand command("./FindFile.sh");
-    ProcessResult *result = command.Execute(CreateArguments());
+    auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
     return (Status)result->GetStatus();

@@ -22,6 +22,8 @@
 #include "Decompressor.hpp"
 #include "UnixCommand.hpp"
 
+using std::auto_ptr;
+
 int DecompressTest::Main(vector<string>)
 {
 	if ( _mode == Normal )
@@ -42,7 +44,7 @@ int DecompressTest::Main(vector<string>)
 Status DecompressTest::MultipleFilesDecompressionFunc()
 {
 	UnixCommand command("./MultipleFilesDecompression.sh");
-    ProcessResult* result = command.Execute(CreateArguments());
+    auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
     return (Status)result->GetStatus();

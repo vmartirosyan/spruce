@@ -18,8 +18,11 @@
 //      MA 02110-1301, USA.
 
 #include <stdlib.h>
+#include <memory>
 #include "Compressor.hpp"
 #include "UnixCommand.hpp"
+
+using std::auto_ptr;
 
 int CompressTest::Main(vector<string>)
 {
@@ -41,7 +44,7 @@ int CompressTest::Main(vector<string>)
 Status CompressTest::MultipleFilesCompressionFunc()
 {
 	UnixCommand command("./MultipleFilesCompression.sh");
-    ProcessResult *result = command.Execute(CreateArguments());
+    auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
     return (Status)result->GetStatus();

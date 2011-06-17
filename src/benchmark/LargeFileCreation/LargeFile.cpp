@@ -18,8 +18,11 @@
 //      MA 02110-1301, USA.
 
 #include <stdlib.h>
+#include <memory>
 #include "LargeFile.hpp"
 #include "UnixCommand.hpp"
+
+using std::auto_ptr;
 
 int LargeFileTest::Main(vector<string>)
 {
@@ -41,7 +44,7 @@ int LargeFileTest::Main(vector<string>)
 Status LargeFileTest::LargeFileCreationFunc()
 {
 	UnixCommand command("./LargeFileCreation.sh");
-    ProcessResult *result = command.Execute(CreateArguments());
+    auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
     return (Status)result->GetStatus();
