@@ -4,10 +4,12 @@
 
 int main(int argc, char ** argv)
 {
-	TestCollection tests;		
+	TestCollection tests;
 	
 	tests.AddTest(new DupFileDescriptorTest(Normal, Dup));	
-	tests.AddTest(new ReadWriteFileTest(Normal, ReadBadFileDescriptor, ""));
+	tests.AddTest(new ReadWriteFileTest(Normal, ReadBadFileDescriptor1, ""));
+	tests.AddTest(new ReadWriteFileTest(Normal, ReadBadFileDescriptor2, ""));
+	tests.AddTest(new ReadWriteFileTest(Normal, ReadEinvalError, ""));
 	
 	TestResultCollection res = tests.Run();
 	

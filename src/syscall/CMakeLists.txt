@@ -13,7 +13,7 @@ ADD_SUBDIRECTORY(read_write)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/syscall/read_write)
 
 ADD_EXECUTABLE(syscall main.cpp)
-TARGET_LINK_LIBRARIES(syscall utils dup read_write)
+TARGET_LINK_LIBRARIES(syscall utils dup read_write rt)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/syscall"
 			DESTINATION bin
