@@ -50,6 +50,7 @@ Status DeleterTest::MultipleFilesDeletionFunc()
     
     return (Status)result->GetStatus();
 }
+
 vector<string> DeleterTest::CreateArguments()
 {
 	vector<string> command;

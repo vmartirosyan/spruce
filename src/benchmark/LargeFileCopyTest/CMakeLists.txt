@@ -5,6 +5,16 @@ PROJECT (Spruce)
 
 SET(TEST_NAME LargeFileCopyTest)
 
+CONFIGURE_FILE(
+	"${PROJECT_SOURCE_DIR}/LargeFileCopyTest.cpp"
+	"${PROJECT_BINARY_DIR}/LargeFileCopyTest.cpp"
+)
+
+FILE(
+	COPY ${PROJECT_SOURCE_DIR}/LargeFileCopyTest.hpp
+	DESTINATION ${PROJECT_BINARY_DIR}/	
+)
+
 ADD_LIBRARY(${TEST_NAME} STATIC LargeFileCopyTest.cpp)
 
 INSTALL(
