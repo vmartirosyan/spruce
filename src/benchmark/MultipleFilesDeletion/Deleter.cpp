@@ -44,7 +44,7 @@ int DeleterTest::Main(vector<string>)
 
 Status DeleterTest::MultipleFilesDeletionFunc()
 {
-	UnixCommand command("./MultipleFilesDeletion.sh");
+	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/MultipleFilesDeletion.sh");
     std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
