@@ -1,9 +1,19 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
-MESSAGE("Configuring LargeFileCopy benchmark test")
+MESSAGE("Configuring MultipleFilesCopy benchmark test")
 PROJECT (Spruce)
 
 SET(TEST_NAME MultipleFilesCopy)
+
+CONFIGURE_FILE(
+	"${PROJECT_SOURCE_DIR}/MultipleFilesCopy.cpp"
+	"${PROJECT_BINARY_DIR}/MultipleFilesCopy.cpp"
+)
+
+FILE(
+	COPY ${PROJECT_SOURCE_DIR}/MultipleFilesCopy.hpp
+	DESTINATION ${PROJECT_BINARY_DIR}/	
+)
 
 ADD_LIBRARY(${TEST_NAME} STATIC MultipleFilesCopy.cpp)
 

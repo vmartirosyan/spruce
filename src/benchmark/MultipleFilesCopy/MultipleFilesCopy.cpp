@@ -44,7 +44,7 @@ int MultipleFilesCopy::Main(vector<string>)
 
 Status MultipleFilesCopy::MultipleFilesCopyFunc()
 {
-	UnixCommand command("./MultipleFilesCopy.sh");
+	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/MultipleFilesCopy.sh");
     std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
