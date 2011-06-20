@@ -44,7 +44,7 @@ int CattingLargeFile::Main(vector<string>)
 
 Status CattingLargeFile::CattingLargeFileFunc()
 {
-	UnixCommand command("./CattingLargeFile.sh");
+	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/CattingLargeFile.sh");
     std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
