@@ -45,7 +45,7 @@ int LargeFileCopyTest::Main(vector<string>)
 
 Status LargeFileCopyTest::LargeFileCopyFunc()
 {
-	UnixCommand command("./LargeFileCopyTest.sh");
+	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/LargeFileCopyTest.sh");
     std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
