@@ -65,7 +65,7 @@ long long getMeasure(const string &suffix)
 }
 
 int main(int argc, char *argv[])
-{	
+{
 	long long n = 0, bytes = 0;
 	char *filename;
 	

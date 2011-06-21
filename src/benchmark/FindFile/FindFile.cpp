@@ -44,7 +44,7 @@ int FindFileTest::Main(vector<string>)
 
 Status FindFileTest::FindFileFunc()
 {
-	UnixCommand command("./FindFile.sh");
+	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/FindFile.sh");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
