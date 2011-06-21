@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" id="benchmark">
+	<bookinfo>
+		<title>Spruce : Benchmark</title>
+		<authorgroup>
+			<author>
+				<firstname>Vahram</firstname>
+				<surname>Martirosyan</surname>
+			</author>	
+			<author>
+				<firstname>Eduard</firstname>
+				<surname>Bagrov</surname>
+			</author>	
+		</authorgroup>	
+		
+	</bookinfo>
+	<chapter id="overview" name="Overview">
+		<para>
+			This is the Benchmark module documentaion of the Spruce system
+		</para>	
+	</chapter>
+</book>
