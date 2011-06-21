@@ -43,7 +43,7 @@ int CompressTest::Main(vector<string>)
 
 Status CompressTest::MultipleFilesCompressionFunc()
 {
-	UnixCommand command("./MultipleFilesCompression.sh");
+	UnixCommand command("${CMAKE_INSTALL_PREFIX}bin/MultipleFilesCompression.sh");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
