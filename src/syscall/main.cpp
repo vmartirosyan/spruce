@@ -3,6 +3,7 @@
 #include "ReadWriteFile.hpp"
 #include "Close.hpp"
 #include "Link.hpp"
+#include "Chmod.hpp"
 int main(int argc, char ** argv)
 {
 	TestCollection tests;
