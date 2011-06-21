@@ -18,9 +18,12 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/syscall/close)
 ADD_SUBDIRECTORY(link)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/syscall/link)
 
+ADD_SUBDIRECTORY(chmod)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/syscall/chmod)
 
 ADD_EXECUTABLE(syscall main.cpp)
 TARGET_LINK_LIBRARIES(syscall utils dup close)
+TARGET_LINK_LIBRARIES(syscall utils dup chmod)
 TARGET_LINK_LIBRARIES(syscall utils dup link)
 TARGET_LINK_LIBRARIES(syscall utils dup read_write)
 TARGET_LINK_LIBRARIES(syscall rt)
