@@ -29,6 +29,9 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/LargeFileCopyTest)
 ADD_SUBDIRECTORY(MultipleFilesCopy)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFilesCopy)
 
+ADD_SUBDIRECTORY(MultipleFilesCatting)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFilesCatting)
+
 ADD_SUBDIRECTORY(CattingLargeFile)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/CattingLargeFile)
 
@@ -38,7 +41,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFilesDecompression
 ADD_EXECUTABLE(benchmark main.cpp)
 TARGET_LINK_LIBRARIES(benchmark utils MultipleFilesCreation MultipleFilesDeletion 
 	MultipleFilesCompression LargeFileCreation FindFile LargeFileCopyTest MultipleFilesDecompression MultipleFilesCopy 
-	CattingLargeFile )
+	CattingLargeFile MultipleFilesCatting)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/benchmark"
 			DESTINATION bin
