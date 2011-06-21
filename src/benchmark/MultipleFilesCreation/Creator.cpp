@@ -33,8 +33,8 @@ int CreatorTest::Main(vector<string>)
 			case MultipleFilesCreation:
 				return MultipleFilesCreationFunc();
 			default:
-				cerr << "Unsupported operation.";	
-				return Unres;		
+				cerr << "Unsupported operation.";
+				return Unres;
 		}
 	}
 	cerr << "Test was successful";	
@@ -43,7 +43,7 @@ int CreatorTest::Main(vector<string>)
 
 Status CreatorTest::MultipleFilesCreationFunc()
 {
-    UnixCommand command("./MultipleFilesCreation.sh");
+    UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/MultipleFilesCreation.sh");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

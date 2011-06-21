@@ -33,5 +33,5 @@ cd $parent_folder
 touch $1
 
 # filling the existing file with zeros
-./../createfile $2
+./createfile $2
 
