@@ -34,16 +34,16 @@ int LargeFileTest::Main(vector<string>)
 				return LargeFileCreationFunc();
 			default:
 				cerr << "Unsupported operation.";	
-				return Unres;		
+				return Unres;
 		}
 	}
 	cerr << "Test was successful";	
-	return Success;		
+	return Success;
 }
 
 Status LargeFileTest::LargeFileCreationFunc()
 {
-	UnixCommand command("./LargeFileCreation.sh");
+	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/LargeFileCreation.sh");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

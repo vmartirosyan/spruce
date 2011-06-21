@@ -43,7 +43,7 @@ int DecompressTest::Main(vector<string>)
 
 Status DecompressTest::MultipleFilesDecompressionFunc()
 {
-	UnixCommand command("./MultipleFilesDecompression.sh");
+	UnixCommand command("${CMAKE_INSTALL_PREFIX}bin/MultipleFilesDecompression.sh");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
