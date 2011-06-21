@@ -77,9 +77,6 @@ Status LinkTest::LinkTooLongNewPath()
 {
 	
 	
-	char buf[1024];
-	size_t count = 10;
-	int fd ;
 	int ret_val;
 	const char* filename="testfile.txt";
 	const char* tooLongfilename="abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
@@ -118,8 +115,7 @@ Status LinkTest::LinkTooLongNewPath()
 
 Status LinkTest::LinkNewPathAlreadyExist()
 {
-	char buf[1024];
-	size_t count = 10;
+
 	int fd ;
 	int ret_val;
 	const char* filename1="testfile1.txt";
@@ -160,8 +156,7 @@ Status LinkTest::LinkNewPathAlreadyExist()
 
 Status LinkTest::LinkOldPathIsDirectory()
 {
-	char buf[1024];
-	size_t count = 10;
+
 	int fd ;
 	int ret_val;
 	const char* dirname="testdir";
