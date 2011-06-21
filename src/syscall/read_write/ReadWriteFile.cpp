@@ -39,6 +39,8 @@ int ReadWriteFileTest::Main(vector<string>)
 				return ReadEinvalErrorTest();
 			case ReadIsdirError:
 				return ReadIsdirErrorTest();
+			case ReadEfaultError:
+				return ReadEfaultErrorTest();
 			case proba:
 				return probaTest();
 			default:
@@ -129,6 +131,7 @@ Status ReadWriteFileTest::ReadEinvalErrorTest()
 	return Success;
 }
 
+// attempt to read from directory
 Status ReadWriteFileTest::ReadIsdirErrorTest()
 {
 	int dir = mkdir("directory", 777);
@@ -161,6 +164,34 @@ Status ReadWriteFileTest::ReadIsdirErrorTest()
 	if (rmstatus == -1)
 	{
 		return Unknown;
+	}
+	
+	return Success;
+}
+
+// attempt to read to the buffer which is -1
+Status ReadWriteFileTest::ReadEfaultErrorTest()
+{
+	try
+	{
+		File file("testfile.txt");
+		
+		size_t count = 10;
+
+		size_t fd = open("testfile.txt", O_RDONLY);
+
+		ssize_t status = read(fd, (void *)-1, count);
+				
+		if (errno != EFAULT)
+		{
+			cerr << "Expected to get EFAULT";
+			return Fail;
+		}
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
 	}
 	
 	return Success;

@@ -27,7 +27,7 @@ using namespace std;
 // returns the suffix of the string: 
 // c = 1, w = 2, b = 512, kB = 1000, K = 1024, MB = 1000*1000, 
 // M = 1024*1024, xM = M GB = 1000*1000*1000, G = 1024*1024*1024
-string getSuffix(char *str)
+string getSuffix(const char *str)
 {
 	string s = "";
 	
@@ -37,7 +37,7 @@ string getSuffix(char *str)
 	return s;
 }
 
-long long getMeasure(string suffix)
+long long getMeasure(const string &suffix)
 {
 	long long bytes = 0;
 	if (suffix == "c")
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 	
 	if (argc >= 3)
 	{
-		string suffix = getSuffix(argv[2]);			
+		string suffix = getSuffix(argv[2]);
 		bytes = getMeasure(suffix);
 	
 		n = atoi(argv[2]);
@@ -90,6 +90,8 @@ int main(int argc, char *argv[])
 	ofstream fout(filename);
 	
 	fout << buffer;
+	
+	delete buffer;
 	
 	return 0;
 }

@@ -30,6 +30,7 @@ enum ReadFileDescriptorSyscalls
 	ReadBadFileDescriptor2,
 	ReadEinvalError,
 	ReadIsdirError,
+	ReadEfaultError,
 	proba
 };
 
@@ -48,6 +49,7 @@ public:
 	Status ReadBadFileDescriptorTest2();
 	Status ReadEinvalErrorTest();
 	Status ReadIsdirErrorTest();
+	Status ReadEfaultErrorTest();
 	Status probaTest();
 protected:
 	virtual int Main(vector<string> args);	
