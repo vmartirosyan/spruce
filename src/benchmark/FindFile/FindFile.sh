@@ -30,13 +30,13 @@ then
 	do
 		if [ -f $i ]
 		then
-			echo -n "file $2 found in" $i
+			echo -n ""
 		else
 			echo -n "file $2 not found"
 			exit 1
 		fi
 	done
 else
-	echo "There is no input folder which is expected to be compressed"
+	echo -n "There is no input folder which is expected to be compressed"
 	exit 2
 fi
