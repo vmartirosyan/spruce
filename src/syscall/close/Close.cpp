@@ -17,7 +17,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include "Close.hpp"
+#include "Chmod.hpp"
 #include <unistd.h>
 #include <fcntl.h>
 #include "File.hpp"
@@ -131,8 +131,15 @@ Status Close::CloseCorrectDescriptorUnlinkTest()
 		return Unres;
 	}
 
-	int fd1 = open("testfile2.txt", O_CREAT);
-	if(fd1!=3)
+	int fd_new = open("testfile2.txt", O_CREAT);
+	if( fd_new== -1)
+	{
+		cerr << "Cannot create file: Aborting test "<<strerror(errno);
+		return Unres;
+	}
+	
+	
+	if(fd_new!=fd)
 	{
 		cerr << "After closing and unlinking the previous file descriptor ,the new one must refer to the same value(as it is minimal value)";
 		return Fail;
