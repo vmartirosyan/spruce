@@ -20,11 +20,10 @@
 #ifndef FCNTL_H
 #define FCNTL_H
 
-#include "SyscallTest.hpp"
-
-enum fnctlFileDescriptorSyscalls
+// Operations
+enum fnctlSyscalls
 {
-
+	fcntlTestGetFileDescriptorFlags
 };
 
 class fcntlTest : public SyscallTest
@@ -33,6 +32,9 @@ class fcntlTest : public SyscallTest
 		fcntlTest(Mode mode, int operation, string arguments = "") :
 			SyscallTest(mode, operation, arguments, "fcntl"){}
 		virtual ~fcntlTest() {}
+		
+	// Test Functions
+		Status getFileDescriptorFlags();
 	protected:
 		virtual int Main(vector<string> args);
 };
