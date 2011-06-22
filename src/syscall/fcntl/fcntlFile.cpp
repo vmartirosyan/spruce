@@ -26,6 +26,8 @@ int fcntlTest::Main(vector<string> args)
 	{
 		switch (_operation)
 		{
+			case fcntlTestGetFileDescriptorFlags:
+				return getFileDescriptorFlags();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;
@@ -35,4 +37,34 @@ int fcntlTest::Main(vector<string> args)
 	cerr << "Test was successful";
 
 	return Success;
+}
+
+Status fcntlTest::getFileDescriptorFlags()
+{
+	int fd;
+	int flags;
+	int get_flags;
+
+	try
+	{
+		flags = O_CREAT | O_WRONLY;
+		fd = open("./test", flags);
+		
+		get_flags = fcntl(fd, F_GETFD);
+		
+		if(flags == get_flags)
+		{
+			return Success;
+		}
+		else
+		{
+			cerr << "Cannot get file descriptor mode: " << strerror(errno);
+			return Fail;
+		}
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Fail;
+	}
 }
