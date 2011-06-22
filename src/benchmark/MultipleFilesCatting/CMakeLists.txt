@@ -1,21 +1,21 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
-MESSAGE("Configuring CattingLargeFile benchmark test")
+MESSAGE("Configuring LargeFileCopy benchmark test")
 PROJECT (Spruce)
 
-SET(TEST_NAME CattingLargeFile)
+SET(TEST_NAME MultipleFilesCatting)
 
 CONFIGURE_FILE(
-	"${PROJECT_SOURCE_DIR}/CattingLargeFile.cpp"
-	"${PROJECT_BINARY_DIR}/CattingLargeFile.cpp"
+	"${PROJECT_SOURCE_DIR}/MultipleFilesCatting.cpp"
+	"${PROJECT_BINARY_DIR}/MultipleFilesCatting.cpp"
 )
 
 FILE(
-	COPY ${PROJECT_SOURCE_DIR}/CattingLargeFile.hpp
+	COPY ${PROJECT_SOURCE_DIR}/MultipleFilesCatting.hpp
 	DESTINATION ${PROJECT_BINARY_DIR}/	
 )
 
-ADD_LIBRARY(${TEST_NAME} STATIC ${PROJECT_BINARY_DIR}/CattingLargeFile.cpp)
+ADD_LIBRARY(${TEST_NAME} STATIC ${PROJECT_BINARY_DIR}/MultipleFilesCatting.cpp)
 
 INSTALL(
 		FILES ${CMAKE_BINARY_DIR}/bin/${TEST_NAME}.sh
