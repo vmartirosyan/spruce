@@ -53,18 +53,18 @@ int main(int argc, char ** argv)
 	
 	TestCollection tests;
 	
-	tests.AddTest(new IoctlTest(Normal, SetFlagsGetFlags, ""));
-	tests.AddTest(new IoctlTest(Normal, ClearExtentsFlags, ""));
-	tests.AddTest(new IoctlTest(Normal, SetFlagsNotOwner, ""));
-	tests.AddTest(new IoctlTest(Normal, SetVersionGetVersion, ""));
-	//tests.AddTest(new IoctlTest(Normal, WaitForReadonly, ""));
-	tests.AddTest(new IoctlTest(Normal, GroupExtend, "", DeviceName, MountPoint));
-	tests.AddTest(new IoctlTest(Normal, MoveExtent, ""));
-	tests.AddTest(new IoctlTest(Normal, GroupAdd, ""));
-	tests.AddTest(new IoctlTest(Normal, Migrate, "", DeviceName, MountPoint));
-	tests.AddTest(new IoctlTest(Normal, AllocDABlocks, ""));
-	//tests.AddTest(new IoctlTest(Normal, Fitrim, ""));
-	tests.AddTest(new IoctlTest(Normal, Unsupported, ""));
+	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlSetFlagsGetFlags, ""));
+	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlClearExtentsFlags, ""));
+	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlSetFlagsNotOwner, ""));
+	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlSetVersionGetVersion, ""));
+	//tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlWaitForReadonly, ""));
+	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlGroupExtend, "", DeviceName, MountPoint));
+	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlMoveExtent, ""));
+	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlGroupAdd, ""));
+	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlMigrate, "", DeviceName, MountPoint));
+	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlAllocDABlocks, ""));
+	//tests.AddTest(new Ext4IoctlTest(Normal, Fitrim, ""));
+	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlUnsupported, ""));
 	
 	TestResultCollection res = tests.Run();
 	

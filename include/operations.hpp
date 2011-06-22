@@ -1,4 +1,4 @@
-//      config.hpp
+//      operations.hpp
 //      
 //      Copyright 2011 Vahram Martirosyan <vmartirosyan@gmail.com>
 //      
@@ -17,65 +17,23 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
+#ifndef OPERATIONS_HPP
+#define OPERATIONS_HPP
 
-#include "test.hpp"
-#include "exception.hpp"
-#include <unistd.h>
-#include <fcntl.h>
 #include <string>
-#include <fstream>
-#include <sstream>
 
 using std::string;
-using std::ifstream;
-using std::stringstream;
 
-struct RawConfigData // A single line of configuration file
+enum Operations
 {
-	string Operation;
-	string Arguments;
+	OneFakeOperation
 };
 
-ifstream & operator >> (ifstream & inf, RawConfigData & data)
-{
-	char buf[256];
-	inf.getline(buf, 256);
-	stringstream s(buf);
-	s >> data.Operation >> data.Arguments;
-	return inf;
-}
-
-class Configuration
+class Operation
 {
 public:
-	Configuration(const char * config_file_name)
-	{
-		_inf.open(config_file_name) ;		
-	}
-	
-	virtual TestCollection Read()
-	{
-		TestCollection tests;
-		Test * tmp;
-		
-		while ( ( tmp = ReadTest() ) != NULL )
-		{
-			tests.AddTest(tmp);
-		}
-		
-		return tests;
-	}
-	
-	~Configuration()
-	{
-		_inf.close();
-	}
-	
-protected:
-	ifstream _inf;
-	virtual Test * ReadTest() = 0;
+	static string ToString( Operations ) { return "OneFakeOperation"; }
+	static Operations Parse( string ) { return static_cast<Operations>(0); }
 };
 
-#endif /* CONFIG_HPP */
+#endif /* OPERATIONS_HPP */

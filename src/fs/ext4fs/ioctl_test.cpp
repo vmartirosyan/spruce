@@ -21,49 +21,49 @@
 #include <sys/capability.h>
 #include <sys/mount.h>
 
-int IoctlTest::_file = -1;	
-int IoctlTest::_file_donor = -1;	
+int Ext4IoctlTest::_file = -1;	
+int Ext4IoctlTest::_file_donor = -1;	
 
-ProcessResult * IoctlTest::Execute(vector<string> args)
+ProcessResult * Ext4IoctlTest::Execute(vector<string> args)
 {
 	ProcessResult * p_res = Ext4fsTest::Execute(args);
 	
-	TestResult * t_res = new IoctlTestResult(*p_res, _operation, _args);
+	TestResult * t_res = new Ext4IoctlTestResult(*p_res, _operation, _args);
 	
 	delete p_res;
 	
 	return t_res;
 }
 
-int IoctlTest::Main(vector<string>)
+int Ext4IoctlTest::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{
 		switch (_operation)
 		{
-			case SetFlagsGetFlags:
+			case Ext4IoctlSetFlagsGetFlags:
 				return TestSetFlagsGetFlags();
-			case ClearExtentsFlags:
+			case Ext4IoctlClearExtentsFlags:
 				return TestClearExtentsFlags();
-			case SetFlagsNotOwner:
+			case Ext4IoctlSetFlagsNotOwner:
 				return TestSetFlagsNotOwner();
-			case SetVersionGetVersion:
+			case Ext4IoctlSetVersionGetVersion:
 				return TestSetVersionGetVersion();
-			case WaitForReadonly:
+			case Ext4IoctlWaitForReadonly:
 				return TestWaitForReadonly();
-			case GroupExtend:
+			case Ext4IoctlGroupExtend:
 				return TestGroupExtend();
-			case MoveExtent:
+			case Ext4IoctlMoveExtent:
 				return TestMoveExtent();
-			case GroupAdd:
+			case Ext4IoctlGroupAdd:
 				return TestGroupAdd();
-			case Migrate:
+			case Ext4IoctlMigrate:
 				return TestMigrate();
-			case AllocDABlocks:
+			case Ext4IoctlAllocDABlocks:
 				return TestAllocDABlocks();
-			case Fitrim:
+			case Ext4IoctlFitrim:
 				return TestFitrim();
-			case Unsupported:
+			case Ext4IoctlUnsupported:
 				return TestUnsupported();
 			default:
 				cerr << "Unsupported operation.";	
@@ -74,7 +74,7 @@ int IoctlTest::Main(vector<string>)
 	return Success;
 }
 
-Status IoctlTest::TestSetFlagsGetFlags()
+Status Ext4IoctlTest::TestSetFlagsGetFlags()
 {
 	if ( _file == -1 )
 	{
@@ -127,7 +127,7 @@ Status IoctlTest::TestSetFlagsGetFlags()
 	}
 }
 
-Status IoctlTest::TestClearExtentsFlags()
+Status Ext4IoctlTest::TestClearExtentsFlags()
 {
 	if ( _file == -1 )
 	{
@@ -160,7 +160,7 @@ Status IoctlTest::TestClearExtentsFlags()
 	}
 }
 
-Status IoctlTest::TestSetFlagsNotOwner()
+Status Ext4IoctlTest::TestSetFlagsNotOwner()
 {
 	if ( _file == -1 )
 	{
@@ -206,7 +206,7 @@ Status IoctlTest::TestSetFlagsNotOwner()
 	}
 }
 
-Status IoctlTest::TestSetVersionGetVersion()
+Status Ext4IoctlTest::TestSetVersionGetVersion()
 {
 	if ( _file == -1 )
 	{
@@ -259,7 +259,7 @@ Status IoctlTest::TestSetVersionGetVersion()
 	}
 }
 
-Status IoctlTest::TestWaitForReadonly()
+Status Ext4IoctlTest::TestWaitForReadonly()
 {
 
 	if ( _file == -1 )
@@ -283,7 +283,7 @@ Status IoctlTest::TestWaitForReadonly()
 extern string MountPoint;
 
 
-Status IoctlTest::TestGroupExtend()
+Status Ext4IoctlTest::TestGroupExtend()
 {	
 	if ( _file == -1 )
 	{
@@ -319,7 +319,7 @@ out:
 	return status;
 }
 
-Status IoctlTest::TestMoveExtent()
+Status Ext4IoctlTest::TestMoveExtent()
 {
 
 	if ( _file == -1 || _file_donor == -1 )
@@ -367,7 +367,7 @@ Status IoctlTest::TestMoveExtent()
 	}
 }
 
-Status IoctlTest::TestGroupAdd()
+Status Ext4IoctlTest::TestGroupAdd()
 {
 	if ( _file == -1 )
 	{
@@ -391,7 +391,7 @@ Status IoctlTest::TestGroupAdd()
 	return Unknown;
 }
 
-Status IoctlTest::TestMigrate()
+Status Ext4IoctlTest::TestMigrate()
 {
 	if ( _file == -1 )
 	{
@@ -420,7 +420,7 @@ Status IoctlTest::TestMigrate()
 	return Unknown;
 }
 
-Status IoctlTest::TestAllocDABlocks()
+Status Ext4IoctlTest::TestAllocDABlocks()
 {
 	if ( _file == -1 )
 	{
@@ -441,7 +441,7 @@ Status IoctlTest::TestAllocDABlocks()
 	return Unknown;
 }
 
-Status IoctlTest::TestFitrim()
+Status Ext4IoctlTest::TestFitrim()
 {
 	cerr << "Fitrim???";
 #ifdef FITRIM	
@@ -465,7 +465,7 @@ Status IoctlTest::TestFitrim()
 	return Unres;
 #endif
 }
-Status IoctlTest::TestUnsupported()
+Status Ext4IoctlTest::TestUnsupported()
 {
 	cerr << "Unsupported...";
 	if ( _file == -1 )
@@ -487,9 +487,10 @@ Status IoctlTest::TestUnsupported()
 	return Unknown;
 }
 
-string IoctlTestResult::OperationToString()
+string Ext4IoctlTestResult::OperationToString()
 {
-	switch (_operation)
+	return Operation::ToString(static_cast<Operations>(_operation));
+/*	switch (_operation)
 		{
 			case SetFlagsGetFlags:
 				return "SetFlagsGetFlags";
@@ -516,5 +517,5 @@ string IoctlTestResult::OperationToString()
 			case Unsupported:
 			default:
 				return "Unsupported";			
-		}
+		}*/
 }
