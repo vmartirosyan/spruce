@@ -29,21 +29,21 @@
 using std::ifstream;
 
 // Operations
-enum IoctlOperations
-{
-	Ext4IoctlSetFlagsGetFlags,
-	Ext4IoctlClearExtentsFlags,
-	Ext4IoctlSetFlagsNotOwner,
-	Ext4IoctlSetVersionGetVersion,
-	Ext4IoctlWaitForReadonly,
-	Ext4IoctlGroupExtend,
-	Ext4IoctlMoveExtent,
-	Ext4IoctlGroupAdd,
-	Ext4IoctlMigrate,
-	Ext4IoctlAllocDABlocks,
-	Ext4IoctlFitrim,
-	Ext4IoctlUnsupported	
-};
+ enum IoctlOperations
+ {
+ 	Ext4IoctlSetFlagsGetFlags,
+ 	Ext4IoctlClearExtentsFlags,
+ 	Ext4IoctlSetFlagsNotOwner,
+ 	Ext4IoctlSetVersionGetVersion,
+ 	Ext4IoctlWaitForReadonly,
+ 	Ext4IoctlGroupExtend,
+ 	Ext4IoctlMoveExtent,
+ 	Ext4IoctlGroupAdd,
+ 	Ext4IoctlMigrate,
+ 	Ext4IoctlAllocDABlocks,
+ 	Ext4IoctlFitrim,
+ 	Ext4IoctlUnsupported	
+ };
 
 class Ext4IoctlTestResult : public Ext4fsTestResult
 {
@@ -123,3 +123,4 @@ private:
 
 
 #endif /* IOCTL_TEST_H */
+
