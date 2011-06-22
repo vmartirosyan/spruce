@@ -33,7 +33,10 @@ int main(int argc, char ** argv)
 	tests.AddTest(new Chmod(Normal, CHMOD_S_IWOTH, ""));
 	tests.AddTest(new Chmod(Normal, CHMOD_S_IXOTH, ""));
 	tests.AddTest(new Chmod(Normal, CHMOD_S_ISUID, ""));
-	tests.AddTest(new Chmod(Normal, ERR_EFAULT, ""));
+    tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENAMETOOLONG, ""));
+    tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENOENT, ""));
+     tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENOTDIR, ""));
+    
 	
 	tests.AddTest(new LinkTest(Normal, TooLongOldPath, ""));
 	tests.AddTest(new LinkTest(Normal, TooLongNewPath, ""));
