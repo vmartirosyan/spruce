@@ -26,7 +26,8 @@ public:
 		char strToTime[100];
 		sprintf(strToTime, "%.2f", timestamp);
 		
-		return StatusToString() + " : " + _output + " : " + _arguments + " : " + (string)strToTime;
+		return Operation::ToString(static_cast<Operations>(_operation)) + " : " + 
+				StatusToString() + " : " + _output + " : " + _arguments + " : " + static_cast<string>(strToTime);
 	}
 protected:
 	double timestamp;

@@ -28,41 +28,42 @@
 
 using std::ifstream;
 
+// Operations
 enum IoctlOperations
 {
-	SetFlagsGetFlags,
-	ClearExtentsFlags,
-	SetFlagsNotOwner,
-	SetVersionGetVersion,
-	WaitForReadonly,
-	GroupExtend,
-	MoveExtent,
-	GroupAdd,
-	Migrate,
-	AllocDABlocks,
-	Fitrim,
-	Unsupported	
+	Ext4IoctlSetFlagsGetFlags,
+	Ext4IoctlClearExtentsFlags,
+	Ext4IoctlSetFlagsNotOwner,
+	Ext4IoctlSetVersionGetVersion,
+	Ext4IoctlWaitForReadonly,
+	Ext4IoctlGroupExtend,
+	Ext4IoctlMoveExtent,
+	Ext4IoctlGroupAdd,
+	Ext4IoctlMigrate,
+	Ext4IoctlAllocDABlocks,
+	Ext4IoctlFitrim,
+	Ext4IoctlUnsupported	
 };
 
-class IoctlTestResult : public Ext4fsTestResult
+class Ext4IoctlTestResult : public Ext4fsTestResult
 {
 public:
-	IoctlTestResult(ProcessResult pr, int op, string args):
+	Ext4IoctlTestResult(ProcessResult pr, int op, string args):
 		Ext4fsTestResult(pr, op, args) {}
 protected:
 	virtual string OperationToString();
 };
 
-class IoctlTest : public Ext4fsTest
+class Ext4IoctlTest : public Ext4fsTest
 {
 public:	
-	IoctlTest(Mode m, int op, string a):
+	Ext4IoctlTest(Mode m, int op, string a):
 		Ext4fsTest(m, op, a)
 	{
 		Init();
 	}
 	
-	IoctlTest(Mode m, int op, string a, string dev, string mtpt):
+	Ext4IoctlTest(Mode m, int op, string a, string dev, string mtpt):
 		_DeviceName(dev),
 		_MountPoint(mtpt),
 		Ext4fsTest(m,op,a)
@@ -76,7 +77,7 @@ public:
 			_PartitionSizeInBlocks = SizeInBytes / 8;
 		}
 		
-	virtual ~IoctlTest()
+	virtual ~Ext4IoctlTest()
 	{
 		if ( _file > 0 )
 		{
