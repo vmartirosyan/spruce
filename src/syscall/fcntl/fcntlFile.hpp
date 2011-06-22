@@ -24,6 +24,7 @@
 enum fnctlSyscalls
 {
 	fcntlTestGetFileDescriptorFlags
+	fcntlTestSetFileDescriptorFlags
 };
 
 class fcntlTest : public SyscallTest
