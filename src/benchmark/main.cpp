@@ -7,6 +7,7 @@
 #include "Decompressor.hpp"
 #include "MultipleFilesCopy.hpp"
 #include "CattingLargeFile.hpp"
+#include "SearchMapFile.hpp"
 
 int main(int argc, char ** argv)
 {
@@ -18,7 +19,8 @@ int main(int argc, char ** argv)
 	tests.AddTest(new LargeFileTest(Normal, LargeFileCreation, ""));
 	tests.AddTest(new LargeFileCopyTest(Normal, LargeFileCopying, ""));
 	tests.AddTest(new MultipleFilesCopy(Normal, MultipleFilesCopyOp, ""));
-	tests.AddTest(new CattingLargeFile(Normal, CattingLargeFileOp, ""));
+	tests.AddTest(new CattingLargeFile(Normal, CattingLargeFileOp, ""));	
+	tests.AddTest(new SearchMapFileTest(Normal, SearchMapFile, ""));
 	tests.AddTest(new DeleterTest(Normal, MultipleFilesDeletion, ""));
 	
 	TestResultCollection res = tests.Run();
