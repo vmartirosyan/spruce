@@ -22,6 +22,7 @@
 
 #include "BenchmarkTest.hpp"
 
+// Operations
 enum CompressOperations
 {
 	MultipleFilesCompression
