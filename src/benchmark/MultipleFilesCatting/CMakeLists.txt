@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
-MESSAGE("Configuring LargeFileCopy benchmark test")
+MESSAGE("Configuring MultipleFilesCatting benchmark test")
 PROJECT (Spruce)
 
 SET(TEST_NAME MultipleFilesCatting)
