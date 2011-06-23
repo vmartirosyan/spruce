@@ -17,7 +17,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include "ioctl_test.hpp"
+#include <ioctl_test.hpp>
 #include <sys/capability.h>
 #include <sys/mount.h>
 

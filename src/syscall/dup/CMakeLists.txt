@@ -4,4 +4,6 @@ message("Configuring dup syscall checker module.")
 
 project (Spruce)
 
-ADD_LIBRARY(dup STATIC ${CMAKE_CURRENT_BINARY_DIR}/DupFileDescriptor.cpp)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+ADD_LIBRARY(dup STATIC DupFileDescriptor.cpp)

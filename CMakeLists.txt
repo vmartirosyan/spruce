@@ -18,8 +18,9 @@ SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY
  "Directory for all Binaries"
  )
  
-message(" -- Copying source files to build folder")
-execute_process(COMMAND bash -c "cp -r ${CMAKE_SOURCE_DIR}/* ${CMAKE_BINARY_DIR}/ ") 
+message("-- Copying source files to build folder")
+execute_process(COMMAND mkdir ${CMAKE_BINARY_DIR}/include/ -p )
+execute_process(COMMAND bash -c "cp -r ${CMAKE_SOURCE_DIR}/include/*.hpp ${CMAKE_BINARY_DIR}/include/ ") 
 
 # Changing the source directory to point to the binary directory
 SET(CMAKE_SOURCE_DIR, ${CMAKE_BINARY_DIR})

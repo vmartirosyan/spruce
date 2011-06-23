@@ -4,7 +4,9 @@ message("Configuring dup syscall checker module.")
 
 project (Spruce)
 
-ADD_LIBRARY(fcntl SHARED ${CMAKE_CURRENT_BINARY_DIR}/fcntlFile.cpp)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+ADD_LIBRARY(fcntl SHARED fcntlFile.cpp)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/syscall"
 			DESTINATION bin

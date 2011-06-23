@@ -23,7 +23,7 @@
 #include "ext4fs_test.hpp"
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include "ext4.h"
+#include "ext4.hpp"
 #include <fstream>
 
 using std::ifstream;
