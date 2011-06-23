@@ -7,7 +7,7 @@
 			<author>
 				<firstname>Vahram</firstname>
 				<surname>Martirosyan</surname>
-			</author>	
+			</author>
 			<author>
 				<firstname>Eduard</firstname>
 				<surname>Bagrov</surname>
@@ -17,7 +17,15 @@
 	</bookinfo>
 	<chapter id="overview" name="Overview">
 		<para>
-			This is the Benchmark module documentaion of the Spruce system
-		</para>	
+			This is the Benchmark module documentation of the Spruce system
+		</para>
+		
+		<para>
+			This benchmark generates and measures a variety of following file operations.
+			
+			<itemizedlist>
+				<listitem>Getting and setting flags</listitem>
+			</itemizedlist>
+		</para>
 	</chapter>
 </book>
