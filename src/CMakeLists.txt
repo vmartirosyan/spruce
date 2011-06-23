@@ -4,6 +4,7 @@ project (Spruce)
 
 message("Configuring project sources.")
 
+#include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/include")
 link_directories("${CMAKE_BINARY_DIR}/src/utils")
 

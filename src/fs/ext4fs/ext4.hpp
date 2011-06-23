@@ -18,7 +18,7 @@
 #ifndef _EXT4_H
 #define _EXT4_H
 
-#include "platform_defs.h"
+#include "platform_defs.hpp"
 
 
 #define	FS_IOC_GETFLAGS			_IOR('f', 1, long)

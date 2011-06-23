@@ -10,7 +10,9 @@ message("Configuring EXT4 specific sources.")
 	#message(FATAL_ERROR "The library libcapability is required for the Ext4FS checker subsystem.")
 #endif()
 
-add_executable( ext4fs ${CMAKE_CURRENT_BINARY_DIR}/ext4fs.cpp ${CMAKE_CURRENT_BINARY_DIR}/ioctl_test.cpp )
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+add_executable( ext4fs ext4fs.cpp ioctl_test.cpp )
 target_link_libraries(ext4fs utils)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/ext4fs"
