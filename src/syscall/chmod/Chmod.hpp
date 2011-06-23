@@ -21,7 +21,7 @@
 #define CHMOD_H
 
 #include "SyscallTest.hpp"
-//ChmodOperations
+// Operations
 enum ChmodSyscalls
 {
 
