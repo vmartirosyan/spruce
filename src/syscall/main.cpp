@@ -4,6 +4,7 @@
 #include "Close.hpp"
 #include "Link.hpp"
 #include "Chmod.hpp"
+
 int main(int argc, char ** argv)
 {
 	TestCollection tests;
@@ -14,6 +15,7 @@ int main(int argc, char ** argv)
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadEinvalError, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadIsdirError, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadEfaultError, ""));
+	tests.AddTest(new ReadWriteFileTest(Normal, ReadEagainError, ""));	
 	tests.AddTest(new ReadWriteFileTest(Normal, proba, ""));
 
 	tests.AddTest(new Close(Normal, BadFileDescriptor, ""));
