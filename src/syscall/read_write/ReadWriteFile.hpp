@@ -23,7 +23,7 @@
 #include "SyscallTest.hpp"
 #include "File.hpp"
 
-
+// Operations
 enum ReadFileDescriptorSyscalls
 {
 	ReadBadFileDescriptor1,
