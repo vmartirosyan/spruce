@@ -18,16 +18,15 @@
 //      MA 02110-1301, USA.
 
 #include "fcntlFile.hpp"
-#include <fcntl.h>
 
-int fcntlTest::Main(vector<string> args)
+int fcntl::Main(vector<string> args)
 {
 	if ( _mode == Normal )
 	{
 		switch (_operation)
 		{
-			case fcntlTestGetFileDescriptorFlags:
-				return getFileDescriptorFlags();
+			case fcntlGetSetFileDescriptorFlags:
+				return get_setFileDescriptorFlags();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;
@@ -39,32 +38,28 @@ int fcntlTest::Main(vector<string> args)
 	return Success;
 }
 
-Status fcntlTest::getFileDescriptorFlags()
+Status fcntl::get_setFileDescriptorFlags()
 {
-	int fd;
-	int flags;
-	int get_flags;
+	//int fd;
+	//int set_flags;
+	//int get_flags;
 
-	try
-	{
-		flags = O_CREAT | O_WRONLY;
-		fd = open("./test", flags);
+	//try
+	//{
+		//fd = open("./test", O_CREAT);
 		
-		get_flags = fcntl(fd, F_GETFD);
+		//get_flags = fcntl(fd, F_GETFD);
 		
-		if(flags == get_flags)
-		{
-			return Success;
-		}
-		else
-		{
-			cerr << "Cannot get file descriptor mode: " << strerror(errno);
-			return Fail;
-		}
-	}
-	catch (Exception ex)
-	{
-		cerr << ex.GetMessage();
-		return Fail;
-	}
+		//if(flags == get_flags)
+		//{
+			//return Success;
+		//}
+		//else
+		//{
+			//cerr << "Cannot get file descriptor mode: " << strerror(errno);
+			//return Fail;
+		//}
+	//}
+	
+	return Success;
 }
