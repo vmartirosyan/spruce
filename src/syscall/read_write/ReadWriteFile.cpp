@@ -41,6 +41,8 @@ int ReadWriteFileTest::Main(vector<string>)
 				return ReadIsdirErrorTest();
 			case ReadEfaultError:
 				return ReadEfaultErrorTest();
+			case ReadEagainError:
+				return ReadEagainErrorTest();
 			case proba:
 				return probaTest();
 			default:
@@ -65,7 +67,7 @@ Status ReadWriteFileTest::ReadBadFileDescriptorTest1()
 		size_t fd = open("testfile.txt", O_WRONLY);
 
 		ssize_t status = read(fd, buf, count);
-		if (errno != EBADF)
+		if (errno != EBADF || status != -1)
 		{
 			cerr << "Expected to get bad file descriptor";
 			return Fail;
@@ -87,7 +89,7 @@ Status ReadWriteFileTest::ReadBadFileDescriptorTest2()
 	size_t count = 10;
 
 	ssize_t status = read(-1, buf, count);
-	if (errno != EBADF)
+	if (errno != EBADF || status != -1)
 	{
 		cerr << "Expected to get bad file descriptor";
 		return Fail;
@@ -122,7 +124,7 @@ Status ReadWriteFileTest::ReadEinvalErrorTest()
 	size_t count = 0;
     ssize_t status = read(fd, buf, 0);
     
-    if (errno != EINVAL)
+    if (errno != EINVAL || status != -1)
     {
 		cerr << "Expecting to get EINVAL error";
 		return Fail;
@@ -153,7 +155,7 @@ Status ReadWriteFileTest::ReadIsdirErrorTest()
 	size_t count = 10;
 
 	ssize_t status = read(fd, buf, count);
-	if (errno != EISDIR)
+	if (errno != EISDIR || status != -1)
 	{
 		cerr << "Expecting to get EISDIR error";
 		rmdir("directory");
@@ -182,7 +184,7 @@ Status ReadWriteFileTest::ReadEfaultErrorTest()
 
 		ssize_t status = read(fd, (void *)-1, count);
 				
-		if (errno != EFAULT)
+		if (errno != EFAULT || status != -1)
 		{
 			cerr << "Expected to get EFAULT";
 			return Fail;
@@ -197,7 +199,47 @@ Status ReadWriteFileTest::ReadEfaultErrorTest()
 	return Success;
 }
 
-Status ReadWriteFileTest::probaTest()
+int ReadWriteFileTest::setNonblocking(int fd)
 {
+    int flags;
+	
+#if defined(O_NONBLOCK)
+    if (-1 == (flags = fcntl(fd, F_GETFL, 0)))
+        flags = 0;
+    return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+#else
+    flags = 1;
+    return ioctl(fd, FIOBIO, &flags);
+#endif
+}
+
+// attempt to read from nonblocking pipe which is empty from the other side
+Status ReadWriteFileTest::ReadEagainErrorTest()
+{		
+	int pipe[2];
+	int status = pipe2(pipe, O_NONBLOCK);
+	if (status == -1)
+	{
+		cerr < strerror(errno);
+		return Unres;
+	}
+	
+	char buf[1024];
+	size_t count = 10;
+	
+	ssize_t st = read(pipe[0], buf, count);
+	
+	if (errno != EAGAIN || st != -1)
+	{
+		cerr << "Expected to get EAGAIN error";
+		return Fail;
+	}
+
+	return Success;
+}
+
+Status ReadWriteFileTest::probaTest()
+{		
+
 	return Success;
 }
