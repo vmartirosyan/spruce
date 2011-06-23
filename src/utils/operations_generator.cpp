@@ -40,6 +40,8 @@ using std::string;
 using std::stringstream;
 
 #include "UnixCommand.hpp"
+#include <sys/stat.h>
+#include <sys/types.h>
 
 int Usage(char ** argv);
 vector<string> GetHeaderFiles(const string & root);
@@ -107,6 +109,11 @@ vector<string> GetHeaderFiles(const string & root)
 		{
 			s >> file;
 			cout << file << endl;
+			if ( root.size() > file.size())
+			{
+				cerr << "Error with file and root folder lengths" << endl;
+				continue;
+			}
 			file = file.substr(root.size());
 			files.push_back(file);
 			
@@ -122,7 +129,13 @@ vector<string> GetHeaderFiles(const string & root)
 void ProcessFile(string file, string source, string dest)
 {
 	// TODO: mkdir output directory
-	mkdir ((dest + file).substr(0, (dest + file).rfind("/") ).c_str(), 0777);
+	size_t BaseNameEnd = (dest + file).rfind("/");
+	if ( BaseNameEnd > (dest + file).size() )
+	{
+		cerr << "Cannot obtain directory name of file " << file << endl;
+		return;
+	}
+	mkdir ((dest + file).substr(0, BaseNameEnd ).c_str(), 0777);
 	ifstream inf((source + file).c_str());
 	ofstream of((dest + file).c_str());
 	/* States
