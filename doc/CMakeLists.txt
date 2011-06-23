@@ -6,7 +6,7 @@ project (Spruce)
 
 execute_process(COMMAND echo "Copying documentation")
 
-execute_process(COMMAND ${CMAKE_SOURCE_DIR}/doc/generate.sh ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc 2>/dev/null )
+#execute_process(COMMAND ${CMAKE_SOURCE_DIR}/doc/generate.sh ${CMAKE_SOURCE_DIR}/doc ${CMAKE_BINARY_DIR}/doc 2>/dev/null )
 
 	
 install (FILES ${CMAKE_BINARY_DIR}/doc/spruce.html DESTINATION share/doc/spruce)
