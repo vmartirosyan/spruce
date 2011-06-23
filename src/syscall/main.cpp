@@ -38,10 +38,12 @@ int main(int argc, char ** argv)
      tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENOTDIR, ""));
     
 	
-	tests.AddTest(new LinkTest(Normal, TooLongOldPath, ""));
-	tests.AddTest(new LinkTest(Normal, TooLongNewPath, ""));
-	tests.AddTest(new LinkTest(Normal, NewPathAleadyExist, ""));
-	tests.AddTest(new LinkTest(Normal, OldPathIsDirectory, ""));
+	tests.AddTest(new LinkTest(Normal, LinkTestTooLongOldPath, ""));
+	tests.AddTest(new LinkTest(Normal, LinkTestTooLongNewPath, ""));
+	tests.AddTest(new LinkTest(Normal, LinkTestNewPathAleadyExist, ""));
+	tests.AddTest(new LinkTest(Normal, LinkTestOldPathIsDirectory, ""));
+	tests.AddTest(new LinkTest(Normal, LinkTestNormalFile, ""));
+	tests.AddTest(new LinkTest(Normal, LinkTestIsNotDirectory, ""));
 	
 	
 	TestResultCollection res = tests.Run();
