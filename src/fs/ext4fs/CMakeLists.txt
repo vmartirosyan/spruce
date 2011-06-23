@@ -12,7 +12,7 @@ message("Configuring EXT4 specific sources.")
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-add_executable( ext4fs ext4fs.cpp ioctl_test.cpp )
+add_executable( ext4fs ext4fs.cpp ioctl_test.cpp ${CMAKE_BINARY_DIR}/include/config.hpp)
 target_link_libraries(ext4fs utils)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/ext4fs"

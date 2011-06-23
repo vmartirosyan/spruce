@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 message("Configuring utils sources.")
 
-add_library(utils STATIC test.cpp process.cpp ${CMAKE_BINARY_DIR}/src/utils/operations.cpp)
+add_library(utils STATIC test.cpp process.cpp ${CMAKE_BINARY_DIR}/src/utils/operations.cpp )
 
 add_executable(operations_generator operations_generator.cpp process.cpp )
 

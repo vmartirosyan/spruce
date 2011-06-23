@@ -17,11 +17,12 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include "ext4.hpp"
+#include <ext4.hpp>
 #include <ioctl_test.hpp>
 #include <sys/mount.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <config.hpp>
 
 string DeviceName = "";
 string MountPoint = "";
@@ -51,8 +52,11 @@ int main(int argc, char ** argv)
 	mkdir( MountPoint.c_str(), 0x0777 );
 	mount ( DeviceName.c_str(), MountPoint.c_str(), "ext4", 0 ,0);
 	
-	TestCollection tests;
+	Configuration<Ext4IoctlTest> conf("/home/vmartirosyan/workspace/spruce/config/ext4fs.conf");
 	
+	TestCollection tests = conf.Read();
+	
+	/*
 	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlSetFlagsGetFlags, ""));
 	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlClearExtentsFlags, ""));
 	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlSetFlagsNotOwner, ""));
@@ -65,6 +69,10 @@ int main(int argc, char ** argv)
 	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlAllocDABlocks, ""));
 	//tests.AddTest(new Ext4IoctlTest(Normal, Fitrim, ""));
 	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlUnsupported, ""));
+	*/
+	
+	
+	
 	
 	TestResultCollection res = tests.Run();
 	
