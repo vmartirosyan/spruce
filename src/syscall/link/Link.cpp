@@ -1,6 +1,6 @@
 //      Link.cpp
 //      
-//      Copyright 2011  Suren Gishyan
+//      Copyright 2011  Gurgen Suren <sgishyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -28,14 +28,18 @@ int LinkTest::Main(vector<string>)
 	{	
 		switch (_operation)
 		{
-			case TooLongNewPath:
+			case LinkTestTooLongNewPath:
 				return LinkTooLongNewPath();
-			case TooLongOldPath:
+			case LinkTestTooLongOldPath:
 			   return LinkTooLongOldPath();
-			case NewPathAleadyExist:
+			case LinkTestNewPathAleadyExist:
 				return LinkNewPathAlreadyExist();
-			case OldPathIsDirectory:
+			case LinkTestOldPathIsDirectory:
 				return LinkOldPathIsDirectory();
+			case LinkTestNormalFile:
+				return LinkNormalLink();
+			case LinkTestIsNotDirectory:
+				return LinkIsNotDirectory();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -192,4 +196,128 @@ Status LinkTest::LinkOldPathIsDirectory()
 
 }
 
+
+Status LinkTest::LinkNormalLink()
+{
+
+	int fd_orig ;
+	int fd_link;
+	
+	int ret_val;
+	const char* buf="ABCDEFGH";
+	char read_buf[1024];
+	size_t  COUNT=6;
+	ssize_t write_count;
+	ssize_t read_count;
+	const char* filename="testfile1.txt";
+	const char* filename_link="testfile2.txt";
+
+	fd_orig=open(filename,O_RDWR| O_CREAT, S_IRWXU);
+	
+	if(fd_orig==-1)
+	{
+		cerr << "Unable create file."<<strerror(errno);
+		return Unres;
+	}
+		
+	fd_link = link(filename, filename_link);
+	if(fd_link==-1)
+	{
+		cerr << "Error occured during linking normal file. "<<strerror(errno);
+		unlink(filename);
+		return Unres;
+	}
+	
+
+	
+	write_count=write(fd_orig, buf, COUNT);
+	if(write_count==-1)
+	{
+		cerr << "Error occured during writing. "<<strerror(errno);
+		unlink(filename);
+		return Unres;
+	}
+	
+
+	
+	fd_link=open(filename_link,O_RDONLY,S_IRUSR);
+	if(fd_link==-1)
+	{
+		cerr << "Error occured during opening linked file. "<<strerror(errno);
+		unlink(filename);
+		return Unres;
+	}
+	
+	read_count=read(fd_link, read_buf, write_count);
+	if(read_count!=write_count)
+	{
+		cerr << "Written bytes count is not equal to read bytes count.";
+		unlink(filename);
+		unlink(filename_link);
+		return Fail;
+	}
+	
+	if(memcmp(buf, read_buf, read_count)!=0)
+	{
+		cerr << "Written bytes are not equal to read bytes count.  ";
+		unlink(filename);
+		unlink(filename_link);
+		return Fail;
+	}
+	
+	
+	unlink(filename);
+	unlink(filename_link);
+	return Success;
+
+
+}
+
+Status LinkTest::LinkIsNotDirectory()
+{
+
+	int ret_val;
+	const char* notDirectoryPath="filename2.txt/linkname";
+	const char* filename2="filename2.txt";
+	const char* filename="filename.txt";
+	
+	
+	
+	try
+	{
+		File file(filename, S_IWUSR);
+		File file2(filename2, S_IWUSR);
+		
+		ret_val=link(filename,notDirectoryPath);
+					
+				
+		if(ret_val==0)
+		{
+				cerr << "Link return 0 in case of non-directory component used as a directory";
+				return Fail;
+		}
+		else
+		{
+			if(errno!=ENOTDIR)
+			{
+					
+					cerr << "Incorrect error set in errno in case of non-directory component used as a directory "<<strerror(errno);
+					return Fail;
+			}
+		}
+		
+		return Success;
+		
+	}	
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Fail;
+	}
+
+	
+	
+	
+	
+}
 

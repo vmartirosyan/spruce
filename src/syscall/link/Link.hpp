@@ -22,12 +22,15 @@
 
 #include "SyscallTest.hpp"
 
+// Operations
 enum LinkSyscalls
 {
-	TooLongOldPath,
-	TooLongNewPath,
-	NewPathAleadyExist,
-	OldPathIsDirectory
+	LinkTestTooLongOldPath,
+	LinkTestTooLongNewPath,
+	LinkTestNewPathAleadyExist,
+	LinkTestOldPathIsDirectory,
+	LinkTestNormalFile,
+	LinkTestIsNotDirectory
 };
 
 class LinkTest : public SyscallTest
@@ -42,6 +45,9 @@ public:
 	Status LinkTooLongNewPath();
 	Status LinkNewPathAlreadyExist();
 	Status LinkOldPathIsDirectory();
+	Status LinkNormalLink();
+	Status LinkIsNotDirectory();
+
 protected:
 	virtual int Main(vector<string> args);	
 };
