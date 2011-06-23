@@ -30,7 +30,6 @@ using std::endl;
 using std::vector;
 using std::pair;
 
-typedef pair<int, string> Operation;
 
 enum Mode
 {

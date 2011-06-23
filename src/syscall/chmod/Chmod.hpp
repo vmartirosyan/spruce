@@ -21,7 +21,7 @@
 #define CHMOD_H
 
 #include "SyscallTest.hpp"
-
+// Operations
 enum ChmodSyscalls
 {
 
@@ -41,16 +41,17 @@ enum ChmodSyscalls
 	CHMOD_S_IXOTH,
 	CHMOD_S_ISUID,
 	
-	ERR_ENOTDIR,
-	ERR_ENAMETOOLONG,
-	ERR_ENOENT,
-	ERR_EACCES,
-	ERR_ELOOP,
-	ERR_EPERM,
-	ERR_EROFS,
-	ERR_EFAULT,
-	ERR_EIO,
-	ERR_EFTYPE
+	CHMOD_ERR_ENOTDIR,
+	CHMOD_ERR_ENAMETOOLONG,
+	CHMOD_ERR_ENOENT,
+	CHMOD_ERR_EACCES,
+	CHMOD_ERR_ELOOP,
+	CHMOD_ERR_EPERM,
+	CHMOD_ERR_EROFS,
+	CHMOD_ERR_EFAULT,
+	CHMOD_ERR_EIO,
+	CHMOD_ERR_EFTYPE
+
 
 
 };
@@ -66,6 +67,9 @@ public:
 	Status Chmod_S_IRWXU();	
 	Status PermissionsTest(int open_mode);
 	Status ErrEfault();
+	Status ChmodTooLongPath();
+	Status ChmodFileNotExist();
+	Status ChmodIsNotDirectory();
 
 protected:
 	virtual int Main(vector<string> args);	

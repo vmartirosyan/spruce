@@ -32,35 +32,39 @@ int Chmod::Main(vector<string>)
 		switch (_operation)
 		{
 			case CHMOD_S_IRWXU:
-				return PermissionsTest(CHMOD_S_IRWXU);
+				return PermissionsTest(S_IRWXU);
 	        case CHMOD_S_IRUSR:
-				return PermissionsTest(CHMOD_S_IRUSR);
+				return PermissionsTest(S_IRUSR);
 			case CHMOD_S_IWUSR:
-				return PermissionsTest(CHMOD_S_IWUSR);
+				return PermissionsTest(S_IWUSR);
 			case CHMOD_S_IXUSR:
-				return PermissionsTest(CHMOD_S_IXUSR);
+				return PermissionsTest(S_IXUSR);
 				
 			case CHMOD_S_IRWXG:
-				return PermissionsTest(CHMOD_S_IRWXG);
+				return PermissionsTest(S_IRWXG);
 			case CHMOD_S_IRGRP:
-				return PermissionsTest(CHMOD_S_IRGRP);
+				return PermissionsTest(S_IRGRP);
 			case CHMOD_S_IWGRP:
-				return PermissionsTest(CHMOD_S_IWGRP);
+				return PermissionsTest(S_IWGRP);
 			case CHMOD_S_IXGRP:
-				return PermissionsTest(CHMOD_S_IXGRP);
+				return PermissionsTest(S_IXGRP);
 				
 			case CHMOD_S_IRWXO:
-				return PermissionsTest(CHMOD_S_IRWXO);
+				return PermissionsTest(S_IRWXO);
 			case CHMOD_S_IROTH:
-				return PermissionsTest(CHMOD_S_IROTH);
+				return PermissionsTest(S_IROTH);
 			case CHMOD_S_IWOTH:
-				return PermissionsTest(CHMOD_S_IWOTH);
+				return PermissionsTest(S_IWOTH);
 			case CHMOD_S_IXOTH:
-				return PermissionsTest(CHMOD_S_IXOTH);
+				return PermissionsTest(S_IXOTH);
 			case CHMOD_S_ISUID:
-				return PermissionsTest(CHMOD_S_ISUID);
-			case ERR_EFAULT:
-				return  ErrEfault();
+				return PermissionsTest(S_ISUID);
+		    case CHMOD_ERR_ENAMETOOLONG:
+				return  ChmodTooLongPath();
+			case CHMOD_ERR_ENOENT:
+				return  ChmodFileNotExist();
+		    case CHMOD_ERR_ENOTDIR:
+				return ChmodIsNotDirectory();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -70,28 +74,42 @@ int Chmod::Main(vector<string>)
 	return Success;
 }
 
-Status Chmod::ErrEfault()
-{/*
+
+
+Status Chmod::ChmodIsNotDirectory()
+{
+
+	
 	const char *path="chmodTest.txt";
-	int ret_chmod;
+	const char *pathNotDirectory = "chmodTest.txt/somthingelse" ;
+	int  ret_chmod;
 	struct stat mode;
 		
 	try
 	{
-		//File file(path, open_mode);
+		File file(path, S_IWUSR);
 
-
-		ret_chmod = chmod("notafile", S_IWUSR);
+		ret_chmod = chmod(pathNotDirectory, S_IWUSR);
 		
-		if(ret_chmod == -1)
+				
+		if(ret_chmod == 0)
 		{
-			cerr << "Chmod  failed: Aborting test "<<strerror(errno) <<errno;
-			return Unres;
+			cerr << "Chmod reruns 0 but it should return -1 when  component of the path prefix is not a directory  "<<strerror(errno);
+			return Fail;
 		}
 		
+		else 
+		{
+			
+			if(errno != ENOTDIR)
+			{
+				
+				cerr << "Incorrect error set in errno in case of component of the path prefix is not a directory "<<strerror(errno);
+				return Fail;
+			}
+			
+		}
 		
-	
-	
 	return Success;
 
 
@@ -104,11 +122,78 @@ Status Chmod::ErrEfault()
 		cerr << ex.GetMessage();
 		return Fail;
 	}
-	*/
-	return Success;
+
+	
 }
 
 
+
+Status Chmod::ChmodTooLongPath()
+{
+	
+	
+    int ret_chmod;
+	const char* filename = "chmodTest.txt";
+	const char* tooLongfilename = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+	
+	try
+	{
+		File file(filename, S_IWUSR);
+	
+		ret_chmod = chmod(tooLongfilename, S_IWUSR);
+		
+		if(ret_chmod == 0)
+		{
+			cerr << "Chmod reruns 0 but it should return -1 when the path is too long  "<<strerror(errno);
+			return Fail;
+		}
+		
+
+		else
+		{
+			if(errno != ENAMETOOLONG)
+			{
+				
+				cerr << "Incorrect error set in errno in case of too long file name "<<strerror(errno);
+				return Fail;
+			}
+		}
+		return Success;
+
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Fail;
+	}
+	
+}
+
+
+Status Chmod::ChmodFileNotExist()
+{
+	
+	const char *path="chmodTest.txt";
+	int ret_chmod;
+	ret_chmod = chmod(path, S_IWUSR);
+	
+	if(ret_chmod == 0)
+	{
+		cerr << "Chmod reruns 0 but it should return -1 when the file is not exist  "<<strerror(errno);
+		return Fail;
+	}
+	else
+		{
+			if(errno != ENOENT)
+			{
+				
+				cerr << "Incorrect error set in errno in case of file does not exists "<<strerror(errno);
+				return Fail;
+			}
+		}
+	
+	return Success;
+}
 
 
 
