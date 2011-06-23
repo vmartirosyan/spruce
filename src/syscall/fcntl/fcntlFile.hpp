@@ -20,23 +20,27 @@
 #ifndef FCNTL_H
 #define FCNTL_H
 
+#include <fcntl.h>
+//#include "File.hpp"
+#include "SyscallTest.hpp"
+
 // Operations
 enum fnctlSyscalls
 {
-	fcntlTestGetFileDescriptorFlags
-	fcntlTestSetFileDescriptorFlags
+	fcntlGetSetFileDescriptorFlags
 };
 
-class fcntlTest : public SyscallTest
+class fcntl : public SyscallTest
 {
 	public:
-		fcntlTest(Mode mode, int operation, string arguments = "") :
+		fcntl(Mode mode, int operation, string arguments = "") :
 			SyscallTest(mode, operation, arguments, "fcntl"){}
-		virtual ~fcntlTest() {}
+		virtual ~fcntl() {}
 		
 	// Test Functions
-		Status getFileDescriptorFlags();
+		Status get_setFileDescriptorFlags();
 	protected:
 		virtual int Main(vector<string> args);
 };
+
 #endif /* FCNTL_H */
