@@ -29,6 +29,7 @@ TARGET_LINK_LIBRARIES(syscall utils dup close)
 TARGET_LINK_LIBRARIES(syscall utils dup chmod)
 TARGET_LINK_LIBRARIES(syscall utils dup link)
 TARGET_LINK_LIBRARIES(syscall utils dup read_write)
+TARGET_LINK_LIBRARIES(syscall utils dup fcntl)
 TARGET_LINK_LIBRARIES(syscall rt)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/syscall"
