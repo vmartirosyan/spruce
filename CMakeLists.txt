@@ -17,6 +17,12 @@ SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY
  CACHE PATH
  "Directory for all Binaries"
  )
+ 
+message(" -- Copying source files to build folder")
+execute_process(COMMAND bash -c "cp -r ${CMAKE_SOURCE_DIR}/* ${CMAKE_BINARY_DIR}/ ") 
+
+# Changing the source directory to point to the binary directory
+SET(CMAKE_SOURCE_DIR, ${CMAKE_BINARY_DIR})
 
 add_subdirectory (bin)
 add_subdirectory (include)
@@ -25,10 +31,12 @@ add_subdirectory (src)
 add_subdirectory (tests)
 add_subdirectory (doc)
 
+
+
 # Uninstall the system
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    "${CMAKE_SOURCE_DIR}/cmake_uninstall.cmake.in"
+    "${CMAKE_BINARY_DIR}/cmake_uninstall.cmake"
     IMMEDIATE @ONLY)
 
 add_custom_target(uninstall

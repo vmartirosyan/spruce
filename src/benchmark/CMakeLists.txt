@@ -41,6 +41,8 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/MultipleFilesDecompression
 ADD_SUBDIRECTORY(SearchMapFile)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/benchmark/SearchMapFile)
 
+
+
 ADD_EXECUTABLE(benchmark main.cpp)
 TARGET_LINK_LIBRARIES(benchmark utils MultipleFilesCreation MultipleFilesDeletion 
 	MultipleFilesCompression LargeFileCreation FindFile LargeFileCopyTest MultipleFilesDecompression MultipleFilesCopy 

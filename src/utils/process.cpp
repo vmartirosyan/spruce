@@ -73,8 +73,8 @@ ProcessResult * Process::Execute(vector<string> args)
 	}
 	
 	// Probably normal end of test. Let's collect the result;
-	char buf[1024];
-	int bytes = read(fds[0], buf, 1024);
+	char buf[10240];
+	int bytes = read(fds[0], buf, 10240);
 	buf[bytes] = 0;
 	
 	// Restore the stdin, stdout and stderr descriptors

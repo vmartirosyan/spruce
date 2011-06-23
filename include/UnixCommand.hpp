@@ -40,10 +40,12 @@ protected:
 	{
 		char** argv = new char*[args.size() + 2];
 		argv[0] = (char*)_name.c_str();
-		for (int i = 0; i < args.size(); i++)
+		for (unsigned int i = 0; i < args.size(); i++)
 			argv[i + 1] = (char*)args[i].c_str();
 		argv[args.size() + 1] = (char*)0;
 		execvp(argv[0], argv);
+		cerr << "Error running Main method: " << strerror(errno);
+		return static_cast<int>(Unres);
 	}
 protected:
 	string _name;

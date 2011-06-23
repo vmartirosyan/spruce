@@ -22,6 +22,7 @@
 
 #include "common.hpp"
 #include "process.hpp"
+#include "operations.hpp"
 
 class TestResult : public ProcessResult
 {
