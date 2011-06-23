@@ -43,16 +43,24 @@ ifstream & operator >> (ifstream & inf, RawConfigData & data)
 	char buf[256];
 	inf.getline(buf, 256);
 	stringstream s(buf);
-	s >> data.Operation >> data.Arguments;
+	s >> data.Operation;
+	s.getline(buf, 256);
+	data.Arguments = buf;
 	return inf;
 }
 
+template <class T>
 class Configuration
 {
 public:
 	Configuration(const char * config_file_name)
 	{
-		_inf.open(config_file_name) ;		
+		_inf.open(config_file_name) ;
+		if ( !_inf.good() )
+		{
+			cerr << "Cannot open configuration file " <<  config_file_name << endl;
+			throw new Exception("Cannot open configuration file");
+		}
 	}
 	
 	virtual TestCollection Read()
@@ -66,7 +74,7 @@ public:
 		}
 		
 		return tests;
-	}
+	} 
 	
 	~Configuration()
 	{
@@ -75,7 +83,18 @@ public:
 	
 protected:
 	ifstream _inf;
-	virtual Test * ReadTest() = 0;
+	T * ReadTest()
+	{
+		if ( ! _inf.good() )
+			return NULL;
+		
+		RawConfigData data;
+		_inf >> data;
+		if (data.Operation == "")
+			return NULL;
+		//cerr << data.Operation << " " << data.Arguments << endl;
+		return new T(Normal, Operation::Parse(data.Operation), data.Arguments);
+	}
 };
 
 #endif /* CONFIG_HPP */

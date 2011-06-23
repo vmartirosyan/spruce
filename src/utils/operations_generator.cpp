@@ -56,6 +56,9 @@ int main(int argc, char ** argv)
 	if ( argc < 3 )
 		return Usage(argv);
 	cout << " ++ Generating operations header file..." << endl;
+	
+	Operations.push_back("UnknownOperation");
+	
 	//rename("/home/vmartirosyan/workspace/build/include/operations.hpp.old", "/home/vmartirosyan/workspace/build/include/operations.hpp");
 	
 	// Find all the header files in the source tree
@@ -242,12 +245,11 @@ enum Operations \n\
 class Operation \n\
 { \n\
 private: \n\
-	static bool MapsInitialized;\n\
 	static map<string, int> MapToInt; \n\
 	static map<int, string> MapToString; \n\
 public: \n\
-	static string ToString( Operations op ) { return MapToString[op]; } \n\
-	static Operations Parse( string s ) { return (Operations)MapToInt[s]; } \n\
+	static string ToString( Operations op ) { return (MapToString.find(op) == MapToString.end()) ? MapToString[UnknownOperation] : MapToString[op]; } \n\
+	static Operations Parse( string s ) { return (MapToInt.find(s) == MapToInt.end()) ? UnknownOperation : (Operations)MapToInt[s]; } \n\
 	friend void InitMaps(); \n\
 }; \n\
 #endif /* OPERATIONS_HPP */ \n\
@@ -307,16 +309,23 @@ bool GenerateOperationsSource(string root)
 \n\
  \n\
 #include \"operations.hpp\" \n\
-bool Operation::MapsInitialized = false;\n\
-map<string, int> Operation::MapToInt; \n\
-map<int, string> Operation::MapToString;\n\
+map<string, int> InitMapToInt(); \n\
+map<int, string> InitMapToString(); \n\
+map<string, int> Operation::MapToInt=InitMapToInt(); \n\
+map<int, string> Operation::MapToString=InitMapToString();\n\
 \n\
-void InitMaps() \n\
+map<string, int> InitMapToInt() \n\
 { \n\
-if ( Operation::MapsInitialized )\n\
-	return;\n\
-%INIT_MAPS% \n\
-	Operation::MapsInitialized = true;\n\
+	map<string, int> tmp;\n\
+%INIT_MAPTOINT% \n\
+	return tmp;\n\
+}\n\
+\
+map<int, string> InitMapToString() \n\
+{ \n\
+	map<int, string> tmp;\n\
+%INIT_MAPTOSTRING% \n\
+	return tmp;\n\
 }\n\
 \n";
 
@@ -325,25 +334,41 @@ if ( Operation::MapsInitialized )\n\
 	ofstream of ((root + "/utils/operations.cpp").c_str());
 	
 	// Generate the InitMaps body
-	size_t InitMapsStart = SourceFileContents.find("%INIT_MAPS%");
+	size_t InitMapsStart = SourceFileContents.find("%INIT_MAPTOINT%");
 	
 	string InitMapsContents = "";
 	
 	for ( vector<string>::iterator i = Operations.begin(); i != Operations.end(); ++i )
 	{
-		InitMapsContents += "\tOperation::MapToInt[\"" + *i + "\"] = " + *i + ";\n";
-		InitMapsContents += "\tOperation::MapToString[" + *i + "] = \"" + *i + "\";\n";		
+		InitMapsContents += "\ttmp[\"" + *i + "\"] = " + *i + ";\n";		
 	}
 	
 	if ( InitMapsStart == string::npos )
 	{
-		cerr << "Cannot find %INIT_MAPS% in file contents" << endl;
+		cerr << "Cannot find %INIT_MAPTOINT% in file contents" << endl;
 		return false;
 	}
 	
-	SourceFileContents = SourceFileContents.replace(InitMapsStart, 11, InitMapsContents);
+	SourceFileContents = SourceFileContents.replace(InitMapsStart, 15, InitMapsContents);
 	
-	of << SourceFileContents;
+	InitMapsStart = SourceFileContents.find("%INIT_MAPTOSTRING%");
+	
+	InitMapsContents = "";
+	
+	for ( vector<string>::iterator i = Operations.begin(); i != Operations.end(); ++i )
+	{
+		InitMapsContents += "\ttmp[" + *i + "] = \"" + *i + "\";\n";		
+	}
+	
+	if ( InitMapsStart == string::npos )
+	{
+		cerr << "Cannot find %INIT_MAPTOSTRING% in file contents" << endl;
+		return false;
+	}
+	
+	SourceFileContents = SourceFileContents.replace(InitMapsStart, 18, InitMapsContents);
+	
+	of << SourceFileContents;	
 	
 	of.close();
 	
