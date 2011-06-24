@@ -1,7 +1,6 @@
-/**
-//      Deleter.hpp
+//      SplitLargeFile.hpp
 //      
-//      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
+//      Copyright 2011 Eduard Bagrov <ebagrov@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -17,35 +16,35 @@
 //      along with this program; if not, write to the Free Software
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
-*/
 
-#ifndef DELETER_H
-#define DELETER_H
+#ifndef SPLIT_LARGE_FILE_H
+#define SPLIT_LARGE_FILE_H
 
 #include "BenchmarkTest.hpp"
 
 // Operations
-enum Deleter_Operations
+enum SplitLargeFileOperations
 {
-	MultipleFilesDeletion
+	SplitLargeFileOp
 };
 
-class DeleterTest : public BenchmarkTest
+class SplitLargeFile : public BenchmarkTest
 {
 public:
 		
-	DeleterTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
+	SplitLargeFile(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
-		dirName = "results";
+		filename = "largefile";
+		numberOfFiles = 10;
 	}
-		
-	~DeleterTest() {}
+	
+	~SplitLargeFile() {}
 	
 	int Main(vector<string>);
 private:
-	string dirName;
-	Status MultipleFilesDeletionFunc();
-	vector<string> CreateArguments();
+	string filename;
+	unsigned int numberOfFiles;
+	Status SplitLargeFileFunc();
 };
 
-#endif /* DELETER_H */
+#endif /* SPLIT_LARGE_FILE_H */
