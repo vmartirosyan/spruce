@@ -31,6 +31,9 @@ enum ReadFileDescriptorSyscalls
 	ReadEinvalError,
 	ReadIsdirError,
 	ReadEfaultError,
+	ReadEagainError,
+	WriteBadFileDescriptor1,
+	WriteBadFileDescriptor2,
 	proba
 };
 
@@ -48,10 +51,15 @@ public:
 	Status ReadBadFileDescriptorTest1();
 	Status ReadBadFileDescriptorTest2();
 	Status ReadEinvalErrorTest();
-	Status ReadIsdirErrorTest();
+	Status ReadIsdirErrorTest();	
 	Status ReadEfaultErrorTest();
+	Status ReadEagainErrorTest();
+	Status WriteBadFileDescriptorTest1();
+	Status WriteBadFileDescriptorTest2();
+		
 	Status probaTest();
 protected:
-	virtual int Main(vector<string> args);	
+	virtual int Main(vector<string> args);
+
 };
 #endif
