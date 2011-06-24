@@ -43,6 +43,10 @@ int ReadWriteFileTest::Main(vector<string>)
 				return ReadEfaultErrorTest();
 			case ReadEagainError:
 				return ReadEagainErrorTest();
+			case WriteBadFileDescriptor1:
+				return WriteBadFileDescriptorTest1();
+			case WriteBadFileDescriptor2:
+				return WriteBadFileDescriptorTest2();
 			case proba:
 				return probaTest();
 			default:
@@ -199,20 +203,6 @@ Status ReadWriteFileTest::ReadEfaultErrorTest()
 	return Success;
 }
 
-int ReadWriteFileTest::setNonblocking(int fd)
-{
-    int flags;
-	
-#if defined(O_NONBLOCK)
-    if (-1 == (flags = fcntl(fd, F_GETFL, 0)))
-        flags = 0;
-    return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-#else
-    flags = 1;
-    return ioctl(fd, FIOBIO, &flags);
-#endif
-}
-
 // attempt to read from nonblocking pipe which is empty from the other side
 Status ReadWriteFileTest::ReadEagainErrorTest()
 {		
@@ -238,8 +228,52 @@ Status ReadWriteFileTest::ReadEagainErrorTest()
 	return Success;
 }
 
-Status ReadWriteFileTest::probaTest()
-{		
+// attempt to write to a file, which was opened in read mode
+Status ReadWriteFileTest::WriteBadFileDescriptorTest1()
+{
+	try
+	{
+		File file("testfile.txt");
+		
+		string buf = "message";
 
+		size_t fd = open("testfile.txt", O_RDONLY);
+
+		ssize_t status = write(fd, buf.c_str(), buf.size());
+		if (errno != EBADF || status != -1)
+		{
+			cerr << "Expected to get bad file descriptor";
+			return Fail;
+		}
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	
+	return Success;
+}
+
+// attempt to read from -1 file descriptor
+Status ReadWriteFileTest::WriteBadFileDescriptorTest2()
+{
+	string buf = "message";
+	
+	ssize_t status = write(-1, buf.c_str(), buf.size());
+
+	if (errno != EBADF || status != -1)
+	{
+		cerr << "Expected to get bad file descriptor";
+		return Fail;
+	}
+	
+	return Success;
+}
+
+
+Status ReadWriteFileTest::probaTest()
+{
+	
 	return Success;
 }
