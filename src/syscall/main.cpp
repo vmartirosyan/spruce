@@ -4,18 +4,20 @@
 #include "Close.hpp"
 #include "Link.hpp"
 #include "Chmod.hpp"
-#include "fcntlFD.hpp"
 
 int main(int argc, char ** argv)
 {
 	TestCollection tests;
-
+	
 	tests.AddTest(new DupFileDescriptorTest(Normal, Dup));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadBadFileDescriptor1, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadBadFileDescriptor2, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadEinvalError, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadIsdirError, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadEfaultError, ""));
+	tests.AddTest(new ReadWriteFileTest(Normal, ReadEagainError, ""));
+	tests.AddTest(new ReadWriteFileTest(Normal, WriteBadFileDescriptor1, ""));
+	tests.AddTest(new ReadWriteFileTest(Normal, WriteBadFileDescriptor2, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, proba, ""));
 
 	tests.AddTest(new Close(Normal, BadFileDescriptor, ""));
@@ -38,20 +40,17 @@ int main(int argc, char ** argv)
     tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENAMETOOLONG, ""));
     tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENOENT, ""));
      tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENOTDIR, ""));
-
-
+    
+	
 	tests.AddTest(new LinkTest(Normal, LinkTestTooLongOldPath, ""));
 	tests.AddTest(new LinkTest(Normal, LinkTestTooLongNewPath, ""));
 	tests.AddTest(new LinkTest(Normal, LinkTestNewPathAleadyExist, ""));
 	tests.AddTest(new LinkTest(Normal, LinkTestOldPathIsDirectory, ""));
 	tests.AddTest(new LinkTest(Normal, LinkTestNormalFile, ""));
 	tests.AddTest(new LinkTest(Normal, LinkTestIsNotDirectory, ""));
-
-	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileDescriptorFlags, ""));
-	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileStatusFlags, ""));
-
-
+	
+	
 	TestResultCollection res = tests.Run();
-
-	cout << res.ToXML() << endl;
+	
+	cout << res.ToXML() << endl;	
 }
