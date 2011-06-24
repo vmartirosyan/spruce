@@ -43,8 +43,30 @@ int fcntlFD::Main(vector<string> args)
 Status fcntlFD::get_setFileStatusFlags()
 {
 	int fd;
+	int set_flags = O_CREAT;
+	int get_flags;
 
-	return Success;
+	if(fd = open("test", set_flags) < 0)
+		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
+
+	// set File Descriptor Flags
+	set_flags |= O_WRONLY;
+	fcntl(fd, F_SETFL, set_flags);
+
+	// get File Descriptor Flags
+	get_flags = fcntl(fd, F_GETFL);
+
+	close(fd);
+
+	if(set_flags == get_flags)
+	{
+		return Success;
+	}
+	else
+	{
+		cerr << "Cannot get right file descriptor flags: " << strerror(errno);
+		return Fail;
+	}
 }
 
 Status fcntlFD::get_setFileDescriptorFlags()

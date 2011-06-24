@@ -4,7 +4,7 @@
 #include "Close.hpp"
 #include "Link.hpp"
 #include "Chmod.hpp"
-#include "fcntlFile.hpp"
+#include "fcntlFD.hpp"
 
 int main(int argc, char ** argv)
 {
@@ -46,7 +46,7 @@ int main(int argc, char ** argv)
 	tests.AddTest(new LinkTest(Normal, LinkTestOldPathIsDirectory, ""));
 	tests.AddTest(new LinkTest(Normal, LinkTestNormalFile, ""));
 	tests.AddTest(new LinkTest(Normal, LinkTestIsNotDirectory, ""));
-	
+
 	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileDescriptorFlags, ""));
 	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileStatusFlags, ""));
 
