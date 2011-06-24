@@ -10,6 +10,7 @@ int main(int argc, char ** argv)
 	TestCollection tests;
 	
 	tests.AddTest(new DupFileDescriptorTest(Normal, Dup));
+	
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadBadFileDescriptor1, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadBadFileDescriptor2, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadEinvalError, ""));
@@ -18,6 +19,10 @@ int main(int argc, char ** argv)
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadEagainError, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, WriteBadFileDescriptor1, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, WriteBadFileDescriptor2, ""));
+	tests.AddTest(new ReadWriteFileTest(Normal, WriteEfaultError, ""));
+	tests.AddTest(new ReadWriteFileTest(Normal, WriteEagainError, ""));
+	tests.AddTest(new ReadWriteFileTest(Normal, ReadWrite1, ""));
+	tests.AddTest(new ReadWriteFileTest(Normal, ReadWrite2, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, proba, ""));
 
 	tests.AddTest(new Close(Normal, BadFileDescriptor, ""));
