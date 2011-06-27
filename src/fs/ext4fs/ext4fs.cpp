@@ -56,27 +56,19 @@ int main(int argc, char ** argv)
 	
 	TestCollection tests = conf.Read();
 	
-	/*
-	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlSetFlagsGetFlags, ""));
-	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlClearExtentsFlags, ""));
-	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlSetFlagsNotOwner, ""));
-	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlSetVersionGetVersion, ""));
-	//tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlWaitForReadonly, ""));
-	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlGroupExtend, "", DeviceName, MountPoint));
-	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlMoveExtent, ""));
-	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlGroupAdd, ""));
-	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlMigrate, "", DeviceName, MountPoint));
-	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlAllocDABlocks, ""));
-	//tests.AddTest(new Ext4IoctlTest(Normal, Fitrim, ""));
-	tests.AddTest(new Ext4IoctlTest(Normal, Ext4IoctlUnsupported, ""));
-	*/
+	//Configuration<Ext4IoctlTest> conf1("/home/vmartirosyan/workspace/spruce/config/ext4fs.conf");
 	
+	//TestCollection tests2 = conf1.Read();
 	
-	
+	//tests.Merge(tests2);
 	
 	TestResultCollection res = tests.Run();
 	
 	cout << res.ToXML() << endl;
+	
+	/*TestResultCollection res2 = tests2.Run();
+	
+	cout << res2.ToXML() << endl;*/
 }
 
 int Usage(char ** argv)

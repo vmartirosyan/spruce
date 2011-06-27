@@ -44,9 +44,48 @@
 		<para>
 			The module execution can be controlled by it's configuration file (ext4fs.conf in config directory).
 			It consists of several lines each describing a single test. Lines must have the following format:
-			<emphasis>CLASS_NAME OPERATION_IDENTIFIER.</emphasis>
+			<emphasis>OPERATION_IDENTIFIER ARG1 ARG2 ... ARGN.</emphasis>
 			
 			All the possible class names and operation identifiers are listed below.
+			
+			<itemizedlist>
+				<listitem>
+					<emphasis role="bold">Ext4IoctlSetFlagsGetFlags</emphasis> - Try to set and then get some flag value.
+				</listitem>
+				<listitem>
+					<emphasis role="bold">Ext4IoctlClearExtentsFlags</emphasis> - Try to clear the Extents flag, which is not allowed!
+				</listitem>
+				<listitem>
+					<emphasis role="bold">Ext4IoctlSetFlagsNotOwner</emphasis> - Try to set flags not having permission to that (not the file owner or have no capabilities.
+				</listitem>
+				<listitem>
+					<emphasis role="bold">Ext4IoctlSetVersionGetVersion</emphasis> - Try to set and then get the version.
+				</listitem>
+				<!--listitem>
+					<em>Ext4IoctlWaitForReadonly</em> - 
+				</listitem-->
+				<listitem>
+					<emphasis role="bold">Ext4IoctlGroupExtend</emphasis> - Online resize test.
+				</listitem>
+				<listitem>
+					<emphasis role="bold">Ext4IoctlMoveExtent</emphasis> - Online defragmentation test.
+				</listitem>
+				<!--listitem>
+					<em>Ext4IoctlGroupAdd</em> - 
+				</listitem-->
+				<!--listitem>
+					<em>Ext4IoctlMigrate</em> - Try to set and then get some generic flag
+				</listitem-->
+				<listitem>
+					<emphasis role="bold">Ext4IoctlAllocDABlocks</emphasis> - Delayed allocation test.
+				</listitem>
+				<!--listitem>
+					<em>Ext4IoctlFitrim</em> - Try to set and then get some generic flag
+				</listitem-->
+				<listitem>
+					<emphasis role="bold">Ext4IoctlUnsupported</emphasis> - Try to execute an unsupported command
+				</listitem>
+			</itemizedlist>
 		</para>
 	</chapter>
 </book>

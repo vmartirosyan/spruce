@@ -108,10 +108,15 @@ public:
 	{
 		_tests.push_back(t);
 	}
+	void Merge( TestCollection &);
 	~TestCollection()
 	{
 		for ( vector<Test *>::iterator i = _tests.begin(); i != _tests.end(); ++i )
-			delete (*i);
+		{
+			if ( *i )
+				delete (*i);
+			*i = NULL;
+		}
 	}	
 private:
 	vector<Test *> _tests;
