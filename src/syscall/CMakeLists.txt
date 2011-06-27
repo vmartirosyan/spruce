@@ -25,6 +25,10 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/link)
 ADD_SUBDIRECTORY(chmod)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/chmod)
 
+ADD_SUBDIRECTORY(ioctl)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/ioctl)
+
+
 ADD_EXECUTABLE(syscall main.cpp)
 TARGET_LINK_LIBRARIES(syscall utils dup close)
 TARGET_LINK_LIBRARIES(syscall utils dup chmod)
@@ -32,6 +36,7 @@ TARGET_LINK_LIBRARIES(syscall utils dup link)
 TARGET_LINK_LIBRARIES(syscall utils dup read_write)
 TARGET_LINK_LIBRARIES(syscall utils dup fcntl)
 TARGET_LINK_LIBRARIES(syscall rt)
+TARGET_LINK_LIBRARIES(syscall utils dup ioctl)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/syscall"
 			DESTINATION bin
