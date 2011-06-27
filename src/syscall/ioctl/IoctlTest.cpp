@@ -115,7 +115,7 @@ Status IoctlTest::InvalidFD()
         }
         
 		if (ioctl(fd, FS_IOC_GETFLAGS, &old_flags) != -1 ) {
-            cerr << "ioctl should return non 0 value for invalid file "
+            cerr << "ioctl should return -1 value for invalid file "
                 "descriptor but it doesn't";                
             return Fail;
         } else if (errno != EBADF) {
