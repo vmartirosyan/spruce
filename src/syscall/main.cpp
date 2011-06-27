@@ -4,6 +4,7 @@
 #include "Close.hpp"
 #include "Link.hpp"
 #include "Chmod.hpp"
+#include "IoctlTest.hpp"
 
 int main(int argc, char ** argv)
 {
@@ -53,6 +54,17 @@ int main(int argc, char ** argv)
 	tests.AddTest(new LinkTest(Normal, LinkTestOldPathIsDirectory, ""));
 	tests.AddTest(new LinkTest(Normal, LinkTestNormalFile, ""));
 	tests.AddTest(new LinkTest(Normal, LinkTestIsNotDirectory, ""));
+	
+
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_SECRM_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_NOATIME_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_NODUMP_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_APPEND_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_IMMUTABLE_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_SYNC_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_COMPR_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_INVALID_FD, ""));
+
 	
 	
 	TestResultCollection res = tests.Run();
