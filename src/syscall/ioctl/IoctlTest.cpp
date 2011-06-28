@@ -88,6 +88,9 @@ int IoctlTest::Main(vector<string> args)
                 
             case IOCTL_INVALID_FD:
                 return InvalidFD();
+            case IOCTL_INVALID_ARGP:
+                return InvalidArgp();
+
 
             default:
 				cerr << "Unsupported operation.";
@@ -115,11 +118,39 @@ Status IoctlTest::InvalidFD()
         }
         
 		if (ioctl(fd, FS_IOC_GETFLAGS, &old_flags) != -1 ) {
-            cerr << "ioctl should return non 0 value for invalid file "
+            cerr << "ioctl should return -1 value for invalid file "
                 "descriptor but it doesn't";                
             return Fail;
         } else if (errno != EBADF) {
-            cerr << "ioctl should set errno to EBADF, errno is set to " 
+            cerr << "ioctl should set errno to EBADF, but errno is set to " 
+                <<"\"" <<strerror(errno) << "\"";
+            return Fail;
+        }
+	}
+	catch (Exception ex) 
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}	
+	return Success;
+}
+
+// Tests if the ioctl retruns EFAULT when the argp is NULL.
+Status IoctlTest::InvalidArgp() 
+{
+	try 
+	{		
+        int old_flags = 0;
+        int fd;
+        File file("newfile");
+        fd = file.GetFileDescriptor();
+        
+		if (ioctl(fd, FS_IOC_GETFLAGS, NULL) != -1 ) {
+            cerr << "ioctl should return -1 value for inaccessible argp but it "
+                "doesn't";                
+            return Fail;
+        } else if (errno != EFAULT) {
+            cerr << "ioctl should set errno to EFAULT, but errno is set to " 
                 <<"\"" <<strerror(errno) << "\"";
             return Fail;
         }
