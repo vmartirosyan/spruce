@@ -64,6 +64,8 @@ int main(int argc, char ** argv)
 	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_SYNC_FL, ""));
 	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_COMPR_FL, ""));
 	tests.AddTest(new IoctlTest(Normal, IOCTL_INVALID_FD, ""));
+   	tests.AddTest(new IoctlTest(Normal, IOCTL_INVALID_ARGP, ""));
+
 
 	
 	

@@ -58,6 +58,7 @@ enum IoctlSyscalls
     IOCTL_FS_RESERVED_FL,		 /* reserved for ext2 lib */
     
     IOCTL_INVALID_FD,
+    IOCTL_INVALID_ARGP,
 
 };
 
@@ -70,6 +71,7 @@ class IoctlTest : public SyscallTest
         
         Status SetGetFlags(int i);
         Status InvalidFD();
+        Status InvalidArgp();
 	protected:
 		virtual int Main(vector<string> args);
 };
