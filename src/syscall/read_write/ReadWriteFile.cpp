@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <signal.h>
 #include <time.h>
 #include <ReadWriteFile.hpp>
 #include "File.hpp"
@@ -56,8 +57,7 @@ int ReadWriteFileTest::Main(vector<string>)
 				return ReadWriteTest1();
 			case ReadWrite2:
 				return ReadWriteTest2();
-			case proba:
-				return probaTest();
+
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;
@@ -280,7 +280,7 @@ Status ReadWriteFileTest::WriteBadFileDescriptorTest2()
 	return Success;
 }
 
-// attempt to read to the buffer which is -1
+// attempt to write to the buffer which is -1
 Status ReadWriteFileTest::WriteEfaultErrorTest()
 {
 	try
@@ -361,6 +361,8 @@ Status ReadWriteFileTest::ReadWriteTest1()
 	if (st == -1)
 	{
 		cerr << "An error occured while writing data to pipe";
+		close(pipefd[0]);
+		close(pipefd[1]);
 		return Fail;
 	}
 	
@@ -370,6 +372,8 @@ Status ReadWriteFileTest::ReadWriteTest1()
 	if (st == -1)
 	{
 		cerr << "An error occured while reading data from pipe";
+		close(pipefd[0]);
+		close(pipefd[1]);
 		return Fail;
 	}
 	
@@ -377,9 +381,13 @@ Status ReadWriteFileTest::ReadWriteTest1()
 	{
 		cerr << "The data was written " << buf << ' ';
 		cerr << "The data was read " << getBuf << ' ';
+		close(pipefd[0]);
+		close(pipefd[1]);
 		return Fail;
 	}
 	
+	close(pipefd[0]);
+	close(pipefd[1]);
 	return Success;
 }
 
@@ -397,7 +405,7 @@ Status ReadWriteFileTest::ReadWriteTest2()
 		return Unres;
 	}
 	
-	string buf = "large message";
+	string buf = "large_message";
 	ssize_t st = write(pipefd[1], buf.c_str(), bytesToRead);
 	if (st == -1)
 	{
@@ -420,12 +428,6 @@ Status ReadWriteFileTest::ReadWriteTest2()
 		cerr << "The data was read " << getBuf << ' ';
 		return Fail;
 	}
-	
-	return Success;
-}
-
-Status ReadWriteFileTest::probaTest()
-{
 	
 	return Success;
 }

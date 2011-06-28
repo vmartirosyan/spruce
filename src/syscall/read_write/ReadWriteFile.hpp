@@ -37,8 +37,7 @@ enum ReadFileDescriptorSyscalls
 	WriteEfaultError,
 	WriteEagainError,
 	ReadWrite1,
-	ReadWrite2,
-	proba
+	ReadWrite2
 };
 
 class ReadWriteFileTest : public SyscallTest
@@ -64,8 +63,6 @@ public:
 	Status WriteEagainErrorTest();
 	Status ReadWriteTest1();
 	Status ReadWriteTest2();
-		
-	Status probaTest();
 protected:
 	virtual int Main(vector<string> args);
 
