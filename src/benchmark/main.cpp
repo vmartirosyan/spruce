@@ -25,7 +25,7 @@ int main(int argc, char ** argv)
 	tests.AddTest(new MultipleFilesCopy(Normal, MultipleFilesCopyOp, ""));
 	tests.AddTest(new MultipleFilesCatting(Normal, MultipleFilesCattingOp, ""));
 	tests.AddTest(new CattingLargeFile(Normal, CattingLargeFileOp, ""));
-	tests.AddTest(new DeleterTest(Normal, MultipleFilesDeletion, ""));
+	//tests.AddTest(new DeleterTest(Normal, MultipleFilesDeletion, ""));
 	
 	TestResultCollection res = tests.Run();
 		
