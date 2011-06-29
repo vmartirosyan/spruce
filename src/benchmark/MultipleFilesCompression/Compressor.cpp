@@ -47,7 +47,7 @@ Status CompressTest::MultipleFilesCompressionFunc()
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
-    return (Status)result->GetStatus();
+    return static_cast<Status>(result->GetStatus());
 }
 
 vector<string> CompressTest::CreateArguments()

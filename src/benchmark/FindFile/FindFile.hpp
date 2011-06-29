@@ -38,8 +38,6 @@ public:
 		
 		directoryName = arguments[0];
 		fileName = arguments[1];
-		cerr << "constructor";
-		cerr << directoryName << ' ' << fileName << ' ' << a << '!';
 	}
 	
 	~FindFileTest()
