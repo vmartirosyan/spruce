@@ -14,7 +14,7 @@ function copy_htmls()
 	local xml_dir=$1
 	local output_dir=$2
 	
-	file $xml_dir/spruce.html > /dev/null 2>&1 || return
+	file $xml_dir/index.html > /dev/null 2>&1 || return
 	
 	echo "Copying files"
 	
@@ -53,5 +53,5 @@ do
 	echo "Generating documentation for $file";
 	xsltproc --output $file/ /usr/share/xml/docbook/stylesheet/docbook-xsl/html/chunk.xsl $file.xml  > /dev/null 2>&1
 done
-mv spruce/index.html spruce.html
+mv spruce/*.html .
 rm -r spruce/
