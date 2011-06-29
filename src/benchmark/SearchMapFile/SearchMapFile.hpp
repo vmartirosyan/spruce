@@ -32,9 +32,12 @@ class SearchMapFileTest : public BenchmarkTest
 {
 public:
 		
-	SearchMapFileTest(Mode m, int op, string a) : BenchmarkTest (m, op, a),
-		filename("mmapfile"), fileSize("150M")
+	SearchMapFileTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
+		vector<string> arguments = ParseArguments(a);
+		
+		filename = arguments[0];
+		fileSize = arguments[1];
 	}
 	
 	~SearchMapFileTest()

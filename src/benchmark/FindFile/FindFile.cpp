@@ -35,10 +35,10 @@ int FindFileTest::Main(vector<string>)
 				return FindFileFunc();
 			default:
 				cerr << "Unsupported operation.";	
-				return Unres;		
+				return Unres;
 		}
 	}
-	cerr << "Test was successful";	
+	cerr << "Test was successful";
 	return Success;		
 }
 

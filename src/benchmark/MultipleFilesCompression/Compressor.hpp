@@ -34,7 +34,9 @@ public:
 		
 	CompressTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
-		directory = "results";
+		vector<string> arguments = ParseArguments(a);
+		
+		directory = arguments[0];
 	}
 		
 	~CompressTest()

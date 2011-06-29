@@ -34,8 +34,10 @@ public:
 		
 	LargeFileTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
-		filename = "largefile";
-		fileSize = "150M";
+		vector<string> arguments = ParseArguments(a);
+		
+		filename = arguments[0];
+		fileSize = arguments[1];
 	}
 	
 	~LargeFileTest()
