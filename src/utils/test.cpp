@@ -46,11 +46,12 @@ ProcessResult * Test::Execute(vector<string> args)
 
 void TestCollection::Merge(TestCollection & tc)
 {
-	for ( vector<Test *>::iterator i = tc._tests.begin(); i != tc._tests.end(); ++i)		
+	//for ( vector<Test *>::iterator i = tc._tests.begin(); i != tc._tests.end(); ++i)		
+	for ( unsigned int i = 0; i < tc._tests.size(); )
 	{
-		_tests.push_back(*i);
+		_tests.push_back(tc._tests[i]);
 		// Erase the original pointer so that the destructors do not overlap
-		tc._tests.erase(i);
+		tc._tests.erase(tc._tests.begin() + i);
 	}
 }
 
