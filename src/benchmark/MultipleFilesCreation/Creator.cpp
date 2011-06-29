@@ -43,11 +43,11 @@ int CreatorTest::Main(vector<string>)
 
 Status CreatorTest::MultipleFilesCreationFunc()
 {
-    UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/MultipleFilesCreation.sh");
+    UnixCommand command("${CMAKE_INSTALL_PREFIX}bin/MultipleFilesCreation.sh");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
-    return (Status)result->GetStatus();
+    return static_cast<Status>(result->GetStatus());
 }
 
 vector<string> CreatorTest::CreateArguments()
@@ -55,5 +55,6 @@ vector<string> CreatorTest::CreateArguments()
 	vector<string> command;
 	command.push_back(filesNumber);
 	command.push_back(fileSize);
+	command.push_back(folder);
 	return command;
 }

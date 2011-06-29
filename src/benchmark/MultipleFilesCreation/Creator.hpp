@@ -34,8 +34,11 @@ public:
 		
 	CreatorTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
-		filesNumber = "10";
-		fileSize = "1M";
+		vector<string> arguments = ParseArguments(a);
+		
+		filesNumber = arguments[0];
+		fileSize = arguments[1];
+		folder = arguments[2];
 	}
 		
 	~CreatorTest()
@@ -46,6 +49,7 @@ public:
 private:
 	string filesNumber;
 	string fileSize;
+	string folder;
 	Status MultipleFilesCreationFunc();
 	vector<string> CreateArguments();
 };

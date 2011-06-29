@@ -44,11 +44,11 @@ int FindFileTest::Main(vector<string>)
 
 Status FindFileTest::FindFileFunc()
 {
-	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/FindFile.sh");
+	UnixCommand command("${CMAKE_INSTALL_PREFIX}bin/FindFile.sh");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
-    return (Status)result->GetStatus();
+    return static_cast<Status>(result->GetStatus());
 }
 
 vector<string> FindFileTest::CreateArguments()

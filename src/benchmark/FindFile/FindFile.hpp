@@ -34,8 +34,12 @@ public:
 		
 	FindFileTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
-		directoryName = "results";
-		fileName = "0";
+		vector<string> arguments = ParseArguments(a);
+		
+		directoryName = arguments[0];
+		fileName = arguments[1];
+		cerr << "constructor";
+		cerr << directoryName << ' ' << fileName << ' ' << a << '!';
 	}
 	
 	~FindFileTest()

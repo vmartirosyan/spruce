@@ -9,10 +9,19 @@
 #include "CattingLargeFile.hpp"
 #include "MultipleFilesCatting.hpp"
 #include "SplitLargeFile.hpp"
+#include <config.hpp>
 
 int main(int argc, char ** argv)
 {
-	TestCollection tests;
+	Configuration<CreatorTest> conf1("/home/eduard/workspace/spruce/config/creator.conf");
+	//Configuration<CreatorTest> conf2("/home/eduard/workspace/spruce/config/creator.conf");
+	Configuration<FindFileTest> conf2("/home/eduard/workspace/spruce/config/findfile.conf");
+
+	TestCollection tests = conf1.Read();
+	TestCollection tests2 = conf2.Read();
+	tests.Merge(tests2);
+	
+	/*TestCollection tests;
 	tests.AddTest(new CreatorTest(Normal, MultipleFilesCreation, ""));
 	tests.AddTest(new FindFileTest(Normal, FindFile, ""));
 	tests.AddTest(new CompressTest(Normal, MultipleFilesCompression, ""));
@@ -24,7 +33,7 @@ int main(int argc, char ** argv)
 	
 	tests.AddTest(new MultipleFilesCopy(Normal, MultipleFilesCopyOp, ""));
 	tests.AddTest(new MultipleFilesCatting(Normal, MultipleFilesCattingOp, ""));
-	tests.AddTest(new CattingLargeFile(Normal, CattingLargeFileOp, ""));
+	tests.AddTest(new CattingLargeFile(Normal, CattingLargeFileOp, ""));*/
 	//tests.AddTest(new DeleterTest(Normal, MultipleFilesDeletion, ""));
 	
 	TestResultCollection res = tests.Run();
