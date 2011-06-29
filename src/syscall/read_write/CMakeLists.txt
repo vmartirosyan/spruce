@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.4)
+cmake_minimum_required(VERSION 2.6)
 
-message("Configuring dup syscall checker module.")
+message("Configuring read_write syscall checker module.")
 
 project (Spruce)
 

@@ -22,6 +22,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <algorithm>
 
 char * StatusMessages[] = {
 	(char * )"Success",
@@ -41,6 +42,16 @@ ProcessResult * Test::Execute(vector<string> args)
 	delete p_res;
 	
 	return t_res;
+}
+
+void TestCollection::Merge(TestCollection & tc)
+{
+	for ( vector<Test *>::iterator i = tc._tests.begin(); i != tc._tests.end(); ++i)		
+	{
+		_tests.push_back(*i);
+		// Erase the original pointer so that the destructors do not overlap
+		tc._tests.erase(i);
+	}
 }
 
 TestResultCollection TestCollection::Run()
