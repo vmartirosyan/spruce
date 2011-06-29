@@ -21,6 +21,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <limits.h>
+#include <signal.h>
 #include <time.h>
 #include <ReadWriteFile.hpp>
 #include "File.hpp"
@@ -41,11 +43,24 @@ int ReadWriteFileTest::Main(vector<string>)
 				return ReadIsdirErrorTest();
 			case ReadEfaultError:
 				return ReadEfaultErrorTest();
-			case proba:
-				return probaTest();
+			case ReadEagainError:
+				return ReadEagainErrorTest();
+			case WriteBadFileDescriptor1:
+				return WriteBadFileDescriptorTest1();
+			case WriteBadFileDescriptor2:
+				return WriteBadFileDescriptorTest2();
+			case WriteEfaultError:
+				return WriteEfaultErrorTest();
+			case WriteEagainError:
+				return WriteEagainErrorTest();
+			case ReadWrite1:
+				return ReadWriteTest1();
+			case ReadWrite2:
+				return ReadWriteTest2();
+
 			default:
 				cerr << "Unsupported operation.";
-				return Unres;		
+				return Unres;
 		}
 	}
 	cerr << "Test was successful";
@@ -65,7 +80,7 @@ Status ReadWriteFileTest::ReadBadFileDescriptorTest1()
 		size_t fd = open("testfile.txt", O_WRONLY);
 
 		ssize_t status = read(fd, buf, count);
-		if (errno != EBADF)
+		if (errno != EBADF || status != -1)
 		{
 			cerr << "Expected to get bad file descriptor";
 			return Fail;
@@ -87,7 +102,7 @@ Status ReadWriteFileTest::ReadBadFileDescriptorTest2()
 	size_t count = 10;
 
 	ssize_t status = read(-1, buf, count);
-	if (errno != EBADF)
+	if (errno != EBADF || status != -1)
 	{
 		cerr << "Expected to get bad file descriptor";
 		return Fail;
@@ -122,7 +137,7 @@ Status ReadWriteFileTest::ReadEinvalErrorTest()
 	size_t count = 0;
     ssize_t status = read(fd, buf, 0);
     
-    if (errno != EINVAL)
+    if (errno != EINVAL || status != -1)
     {
 		cerr << "Expecting to get EINVAL error";
 		return Fail;
@@ -153,7 +168,7 @@ Status ReadWriteFileTest::ReadIsdirErrorTest()
 	size_t count = 10;
 
 	ssize_t status = read(fd, buf, count);
-	if (errno != EISDIR)
+	if (errno != EISDIR || status != -1)
 	{
 		cerr << "Expecting to get EISDIR error";
 		rmdir("directory");
@@ -182,7 +197,7 @@ Status ReadWriteFileTest::ReadEfaultErrorTest()
 
 		ssize_t status = read(fd, (void *)-1, count);
 				
-		if (errno != EFAULT)
+		if (errno != EFAULT || status != -1)
 		{
 			cerr << "Expected to get EFAULT";
 			return Fail;
@@ -197,7 +212,222 @@ Status ReadWriteFileTest::ReadEfaultErrorTest()
 	return Success;
 }
 
-Status ReadWriteFileTest::probaTest()
+// attempt to read from nonblocking pipe which is empty from the other side
+Status ReadWriteFileTest::ReadEagainErrorTest()
+{		
+	int pipe[2];
+	int status = pipe2(pipe, O_NONBLOCK);
+	if (status == -1)
+	{
+		cerr << strerror(errno);
+		return Unres;
+	}
+	
+	char buf[1024];
+	size_t count = 10;
+	
+	ssize_t st = read(pipe[0], buf, count);
+	
+	if (errno != EAGAIN || st != -1)
+	{
+		cerr << "Expected to get EAGAIN error";
+		return Fail;
+	}
+
+	return Success;
+}
+
+// attempt to write to a file, which was opened in read mode
+Status ReadWriteFileTest::WriteBadFileDescriptorTest1()
 {
+	try
+	{
+		File file("testfile.txt");
+		
+		string buf = "message";
+
+		size_t fd = open("testfile.txt", O_RDONLY);
+
+		ssize_t status = write(fd, buf.c_str(), buf.size());
+		if (errno != EBADF || status != -1)
+		{
+			cerr << "Expected to get bad file descriptor";
+			return Fail;
+		}
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	
+	return Success;
+}
+
+// attempt to write to -1 file descriptor
+Status ReadWriteFileTest::WriteBadFileDescriptorTest2()
+{
+	string buf = "message";
+	
+	ssize_t status = write(-1, buf.c_str(), buf.size());
+
+	if (errno != EBADF || status != -1)
+	{
+		cerr << "Expected to get bad file descriptor";
+		return Fail;
+	}
+	
+	return Success;
+}
+
+// attempt to write to the buffer which is -1
+Status ReadWriteFileTest::WriteEfaultErrorTest()
+{
+	try
+	{
+		File file("testfile.txt");
+		
+		size_t count = 10;
+
+		size_t fd = open("testfile.txt", O_WRONLY);
+
+		ssize_t status = write(fd, (void *)-1, count);
+		
+		if (errno != EFAULT || status != -1)
+		{
+			cerr << "Expected to get EFAULT";
+			return Fail;
+		}
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	
+	return Success;
+}
+
+// attempt to write to nonblocking pipe which is full
+// by default the pipe's size is 64 Kb
+Status ReadWriteFileTest::WriteEagainErrorTest()
+{
+	int pipe[2];
+	int status = pipe2(pipe, O_NONBLOCK);
+	if (status == -1)
+	{
+		cerr << strerror(errno);
+		return Unres;
+	}
+	
+	int bytes = 64 * 1024 + 1;
+	char *buf;
+	memset(buf, '0', bytes);
+		
+	ssize_t st = write(pipe[1], buf, bytes);
+	if (st == -1)
+	{
+		cerr << strerror(errno);
+		free(buf);
+		return Unres;
+	}
+	
+	if (errno != EAGAIN || st != -1)
+	{
+		cerr << "Expected to get EAGAIN error";
+		free(buf);
+		return Fail;
+	}
+
+	free(buf);
+	return Success;
+}
+
+// writes 'message' data to pipe, and reads from the other end of pipe the
+// same data
+Status ReadWriteFileTest::ReadWriteTest1()
+{		
+	int pipefd[2];
+	int status = pipe(pipefd);
+	if (status == -1)
+	{
+		cerr << "bad";
+		cerr << strerror(errno);
+		return Unres;
+	}
+	
+	string buf = "message";		
+	ssize_t st = write(pipefd[1], buf.c_str(), buf.size());
+	if (st == -1)
+	{
+		cerr << "An error occured while writing data to pipe";
+		close(pipefd[0]);
+		close(pipefd[1]);
+		return Fail;
+	}
+	
+	char getBuf[1024];
+	size_t count = 10;
+	st = read(pipefd[0], getBuf, count);
+	if (st == -1)
+	{
+		cerr << "An error occured while reading data from pipe";
+		close(pipefd[0]);
+		close(pipefd[1]);
+		return Fail;
+	}
+	
+	if (strncmp(getBuf, buf.c_str(), buf.size()) != 0)
+	{
+		cerr << "The data was written " << buf << ' ';
+		cerr << "The data was read " << getBuf << ' ';
+		close(pipefd[0]);
+		close(pipefd[1]);
+		return Fail;
+	}
+	
+	close(pipefd[0]);
+	close(pipefd[1]);
+	return Success;
+}
+
+// writes 'message' data to pipe, and reads from the other end of pipe the
+// same data with the fewer length, than it was written
+Status ReadWriteFileTest::ReadWriteTest2()
+{
+	int bytesToRead = 6;
+	int pipefd[2];
+	int status = pipe(pipefd);
+	if (status == -1)
+	{
+		cerr << "bad";
+		cerr << strerror(errno);
+		return Unres;
+	}
+	
+	string buf = "large_message";
+	ssize_t st = write(pipefd[1], buf.c_str(), bytesToRead);
+	if (st == -1)
+	{
+		cerr << "An error occured while writing data to pipe";
+		return Fail;
+	}
+	
+	char getBuf[1024];
+	size_t count = 10;
+	st = read(pipefd[0], getBuf, count);
+	if (st == -1)
+	{
+		cerr << "An error occured while reading data from pipe";
+		return Fail;
+	}
+	
+	if (strncmp(getBuf, buf.c_str(), bytesToRead) != 0)
+	{
+		cerr << "The data was written " << buf.substr(0, bytesToRead) << ' ';
+		cerr << "The data was read " << getBuf << ' ';
+		return Fail;
+	}
+	
 	return Success;
 }

@@ -24,6 +24,7 @@
 
 #include "BenchmarkTest.hpp"
 
+// Operations
 enum CattingOperations
 {
 	CattingLargeFileOp

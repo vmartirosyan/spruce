@@ -31,14 +31,20 @@ enum ReadFileDescriptorSyscalls
 	ReadEinvalError,
 	ReadIsdirError,
 	ReadEfaultError,
-	proba
+	ReadEagainError,
+	WriteBadFileDescriptor1,
+	WriteBadFileDescriptor2,
+	WriteEfaultError,
+	WriteEagainError,
+	ReadWrite1,
+	ReadWrite2
 };
 
 class ReadWriteFileTest : public SyscallTest
 {			
 public:	
 	ReadWriteFileTest(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "read")
+		SyscallTest(mode, operation, arguments, "read_write")
 	{
 		
 	}
@@ -48,10 +54,17 @@ public:
 	Status ReadBadFileDescriptorTest1();
 	Status ReadBadFileDescriptorTest2();
 	Status ReadEinvalErrorTest();
-	Status ReadIsdirErrorTest();
+	Status ReadIsdirErrorTest();	
 	Status ReadEfaultErrorTest();
-	Status probaTest();
+	Status ReadEagainErrorTest();
+	Status WriteBadFileDescriptorTest1();
+	Status WriteBadFileDescriptorTest2();
+	Status WriteEfaultErrorTest();
+	Status WriteEagainErrorTest();
+	Status ReadWriteTest1();
+	Status ReadWriteTest2();
 protected:
-	virtual int Main(vector<string> args);	
+	virtual int Main(vector<string> args);
+
 };
 #endif
