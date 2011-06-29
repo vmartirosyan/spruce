@@ -27,6 +27,12 @@ int fcntlFD::Main(vector<string> args)
 		{
 			case fcntlFDGetSetFileDescriptorFlags:
 				return get_setFileDescriptorFlags();
+
+			case fcntlFDGetSetFileStatusFlagsIgnore:
+				return get_setFileStatusFlagsIgnore();
+			case fcntlFDGetSetFileStatusFlagsIgnoreRDONLY:
+				return get_setFileStatusFlagsIgnoreRDONLY();
+
 			case fcntlFDGetSetFileStatusFlags:
 				return get_setFileStatusFlags();
 
@@ -40,17 +46,18 @@ int fcntlFD::Main(vector<string> args)
 
 	return Success;
 }
-Status fcntlFD::get_setFileStatusFlags()
+
+Status fcntlFD::get_setFileStatusFlagsIgnore()
 {
 	int fd;
-	int set_flags = O_CREAT;
+	int set_flags;
 	int get_flags;
 
-	if(fd = open("test", set_flags) < 0)
+	if((fd = open("test", O_CREAT)) < 0)
 		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
 
 	// set File Descriptor Flags
-	set_flags |= O_WRONLY;
+	set_flags = O_WRONLY | O_RDWR | O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC;
 	fcntl(fd, F_SETFL, set_flags);
 
 	// get File Descriptor Flags
@@ -58,15 +65,70 @@ Status fcntlFD::get_setFileStatusFlags()
 
 	close(fd);
 
-	if(set_flags == get_flags)
+	if(set_flags & get_flags != 0)
 	{
-		return Success;
-	}
-	else
-	{
-		cerr << "Cannot get right file descriptor flags: " << strerror(errno);
+		cerr << "Must Ignore setted flags, but does not!: " << strerror(errno);
 		return Fail;
 	}
+
+	return Success;
+}
+
+Status fcntlFD::get_setFileStatusFlagsIgnoreRDONLY()
+{
+	int fd;
+	int set_flags;
+	int get_flags;
+
+	if((fd = open("test", O_CREAT)) < 0)
+		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
+
+	// set File Descriptor Flags
+	set_flags = O_RDONLY;
+	fcntl(fd, F_SETFL, set_flags);
+
+	// get File Descriptor Flags
+	get_flags = fcntl(fd, F_GETFL);
+
+	close(fd);
+
+	if(set_flags & get_flags != 0)
+	{
+		cerr << "Must Ignore setted flags, but does not!: " << strerror(errno);
+		return Fail;
+	}
+
+	return Success;
+}
+
+Status fcntlFD::get_setFileStatusFlags()
+{
+	int fd;
+	long set_flags;
+	long get_flags;
+
+	if((fd = open("test", O_CREAT)) < 0)
+	{
+		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
+	}
+
+	// set File Descriptor Flags
+	set_flags = O_APPEND | O_DIRECT | O_NOATIME | O_NONBLOCK;
+	fcntl(fd, F_SETFL, set_flags);
+
+	// get File Descriptor Flags
+	get_flags = fcntl(fd, F_GETFL);
+
+	close(fd);
+	unlink("test");
+
+	if(set_flags != get_flags)
+	{
+		cerr << "Can't get right file descriptor flags: " << strerror(errno);
+		return Fail;
+	}
+
+	return Success;
 }
 
 Status fcntlFD::get_setFileDescriptorFlags()

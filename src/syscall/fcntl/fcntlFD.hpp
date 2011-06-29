@@ -27,7 +27,9 @@
 enum fnctlFDSyscalls
 {
 	fcntlFDGetSetFileDescriptorFlags,
-	fcntlFDGetSetFileStatusFlags
+	fcntlFDGetSetFileStatusFlags,
+	fcntlFDGetSetFileStatusFlagsIgnore,
+	fcntlFDGetSetFileStatusFlagsIgnoreRDONLY
 };
 
 class fcntlFD : public SyscallTest
@@ -40,6 +42,9 @@ class fcntlFD : public SyscallTest
 	// Test Functions
 		Status get_setFileDescriptorFlags();
 		Status get_setFileStatusFlags();
+		Status get_setFileStatusFlagsIgnore();
+		Status get_setFileStatusFlagsIgnoreRDONLY();
+
 	protected:
 		virtual int Main(vector<string> args);
 };
