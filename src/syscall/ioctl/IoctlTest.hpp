@@ -21,18 +21,10 @@
 #define TEST_IOCTL_H
 
 #include "SyscallTest.hpp"
-
+// Operations
 enum IoctlSyscalls
 {
-    
-    /*
-    tests.AddTest(new IoctlTest(Normal, IOCTL_FS_BTREE_FL, ""));
-    tests.AddTest(new IoctlTest(Normal, IOCTL_FS_ECOMPR_FL, ""));
-    tests.AddTest(new IoctlTest(Normal, IOCTL_FS_NOCOMP_FL, ""));
-    tests.AddTest(new IoctlTest(Normal, IOCTL_FS_COMPRBLK_FL, ""));
-    tests.AddTest(new IoctlTest(Normal, IOCTL_FS_DIRTY_FL, ""));
-    */
-	IOCTL_FS_SECRM_FL, /* Secure deletion */
+    IOCTL_FS_SECRM_FL, /* Secure deletion */
     IOCTL_FS_UNRM_FL,	/* Undelete */
 	IOCTL_FS_COMPR_FL,	/* Compress file */
     IOCTL_FS_SYNC_FL,	 /* Synchronous updates */
@@ -40,12 +32,12 @@ enum IoctlSyscalls
     IOCTL_FS_APPEND_FL,	 /* writes to file may only append */
     IOCTL_FS_NODUMP_FL,	 /* do not dump file */
     IOCTL_FS_NOATIME_FL,	 /* do not update atime */
-/* Reserved for compression usage... */
+
     IOCTL_FS_DIRTY_FL,		
     IOCTL_FS_COMPRBLK_FL,	 /* One or more compressed clusters */
     IOCTL_FS_NOCOMP_FL,	 /* Don't compress */
     IOCTL_FS_ECOMPR_FL,	 /* Compression error */
-/* End compression flags --- maybe not all used */
+
     IOCTL_FS_BTREE_FL,		 /* btree format dir */
     IOCTL_FS_INDEX_FL,		 /* hash-indexed directory */
     IOCTL_FS_IMAGIC_FL,	 /* AFS directory */

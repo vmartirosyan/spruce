@@ -51,7 +51,7 @@ protected:
 	string StatusToString();
 	virtual string OperationToString()
 	{
-		return "";
+		return Operation::ToString((Operations)_operation);
 	};
 };
 
