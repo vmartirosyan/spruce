@@ -6,6 +6,7 @@
 #include "Chmod.hpp"
 #include "fcntlFD.hpp"
 #include "getdents.hpp"
+#include "IoctlTest.hpp"
 
 int main(int argc, char ** argv)
 {
@@ -50,6 +51,16 @@ int main(int argc, char ** argv)
 	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileStatusFlags, ""));
 	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileStatusFlagsIgnore, ""));
 	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileStatusFlagsIgnoreRDONLY, ""));
+	
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_SECRM_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_NOATIME_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_NODUMP_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_APPEND_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_IMMUTABLE_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_SYNC_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_COMPR_FL, ""));
+	tests.AddTest(new IoctlTest(Normal, IOCTL_INVALID_FD, ""));
+   	tests.AddTest(new IoctlTest(Normal, IOCTL_INVALID_ARGP, ""));
 
 	tests.AddTest(new GetDentsTest(Normal, GetDentsEbadfError, ""));
  	tests.AddTest(new GetDentsTest(Normal, GetDentsEfaultError, ""));
