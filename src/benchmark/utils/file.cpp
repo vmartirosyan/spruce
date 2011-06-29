@@ -39,27 +39,27 @@ string getSuffix(const char *str)
 
 long long getMeasure(const string &suffix)
 {
-	long long bytes = 0;
+	long long bytes = 1;
 	if (suffix == "c")
-		bytes += 1;
+		bytes = 1;
 	else if (suffix == "w")
-		bytes += 2;
+		bytes = 2;
 	else if (suffix == "b")
-		bytes += 512;
+		bytes = 512;
 	else if (suffix == "kB")
-		bytes += 1000;
+		bytes = 1000;
 	else if (suffix == "K")
-		bytes += 1024;
+		bytes = 1024;
 	else if (suffix == "MB")
-		bytes += 1000 * 1000;
+		bytes = 1000 * 1000;
 	else if (suffix == "M")
-		bytes += 1024 * 1024;
+		bytes = 1024 * 1024;
 	else if (suffix == "xM")
-		bytes += 1024 * 1024;
+		bytes = 1024 * 1024;
 	else if (suffix == "GB")
-		bytes += 1000 * 1000 * 1000;
+		bytes = 1000 * 1000 * 1000;
 	else if (suffix == "G")
-		bytes += 1024 * 1024 * 1024;
+		bytes = 1024 * 1024 * 1024;
 		
 	return bytes;
 }
