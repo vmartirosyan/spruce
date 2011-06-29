@@ -1,6 +1,9 @@
 //      ext4fs.cpp
 //      
-//      Copyright 2011 Vahram Martirosyan <vmartirosyan@gmail.com>
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -52,13 +55,20 @@ int main(int argc, char ** argv)
 	mkdir( MountPoint.c_str(), 0x0777 );
 	mount ( DeviceName.c_str(), MountPoint.c_str(), "ext4", 0 ,0);
 	
+	//Configuration<Ext4IoctlTest> conf("${CMAKE_INSTALL_PREFIX}/config/ext4fs.conf");
 	Configuration<Ext4IoctlTest> conf("/home/vmartirosyan/workspace/spruce/config/ext4fs.conf");
 	
-	TestCollection tests = conf.Read();
+	TestCollection tests = conf.Read();	
 	
 	//Configuration<Ext4IoctlTest> conf1("/home/vmartirosyan/workspace/spruce/config/ext4fs.conf");
 	
 	//TestCollection tests2 = conf1.Read();
+	
+	tests.Merge(tests2);
+	
+	//Configuration<Ext4IoctlTest> conf2("/home/vmartirosyan/workspace/spruce/config/ext4fs.conf");
+	
+	//tests2 = conf2.Read();
 	
 	//tests.Merge(tests2);
 	

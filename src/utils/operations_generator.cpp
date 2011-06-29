@@ -1,6 +1,9 @@
 //      operations_generator.cpp
 //      
-//      Copyright 2011 Vahram Martirosyan <vmartirosyan@gmail.com>
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
