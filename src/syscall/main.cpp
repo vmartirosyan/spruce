@@ -49,6 +49,8 @@ int main(int argc, char ** argv)
 
 	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileDescriptorFlags, ""));
 	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileStatusFlags, ""));
+	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileStatusFlagsIgnore, ""));
+	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileStatusFlagsIgnoreRDONLY, ""));
 
 
 	TestResultCollection res = tests.Run();
