@@ -5,6 +5,7 @@
 #include "Link.hpp"
 #include "Chmod.hpp"
 #include "fcntlFD.hpp"
+#include "getdents.hpp"
 
 int main(int argc, char ** argv)
 {
@@ -16,7 +17,6 @@ int main(int argc, char ** argv)
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadEinvalError, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadIsdirError, ""));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadEfaultError, ""));
-	tests.AddTest(new ReadWriteFileTest(Normal, proba, ""));
 
 	tests.AddTest(new Close(Normal, BadFileDescriptor, ""));
  	tests.AddTest(new Close(Normal, CorrectDescriptor, ""));
@@ -37,8 +37,7 @@ int main(int argc, char ** argv)
 	tests.AddTest(new Chmod(Normal, CHMOD_S_ISUID, ""));
     tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENAMETOOLONG, ""));
     tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENOENT, ""));
-     tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENOTDIR, ""));
-
+    tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENOTDIR, ""));
 
 	tests.AddTest(new LinkTest(Normal, LinkTestTooLongOldPath, ""));
 	tests.AddTest(new LinkTest(Normal, LinkTestTooLongNewPath, ""));
@@ -52,6 +51,11 @@ int main(int argc, char ** argv)
 	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileStatusFlagsIgnore, ""));
 	tests.AddTest(new fcntlFD(Normal, fcntlFDGetSetFileStatusFlagsIgnoreRDONLY, ""));
 
+	tests.AddTest(new GetDentsTest(Normal, GetDentsEbadfError, ""));
+ 	tests.AddTest(new GetDentsTest(Normal, GetDentsEfaultError, ""));
+	tests.AddTest(new GetDentsTest(Normal, GetDentsEinvalError, ""));
+	tests.AddTest(new GetDentsTest(Normal, GetDentsEnotdirError, ""));
+	tests.AddTest(new GetDentsTest(Normal, proba, ""));
 
 	TestResultCollection res = tests.Run();
 
