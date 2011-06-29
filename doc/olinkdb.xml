@@ -17,7 +17,7 @@
 
   <!-- Site map for generating relative paths between documents -->
   <sitemap>
-	<document targetdoc="spruce" baseuri="spruce.html">&sprucetargets;</document>
+	<document targetdoc="spruce" baseuri="index.html">&sprucetargets;</document>
     
     <document targetdoc="main" baseuri="main/">&maintargets;</document>
     

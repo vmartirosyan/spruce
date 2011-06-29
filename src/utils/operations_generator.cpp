@@ -55,7 +55,7 @@ int main(int argc, char ** argv)
 {
 	if ( argc < 3 )
 		return Usage(argv);
-	cout << " ++ Generating operations header file..." << endl;
+	cout << "++ Generating operations header file..." << endl;
 	
 	Operations.push_back("UnknownOperation");
 	
@@ -111,7 +111,7 @@ vector<string> GetHeaderFiles(const string & root)
 		while (s.good())
 		{
 			s >> file;
-			cout << file << endl;
+			//cout << file << endl;
 			if ( root.size() > file.size())
 			{
 				cerr << "Error with file and root folder lengths" << endl;
@@ -255,7 +255,7 @@ public: \n\
 #endif /* OPERATIONS_HPP */ \n\
 \n";
 
-	cout << "++ generating file " << (root + "/../include/operations.hpp") << endl;
+	cout << "++ Generating file " << (root + "/../include/operations.hpp") << endl;
 
 	ofstream of ((root + "/../include/operations.hpp").c_str());
 	
@@ -329,7 +329,7 @@ map<int, string> InitMapToString() \n\
 }\n\
 \n";
 
-	cout << "++ generating file " << (root + "/utils/operations.cpp") << endl;
+	cout << "++ Generating file " << (root + "/utils/operations.cpp") << endl;
 
 	ofstream of ((root + "/utils/operations.cpp").c_str());
 	
