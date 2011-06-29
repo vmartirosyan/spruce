@@ -38,6 +38,32 @@ public:
 		return bench_test_res;
 	}
 	
+	vector<string> ParseArguments(string args)
+	{
+		vector<string> arguments;
+		
+		while(args.size() != 0)
+		{
+			int position = args.find(" ");
+			if (position == -1)
+			{
+				string s = args.substr(0, args.size());
+				if (s.size() > 0)
+					arguments.push_back(s);
+				args = "";
+			}
+			else
+			{
+				string s = args.substr(0 , position);
+				if (s.size() > 0)
+					arguments.push_back(s);
+				args = args.substr(position + 1, args.size());
+			}
+		}
+		
+		return arguments;
+	}
+
 protected:
 	virtual int Main(vector<string>) = 0;
 };

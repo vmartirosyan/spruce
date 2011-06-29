@@ -19,7 +19,7 @@
 #      MA 02110-1301, USA.
 
 
-# creates files with fixed size filled with zeros
+# creates files with fixed size filled with zeros and place them into folder
 # arguments
 # - number of files to create
 # - size of files to create
@@ -30,7 +30,7 @@
 # creating 'number' of files
 number=$1
 
-parent_folder="results"
+parent_folder=$3
 mkdir -p $parent_folder
 cd $parent_folder
 for ((i = 0; i < $number; i++))
