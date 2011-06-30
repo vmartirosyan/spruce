@@ -46,10 +46,12 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/benchmark/SearchMapFile)
 
 
 
-ADD_EXECUTABLE(benchmark main.cpp)
+ADD_EXECUTABLE(benchmark ${CMAKE_CURRENT_BINARY_DIR}/main.cpp)
 TARGET_LINK_LIBRARIES(benchmark utils MultipleFilesCreation MultipleFilesDeletion 
 	MultipleFilesCompression LargeFileCreation FindFile LargeFileCopyTest MultipleFilesDecompression MultipleFilesCopy 
 	MultipleFilesCatting CattingLargeFile SearchMapFile SplitLargeFile)
+	
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${CMAKE_CURRENT_BINARY_DIR}/main.cpp)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/benchmark"
 			DESTINATION bin
