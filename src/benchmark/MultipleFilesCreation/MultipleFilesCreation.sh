@@ -1,7 +1,10 @@
 #!/bin/bash
 #      MultipleFilesCreation.sh
 #      
-#      Copyright 2011 Eduard Bagrov <ebagrov@gmail.com>
+# 		Copyright (C) 2011, Institute for System Programming
+#                          of the Russian Academy of Sciences (ISPRAS)
+#
+#      Author: Eduard Bagrov <ebagrov@gmail.com>
 #      
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
@@ -23,6 +26,7 @@
 # arguments
 # - number of files to create
 # - size of files to create
+# - folder to store the files in
 # 'size' can be followed by the following multiplicative suffixes:
 # c = 1, w = 2,  b = 512, kB = 1000, K = 1024, MB = 1000*1000, M = 1024*1024, 
 # xM = M GB = 1000*1000*1000, G = 1024*1024*1024, and so on for T, P, E, Z, Y.
