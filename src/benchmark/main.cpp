@@ -14,12 +14,12 @@
 
 int main(int argc, char ** argv)
 {
-	Configuration<CreatorTest> conf1("/home/eduard/workspace/spruce/config/creator.conf");
-	Configuration<FindFileTest> conf2("/home/eduard/workspace/spruce/config/findfile.conf");
-	Configuration<CompressTest> conf3("/home/eduard/workspace/spruce/config/compression.conf");
-	Configuration<DecompressTest> conf4("/home/eduard/workspace/spruce/config/decompression.conf");
-	Configuration<LargeFileTest> conf5("/home/eduard/workspace/spruce/config/largefile.conf");
-	Configuration<SearchMapFileTest> conf6("/home/eduard/workspace/spruce/config/searchmapfile.conf");
+	Configuration<CreatorTest> conf1("${CMAKE_INSTALL_PREFIX}/config/creator.conf");
+	Configuration<FindFileTest> conf2("${CMAKE_INSTALL_PREFIX}/config/findfile.conf");
+	Configuration<CompressTest> conf3("${CMAKE_INSTALL_PREFIX}/config/compression.conf");
+	Configuration<DecompressTest> conf4("${CMAKE_INSTALL_PREFIX}/config/decompression.conf");
+	Configuration<LargeFileTest> conf5("${CMAKE_INSTALL_PREFIX}/config/largefile.conf");
+	Configuration<SearchMapFileTest> conf6("${CMAKE_INSTALL_PREFIX}/config/searchmapfile.conf");
 		
 	TestCollection tests = conf1.Read();
 	TestCollection tests2 = conf2.Read();
