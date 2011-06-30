@@ -7,10 +7,39 @@
 #include "fcntlFD.hpp"
 #include "getdents.hpp"
 #include "IoctlTest.hpp"
+#include <config.hpp>
 
 int main(int argc, char ** argv)
 {
 	TestCollection tests;
+	
+	Configuration<DupFileDescriptorTest> conf1("${CMAKE_INSTALL_PREFIX}/config/dup.conf");
+	Configuration<ReadWriteFileTest> conf2("${CMAKE_INSTALL_PREFIX}/config/read_write.conf");
+	Configuration<Close> conf3("${CMAKE_INSTALL_PREFIX}/config/close.conf");
+	Configuration<Chmod> conf4("${CMAKE_INSTALL_PREFIX}/config/chmod.conf");
+	Configuration<LinkTest> conf5("${CMAKE_INSTALL_PREFIX}/config/link.conf");
+	Configuration<fcntlFD> conf6("${CMAKE_INSTALL_PREFIX}/config/fcntl.conf");
+	Configuration<IoctlTest> conf7("${CMAKE_INSTALL_PREFIX}/config/ioctl.conf");
+	Configuration<GetDentsTest> conf8("${CMAKE_INSTALL_PREFIX}/config/getdents.conf");
+	
+	TestCollection tests1 = conf1.Read();
+	TestCollection tests2 = conf2.Read();
+	TestCollection tests3 = conf3.Read();
+	TestCollection tests4 = conf4.Read();
+	TestCollection tests5 = conf5.Read();
+	TestCollection tests6 = conf6.Read();
+	TestCollection tests7 = conf7.Read();
+	TestCollection tests8 = conf8.Read();
+	
+	tests.Merge(tests1);
+	tests.Merge(tests2);
+	tests.Merge(tests3);
+	tests.Merge(tests4);
+	tests.Merge(tests5);
+	tests.Merge(tests6);
+	tests.Merge(tests7);
+	tests.Merge(tests8);
+	/*
 
 	tests.AddTest(new DupFileDescriptorTest(Normal, Dup));
 	tests.AddTest(new ReadWriteFileTest(Normal, ReadBadFileDescriptor1, ""));
@@ -66,9 +95,10 @@ int main(int argc, char ** argv)
  	tests.AddTest(new GetDentsTest(Normal, GetDentsEfaultError, ""));
 	tests.AddTest(new GetDentsTest(Normal, GetDentsEinvalError, ""));
 	tests.AddTest(new GetDentsTest(Normal, GetDentsEnotdirError, ""));
-	tests.AddTest(new GetDentsTest(Normal, GetDentsGeneral, ""));
+	tests.AddTest(new GetDentsTest(Normal, proba, ""));*/
 
 	TestResultCollection res = tests.Run();
 
 	cout << res.ToXML() << endl;
 }
+
