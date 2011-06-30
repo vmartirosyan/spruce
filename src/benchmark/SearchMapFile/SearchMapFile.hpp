@@ -1,6 +1,9 @@
 //      SearchMapFile.hpp
 //      
-//      Copyright 2011 Eduard Bagrov <ebagrov@gmail.com>
+// 		Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//
+//      Author: Eduard Bagrov <ebagrov@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -32,9 +35,12 @@ class SearchMapFileTest : public BenchmarkTest
 {
 public:
 		
-	SearchMapFileTest(Mode m, int op, string a) : BenchmarkTest (m, op, a),
-		filename("mmapfile"), fileSize("150M")
+	SearchMapFileTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
+		vector<string> arguments = ParseArguments(a);
+		
+		filename = arguments[0];
+		fileSize = arguments[1];
 	}
 	
 	~SearchMapFileTest()
