@@ -38,7 +38,7 @@ enum GetDentsSyscalls
 	GetDentsEfaultError,
 	GetDentsEinvalError,
 	GetDentsEnotdirError,
-	proba
+	GetDentsGeneral
 };
 
 class GetDentsTest : public SyscallTest
@@ -71,7 +71,7 @@ public:
 	Status GetDentsEfaultErrorTest();
 	Status GetDentsEinvalErrorTest();
 	Status GetDentsEnotdirErrorTest();
-	Status probaTest();
+	Status GetDentsGeneralTest();
 	
 protected:
 	virtual int Main(vector<string> args);

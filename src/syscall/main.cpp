@@ -66,7 +66,7 @@ int main(int argc, char ** argv)
  	tests.AddTest(new GetDentsTest(Normal, GetDentsEfaultError, ""));
 	tests.AddTest(new GetDentsTest(Normal, GetDentsEinvalError, ""));
 	tests.AddTest(new GetDentsTest(Normal, GetDentsEnotdirError, ""));
-	tests.AddTest(new GetDentsTest(Normal, proba, ""));
+	tests.AddTest(new GetDentsTest(Normal, GetDentsGeneral, ""));
 
 	TestResultCollection res = tests.Run();
 

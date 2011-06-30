@@ -64,7 +64,7 @@ int main(int argc, char ** argv)
 	
 	//TestCollection tests2 = conf1.Read();
 	
-	tests.Merge(tests2);
+	//tests.Merge(tests2);
 	
 	//Configuration<Ext4IoctlTest> conf2("/home/vmartirosyan/workspace/spruce/config/ext4fs.conf");
 	

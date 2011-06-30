@@ -111,8 +111,8 @@ int GetDentsTest::Main(vector<string>)
 				return GetDentsEinvalErrorTest();
 			case GetDentsEnotdirError:
 				return GetDentsEnotdirErrorTest();
-			case proba:
-				return probaTest();
+			case GetDentsGeneral:
+				return GetDentsGeneralTest();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;
@@ -213,7 +213,7 @@ Status GetDentsTest::GetDentsEnotdirErrorTest()
 	return Success;
 }
 
-Status GetDentsTest::probaTest()
+Status GetDentsTest::GetDentsGeneralTest()
 {
 	linux_dirent *d;
 	int fd = open(directory.c_str(), O_RDONLY | O_DIRECTORY);
@@ -238,35 +238,35 @@ Status GetDentsTest::probaTest()
 	for (int bpos = 0; bpos < nread;) 
 	{
 		d = (struct linux_dirent *) (buf + bpos);
-		cerr << d->d_ino << ' ';
+		//cerr << d->d_ino << ' ';
 		d_type = *(buf + bpos + d->d_reclen - 1);
 		
 		switch(d_type)
 		{
 			case DT_REG:
-				cerr << "regular";
+				//cerr << "regular";
 				break;
 			case DT_DIR:
-				cerr << "directory";
+				//cerr << "directory";
 				break;
 			case DT_FIFO:
-				cerr << "FIFO";
+				//cerr << "FIFO";
 				break;
 			case DT_SOCK:
-				cerr << "socket";
+				//cerr << "socket";
 				break;
 			case DT_LNK:
-				cerr << "symlink";
+				//cerr << "symlink";
 				break;
 			case DT_BLK:
-				cerr << "block dev";
+				//cerr << "block dev";
 				break;
 			case DT_CHR:
-				cerr << "char dev";
+				//cerr << "char dev";
 				break;
 		}
 		
-		cerr << (char *) d->d_name << ' ';
+		//cerr << (char *) d->d_name << ' ';
 		bpos += d->d_reclen;
 	}
 	return Success;
