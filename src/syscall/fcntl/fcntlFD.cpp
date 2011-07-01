@@ -1,6 +1,9 @@
 //      fnctl.cpp
 //
-//      Copyright 2011 Shahzadyan Khachik <qwerity@gmail.com>
+// 		Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//
+//      Author: Shahzadyan Khachik <qwerity@gmail.com>
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -18,6 +21,8 @@
 //      MA 02110-1301, USA.
 
 #include <fcntlFD.hpp>
+#include <string.h>
+#include <stdlib.h>
 
 int fcntlFD::Main(vector<string> args)
 {
@@ -30,11 +35,15 @@ int fcntlFD::Main(vector<string> args)
 
 			case fcntlFDGetSetFileStatusFlagsIgnore:
 				return get_setFileStatusFlagsIgnore();
+
 			case fcntlFDGetSetFileStatusFlagsIgnoreRDONLY:
 				return get_setFileStatusFlagsIgnoreRDONLY();
 
 			case fcntlFDGetSetFileStatusFlags:
 				return get_setFileStatusFlags();
+
+			case fcntlFDDupFileDescriptor:
+				return dupFileDescriptor();
 
 			default:
 				cerr << "Unsupported operation.";
@@ -47,11 +56,54 @@ int fcntlFD::Main(vector<string> args)
 	return Success;
 }
 
+Status fcntlFD::dupFileDescriptor()
+{
+	int fd;
+	int new_fd;
+	const char buff[6] = "apero";
+	char* nbuff = new char[6];
+	long _arg = rand()%99;
+
+	if((fd = open("test", O_CREAT | O_RDWR)) < 0)
+		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
+
+	new_fd = fcntl(fd, F_DUPFD, _arg);
+
+	write(fd, &buff, 5);
+	lseek(fd, 0, SEEK_SET);
+	read(new_fd, nbuff, 5);
+
+	close(fd);
+	close(new_fd);
+	unlink("test");
+
+	if(new_fd == EINVAL)
+	{
+		cerr << "arg is negative or is greater than the maximum allowable value." << endl;
+		return Fail;
+	}
+
+	if(new_fd == EMFILE)
+	{
+		cerr << "the process already has the maximum number of file descriptors open" << endl;
+		return Fail;
+	}
+
+	if((strcmp(buff, nbuff) != 0) || (new_fd < _arg))
+	{
+		delete [] nbuff;
+		cerr << "Return wrong file descriptor";
+		return Fail;
+	}
+
+	return Success;
+}
+
 Status fcntlFD::get_setFileStatusFlagsIgnore()
 {
 	int fd;
-	int set_flags;
-	int get_flags;
+	long set_flags;
+	long get_flags;
 
 	if((fd = open("test", O_CREAT)) < 0)
 		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
@@ -64,6 +116,7 @@ Status fcntlFD::get_setFileStatusFlagsIgnore()
 	get_flags = fcntl(fd, F_GETFL);
 
 	close(fd);
+	unlink("test");
 
 	if(set_flags & get_flags != 0)
 	{
@@ -77,8 +130,8 @@ Status fcntlFD::get_setFileStatusFlagsIgnore()
 Status fcntlFD::get_setFileStatusFlagsIgnoreRDONLY()
 {
 	int fd;
-	int set_flags;
-	int get_flags;
+	long set_flags;
+	long get_flags;
 
 	if((fd = open("test", O_CREAT)) < 0)
 		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
@@ -91,6 +144,7 @@ Status fcntlFD::get_setFileStatusFlagsIgnoreRDONLY()
 	get_flags = fcntl(fd, F_GETFL);
 
 	close(fd);
+	unlink("test");
 
 	if(set_flags & get_flags != 0)
 	{
@@ -134,8 +188,8 @@ Status fcntlFD::get_setFileStatusFlags()
 Status fcntlFD::get_setFileDescriptorFlags()
 {
 	int fd;
-	int set_flags = FD_CLOEXEC;
-	int get_flags;
+	long set_flags = FD_CLOEXEC;
+	long get_flags;
 
 	if(fd = open("test", O_CREAT | O_WRONLY) < 0)
 		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
@@ -147,6 +201,7 @@ Status fcntlFD::get_setFileDescriptorFlags()
 	get_flags = fcntl(fd, F_GETFD);
 
 	close(fd);
+	unlink("test");
 
 	if(FD_CLOEXEC == get_flags)
 	{

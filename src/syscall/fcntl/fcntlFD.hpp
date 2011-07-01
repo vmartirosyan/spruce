@@ -1,6 +1,9 @@
 //      DupFileDescriptor.hpp
 //
-//      Copyright 2011 Shahzadyan Khachik <qwerity@gmail.com>
+// 		Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//
+//      Author: Shahzadyan Khachik <qwerity@gmail.com>
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -29,7 +32,9 @@ enum fnctlFDSyscalls
 	fcntlFDGetSetFileDescriptorFlags,
 	fcntlFDGetSetFileStatusFlags,
 	fcntlFDGetSetFileStatusFlagsIgnore,
-	fcntlFDGetSetFileStatusFlagsIgnoreRDONLY
+	fcntlFDGetSetFileStatusFlagsIgnoreRDONLY,
+	fcntlFDDupFileDescriptor
+	fcntlFDGetSetLock
 };
 
 class fcntlFD : public SyscallTest
@@ -44,6 +49,7 @@ class fcntlFD : public SyscallTest
 		Status get_setFileStatusFlags();
 		Status get_setFileStatusFlagsIgnore();
 		Status get_setFileStatusFlagsIgnoreRDONLY();
+		Status dupFileDescriptor();
 
 	protected:
 		virtual int Main(vector<string> args);
