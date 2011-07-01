@@ -14,39 +14,42 @@
 
 int main(int argc, char ** argv)
 {
-	Configuration<CreatorTest> conf1("${CMAKE_INSTALL_PREFIX}/config/creator.conf");
-	Configuration<FindFileTest> conf2("${CMAKE_INSTALL_PREFIX}/config/findfile.conf");
-	Configuration<CompressTest> conf3("${CMAKE_INSTALL_PREFIX}/config/compression.conf");
-	Configuration<DecompressTest> conf4("${CMAKE_INSTALL_PREFIX}/config/decompression.conf");
-	Configuration<LargeFileTest> conf5("${CMAKE_INSTALL_PREFIX}/config/largefile.conf");
-	Configuration<SearchMapFileTest> conf6("${CMAKE_INSTALL_PREFIX}/config/searchmapfile.conf");
+	Configuration<CreatorTest> conf1("${CMAKE_INSTALL_PREFIX}config/creator.conf");
+	Configuration<FindFileTest> conf2("${CMAKE_INSTALL_PREFIX}config/findfile.conf");
+	Configuration<CompressTest> conf3("${CMAKE_INSTALL_PREFIX}config/compression.conf");
+	Configuration<DecompressTest> conf4("${CMAKE_INSTALL_PREFIX}config/decompression.conf");
+	Configuration<LargeFileTest> conf5("${CMAKE_INSTALL_PREFIX}config/largefile.conf");
+	Configuration<SearchMapFileTest> conf6("${CMAKE_INSTALL_PREFIX}config/searchmapfile.conf");
+	Configuration<CattingLargeFile> conf7("${CMAKE_INSTALL_PREFIX}config/cattinglargefile.conf");
+	Configuration<LargeFileCopyTest> conf8("${CMAKE_INSTALL_PREFIX}config/largefilecopy.conf");
+	Configuration<MultipleFilesCatting> conf9("${CMAKE_INSTALL_PREFIX}config/multiplefilescatting.conf");
+	Configuration<MultipleFilesCopy> conf10("${CMAKE_INSTALL_PREFIX}config/multiplefilescopy.conf");
+	Configuration<SplitLargeFile> conf11("${CMAKE_INSTALL_PREFIX}config/splitlargefile.conf");
+	Configuration<DeleterTest> conf12("${CMAKE_INSTALL_PREFIX}config/deleter.conf");
 		
 	TestCollection tests = conf1.Read();
 	TestCollection tests2 = conf2.Read();
 	TestCollection tests3 = conf3.Read();
 	TestCollection tests4 = conf4.Read();
-	TestCollection tests5 = conf5.Read();
+	TestCollection tests5 = conf5.Read();	
 	TestCollection tests6 = conf6.Read();
+	TestCollection tests7 = conf7.Read();
+	TestCollection tests8 = conf8.Read();
+	TestCollection tests9 = conf9.Read();
+	TestCollection tests10 = conf10.Read();
+	TestCollection tests11 = conf11.Read();
+	TestCollection tests12 = conf12.Read();
 	tests.Merge(tests2);
 	tests.Merge(tests3);
 	tests.Merge(tests4);
 	tests.Merge(tests5);
 	tests.Merge(tests6);
-	
-	/*TestCollection tests;
-	tests.AddTest(new CreatorTest(Normal, MultipleFilesCreation, ""));
-	tests.AddTest(new FindFileTest(Normal, FindFile, ""));
-	tests.AddTest(new CompressTest(Normal, MultipleFilesCompression, ""));
-	tests.AddTest(new DecompressTest(Normal, MultipleFilesDecompression, ""));
-	tests.AddTest(new LargeFileTest(Normal, LargeFileCreation, ""));
-	tests.AddTest(new LargeFileCopyTest(Normal, LargeFileCopying, ""));
-	
-	tests.AddTest(new SplitLargeFile(Normal, SplitLargeFileOp, ""));
-	
-	tests.AddTest(new MultipleFilesCopy(Normal, MultipleFilesCopyOp, ""));
-	tests.AddTest(new MultipleFilesCatting(Normal, MultipleFilesCattingOp, ""));
-	tests.AddTest(new CattingLargeFile(Normal, CattingLargeFileOp, ""));*/
-	//tests.AddTest(new DeleterTest(Normal, MultipleFilesDeletion, ""));
+	tests.Merge(tests7);
+	tests.Merge(tests8);
+	tests.Merge(tests9);
+	tests.Merge(tests10);
+	tests.Merge(tests11);
+	tests.Merge(tests12);
 	
 	TestResultCollection res = tests.Run();
 		

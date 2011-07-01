@@ -1,7 +1,10 @@
 /**
 //      MultipleFilesCopy.hpp
 //      
-//      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
+// 		Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author: 
+// 			Tigran Piloyan <tigran.piloyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -36,8 +39,10 @@ public:
 		
 	MultipleFilesCopy(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
-		dirName = "results";
-		destDirName = "largefile";
+		vector<string> arguments = ParseArguments(a);
+		
+		dirName = arguments[0];
+		destDirName = arguments[1];
 	}
 		
 	~MultipleFilesCopy() {}
