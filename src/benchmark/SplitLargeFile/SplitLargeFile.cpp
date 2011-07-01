@@ -1,6 +1,9 @@
 //      SplitLargeFile.cpp
 //      
-//      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
+// 		Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author: 
+// 			Tigran Piloyan <tigran.piloyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -46,50 +49,44 @@ int SplitLargeFile::Main(vector<string>)
 Status SplitLargeFile::SplitLargeFileFunc()
 {
 	int fd = open((this->filename).c_str(), O_RDONLY);
-	std::stringstream ss;
 	
-	//piece of code to determine file size
-    struct stat buf;
-    fstat(fd, &buf);
-    int size = buf.st_size;
-    
-    int filesSize = size / (this->numberOfFiles); // computing the small files sizes
-    
-    string buffer = "";
-    string smallFiles = "small";
-    
-    for (int i = 0; i < this->numberOfFiles; ++i) {
-		ss << i;
-		int fds = open((smallFiles + ss.str()).c_str(), O_WRONLY | O_CREAT); 
+	if (fd < 0) {
+		cerr << "An error occured during opening file";
+		return Unres;
+	} else {
+		std::stringstream ss;
 		
-		if (read(fd, (void *)buffer.c_str(), filesSize) != -1) {
-			int writtenBytes = write(fds, (void *)buffer.c_str(), filesSize);
-			if(writtenBytes == -1) {
-				cerr << "An error occured during writing";
+		//code to determine file size
+		struct stat buf;
+		fstat(fd, &buf);
+		int size = buf.st_size;
+		
+		int filesSize = size / (this->numberOfFiles); // computing the small files sizes
+		
+		string buffer = "";
+		string smallFiles = "small";
+		
+		for (int i = 0; i < this->numberOfFiles; ++i) {
+			ss << i;
+			int fds = open(("results/" + smallFiles + ss.str()).c_str(), O_WRONLY | O_CREAT); 
+			
+			if (read(fd, (void*)buffer.c_str(), filesSize) != -1) {
+				if(write(fds, (void*)buffer.c_str(), filesSize) == -1) {
+					cerr << "An error occured during writing " << i;
+					return Unres;
+				} else {
+					close(fds);
+				}
+				
+			} else {
+				cerr << "An error occured during reading";
 				return Unres;
 			}
-		} else {
-			cerr << "An error occured during reading";
-			return Unres;
+			
 		}
-		
+		close (fd);
 	}
     
-    cerr << smallFiles;
-	//ofstream large_file ("largefile");
-    //if (large_file.is_open()) {
-      //large_file << "This is a line.\n";
-      //large_file << "This is another line.\n";
-      //large_file.close();
-    //}
-    //else {
-		//cout << "Unable to open file";
-	//}
-	
-    //std::auto_ptr<ProcessResult> result();
-    //cerr << result->GetOutput() << " ";
-    
-    //return (Status)result->GetStatus();
     return (Status)Success;
 }
 
