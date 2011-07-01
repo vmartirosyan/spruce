@@ -7,12 +7,12 @@
 #include "fcntlFD.hpp"
 #include "getdents.hpp"
 #include "IoctlTest.hpp"
+#include "rename.hpp"
 #include <config.hpp>
 
 int main(int argc, char ** argv)
 {
 	TestCollection tests;
-	
 	Configuration<DupFileDescriptorTest> conf1("${CMAKE_INSTALL_PREFIX}/config/dup.conf");
 	Configuration<ReadWriteFileTest> conf2("${CMAKE_INSTALL_PREFIX}/config/read_write.conf");
 	Configuration<Close> conf3("${CMAKE_INSTALL_PREFIX}/config/close.conf");
@@ -21,6 +21,7 @@ int main(int argc, char ** argv)
 	Configuration<fcntlFD> conf6("${CMAKE_INSTALL_PREFIX}/config/fcntl.conf");
 	Configuration<IoctlTest> conf7("${CMAKE_INSTALL_PREFIX}/config/ioctl.conf");
 	Configuration<GetDentsTest> conf8("${CMAKE_INSTALL_PREFIX}/config/getdents.conf");
+	Configuration<RenameTest> conf9("${CMAKE_INSTALL_PREFIX}/config/rename.conf");
 	
 	TestCollection tests1 = conf1.Read();
 	TestCollection tests2 = conf2.Read();
@@ -30,6 +31,7 @@ int main(int argc, char ** argv)
 	TestCollection tests6 = conf6.Read();
 	TestCollection tests7 = conf7.Read();
 	TestCollection tests8 = conf8.Read();
+	TestCollection tests9 = conf9.Read();
 	
 	tests.Merge(tests1);
 	tests.Merge(tests2);
@@ -39,15 +41,14 @@ int main(int argc, char ** argv)
 	tests.Merge(tests6);
 	tests.Merge(tests7);
 	tests.Merge(tests8);
-	/*
+	tests.Merge(tests9);
+	
+	TestResultCollection res = tests.Run();
 
-	tests.AddTest(new DupFileDescriptorTest(Normal, Dup));
-	tests.AddTest(new ReadWriteFileTest(Normal, ReadBadFileDescriptor1, ""));
-	tests.AddTest(new ReadWriteFileTest(Normal, ReadBadFileDescriptor2, ""));
-	tests.AddTest(new ReadWriteFileTest(Normal, ReadEinvalError, ""));
-	tests.AddTest(new ReadWriteFileTest(Normal, ReadIsdirError, ""));
-	tests.AddTest(new ReadWriteFileTest(Normal, ReadEfaultError, ""));
+	cout << res.ToXML() << endl;
 
+	/*tests.AddTest(new DupFileDescriptorTest(Normal, Dup));
+	
 	tests.AddTest(new Close(Normal, BadFileDescriptor, ""));
  	tests.AddTest(new Close(Normal, CorrectDescriptor, ""));
 	tests.AddTest(new Close(Normal, CorrectDescriptorUnlink, ""));
@@ -90,15 +91,9 @@ int main(int argc, char ** argv)
 	tests.AddTest(new IoctlTest(Normal, IOCTL_FS_COMPR_FL, ""));
 	tests.AddTest(new IoctlTest(Normal, IOCTL_INVALID_FD, ""));
    	tests.AddTest(new IoctlTest(Normal, IOCTL_INVALID_ARGP, ""));
-
-	tests.AddTest(new GetDentsTest(Normal, GetDentsEbadfError, ""));
- 	tests.AddTest(new GetDentsTest(Normal, GetDentsEfaultError, ""));
-	tests.AddTest(new GetDentsTest(Normal, GetDentsEinvalError, ""));
-	tests.AddTest(new GetDentsTest(Normal, GetDentsEnotdirError, ""));
-	tests.AddTest(new GetDentsTest(Normal, proba, ""));*/
-
-	TestResultCollection res = tests.Run();
-
-	cout << res.ToXML() << endl;
+	
+	tests.AddTest(new RenameTest(Normal, RenameEfaultError1, ""));
+	tests.AddTest(new RenameTest(Normal, RenameEfaultError2, ""));
+	tests.AddTest(new RenameTest(Normal, RenameEbusyError, ""));
+	tests.AddTest(new RenameTest(Normal, proba, ""));*/
 }
-
