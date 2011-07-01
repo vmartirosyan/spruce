@@ -1,6 +1,9 @@
 //      SplitLargeFile.hpp
 //      
-//      Copyright 2011 Eduard Bagrov <ebagrov@gmail.com>
+// 		Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author: 
+// 			Tigran Piloyan <tigran.piloyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -21,6 +24,7 @@
 #define SPLIT_LARGE_FILE_H
 
 #include "BenchmarkTest.hpp"
+#include <sstream>
 
 // Operations
 enum SplitLargeFileOperations
@@ -34,8 +38,11 @@ public:
 		
 	SplitLargeFile(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
-		filename = "largefile";
-		numberOfFiles = 10;
+		vector<string> arguments = ParseArguments(a);
+		
+		filename = arguments[0];
+		std::stringstream ss(arguments[1]);
+		ss >> numberOfFiles;
 	}
 	
 	~SplitLargeFile() {}

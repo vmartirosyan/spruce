@@ -1,6 +1,9 @@
 #      MultipleFilesCopy.sh
 #      
-#      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
+# 		Copyright (C) 2011, Institute for System Programming
+#                          of the Russian Academy of Sciences (ISPRAS)
+#      Author: 
+# 			Tigran Piloyan <tigran.piloyan@gmail.com>
 #      
 #      This program is free software; you can redistribute it and/or modify
 #      it under the terms of the GNU General Public License as published by
@@ -21,7 +24,7 @@
 
 # Multiple files copying from a given directory to another
 
-dest_folder="destFolder"
+dest_folder=$2
 mkdir -p $dest_folder
 
 if [ -d $1 ]
