@@ -1,7 +1,10 @@
 /**
 //      LargeFileCopyTest.hpp
 //      
-//      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
+// 		Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author: 
+// 			Tigran Piloyan <tigran.piloyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -36,9 +39,11 @@ public:
 		
 	LargeFileCopyTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
 	{
-		dirName = "results";
-		fileName = "largefile";
-		numOfCopies = 3; 
+		vector<string> arguments = ParseArguments(a);
+		
+		dirName = arguments[0];
+		fileName = arguments[1];
+		numOfCopies = arguments[2];
 	}
 		
 	~LargeFileCopyTest() {}
@@ -47,7 +52,7 @@ public:
 private:
 	string dirName;
 	string fileName;
-	unsigned int numOfCopies; 
+	string numOfCopies; 
 	Status LargeFileCopyFunc();
 	vector<string> CreateArguments();
 };

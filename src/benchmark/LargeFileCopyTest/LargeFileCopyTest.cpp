@@ -1,7 +1,10 @@
 /**
 //      LargeFileCopyTest.cpp
 //      
-//      Copyright 2011 Tigran Piloyan <tigran.piloyan@gmail.com>
+// 		Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author: 
+// 			Tigran Piloyan <tigran.piloyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -20,7 +23,6 @@
 */
 
 #include <stdlib.h>
-#include <sstream>
 #include <memory>
 #include "UnixCommand.hpp"
 #include "LargeFileCopyTest.hpp"
@@ -49,18 +51,16 @@ Status LargeFileCopyTest::LargeFileCopyFunc()
     std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     
-    return (Status)result->GetStatus();
+    return static_cast<Status>(result->GetStatus());
 }
 
 vector<string> LargeFileCopyTest::CreateArguments()
 {
-	std::stringstream ss;
-	ss << numOfCopies;
-	
 	vector<string> command;
+	
 	command.push_back(dirName);
 	command.push_back(fileName);
-	command.push_back(ss.str());
+	command.push_back(numOfCopies);
 	
 	return command;
 }
