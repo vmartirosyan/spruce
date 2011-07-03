@@ -33,6 +33,9 @@ enum RenameSyscalls
 	RenameEfaultError1,
 	RenameEfaultError2,
 	RenameEbusyError,
+	RenameEnametoolongError,
+	RenameEisdirError,
+	RenameEnotdirError,
 	proba
 };
 
@@ -52,6 +55,9 @@ public:
 	Status RenameEfaultError1Test();
 	Status RenameEfaultError2Test();
 	Status RenameEbusyErrorTest();
+	Status RenameEnametoolongErrorTest();
+	Status RenameEisdirErrorTest();
+	Status RenameEnotdirErrorTest();
 	Status probaTest();
 	
 protected:
