@@ -24,7 +24,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "File.hpp"
-#include "exception.hpp"
+#include "Directory.hpp"
 
 int RenameTest::Main(vector<string>)
 {
@@ -38,6 +38,12 @@ int RenameTest::Main(vector<string>)
 				return RenameEfaultError2Test();
 			case RenameEbusyError:
 				return RenameEbusyErrorTest();
+			case RenameEnametoolongError:
+				return RenameEnametoolongErrorTest();
+			case RenameEisdirError:
+				return RenameEisdirErrorTest();
+			case RenameEnotdirError:
+				return RenameEnotdirErrorTest();
 			case proba:
 				return probaTest();
 			default:
@@ -88,44 +94,104 @@ Status RenameTest::RenameEbusyErrorTest()
 	return Success;
 }
 
+// attempt to rename file with very long string
+Status RenameTest::RenameEnametoolongErrorTest()
+{
+	try
+	{
+		File file("name");
+		
+		char *newname = new char[1000];
+		if (newname == NULL)
+		{
+			cerr << "Unable to allocate memory for name of the name";
+			return Unres;
+		}
+		memset(newname, 'a', 1000);
+		
+		int status = rename("name", newname);
+		
+		if (errno != ENAMETOOLONG || status != -1)
+		{
+			cerr << strerror(errno);
+			delete newname;
+			return Fail;
+		}
+		
+		delete newname;
+	}
+	catch(Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	return Success;
+}
+
+// attempt to rename the filename with the name of existed directory
+Status RenameTest::RenameEisdirErrorTest()
+{
+	try
+	{
+		File file("nameas");
+		Directory dir("dir", 0777);
+		
+		int status = rename("nameas", "dir");
+		if (errno != EISDIR || status != -1)
+		{
+			cerr << strerror(errno);
+			return Fail;
+		}
+	}
+	catch(Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	return Success;
+}
+
+// attempt to rename directory with the name of existing filename
+Status RenameTest::RenameEnotdirErrorTest()
+{
+	try
+	{
+		File file("2");
+		Directory dir("1");
+		
+		errno = 0;
+		int status = rename("1", "2");				
+		if (errno != ENOTDIR || status != -1)
+		{
+			cerr << strerror(errno);
+			return Fail;
+		}
+	}
+	catch(Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	return Success;
+}
+
 Status RenameTest::probaTest()
 {
 	try
 	{
-		File ("name");
-		/*int status = creat("asasas", 0777);
-		if (status == -1)
-		{
-			cerr << "1";
-			cerr << strerror(errno);
-			return Unres;
-		}*/
-		
-		int status = mkdir("dir", 0777);
-		if (status == -1)
-		{
-			cerr << "mkdir2";
-			cerr << strerror(errno);
-			return Unres;
-		}
+		File file("2");
+		Directory dir("1");
 		
 		errno = 0;
-		status = rename("name", "dir/.");
-		status = creat("name/asasas", 0777);
-		if (status == -1)
-		{
-			cerr << "1";
-			cerr << strerror(errno);
-			return Unres;
-		}
-		cerr << errno << ' ';
+		int status = rename("1", "2");
 		
+		cerr << errno << ' ';
 		cerr << EINVAL << ' ';
 		cerr << EISDIR << ' ';
-		if (errno != EFAULT || status != -1)
+				
+		if (errno != EISDIR || status != -1)
 		{
 			cerr << strerror(errno);
-			//rmdir("dir");
 			return Fail;
 		}
 	}
