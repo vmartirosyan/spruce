@@ -49,10 +49,10 @@ public:
 		directory(randomName(6))
 	{
 		Status status = createDirWithFiles(directory, 3);
-		cerr << "status = " << status ;
+		//cerr << "status = " << status ;
 		if (status != Success)
 		{
-			cerr << "exception no no ";
+			//cerr << "exception no no ";
 			//throw Exception("Cannot create directory for testing, error = " +  
 				//static_cast<string>(strerror(errno)));
 		}

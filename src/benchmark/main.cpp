@@ -31,7 +31,7 @@ int main(int argc, char ** argv)
 	TestCollection tests2 = conf2.Read();
 	TestCollection tests3 = conf3.Read();
 	TestCollection tests4 = conf4.Read();
-	TestCollection tests5 = conf5.Read();	
+	TestCollection tests5 = conf5.Read();
 	TestCollection tests6 = conf6.Read();
 	TestCollection tests7 = conf7.Read();
 	TestCollection tests8 = conf8.Read();
