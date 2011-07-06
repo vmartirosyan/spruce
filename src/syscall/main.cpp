@@ -44,6 +44,7 @@ int main(int argc, char ** argv)
 	tests.Merge(tests9);
 
 	TestResultCollection res = tests.Run();
+	cout << res.ToXML() << endl;
 
 	/*tests.AddTest(new DupFileDescriptorTest(Normal, Dup));
 	tests.AddTest(new DupFileDescriptorTest(Normal, Dup));
