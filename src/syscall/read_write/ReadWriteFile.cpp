@@ -349,7 +349,7 @@ Status ReadWriteFileTest::WriteEagainErrorTest()
 // writes 'message' data to pipe, and reads from the other end of pipe the
 // same data
 Status ReadWriteFileTest::ReadWriteTest1()
-{		
+{
 	int pipefd[2];
 	int status = pipe(pipefd);
 	if (status == -1)
@@ -359,7 +359,7 @@ Status ReadWriteFileTest::ReadWriteTest1()
 		return Unres;
 	}
 	
-	string buf = "message";		
+	string buf = "message";
 	ssize_t st = write(pipefd[1], buf.c_str(), buf.size());
 	if (st == -1)
 	{

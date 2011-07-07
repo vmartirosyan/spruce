@@ -23,6 +23,7 @@
 #include <rename.hpp>
 #include <fcntl.h>
 #include <stdio.h>
+#include <fstream>
 #include "File.hpp"
 #include "Directory.hpp"
 
@@ -44,6 +45,10 @@ int RenameTest::Main(vector<string>)
 				return RenameEisdirErrorTest();
 			case RenameEnotdirError:
 				return RenameEnotdirErrorTest();
+			case RenameGeneral1:
+				return RenameGeneralTest1();
+			case RenameGeneral2:
+				return RenameGeneralTest2();
 			case proba:
 				return probaTest();
 			default:
@@ -175,23 +180,140 @@ Status RenameTest::RenameEnotdirErrorTest()
 	return Success;
 }
 
+// checks whether rename system call works correct
+// it should rename the file, and delete the file with the old name
+Status RenameTest::RenameGeneralTest1()
+{
+	try
+	{
+		File file("old");
+	
+		struct stat oldstat;
+		struct stat newstat;
+		int status = stat("old", &oldstat);
+		if (status < 0)
+		{
+			cerr << strerror(errno);
+			return Unres;
+		}		
+		
+		status = rename("old", "new");
+		status = stat("new", &newstat);
+		if (status < 0)
+		{
+			cerr << strerror(errno);
+			return Unres;
+		}
+				
+		ifstream ifile("old");
+		if (ifile)
+		{
+			cerr << "After renaming file, it exists";
+			return Fail;
+		}
+		
+		if (oldstat.st_dev != newstat.st_dev)
+		{
+			cerr << "After renaming the file, the file descriptors are different";
+			return Fail;
+		}
+	}
+	catch(Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	return Success;
+}
+
+Status RenameTest::RenameGeneralTest2()
+{
+		try
+	{
+		File file1("old");
+		File file2("new");
+		int status = open("new", O_RDWR);
+		if (status == -1)
+		{
+			cerr << strerror(errno);
+			return Unres;
+		}
+		
+		int fd1 = status;
+		string message = "message";
+		status = write(fd1, message.c_str(), 7);
+		if (status == -1)
+		{
+			cerr << strerror(errno);
+			return Unres;
+		}
+		close(fd1);
+				
+		int fd2 = open("new", O_RDWR);
+		char getText[100];
+		status = read(fd2, getText, 7);
+		close(fd2);
+		
+		status = rename("old", "new");
+		if (status == -1)
+		{
+			cerr << "renaming file causes error, no error expecting";
+			return Fail;
+		}
+		
+		if (strncmp(getText, message.c_str(), message.size()) != 0)
+		{
+			cerr << "Error occured while renaming the existing file to its name, no error expected";
+			return Fail;
+		}
+	}
+	catch(Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	
+	return Success;	
+}
+
 Status RenameTest::probaTest()
 {
 	try
 	{
-		File file("2");
-		Directory dir("1");
-		
-		errno = 0;
-		int status = rename("1", "2");
-		
-		cerr << errno << ' ';
-		cerr << EINVAL << ' ';
-		cerr << EISDIR << ' ';
-				
-		if (errno != EISDIR || status != -1)
+		File file1("old");
+		File file2("new");
+		int status = open("new", O_RDWR);
+		if (status == -1)
 		{
 			cerr << strerror(errno);
+			return Unres;
+		}
+		
+		int fd1 = status;
+		string message = "message";
+		status = write(fd1, message.c_str(), 7);
+		if (status == -1)
+		{
+			cerr << strerror(errno);
+			return Unres;
+		}
+		close(fd1);
+				
+		int fd2 = open("new", O_RDWR);
+		char getText[100];
+		status = read(fd2, getText, 7);
+		close(fd2);
+		
+		status = rename("old", "new");
+		if (status == -1)
+		{
+			cerr << "renaming file causes error, no error expecting";
+			return Fail;
+		}
+		
+		if (strncmp(getText, message.c_str(), message.size()) != 0)
+		{
+			cerr << "Error occured while renaming the existing file to its name, no error expected";
 			return Fail;
 		}
 	}
