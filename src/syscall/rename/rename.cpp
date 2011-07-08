@@ -49,6 +49,8 @@ int RenameTest::Main(vector<string>)
 				return RenameGeneralTest1();
 			case RenameGeneral2:
 				return RenameGeneralTest2();
+			case RenameHardLinks:
+				return RenameHardLinksTest();
 			case proba:
 				return probaTest();
 			default:
@@ -228,7 +230,7 @@ Status RenameTest::RenameGeneralTest1()
 
 Status RenameTest::RenameGeneralTest2()
 {
-		try
+	try
 	{
 		File file1("old");
 		File file2("new");
@@ -276,44 +278,64 @@ Status RenameTest::RenameGeneralTest2()
 	return Success;	
 }
 
+Status RenameTest::RenameHardLinksTest()
+{
+	try
+	{
+		File file1("old");
+		
+		int status = link("old", "new");
+		if (status < 0)
+		{
+			cerr << strerror(errno);
+			return Unres;
+		}
+		
+		struct stat fstat;
+		status = stat("new", &fstat);
+		if (status < 0)
+		{
+			cerr << strerror(errno);
+			return Unres;
+		}
+		
+		status = rename("old", "name");
+		if (status != 0)
+		{
+			cerr << "renaming one hard link to another of existing file "
+				 << "causes error, expecting no error";
+			return Fail;
+		}
+	}
+	catch(Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	return Success;
+}
+
 Status RenameTest::probaTest()
 {
 	try
 	{
 		File file1("old");
-		File file2("new");
-		int status = open("new", O_RDWR);
-		if (status == -1)
+		
+		link("old", "new");
+		
+		struct stat fstat;
+		int status = stat("new", &fstat);
+		if (status < 0)
 		{
 			cerr << strerror(errno);
 			return Unres;
 		}
 		
-		int fd1 = status;
-		string message = "message";
-		status = write(fd1, message.c_str(), 7);
-		if (status == -1)
+		status = rename("old", "name");
+		if (status != 0)
 		{
-			cerr << strerror(errno);
-			return Unres;
-		}
-		close(fd1);
-				
-		int fd2 = open("new", O_RDWR);
-		char getText[100];
-		status = read(fd2, getText, 7);
-		close(fd2);
-		
-		status = rename("old", "new");
-		if (status == -1)
-		{
-			cerr << "renaming file causes error, no error expecting";
-			return Fail;
-		}
-		
-		if (strncmp(getText, message.c_str(), message.size()) != 0)
-		{
-			cerr << "Error occured while renaming the existing file to its name, no error expected";
+			cerr << "renaming one hard link to another of existing file "
+				 << "causes error, expecting no error";
 			return Fail;
 		}
 	}

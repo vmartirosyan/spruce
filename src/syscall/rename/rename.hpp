@@ -38,6 +38,7 @@ enum RenameSyscalls
 	RenameEnotdirError,
 	RenameGeneral1,
 	RenameGeneral2,
+	RenameHardLinks,
 	proba
 };
 
@@ -62,6 +63,7 @@ public:
 	Status RenameEnotdirErrorTest();
 	Status RenameGeneralTest1();
 	Status RenameGeneralTest2();
+	Status RenameHardLinksTest();
 	Status probaTest();
 	
 protected:
