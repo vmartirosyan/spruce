@@ -51,6 +51,10 @@ int RenameTest::Main(vector<string>)
 				return RenameGeneralTest2();
 			case RenameHardLinks:
 				return RenameHardLinksTest();
+			case RenameSoftLinks1:
+				return RenameSoftLinksTest1();
+			case RenameSoftLinks2:
+				return RenameSoftLinksTest2();
 			case proba:
 				return probaTest();
 			default:
@@ -219,6 +223,8 @@ Status RenameTest::RenameGeneralTest1()
 			cerr << "After renaming the file, the file descriptors are different";
 			return Fail;
 		}
+		
+		unlink("new");
 	}
 	catch(Exception ex)
 	{
@@ -228,6 +234,8 @@ Status RenameTest::RenameGeneralTest1()
 	return Success;
 }
 
+// checks whether rename system call works correct
+// rename file to another existing file
 Status RenameTest::RenameGeneralTest2()
 {
 	try
@@ -278,6 +286,7 @@ Status RenameTest::RenameGeneralTest2()
 	return Success;	
 }
 
+// renaming hard links
 Status RenameTest::RenameHardLinksTest()
 {
 	try
@@ -315,27 +324,25 @@ Status RenameTest::RenameHardLinksTest()
 	return Success;
 }
 
-Status RenameTest::probaTest()
+// renaming soft link to new name
+Status RenameTest::RenameSoftLinksTest1()
 {
 	try
 	{
-		File file1("old");
+		File file("file123");
 		
-		link("old", "new");
-		
-		struct stat fstat;
-		int status = stat("new", &fstat);
-		if (status < 0)
+		int status = symlink("file123", "sym_file123");
+		if (status == -1)
 		{
-			cerr << strerror(errno);
+			cerr << "cannot symlink the file";
 			return Unres;
 		}
 		
-		status = rename("old", "name");
+		status = rename("sym_file123", "new123");
 		if (status != 0)
 		{
-			cerr << "renaming one hard link to another of existing file "
-				 << "causes error, expecting no error";
+			cerr << "renaming soft link causes error, no error expected";
+			unlink("file123");
 			return Fail;
 		}
 	}
@@ -344,5 +351,78 @@ Status RenameTest::probaTest()
 		cerr << ex.GetMessage();
 		return Unres;
 	}
+	
+	unlink("new123");
+	return Success;
+}
+
+// renaming soft link to another existing link name
+Status RenameTest::RenameSoftLinksTest2()
+{
+	try
+	{
+		File file1("file1");
+		File file2("file2");
+		
+		int status = symlink("file1", "sym_file1");
+		if (status == -1)
+		{
+			cerr << "cannot symlink the file";
+			return Unres;
+		}
+		
+		status = symlink("file2", "sym_file2");
+		if (status == -1)
+		{
+			cerr << "cannot symlink the file";
+			return Unres;
+		}
+		
+		status = rename("sym_file1", "sym_file2");
+		if (status != 0)
+		{
+			cerr << "renaming soft link causes error, no error expected";
+			return Fail;
+		}
+	}
+	catch(Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	
+	unlink("sym_file2");
+	return Success;
+}
+
+
+Status RenameTest::probaTest()
+{
+	/*try
+	{
+		File ("file123");
+		
+		int status = symlink("file123", "sym_file123");
+		if (status == -1)
+		{
+			cerr << "cannot symlink the file";
+			return Unres;
+		}
+		
+		status = rename("sym_file123", "new123");
+		if (status != 0)
+		{
+			cerr << "renaming soft link causes error, no error expected";
+			return Fail;
+		}
+		
+		cerr << errno;
+		cerr << strerror(errno);
+	}
+	catch(Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}*/
 	return Success;
 }
