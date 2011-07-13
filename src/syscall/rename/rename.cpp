@@ -55,6 +55,8 @@ int RenameTest::Main(vector<string>)
 				return RenameSoftLinksTest1();
 			case RenameSoftLinks2:
 				return RenameSoftLinksTest2();
+			case RenameEnotempty:
+				return RenameEnotemptyTest();
 			case proba:
 				return probaTest();
 			default:
@@ -201,7 +203,7 @@ Status RenameTest::RenameGeneralTest1()
 		{
 			cerr << strerror(errno);
 			return Unres;
-		}		
+		}
 		
 		status = rename("old", "new");
 		status = stat("new", &newstat);
@@ -315,6 +317,8 @@ Status RenameTest::RenameHardLinksTest()
 				 << "causes error, expecting no error";
 			return Fail;
 		}
+		
+		unlink("name");
 	}
 	catch(Exception ex)
 	{
@@ -395,34 +399,49 @@ Status RenameTest::RenameSoftLinksTest2()
 	return Success;
 }
 
-
-Status RenameTest::probaTest()
+// rename the directory to not empty directory
+Status RenameTest::RenameEnotemptyTest()
 {
-	/*try
+	try
 	{
-		File ("file123");
+		Directory dir1("dir1"), dir2("dir2");
 		
-		int status = symlink("file123", "sym_file123");
-		if (status == -1)
+		int status = chdir("dir2");
+		if (status != 0)
 		{
-			cerr << "cannot symlink the file";
+			cerr << "Cannot change the directory";
 			return Unres;
 		}
 		
-		status = rename("sym_file123", "new123");
+		status = open("new", O_CREAT);
+	
+		status = chdir("../");
 		if (status != 0)
 		{
-			cerr << "renaming soft link causes error, no error expected";
+			cerr << "Cannot change the directory";
+			return Unres;
+		}
+			
+		status = rename("dir1", "dir2");
+		if (!(status == -1 && (errno == EEXIST || errno == ENOTEMPTY)))
+		{
+			cerr << strerror(errno);
+			unlink("new");
 			return Fail;
 		}
 		
-		cerr << errno;
-		cerr << strerror(errno);
+		unlink("new");
 	}
 	catch(Exception ex)
 	{
 		cerr << ex.GetMessage();
 		return Unres;
-	}*/
+	}
+	return Success;
+}
+
+
+Status RenameTest::probaTest()
+{
 	return Success;
 }
