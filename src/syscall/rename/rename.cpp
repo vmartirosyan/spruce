@@ -24,6 +24,10 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <fstream>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <ftw.h>
 #include "File.hpp"
 #include "Directory.hpp"
 
@@ -57,6 +61,8 @@ int RenameTest::Main(vector<string>)
 				return RenameSoftLinksTest2();
 			case RenameEnotempty:
 				return RenameEnotemptyTest();
+			case RenameEinval:
+				return RenameEinvalTest();
 			case proba:
 				return probaTest();
 			default:
@@ -399,6 +405,81 @@ Status RenameTest::RenameSoftLinksTest2()
 	return Success;
 }
 
+int removeCallback(const char *name, const struct stat *status, int type)
+{
+	cerr << "file " << name << ' ';
+	remove(name);
+}
+
+struct linux_dirent {
+           long           d_ino;
+           off_t          d_off;
+           unsigned short d_reclen;
+           char           d_name[];
+       };
+
+Status removeDir(const char *dir) 
+{	
+	linux_dirent *d;
+	int fd = open(dir, O_RDONLY | O_DIRECTORY);
+	if (fd == -1)
+	{
+		cerr << strerror(errno);
+		return Unres;
+	}
+	
+	unsigned int count = 1024;
+	char buf[1024];
+	int nread;
+	char d_type;
+		
+	nread = syscall(SYS_getdents, fd, buf, count);
+	if (nread == -1)
+	{
+		cerr << strerror(errno);
+		return Unres;
+	}
+	
+	for (int bpos = 0; bpos < nread;) 
+	{
+		d = (struct linux_dirent *) (buf + bpos);
+		//cerr << d->d_ino << ' ';
+		d_type = *(buf + bpos + d->d_reclen - 1);
+		
+		switch(d_type)
+		{
+			case DT_REG:
+				//cerr << "regular";
+				break;
+			case DT_DIR:
+				//cerr << "directory";
+				break;
+			case DT_FIFO:
+				//cerr << "FIFO";
+				break;
+			case DT_SOCK:
+				//cerr << "socket";
+				break;
+			case DT_LNK:
+				//cerr << "symlink";
+				break;
+			case DT_BLK:
+				//cerr << "block dev";
+				break;
+			case DT_CHR:
+				//cerr << "char dev";
+				break;
+		}
+		
+		cerr << (char *) d->d_name << ' ';
+		//int s = unlink((char *) d->d_name);
+		//cerr << s << ' ' << strerror(errno) << ' ';
+		bpos += d->d_reclen;
+	}
+	
+	return Success;
+}
+
 // rename the directory to not empty directory
 Status RenameTest::RenameEnotemptyTest()
 {
@@ -410,6 +491,7 @@ Status RenameTest::RenameEnotemptyTest()
 		if (status != 0)
 		{
 			cerr << "Cannot change the directory";
+			cerr << strerror(errno);
 			return Unres;
 		}
 		
@@ -431,6 +513,10 @@ Status RenameTest::RenameEnotemptyTest()
 		}
 		
 		unlink("new");
+		//ftw("dir2", removeCallback, 10);
+		
+		removeDir("dir2");
+		unlink("dir2");
 	}
 	catch(Exception ex)
 	{
@@ -440,8 +526,76 @@ Status RenameTest::RenameEnotemptyTest()
 	return Success;
 }
 
+// attempt to rename the directory to the name of its subdirectory
+Status RenameTest::RenameEinvalTest()
+{
+	try
+	{
+		Directory dir1("dir1");
+		
+		int status = chdir("dir1");
+		if (status != 0)
+		{
+			cerr << "Cannot change the directory";
+			cerr << strerror(errno);
+			return Unres;
+		}
+		
+		Directory dir2("dir2");
+	
+		status = chdir("../");
+		if (status != 0)
+		{
+			cerr << "Cannot change the directory";
+			return Unres;
+		}
+			
+		status = rename("dir1", "dir1/dir2");	
+		if (errno != EINVAL || status != -1)
+		{
+			cerr << strerror(errno);
+			return Fail;
+		}
+	}
+	catch(Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	return Success;
+}
 
 Status RenameTest::probaTest()
 {
+/*	try
+	{
+		Directory dir1("dir1");
+		
+		int status = chdir("dir1");
+		if (status != 0)
+		{
+			cerr << "Cannot change the directory";
+			cerr << strerror(errno);
+			return Unres;
+		}
+		
+		Directory dir2("dir2");
+	
+		status = chdir("../");
+		if (status != 0)
+		{
+			cerr << "Cannot change the directory";
+			return Unres;
+		}
+			
+		status = rename("dir1", "dir1/dir2");
+		cerr << errno << ' ' << strerror(errno) << ' ' << EINVAL;
+	
+	}
+	catch(Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}*/
 	return Success;
 }
