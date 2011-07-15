@@ -42,6 +42,7 @@ enum RenameSyscalls
 	RenameSoftLinks1,
 	RenameSoftLinks2,
 	RenameEnotempty,
+	RenameEinval,
 	proba
 };
 
@@ -70,6 +71,7 @@ public:
 	Status RenameSoftLinksTest1();
 	Status RenameSoftLinksTest2();
 	Status RenameEnotemptyTest();
+	Status RenameEinvalTest();
 	Status probaTest();
 	
 protected:
