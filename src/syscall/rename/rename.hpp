@@ -32,6 +32,7 @@ enum RenameSyscalls
 {
 	RenameEfaultError1,
 	RenameEfaultError2,
+	RenameEfaultError3,
 	RenameEbusyError,
 	RenameEnametoolongError,
 	RenameEisdirError,
@@ -61,6 +62,7 @@ public:
 	
 	Status RenameEfaultError1Test();
 	Status RenameEfaultError2Test();
+	Status RenameEfaultError3Test();
 	Status RenameEbusyErrorTest();
 	Status RenameEnametoolongErrorTest();
 	Status RenameEisdirErrorTest();

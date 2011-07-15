@@ -41,6 +41,8 @@ int RenameTest::Main(vector<string>)
 				return RenameEfaultError1Test();
 			case RenameEfaultError2:
 				return RenameEfaultError2Test();
+			case RenameEfaultError3:
+				return RenameEfaultError3Test();
 			case RenameEbusyError:
 				return RenameEbusyErrorTest();
 			case RenameEnametoolongError:
@@ -77,7 +79,7 @@ int RenameTest::Main(vector<string>)
 // attempt to rename with -1 name
 Status RenameTest::RenameEfaultError1Test()
 {
-	int status = rename("oldname", (char *)-1);
+	int status = rename("oldname", reinterpret_cast<char *>(-1));
 	if (errno != EFAULT || status != -1)
 	{
 		cerr << strerror(errno);
@@ -90,7 +92,20 @@ Status RenameTest::RenameEfaultError1Test()
 // attempt -1 to rename
 Status RenameTest::RenameEfaultError2Test()
 {
-	int status = rename((char *)-1, "newname");
+	int status = rename(reinterpret_cast<char *>(-1), "newname");
+	if (errno != EFAULT || status != -1)
+	{
+		cerr << strerror(errno);
+		return Fail;
+	}
+
+	return Success;
+}
+
+// attempt to rename NULL to NULL
+Status RenameTest::RenameEfaultError3Test()
+{
+	int status = rename(NULL, NULL);
 	if (errno != EFAULT || status != -1)
 	{
 		cerr << strerror(errno);
@@ -566,7 +581,7 @@ Status RenameTest::RenameEinvalTest()
 }
 
 Status RenameTest::probaTest()
-{
+{	
 /*	try
 	{
 		Directory dir1("dir1");
