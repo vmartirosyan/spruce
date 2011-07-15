@@ -76,6 +76,9 @@ public:
 	Status RenameEinvalTest();
 	Status probaTest();
 	
+private:
+	void DeleteDirectory(string path);
+	
 protected:
 	virtual int Main(vector<string> args);
 	
