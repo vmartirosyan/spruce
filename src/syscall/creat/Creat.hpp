@@ -29,7 +29,8 @@
 enum CreatSyscalls
 {
 	CreatTestTooLongPath,
-	CreatTestFileExist
+	CreatTestFileExist,
+	CreatTextMaximumProcessFiles
 };
 
 class CreatTest : public SyscallTest
@@ -41,7 +42,8 @@ public:
 	}
 	virtual ~CreatTest() {}	
 	Status CreatTooLongPath();	
-	Status CreatFileExist();	
+	Status CreatFileExist();
+	Status CreatMaximumProcessFilesOpen();	
 protected:
 	virtual int Main(vector<string> args);	
 };
