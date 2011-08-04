@@ -35,6 +35,9 @@ int CreatTest::Main(vector<string>)
 				return CreatTooLongPath();
 			case CreatTestFileExist:
 				return CreatFileExist();
+			case CreatTextMaximumProcessFiles:
+				return CreatMaximumProcessFilesOpen();
+
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -87,7 +90,7 @@ Status CreatTest::CreatFileExist()
 		
 		if(ret_val==0)
 		{
-			cerr << "Creat returned 0 ,then path is already exist.";
+			cerr << "Creat returned 0 when path is already exist.";
 			return Fail;
 		}
 		else
@@ -95,7 +98,7 @@ Status CreatTest::CreatFileExist()
 			if(errno!=EEXIST)
 			{
 				
-				cerr << "Incorrect error set in errno ,then new path is already exist. "<<strerror(errno);
+				cerr << "Incorrect error set in errno when new path is already exist. "<<strerror(errno);
 				return Fail;
 			}
 		}
@@ -106,8 +109,7 @@ Status CreatTest::CreatFileExist()
 	{
 		cerr << ex.GetMessage();
 		return Fail;
-	}
-	
+	}	
 	
 }
 
