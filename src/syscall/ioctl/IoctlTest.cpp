@@ -1,17 +1,20 @@
-//      ioctl.cpp
-//
-//      Copyright 2011 Suren Grigoryan <suren.grigoryan@gmail.com>
-//
-//      This program is free software; you can redistrisbute it and/or modify
+//      IoctlTest.cpp
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Suren Grigoryan <suren.grigoryan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
 //      the Free Software Foundation; either version 2 of the License, or
 //      (at your option) any later version.
-//
+//      
 //      This program is distributed in the hope that it will be useful,
 //      but WITHOUT ANY WARRANTY; without even the implied warranty of
 //      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //      GNU General Public License for more details.
-//
+//      
 //      You should have received a copy of the GNU General Public License
 //      along with this program; if not, write to the Free Software
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -86,6 +89,26 @@ int IoctlTest::Main(vector<string> args)
             case IOCTL_FS_UNRM_FL:
                 return SetGetFlags(FS_UNRM_FL);
                 
+                
+            case IOCTL_FIGETBSZ:
+                return SetGetFlags(FIGETBSZ);
+            //case IOCTL_FS_IOC_FIEMAP:
+            //return SetGetFlags(FS_IOC_FIEMAP);
+            case IOCTL_FIOQSIZE:
+                return SetGetFlags(FIOQSIZE);
+            case IOCTL_FITHAW:
+                return SetGetFlags(FITHAW);
+            case IOCTL_FIFREEZE:
+                return SetGetFlags(FIFREEZE);
+            case IOCTL_FIOASYNC:
+                return SetGetFlags(FIOASYNC);
+            case IOCTL_FIONBIO:
+                return SetGetFlags(FIONBIO);
+            case IOCTL_FIONCLEX:
+                return SetGetFlags(FIONCLEX);
+            case IOCTL_FIOCLEX:
+                return SetGetFlags(FIOCLEX);
+    
             case IOCTL_INVALID_FD:
                 return InvalidFD();
             case IOCTL_INVALID_ARGP:
