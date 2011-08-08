@@ -17,10 +17,7 @@ class StatTest : public SyscallTest
             SyscallTest(mode, operation, arguments, "stat") {}
 		virtual ~StatTest() {}
         Status NormExec();
-        /*
-        Status SetGetFlags(int i);
-        Status InvalidFD();
-        Status InvalidArgp();*/
+     
 	protected:
 		virtual int Main(vector<string> args);
 };

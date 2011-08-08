@@ -77,5 +77,12 @@ Status StatTest::NormExec ()
         return Fail;
     }
     
+    if (stat_buf.st_gid != file.GetGID()) {
+        cerr << "stat filled stat_buf with wrong st_gid value";
+        return Fail;
+    }
+    
+    return Success;
+    
     
 }
