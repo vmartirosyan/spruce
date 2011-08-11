@@ -10,6 +10,7 @@
 #include "rename.hpp"
 #include "Creat.hpp"
 #include <config.hpp>
+#include <Unlink.hpp>
 
 int main(int argc, char ** argv)
 {
@@ -24,6 +25,8 @@ int main(int argc, char ** argv)
 	Configuration<GetDentsTest> conf8("${CMAKE_INSTALL_PREFIX}/config/getdents.conf");
 	Configuration<RenameTest> conf9("${CMAKE_INSTALL_PREFIX}/config/rename.conf");
 	Configuration<CreatTest> conf10("${CMAKE_INSTALL_PREFIX}/config/creat.conf");
+	Configuration<UnlinkTest> conf11("${CMAKE_INSTALL_PREFIX}/config/unlink.conf");
+	
 
 	TestCollection tests1 = conf1.Read();
 	TestCollection tests2 = conf2.Read();
@@ -35,6 +38,7 @@ int main(int argc, char ** argv)
 	TestCollection tests8 = conf8.Read();
 	TestCollection tests9 = conf9.Read();
 	TestCollection tests10 = conf10.Read();
+	TestCollection tests11 = conf11.Read();
 	
 	
 
@@ -48,6 +52,7 @@ int main(int argc, char ** argv)
 	tests.Merge(tests8);
 	tests.Merge(tests9);
 	tests.Merge(tests10);
+	tests.Merge(tests11);
 
 	TestResultCollection res = tests.Run();
 	cout << res.ToXML() << endl;
