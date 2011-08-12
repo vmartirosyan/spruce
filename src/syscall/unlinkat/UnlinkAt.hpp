@@ -1,4 +1,4 @@
-//      Unlink.hpp
+//      UnlinkAt.hpp
 //      
 // 		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -20,41 +20,35 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#ifndef UNLINK_Hkk
-#define UNLINK_Hkk
+#ifndef UNLINKAT_Hkk
+#define UNLINKAT_Hkk
 
 #include "SyscallTest.hpp"
 
 // Operations
-enum UnlinkSyscalls
+enum UnlinkAtSyscalls
 {
-	UnlinkTestTooLongPath,
-	UnlinkTestNormalFile,
-	UnlinkTestIsNotDirectory,
-	UnlinkTestNoSuchFile,
-	UnlinkIsDirectory,
-	UnlinkTestEmptyPath,
-	UnlinkTestNegativeAdress,
-	UnlinkTestPermissionDenied
+	UnlinkAtTestBadFileDescriptor1,
+	UnlinkAtTestBadFileDescriptor2,
+	UnlinkAtTestBadFlagValue,
+	UnlinkAtTestIsNotDirectory
 };
 
-class UnlinkTest : public SyscallTest
+class UnlinkAtTest : public SyscallTest
 {			
 public:	
-	UnlinkTest(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "Unlink")
+	UnlinkAtTest(Mode mode, int operation, string arguments = "") :
+		SyscallTest(mode, operation, arguments, "UnlinkAt")
 	{			
 	}
+	virtual ~UnlinkAtTest() {}	
+	Status UnlinkAtTestBadFileDescriptor1Function();	
+	Status UnlinkAtTestBadFileDescriptor2Function();	
+	Status UnlinkAtTestBadFlagValueFunction();
+	Status UnlinkAtTestIsNotDirectoryFunction();
+	
+
 protected:
-	virtual ~UnlinkTest() {}	
-	Status UnlinkTestTooLongPathFunction();	
-	Status UnlinkTestNormalFileFunction();
-	Status UnlinkTestIsNotDirectoryFunction();
-	Status UnlinkTestNoSuchFileFunction();
-	Status UnlinkIsDirectoryFunction();
-	Status UnlinkTestEmptyPathFunction();
-	Status UnlinkTestNegativeAdressFunction();
-	Status UnlinkTestPermissionDeniedFunction();
 	virtual int Main(vector<string> args);	
 };
 #endif
