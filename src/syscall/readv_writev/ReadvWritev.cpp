@@ -145,7 +145,7 @@ Status ReadvWritev::ReadvWritevBasicFunc1()
 		return Fail;
 	}
 	
-	if (strncmp(readBuf2, writeBuf2.c_str(), writeBuf2.size()) == 0)
+	if (strncmp(readBuf2, writeBuf2.c_str(), writeBuf2.size()) != 0)
 	{
 		cerr << "The data read from the second bufer should be " 
 			 << writeBuf2 << ", but it is " << readBuf2;
