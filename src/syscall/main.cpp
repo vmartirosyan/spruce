@@ -11,7 +11,7 @@
 #include "Creat.hpp"
 #include <config.hpp>
 #include <Unlink.hpp>
-
+#include <UnlinkAt.hpp>
 int main(int argc, char ** argv)
 {
 	TestCollection tests;
@@ -26,6 +26,7 @@ int main(int argc, char ** argv)
 	Configuration<RenameTest> conf9("${CMAKE_INSTALL_PREFIX}/config/rename.conf");
 	Configuration<CreatTest> conf10("${CMAKE_INSTALL_PREFIX}/config/creat.conf");
 	Configuration<UnlinkTest> conf11("${CMAKE_INSTALL_PREFIX}/config/unlink.conf");
+	Configuration<UnlinkAtTest> conf12("${CMAKE_INSTALL_PREFIX}/config/unlinkat.conf");
 	
 
 	TestCollection tests1 = conf1.Read();
@@ -39,6 +40,7 @@ int main(int argc, char ** argv)
 	TestCollection tests9 = conf9.Read();
 	TestCollection tests10 = conf10.Read();
 	TestCollection tests11 = conf11.Read();
+	TestCollection tests12 = conf12.Read();
 	
 	
 
@@ -53,6 +55,7 @@ int main(int argc, char ** argv)
 	tests.Merge(tests9);
 	tests.Merge(tests10);
 	tests.Merge(tests11);
+	tests.Merge(tests12);
 
 	TestResultCollection res = tests.Run();
 	cout << res.ToXML() << endl;

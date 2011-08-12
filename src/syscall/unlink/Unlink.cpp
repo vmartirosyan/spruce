@@ -56,7 +56,7 @@ int UnlinkTest::Main(vector<string>)
 			case UnlinkTestNegativeAdress:
 				 return UnlinkTestNegativeAdressFunction();
 			case UnlinkTestPermissionDenied:
-				 return UnlinkTestPermissionDeniedFunction();
+				 return UnlinkTestPermissionDeniedFunction(); 
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -277,3 +277,4 @@ Status UnlinkTest::UnlinkTestPermissionDeniedFunction()
 	return Success;
 	
 }
+
