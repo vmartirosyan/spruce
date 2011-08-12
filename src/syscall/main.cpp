@@ -8,10 +8,9 @@
 #include "getdents.hpp"
 #include "IoctlTest.hpp"
 #include "rename.hpp"
-#include "Creat.hpp"
+#include "ReadvWritev.hpp"
 #include <config.hpp>
-#include <Unlink.hpp>
-#include <UnlinkAt.hpp>
+
 int main(int argc, char ** argv)
 {
 	TestCollection tests;
@@ -24,10 +23,7 @@ int main(int argc, char ** argv)
 	Configuration<IoctlTest> conf7("${CMAKE_INSTALL_PREFIX}/config/ioctl.conf");
 	Configuration<GetDentsTest> conf8("${CMAKE_INSTALL_PREFIX}/config/getdents.conf");
 	Configuration<RenameTest> conf9("${CMAKE_INSTALL_PREFIX}/config/rename.conf");
-	Configuration<CreatTest> conf10("${CMAKE_INSTALL_PREFIX}/config/creat.conf");
-	Configuration<UnlinkTest> conf11("${CMAKE_INSTALL_PREFIX}/config/unlink.conf");
-	Configuration<UnlinkAtTest> conf12("${CMAKE_INSTALL_PREFIX}/config/unlinkat.conf");
-	
+	Configuration<ReadvWritev> conf10("${CMAKE_INSTALL_PREFIX}config/readv_writev.conf");
 
 	TestCollection tests1 = conf1.Read();
 	TestCollection tests2 = conf2.Read();
@@ -39,10 +35,6 @@ int main(int argc, char ** argv)
 	TestCollection tests8 = conf8.Read();
 	TestCollection tests9 = conf9.Read();
 	TestCollection tests10 = conf10.Read();
-	TestCollection tests11 = conf11.Read();
-	TestCollection tests12 = conf12.Read();
-	
-	
 
 	tests.Merge(tests1);
 	tests.Merge(tests2);
@@ -54,8 +46,6 @@ int main(int argc, char ** argv)
 	tests.Merge(tests8);
 	tests.Merge(tests9);
 	tests.Merge(tests10);
-	tests.Merge(tests11);
-	tests.Merge(tests12);
 
 	TestResultCollection res = tests.Run();
 	cout << res.ToXML() << endl;

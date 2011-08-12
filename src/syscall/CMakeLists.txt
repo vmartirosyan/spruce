@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-MESSAGE("Configuring project benchmark BINARYs")
+MESSAGE("Configuring project syscall BINARYs")
 PROJECT (Spruce)
 
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/include)
@@ -33,15 +33,8 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/getdents)
 ADD_SUBDIRECTORY(rename)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/rename)
 
-ADD_SUBDIRECTORY(creat)
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/creat)
-
-ADD_SUBDIRECTORY(unlink)
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/unlink)
-
-ADD_SUBDIRECTORY(unlinkat)
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/unlinkat)
-
+ADD_SUBDIRECTORY(readv_writev)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/readv_writev)
 
 ADD_EXECUTABLE(syscall ${CMAKE_CURRENT_BINARY_DIR}/main.cpp)
 TARGET_LINK_LIBRARIES(syscall utils)
@@ -55,10 +48,7 @@ TARGET_LINK_LIBRARIES(syscall rt)
 TARGET_LINK_LIBRARIES(syscall ioctl)
 TARGET_LINK_LIBRARIES(syscall getdents)
 TARGET_LINK_LIBRARIES(syscall rename)
-TARGET_LINK_LIBRARIES(syscall creat)
-TARGET_LINK_LIBRARIES(syscall unlink)
-TARGET_LINK_LIBRARIES(syscall unlinkat)
-
+TARGET_LINK_LIBRARIES(syscall readv_writev)
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${CMAKE_CURRENT_BINARY_DIR}/main.cpp)
 

@@ -40,7 +40,7 @@ using std::string;
 class File
 {	
 	public:
-		File(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR)) : 
+		explicit File(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR)) : 
 		_pathname(pathname),
 		_mode(mode)
 		{
