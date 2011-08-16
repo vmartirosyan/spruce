@@ -46,6 +46,11 @@ int UnlinkAtTest::Main(vector<string>)
 				return UnlinkAtTestBadFileDescriptor1Function();
 		    case  UnlinkAtTestBadFileDescriptor2:
 		        return  UnlinkAtTestBadFileDescriptor2Function();
+		     case UnlinkAtTestNormalUnlink:
+				return UnlinkAtTestNormalUnlinkFunction();
+			case  UnlinkAtTestNormalRemove:
+				return UnlinkAtTestNormalRemoveFunction();
+				
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -201,6 +206,108 @@ Status UnlinkAtTest:: UnlinkAtTestBadFileDescriptor2Function()
 		cerr << "Error: unable to remove directory "<< strerror(errno);
 		return Fail;
 	}
+	
+	return Success;
+	
+}
+
+Status UnlinkAtTest:: UnlinkAtTestNormalUnlinkFunction(  )
+{
+
+	int dirfd_, ret_unlinkat;
+	string path = "unlinkat_file1.txt";
+	string dir = "unlinkat_dir1";
+	string abs_path = dir+"/"+path;
+	
+	//setting up
+	if ( mkdir( dir.c_str() , 0777 ) == -1 )
+	{
+		cerr << "Error: unable to make directory "<< strerror(errno);
+		return Unres;
+	}
+	dirfd_ = open ( dir.c_str(), O_DIRECTORY );
+	if ( dirfd_ < 0 )
+	{
+		cerr << "Error: unable to open directory "<< strerror(errno);
+		return Unres;
+	}
+    if ( creat( abs_path.c_str(), 0777 ) == -1 )
+    {
+		cerr << "Error: unable to creat file "<<strerror(errno);
+		return Unres;
+	}
+	
+    ret_unlinkat = unlinkat( dirfd_, path.c_str(), 0 );
+    if ( ret_unlinkat !=0 )
+    {
+		cerr << "Error: in case of Success "<<strerror(errno);
+		return Fail;
+	}
+	
+	//checking 
+	if ( open ( abs_path.c_str(), O_RDWR ) != -1 )
+	{
+		cerr << "Error: opened unlinked file "<<endl;
+		return Fail;
+	}
+	
+	//cleaning up
+    if ( rmdir ( dir.c_str() ) == -1 )
+    {
+		cerr << "Error: unable to remove directory "<<strerror(errno);
+		return Fail;
+	}
+
+	return Success;
+
+}
+
+Status UnlinkAtTest::UnlinkAtTestNormalRemoveFunction()
+{
+	int dirfd_, ret_unlinkat;
+	string dirname = "unlinkat_dir1";
+	string subdirname = "unlinkat_subdir1";
+	string abs_path = dirname + "/" + subdirname;
+	
+	//setting up
+	if ( mkdir( dirname.c_str(), 0777 ) == -1 )
+	{
+		cerr << "Error: unable to make directory "<< strerror(errno);
+		return Unres;
+	}
+	 dirfd_ = open( dirname.c_str(), O_DIRECTORY );
+	 if ( dirfd_ < 0 )
+	 {
+		 cerr << "Error: unable to open directory "<< strerror(errno);
+		 return Unres;
+	 }
+	if ( mkdir( abs_path.c_str(), 0777 ) == -1)
+	{
+		cerr << "Error: unable to make directory "<<strerror(errno);
+		return Unres;
+	}
+	
+	ret_unlinkat = unlinkat( dirfd_, subdirname.c_str(), AT_REMOVEDIR );
+	if ( ret_unlinkat == -1 )
+	{
+		cerr << "Error: in case of Success "<<strerror(errno);
+		return Fail;
+	}
+	
+	//checking 
+	if ( open ( abs_path.c_str(), O_DIRECTORY ) != -1 )
+	{
+		cerr << "Error: opened removed directory "<<strerror(errno);
+		return Fail;
+	}
+	
+	//cleaning up
+	if ( rmdir( dirname.c_str() ) == -1 )
+	{
+		cerr << "Error: unable to remove directory "<<strerror(errno);
+		return Fail;
+	}
+	
 	
 	return Success;
 	
