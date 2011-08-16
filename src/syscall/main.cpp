@@ -11,6 +11,7 @@
 #include "ReadvWritev.hpp"
 #include "Unlink.hpp"
 #include "UnlinkAt.hpp"
+#include "StatTest.hpp"
 #include <config.hpp>
 
 int main(int argc, char ** argv)
@@ -28,7 +29,7 @@ int main(int argc, char ** argv)
 	Configuration<ReadvWritev> conf10("${CMAKE_INSTALL_PREFIX}config/readv_writev.conf");
 	Configuration<UnlinkTest> conf11("${CMAKE_INSTALL_PREFIX}/config/unlink.conf");
     Configuration<UnlinkAtTest> conf12("${CMAKE_INSTALL_PREFIX}/config/unlinkat.conf");
-
+    Configuration<StatTest> statConf("${CMAKE_INSTALL_PREFIX}/config/stat.conf");
 
 	TestCollection tests1 = conf1.Read();
 	TestCollection tests2 = conf2.Read();
@@ -42,6 +43,7 @@ int main(int argc, char ** argv)
 	TestCollection tests10 = conf10.Read();
 	TestCollection tests11 = conf11.Read();
 	TestCollection tests12 = conf12.Read();
+    TestCollection statTests = statConf.Read();
 
 	tests.Merge(tests1);
 	tests.Merge(tests2);
@@ -55,6 +57,7 @@ int main(int argc, char ** argv)
 	tests.Merge(tests10);
 	tests.Merge(tests11);
 	tests.Merge(tests12);
+    tests.Merge(statTests);
 
 	TestResultCollection res = tests.Run();
 	cout << res.ToXML() << endl;
