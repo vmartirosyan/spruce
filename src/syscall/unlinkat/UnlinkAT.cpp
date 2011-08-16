@@ -387,13 +387,13 @@ Status UnlinkAtTest:: UnlinkAtTestRemove2Function ()
 	 ret_unlinkat = unlinkat( dirfd, subdir.c_str(), AT_REMOVEDIR );
 	 if ( ret_unlinkat != -1 )
 	 {
-		 cerr << "unlinkat returs 0 in case of path contains '.' as last component ";
+		 cerr << "unlinkat returs 0 in case of path contains '..' as last component ";
 		 return Fail;
 	 }
 	 if ( errno != ENOTEMPTY )
 	 {
 		 cerr << "Incorrect error set in errno in case of path contains"
-		          " '.' as last component "<< strerror(errno);
+		          " '..' as last component "<< strerror(errno);
 		 return Fail;
 	 }
 	 
