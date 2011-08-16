@@ -31,9 +31,11 @@ enum UnlinkAtSyscalls
 	UnlinkAtTestBadFileDescriptor1,
 	UnlinkAtTestBadFileDescriptor2,
 	UnlinkAtTestBadFlagValue,
-	UnlinkAtTestIsNotDirectory
-	UnlinkAtTestNormalRemove
-	UnlinkAtTestNormalUnlink
+	UnlinkAtTestIsNotDirectory,
+	UnlinkAtTestNormalRemove,
+	UnlinkAtTestNormalUnlink,
+	UnlinkAtTestRemove1,
+	UnlinkAtTestRemove2
 };
 
 class UnlinkAtTest : public SyscallTest
@@ -50,6 +52,8 @@ public:
 	Status UnlinkAtTestIsNotDirectoryFunction();
 	Status UnlinkAtTestNormalUnlinkFunction();
 	Status UnlinkAtTestNormalRemoveFunction();
+	Status UnlinkAtTestRemove1Function();
+	Status UnlinkAtTestRemove2Function();
 	
 
 protected:

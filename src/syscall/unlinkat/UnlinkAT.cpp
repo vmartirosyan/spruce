@@ -50,7 +50,10 @@ int UnlinkAtTest::Main(vector<string>)
 				return UnlinkAtTestNormalUnlinkFunction();
 			case  UnlinkAtTestNormalRemove:
 				return UnlinkAtTestNormalRemoveFunction();
-				
+			case UnlinkAtTestRemove1:
+				return UnlinkAtTestRemove1Function();
+			case UnlinkAtTestRemove2:
+				return UnlinkAtTestRemove2Function();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -311,4 +314,96 @@ Status UnlinkAtTest::UnlinkAtTestNormalRemoveFunction()
 	
 	return Success;
 	
+}
+
+//EINVAL 
+// setting _flags to AT_REMOVEDIR and '.' as last component of the path
+Status UnlinkAtTest::UnlinkAtTestRemove1Function()
+{
+	int dirfd , ret_unlinkat;
+	string dir = "unlinkat_rm_dir0";
+	string subdir = ".";
+	string abs_path = dir + "/" + subdir;
+	
+	//setting up
+	if ( mkdir( dir.c_str(), 0777 ) == -1 )
+	{
+		cerr << "Error: unable to make directory "<<strerror(errno);
+		return Unres;
+	}
+	 dirfd = open( dir.c_str(), O_DIRECTORY );
+	 if ( dirfd < 0 )
+	 {
+		 cerr << "Error: unable to open directory "<<strerror(errno);
+		 return Unres;
+	 } 
+	 
+	 ret_unlinkat = unlinkat( dirfd, subdir.c_str(), AT_REMOVEDIR );
+	 if ( ret_unlinkat != -1 )
+	 {
+		 cerr << "unlinkat returs 0 in case of path contains '.' as last component ";
+		 return Fail;
+	 }
+	 if ( errno != EINVAL )
+	 {
+		 cerr << "Incorrect error set in errno in case of path contains"
+		          " '.' as last component "<< strerror(errno);
+		 return Fail;
+	 }
+	 
+	 
+	 //cleaning up
+	 if ( rmdir( dir.c_str() ) == -1 )
+	 {
+		 cerr << "Error : unable to remove directory ";
+		 return Fail;
+	 }
+	 
+	 return Success;
+}
+	
+//ENOTEMPTY
+//setting _flags to AT_REMOVEDIR and '..' as last component of file path
+Status UnlinkAtTest:: UnlinkAtTestRemove2Function ()	
+{
+    int dirfd , ret_unlinkat;
+	string dir = "unlinkat_rm_dir0";
+	string subdir = "..";
+	string abs_path = dir + "/" + subdir;
+	
+	//setting up
+	if ( mkdir( dir.c_str(), 0777 ) == -1 )
+	{
+		cerr << "Error: unable to make directory "<<strerror(errno);
+		return Unres;
+	}
+	 dirfd = open( dir.c_str(), O_DIRECTORY );
+	 if ( dirfd < 0 )
+	 {
+		 cerr << "Error: unable to open directory "<<strerror(errno);
+		 return Unres;
+	 } 
+	 
+	 ret_unlinkat = unlinkat( dirfd, subdir.c_str(), AT_REMOVEDIR );
+	 if ( ret_unlinkat != -1 )
+	 {
+		 cerr << "unlinkat returs 0 in case of path contains '.' as last component ";
+		 return Fail;
+	 }
+	 if ( errno != ENOTEMPTY )
+	 {
+		 cerr << "Incorrect error set in errno in case of path contains"
+		          " '.' as last component "<< strerror(errno);
+		 return Fail;
+	 }
+	 
+	 //cleaning up
+	 if ( rmdir( dir.c_str() ) == -1 )
+	 {
+		 cerr << "Error : unable to remove directory ";
+		 return Fail;
+	 }
+	 
+	  
+	  return Success;
 }
