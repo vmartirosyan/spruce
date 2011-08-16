@@ -38,6 +38,8 @@ enum StatSyscalls
 {
     STAT_NORM_EXEC,
     StatErrNoAccess,
+    StatErrNameTooLong,
+    StatErrNotDir,
  
 };
 
