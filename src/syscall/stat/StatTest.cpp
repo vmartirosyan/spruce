@@ -47,6 +47,10 @@ int StatTest::Main(vector<string> args)
                 return NormExec();
             case StatErrNoAccess:
                 return ErrNoAccess();
+            case StatErrNameTooLong:
+                return ErrNameTooLong();
+            case StatErrNotDir:
+                return ErrNotDir();
 
             default:
 				cerr << "Unsupported operation.";
@@ -98,7 +102,7 @@ Status StatTest::ErrNoAccess ()
    
     mkdir (dirPath.c_str(), FILE_MODE);
    
-    StatFile * file  = new StatFile(filePath);
+    StatFile file (filePath);
    
     if (0 != chmod (filePath.c_str(), FILE_MODE)) {
         cerr<<"Can not chmod file";
@@ -140,12 +144,54 @@ Status StatTest::ErrNoAccess ()
 // component is longer than {NAME_MAX}.
 Status StatTest::ErrNameTooLong ()
 {
+    struct stat stat_buf;
+    char tooLongPath[PATH_MAX + 1];
+    
+    for(int i = 0; i <= PATH_MAX; i++)
+        tooLongPath[i] = 'a';    
+    
+    int ret = stat (tooLongPath, &stat_buf);
+    if (ret != -1) {
+        cerr<<"stat must return -1 when length of the path argument exceeds "
+            "{PATH_MAX}";
+        return Fail;
+    }
+    
+    if (errno != ENAMETOOLONG) {
+        cerr<<"stat must set ENAMETOOLONG error when length of the path "
+            "argument exceeds {PATH_MAX}";
+        return Fail;
+    }
+    
+    return Success;
     
 }
 
 // ENOTDIR A component of the path prefix is not a directory.
 Status StatTest::ErrNotDir ()
-{}
+{
+    struct stat stat_buf;
+    string notDirPath = this->_statDir + "/stat_not_dir";
+    string filePath = notDirPath + "/stat_file";
+    
+    StatFile file (notDirPath);
+   
+    int ret = stat (filePath.c_str(), &stat_buf);
+    
+    if (ret != -1) {
+        cerr<<"stat must return -1 when a component of the path prefix is not "
+            "a directory.";
+        return Fail;
+    }
+    
+    if (errno != ENOTDIR) {
+        cerr<<"stat must set ENOTDIR error when a component of the path prefix "
+            "is not a directory.";
+        return Fail;
+    }
+    return Success;
+    
+}
 
 // EIO An error occurred while reading from the file system.
 Status StatTest::ErrFailToRead ()
