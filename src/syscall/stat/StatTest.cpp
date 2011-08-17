@@ -51,6 +51,10 @@ int StatTest::Main(vector<string> args)
                 return ErrNameTooLong();
             case StatErrNotDir:
                 return ErrNotDir();
+            case StatErrLoopedSymLinks:
+                return ErrLoopedSymLinks();
+            case StatErrNonExistantFile:
+                return ErrNonExistantFile();
 
             default:
 				cerr << "Unsupported operation.";
@@ -197,7 +201,31 @@ Status StatTest::ErrNotDir ()
 Status StatTest::ErrFailToRead ()
 {}
 
+// ENOENT A component of path does not name an existing file or path is an 
+// empty string.
+Status StatTest::ErrNonExistantFile ()
+{
+    struct stat stat_buf;
+
+    int ret = stat ("./non_existant_file", &stat_buf);
+    
+    if (ret != -1) {
+        cerr<<"stat must return -1 when a component of path does not name an "
+            "existing file or path is an empty string.";
+        return Fail;
+    }
+    
+    if (errno != ENOENT) {
+        cerr<<"stat must set ENOENT error when a component of path does not name an "
+            "existing file or path is an empty string.";
+        return Fail;
+    }
+    return Success;
+}
+
 // ELOOP A loop exists in symbolic links encountered during resolution of the
 // path argument.
 Status StatTest::ErrLoopedSymLinks ()
-{}
+{
+
+}

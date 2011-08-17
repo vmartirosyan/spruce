@@ -39,6 +39,8 @@ enum StatSyscalls
     StatErrNoAccess,
     StatErrNameTooLong,
     StatErrNotDir,
+    StatErrLoopedSymLinks,
+    StatErrNonExistantFile,
  
 };
 
@@ -46,21 +48,41 @@ class StatTest : public SyscallTest
 {
 	public:
 		StatTest(Mode mode, int operation, string arguments = "") :
-            _statDir("./stat_test_dir"),
-            SyscallTest(mode, operation, arguments, "stat") {
-                if (mkdir (_statDir.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)){}
+            
+            SyscallTest(mode, operation, arguments, "stat") 
+        {
+            
+
+            long size;
+            
+            
+
+
+            size = pathconf(".", _PC_PATH_MAX);
+            _cwd = NULL;
+
+
+            if ((_cwd = (char *)malloc((size_t)size)) != NULL)
+                _cwd = getcwd(_cwd, (size_t)size);
+                //cerr << "cwd"<<_cwd<<endl;
+            _statDir = (string) _cwd + "/stat_test_dir";
+            if (mkdir (_statDir.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)){}
         }
 		virtual ~StatTest() {
-            system (("rm -rf " + _statDir).c_str());
+        //    system (("rm -rf " + _statDir).c_str());
+            free(_cwd);
             
         }
+        // Tests for basic functionality
         Status NormExec();
-        
+        // Tests for error situations
         Status ErrNoAccess ();
         Status ErrNameTooLong ();
         Status ErrNotDir ();
         Status ErrFailToRead ();
         Status ErrLoopedSymLinks ();
+        Status ErrNonExistantFile ();
+        
         string GetTestDirPath() {
             return _statDir;
         }
@@ -69,6 +91,7 @@ class StatTest : public SyscallTest
 		virtual int Main(vector<string> args);
     private:
         string _statDir;
+        char *_cwd;
 };
 
 #endif /* TEST_STATTEST_H */
