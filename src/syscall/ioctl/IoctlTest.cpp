@@ -21,7 +21,6 @@
 //      MA 02110-1301, USA.
 
 #include <linux/fs.h>
-#include <sys/capability.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
