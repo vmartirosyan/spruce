@@ -12,6 +12,7 @@
 #include "Unlink.hpp"
 #include "UnlinkAt.hpp"
 #include "StatTest.hpp"
+#include "Creat.hpp"
 #include <config.hpp>
 
 int main(int argc, char ** argv)
@@ -28,7 +29,10 @@ int main(int argc, char ** argv)
 	Configuration<RenameTest> conf9("${CMAKE_INSTALL_PREFIX}/config/rename.conf");
 	Configuration<ReadvWritev> conf10("${CMAKE_INSTALL_PREFIX}config/readv_writev.conf");
 	Configuration<UnlinkTest> conf11("${CMAKE_INSTALL_PREFIX}/config/unlink.conf");
-    Configuration<UnlinkAtTest> conf12("${CMAKE_INSTALL_PREFIX}/config/unlinkat.conf");
+        Configuration<UnlinkAtTest> conf12("${CMAKE_INSTALL_PREFIX}/config/unlinkat.conf");
+        Configuration<CreatTest> conf13("${CMAKE_INSTALL_PREFIX}/config/creat.conf");
+
+
     Configuration<StatTest> statConf("${CMAKE_INSTALL_PREFIX}/config/stat.conf");
 
 	TestCollection tests1 = conf1.Read();
@@ -43,6 +47,7 @@ int main(int argc, char ** argv)
 	TestCollection tests10 = conf10.Read();
 	TestCollection tests11 = conf11.Read();
 	TestCollection tests12 = conf12.Read();
+	TestCollection tests13 = conf13.Read();
     TestCollection statTests = statConf.Read();
 
 	tests.Merge(tests1);
@@ -57,6 +62,7 @@ int main(int argc, char ** argv)
 	tests.Merge(tests10);
 	tests.Merge(tests11);
 	tests.Merge(tests12);
+	tests.Merge(tests13);
     tests.Merge(statTests);
 
 	TestResultCollection res = tests.Run();

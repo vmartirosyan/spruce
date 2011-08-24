@@ -21,7 +21,9 @@
 //      MA 02110-1301, USA.
 
 #include <Creat.hpp>
+#include <stdio.h>
 #include <unistd.h>
+#include <limits.h>
 #include <fcntl.h>
 #include "File.hpp"
 
@@ -35,6 +37,9 @@ int CreatTest::Main(vector<string>)
 				return CreatTooLongPath();
 			case CreatTestFileExist:
 				return CreatFileExist();
+			case CreatTextMaximumProcessFiles:
+				return CreatMaxProcessFilesOpen();
+
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -87,7 +92,7 @@ Status CreatTest::CreatFileExist()
 		
 		if(ret_val==0)
 		{
-			cerr << "Creat returned 0 ,then path is already exist.";
+			cerr << "Creat returned 0 when path is already exist.";
 			return Fail;
 		}
 		else
@@ -95,7 +100,7 @@ Status CreatTest::CreatFileExist()
 			if(errno!=EEXIST)
 			{
 				
-				cerr << "Incorrect error set in errno ,then new path is already exist. "<<strerror(errno);
+				cerr << "Incorrect error set in errno when new path is already exist. "<<strerror(errno);
 				return Fail;
 			}
 		}
@@ -106,8 +111,62 @@ Status CreatTest::CreatFileExist()
 	{
 		cerr << ex.GetMessage();
 		return Fail;
-	}
-	
+	}	
 	
 }
+
+
+Status CreatTest::CreatMaxProcessFilesOpen()
+{	
+	
+	
+	
+	long max_files_open=sysconf(_SC_OPEN_MAX);
+	buf=new int[max_files_open+1];
+	for (file_index=0; file_index <= max_files_open; file_index++)
+	{
+		//Generating new filename
+		sprintf(fname, "testfile%d.txt", file_index);
+	
+		//Creating new file
+		int ret_val = creat(fname,S_IRWXU);	
+		
+		//Saving file descriptors
+		buf[file_index]=ret_val;
+		
+		
+	
+		if(ret_val==-1 && file_index<=max_files_open)
+		{
+			if(errno!=EMFILE)
+			{
+				
+				cerr << "Incorrect error set in errno when the process already has the maximum number of files open."<<strerror(errno);
+				CreatMaxProcessCleanUp();
+				return Fail;
+			}
+			else
+			{
+				CreatMaxProcessCleanUp();
+				return Success;
+			}
+		}
+	}
+	cerr << "No error was accured when the process already has the maximum number of files open.";
+	return Fail;
+}
+
+void CreatTest::CreatMaxProcessCleanUp()
+{
+	for(int i=file_index-1;i>=0;i--)
+	{
+		
+		sprintf(fname, "testfile%d.txt", i);
+		close(buf[i]);
+		unlink(fname);
+	}
+	
+}
+
+	
 
