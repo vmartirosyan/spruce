@@ -33,8 +33,13 @@ enum fnctlFDSyscalls
 	fcntlFDGetSetFileStatusFlags,
 	fcntlFDGetSetFileStatusFlagsIgnore,
 	fcntlFDGetSetFileStatusFlagsIgnoreRDONLY,
-	fcntlFDDupFileDescriptor
-	fcntlFDGetSetLock
+	fcntlFDDupFileDescriptor,
+	fcntlFDGetLock,
+	fcntlFDSetLock,
+	fcntlFDSetLockWithWait, 
+	fcntlFDNoteDir,
+	fcntlFDNoteFile
+	
 };
 
 class fcntlFD : public SyscallTest
@@ -50,6 +55,11 @@ class fcntlFD : public SyscallTest
 		Status get_setFileStatusFlagsIgnore();
 		Status get_setFileStatusFlagsIgnoreRDONLY();
 		Status dupFileDescriptor();
+		Status fcntlFDGetLockFunction();
+		Status fcntlFDSetLockFunction();
+        Status fcntlFDSetLockWithWaitFunction();
+        Status fcntlFDNoteFileFunction();
+        Status fcntlFDNoteDirFunction();
 
 	protected:
 		virtual int Main(vector<string> args);
