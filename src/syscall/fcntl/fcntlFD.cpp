@@ -63,7 +63,11 @@ int fcntlFD::Main(vector<string> args)
 		   case fcntlFDNoteFile:
 				return fcntlFDNoteFileFunction();
 
-				
+		  case fcntlFDBadFileDescriptor1:
+				return fcntlFDBadFileDescriptor1Func();
+		
+		  case fcntlFDBadFileDescriptor2:
+				return fcntlFDBadFileDescriptor2Func();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;
@@ -460,7 +464,7 @@ Status fcntlFD::fcntlFDNoteFileFunction()
 	
 
 	//DN_CREATE
-	if ( mkdir ( dir, 0777 ) == -1 )
+	if ( mkdir ( dir, 0700 ) == -1 )
 	{
 		cerr << "Error in making directory: "<<strerror(errno);
 		return Unres;
@@ -564,4 +568,81 @@ Status fcntlFD::fcntlFDNoteFileFunction()
 	}
 
      return  Success;
+}
+
+//EBADF
+//case 1:file descriptor open mode doesn't match with the type of lock requested
+Status fcntlFD::fcntlFDBadFileDescriptor1Func()
+{
+	
+	const char *file = "some_file_1";
+	struct flock flocks;
+	int fd;
+	
+    if ( creat ( file, 0777 ) == -1 )
+	{
+		cerr << "Error in creating file: "<<strerror(errno);
+		return Unres;
+	}
+	if ( (fd =open( file, O_RDONLY )) == -1 ) // file opened only for reading
+	{
+		cerr << "Error in opening file: "<<strerror(errno);
+		return Unres;
+	}
+	//setting flock structure
+	flocks.l_whence = SEEK_SET;
+	flocks.l_start = 0;
+	flocks.l_len = 0;
+	flocks.l_pid = getpid();
+	flocks.l_type = F_WRLCK; // write lock 
+	
+	if ( fcntl ( fd, F_SETLK, &flocks ) != -1 )
+	{
+		cerr << "returns 0 in case of bad file descriptor ";
+		return Fail;
+	}
+	if ( errno != EBADF )
+	{
+		cerr << "Incorrect error set in errno in case of bad file descriptor "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
+}
+
+//case 2: fd is not opened file descriptor
+Status fcntlFD::fcntlFDBadFileDescriptor2Func()
+{	
+	const char *file = "some_file_1";
+	int fd;
+	
+    if ( creat ( file, 0777 ) == -1 )
+	{
+		cerr << "Error in creating file: "<<strerror(errno);
+		return Unres;
+	}
+	//open and close file to make file descriptor invalid
+	if ( (fd =open( file, O_RDONLY )) == -1 )
+	{
+		cerr << "Error in opening file: "<<strerror(errno);
+		return Unres;
+	}
+	if ( close ( fd ) == -1 )
+	{
+		cerr << "Error in closing file: "<< strerror(errno);
+		return Unres;
+	}
+	
+	if ( fcntl ( fd, F_SETFD, FD_CLOEXEC ) != -1 )
+	{
+		cerr << "returns 0 in case of bad file descriptor ";
+		return Fail;
+	}
+	if ( errno != EBADF )
+	{
+		cerr << "Incorrect error set in errno in case of bad file descriptor "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
 }
