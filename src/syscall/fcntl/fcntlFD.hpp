@@ -38,7 +38,9 @@ enum fnctlFDSyscalls
 	fcntlFDSetLock,
 	fcntlFDSetLockWithWait, 
 	fcntlFDNoteDir,
-	fcntlFDNoteFile
+	fcntlFDNoteFile, 
+	fcntlFDBadFileDescriptor1,
+	fcntlFDBadFileDescriptor2
 	
 };
 
@@ -60,6 +62,8 @@ class fcntlFD : public SyscallTest
         Status fcntlFDSetLockWithWaitFunction();
         Status fcntlFDNoteFileFunction();
         Status fcntlFDNoteDirFunction();
+        Status fcntlFDBadFileDescriptor1Func();
+	    Status fcntlFDBadFileDescriptor2Func();
 
 	protected:
 		virtual int Main(vector<string> args);
