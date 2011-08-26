@@ -40,7 +40,9 @@ enum fnctlFDSyscalls
 	fcntlFDNoteDir,
 	fcntlFDNoteFile, 
 	fcntlFDBadFileDescriptor1,
-	fcntlFDBadFileDescriptor2
+	fcntlFDBadFileDescriptor2,
+	fcntlFDTooManyOpenedFiles,
+	fcntlFDGetSetLease
 	
 };
 
@@ -64,7 +66,8 @@ class fcntlFD : public SyscallTest
         Status fcntlFDNoteDirFunction();
         Status fcntlFDBadFileDescriptor1Func();
 	    Status fcntlFDBadFileDescriptor2Func();
-
+        Status fcntlFDTooManyOpenedFilesFunc();
+        Status fcntlFDGetSetLeaseFunc();
 	protected:
 		virtual int Main(vector<string> args);
 };
