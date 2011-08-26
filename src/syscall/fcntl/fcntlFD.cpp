@@ -68,6 +68,12 @@ int fcntlFD::Main(vector<string> args)
 		
 		  case fcntlFDBadFileDescriptor2:
 				return fcntlFDBadFileDescriptor2Func();
+				
+			case fcntlFDTooManyOpenedFiles:
+					return fcntlFDTooManyOpenedFilesFunc();
+					
+			case fcntlFDGetSetLease:
+					return fcntlFDGetSetLeaseFunc();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;
@@ -645,4 +651,125 @@ Status fcntlFD::fcntlFDBadFileDescriptor2Func()
 	}
 	
 	return Success;
+}
+
+Status fcntlFD:: fcntlFDTooManyOpenedFilesFunc()
+{
+	int ind, fd;
+	pid_t pid;
+	const char* filename = "smthfile";
+	
+	pid = fork();
+	
+	if ( pid < 0 )
+	{
+		cerr << "Error in fork: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( !pid  )
+	{
+	  //child process
+	   int max_files = getdtablesize();
+
+	   for ( ind = 0; ind < max_files; ++ind )
+	  {
+		 if ( (fd = open (filename, O_CREAT | O_RDONLY, 0444 )) == -1 )
+		
+		 cerr << "Error in opening: "<<strerror(errno);
+		 return Unres;
+	  }
+	  if ( fcntl( 1, F_DUPFD, 1 ) != -1 )
+	  {
+		 cerr << "returns 0 in case of too many opened files "<<strerror(errno);
+		 return Fail;
+	  }
+     if ( errno != EMFILE )
+     {
+		cerr << "Incorrect error set in errno in case of too many opened files"
+		     << strerror(errno);
+		return Fail;
+	  }
+    }
+	
+	return Success;
+}
+Status fcntlFD::fcntlFDGetSetLeaseFunc()
+{
+	 int fd1, fd2;
+	 const char *filename1 = "file1.txt";
+     const char *filename2 = "file2.txt";
+  
+     	
+     //read lease ( F_SETLEASE & F_RDLCK )
+	  if ( (fd1 = open(filename1, O_RDONLY | O_CREAT, 0777)) == -1 )
+  {
+	  cerr << "Error in opening file: "<<strerror(errno);
+	  return Unres;
+  }   
+	if ( fcntl( fd1, F_SETLEASE, F_RDLCK ) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+	   if ( unlink ( filename1 ) == -1 )
+			cerr << "Error in unlinking: "<<strerror(errno);
+		return Fail;
+	}
+	
+	if ( fcntl( fd1, F_GETLEASE ) != F_RDLCK )
+	{
+		cerr << "get-set lease failed for read lease" ;
+		if ( unlink ( filename1 ) == -1 )
+		cerr << "Error in  unlinking: "<<strerror(errno);
+		return  Fail;
+	}
+	
+	if ( unlink ( filename1 ) == -1 )
+	{
+		cerr << "Error in unlinking: "<<strerror(errno);
+		return Fail;
+	}
+	
+	// write lease ( F_SETLEASE & F_WRLCK )
+	 if ( (fd2 = open(filename2, O_RDWR | O_CREAT, 0777)) == -1 )
+	{
+		cerr << "Error in opening: "<< strerror(errno);
+		return Unres;
+		
+	}
+	if ( fcntl ( fd2, F_SETLEASE, F_WRLCK ) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		if ( unlink (filename2) == -1 )
+			cerr << "Error in unlinking: "<<strerror(errno);
+		 return Fail;
+	}
+	if ( fcntl( fd2, F_GETLEASE ) != F_WRLCK )
+	{
+		cerr << "get-set lease failed for write lease ";
+		if ( unlink(filename2) == -1 )
+			cerr << "Error in unlinking: "<<strerror(errno);
+		return Fail;
+	}
+	
+	// removing lease ( F_SETLEASE & F_UNLCK )
+	if ( fcntl ( fd2, F_SETLEASE , F_UNLCK ) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		if ( unlink (filename2) == -1 )
+		  cerr << "Error in unlinking: "<<strerror(errno);
+		return Fail;
+	}
+	if ( fcntl ( fd2, F_GETLEASE ) != F_UNLCK )
+	{
+		cerr << "get-set lease failed for remove lease ";
+		if ( unlink (filename2) == -1 )
+			cerr << "Error in unlinking: "<<strerror(errno);
+        return Fail;		
+	}
+	if ( unlink (filename2) == -1 )
+	{
+		cerr << "Error in unlinking: "<<strerror(errno);
+		return Fail;
+	} 
+	return  Success;
 }
