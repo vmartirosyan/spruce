@@ -42,8 +42,8 @@ enum fnctlFDSyscalls
 	fcntlFDBadFileDescriptor1,
 	fcntlFDBadFileDescriptor2,
 	fcntlFDTooManyOpenedFiles,
-	fcntlFDGetSetLease
-	
+	fcntlFDGetSetLease,
+	fcntlFDInvalidArg
 };
 
 class fcntlFD : public SyscallTest
@@ -68,6 +68,7 @@ class fcntlFD : public SyscallTest
 	    Status fcntlFDBadFileDescriptor2Func();
         Status fcntlFDTooManyOpenedFilesFunc();
         Status fcntlFDGetSetLeaseFunc();
+        Status fcntlFDInvalidArgFunc();
 	protected:
 		virtual int Main(vector<string> args);
 };
