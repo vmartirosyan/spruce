@@ -74,6 +74,9 @@ int fcntlFD::Main(vector<string> args)
 					
 			case fcntlFDGetSetLease:
 					return fcntlFDGetSetLeaseFunc();
+					
+			case fcntlFDInvalidArg: 
+					return fcntlFDInvalidArgFunc();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;
@@ -94,17 +97,50 @@ Status fcntlFD::dupFileDescriptor()
 	long _arg = rand()%99;
 
 	if((fd = open("test", O_CREAT | O_RDWR)) < 0)
+	{	
 		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
+	    return Unres;
+    }
 
-	new_fd = fcntl(fd, F_DUPFD, _arg);
+	if( (new_fd = fcntl(fd, F_DUPFD, _arg)) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
 
-	write(fd, &buff, 5);
-	lseek(fd, 0, SEEK_SET);
-	read(new_fd, nbuff, 5);
+	if ( write(fd, &buff, 5) == -1 )
+	{
+		cerr << "Error in writing: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( lseek(fd, 0, SEEK_SET) == -1 )
+	{
+		cerr << "Error: "<<strerror(errno);
+		return Unres;
+	}
+	if( read(new_fd, nbuff, 5) == -1 )
+	{
+		cerr << "Error in writing: "<<strerror(errno);
+		return Unres;
+	}
 
-	close(fd);
-	close(new_fd);
-	unlink("test");
+	if ( close(fd) == -1 )
+	{
+		cerr << "Error in closing: "<<strerror(errno);
+		return Unres;
+	}
+	if ( close(new_fd) == -1 )
+	{
+		cerr << "Error in closing file: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( unlink("test") == -1 )
+	{
+		cerr << "Error in unlinking: "<<strerror(errno);
+		return Unres;
+	}
 
 	if(new_fd == EINVAL)
 	{
@@ -135,17 +171,36 @@ Status fcntlFD::get_setFileStatusFlagsIgnore()
 	long get_flags;
 
 	if((fd = open("test", O_CREAT)) < 0)
-		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
+	{
+			cerr << "Can't open file\n errno: " << strerror(errno) << endl;
+			return Unres;
+	}
 
 	// set File Descriptor Flags
 	set_flags = O_WRONLY | O_RDWR | O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC;
-	fcntl(fd, F_SETFL, set_flags);
+	if ( fcntl(fd, F_SETFL, set_flags) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
 
 	// get File Descriptor Flags
-	get_flags = fcntl(fd, F_GETFL);
+	if ( (get_flags = fcntl(fd, F_GETFL)) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
 
-	close(fd);
-	unlink("test");
+ 	if ( close(fd) == -1 )
+ 	{
+		cerr << "Error in closing file: "<<strerror(errno);
+		return Unres;
+	}
+	if ( unlink("test") == -1 )
+	{
+		cerr << "Error in unlinking: "<<strerror(errno);
+		return Unres;
+	}
 
 	if(set_flags & get_flags != 0)
 	{
@@ -163,17 +218,36 @@ Status fcntlFD::get_setFileStatusFlagsIgnoreRDONLY()
 	long get_flags;
 
 	if((fd = open("test", O_CREAT)) < 0)
-		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
+		{
+			cerr << "Can't open file\n errno: " << strerror(errno) << endl;
+			return Unres;
+		}
 
 	// set File Descriptor Flags
 	set_flags = O_RDONLY;
-	fcntl(fd, F_SETFL, set_flags);
+	if( fcntl(fd, F_SETFL, set_flags) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
 
 	// get File Descriptor Flags
-	get_flags = fcntl(fd, F_GETFL);
+	if( (get_flags = fcntl(fd, F_GETFL)) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
 
-	close(fd);
-	unlink("test");
+	if ( close(fd) == -1 )
+	{
+		cerr << "Error in closing: "<<strerror(errno);
+		return Unres;
+	}
+	if( unlink("test") == -1 )
+	{
+		cerr << "Error in unlinking: "<<strerror(errno);
+		return Unres;
+	}
 
 	if(set_flags & get_flags != 0)
 	{
@@ -193,18 +267,35 @@ Status fcntlFD::get_setFileStatusFlags()
 	if((fd = open("test", O_CREAT)) < 0)
 	{
 		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
+		return Unres;
 	}
 
 	// set File Descriptor Flags
 	set_flags = O_APPEND | O_DIRECT | O_NOATIME | O_NONBLOCK;
-	fcntl(fd, F_SETFL, set_flags);
+	if ( fcntl(fd, F_SETFL, set_flags) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
 
 	// get File Descriptor Flags
-	get_flags = fcntl(fd, F_GETFL);
+	if( (get_flags = fcntl(fd, F_GETFL)) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
 
-	close(fd);
-	unlink("test");
-
+	if ( close(fd) == -1 )
+	{
+		cerr << "Error in closing: "<<strerror(errno);
+		return Unres;
+	}
+	if ( unlink("test") == -1 )
+    {
+		cerr << "Error in unlinking: "<<strerror(errno);
+		return Unres;
+    }
+    
 	if(set_flags != get_flags)
 	{
 		cerr << "Can't get right file descriptor flags: " << strerror(errno);
@@ -220,17 +311,37 @@ Status fcntlFD::get_setFileDescriptorFlags()
 	long set_flags = FD_CLOEXEC;
 	long get_flags;
 
-	if(fd = open("test", O_CREAT | O_WRONLY) < 0)
+	if((fd = open("test", O_CREAT | O_WRONLY)) < 0)
+	{
 		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
+		return Unres;
+	}
 
 	// set File Descriptor Flags
-	fcntl(fd, F_SETFD, set_flags);
+	if ( fcntl(fd, F_SETFD, set_flags) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
 
 	// get File Descriptor Flags
-	get_flags = fcntl(fd, F_GETFD);
+	if ( (get_flags = fcntl(fd, F_GETFD)) == -1 )
+	{
+		cerr <<"Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
 
-	close(fd);
-	unlink("test");
+	if ( close(fd) == -1 )
+	{
+		cerr << "Error in closing: "<<strerror(errno);
+		return Unres;
+		
+	}
+	if ( unlink("test") == -1 )
+	{
+		cerr << "Error in unlinking: "<<strerror(errno);
+		return Unres; 
+	}
 
 	if(FD_CLOEXEC == get_flags)
 	{
@@ -273,7 +384,7 @@ Status fcntlFD:: fcntlFDGetLockFunction()
 	 cerr << "Error: "<<strerror(errno);
 
 	 if ( unlink( filename ) == -1 )
-	   cerr << "Error in unlinking "<<strerror(errno);
+	   cerr << "Error in unlinking: "<<strerror(errno);
 	   return Fail;
    }
   
@@ -283,7 +394,7 @@ Status fcntlFD:: fcntlFDGetLockFunction()
 	 cerr <<"incompatible locks prevent this lock\n"
 	        "PID of the process holding this lock "<< flocks.l_pid ; 
 	 if ( unlink( filename ) == -1 )
-      cerr << "Error in unlinking file "<<strerror(errno);
+      cerr << "Error in unlinking file: "<<strerror(errno);
 	 return Fail;
   }
 	return Success;
@@ -298,7 +409,7 @@ Status fcntlFD::fcntlFDSetLockFunction ()
 	int fd, type, ret_fcntl;
 	if ((fd= open( filename, O_RDWR | O_CREAT, 0700 )) == -1 )
 	{
-		cerr << "Error: "<<strerror(errno);
+		cerr << "Error in opening: "<<strerror(errno);
 		return Fail;
 	}
 
@@ -320,7 +431,7 @@ Status fcntlFD::fcntlFDSetLockFunction ()
 	   if ( errno == EACCES || EAGAIN )
 	    cerr << "conflicting lock is held by another process" << strerror(errno);
 	   if ( unlink ( filename ) == -1 )
-	         cerr << "Error in unlinking file "<<strerror(errno);
+	         cerr << "Error in unlinking file: "<<strerror(errno);
 	         
 	   return Fail;
     }
@@ -338,7 +449,7 @@ Status fcntlFD::fcntlFDSetLockFunction ()
 	  
    if ( unlink( filename ) == -1 )
    {
-	   cerr << "Error in unlinking file "<<strerror(errno);
+	   cerr << "Error in unlinking file: "<<strerror(errno);
 	   return Fail;
    }
     
@@ -772,4 +883,29 @@ Status fcntlFD::fcntlFDGetSetLeaseFunc()
 		return Fail;
 	} 
 	return  Success;
+}
+//EINVAL
+// setting negative argument for F_DUPFD operation
+Status fcntlFD:: fcntlFDInvalidArgFunc()
+{
+	const char *file = "somefile";
+	int fd; 
+	if ( (fd= open ( file, O_RDWR | O_CREAT, 0777)) == -1 )
+	{
+		cerr << "Error in opening and creating: "<<strerror(errno);
+		return Unres;
+	}
+	//setting negative value to arg_
+	if ( fcntl ( fd, F_DUPFD, -1 ) != -1 )
+	{
+		cerr << "returns 0 in case of invalid argument ";
+		return Fail;
+	}
+	if ( errno != EINVAL )
+	{
+		cerr << "Incorrect error set in errno in case of invalid argument "<<strerror(errno);
+		return Fail;
+	}
+	 
+	return Success;
 }
