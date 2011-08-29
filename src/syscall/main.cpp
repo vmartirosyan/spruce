@@ -12,6 +12,7 @@
 #include "Unlink.hpp"
 #include "UnlinkAt.hpp"
 #include "StatTest.hpp"
+#include "FSyncTest.hpp"
 #include "Creat.hpp"
 #include <config.hpp>
 
@@ -34,6 +35,8 @@ int main(int argc, char ** argv)
 
 
     Configuration<StatTest> statConf("${CMAKE_INSTALL_PREFIX}/config/stat.conf");
+    Configuration<FSyncTest> fsyncConf("${CMAKE_INSTALL_PREFIX}/config/fsync.conf");
+
 
 	TestCollection tests1 = conf1.Read();
 	TestCollection tests2 = conf2.Read();
@@ -49,6 +52,7 @@ int main(int argc, char ** argv)
 	TestCollection tests12 = conf12.Read();
 	TestCollection tests13 = conf13.Read();
     TestCollection statTests = statConf.Read();
+    TestCollection fsyncTests = fsyncConf.Read();
 
 	tests.Merge(tests1);
 	tests.Merge(tests2);
@@ -64,6 +68,7 @@ int main(int argc, char ** argv)
 	tests.Merge(tests12);
 	tests.Merge(tests13);
     tests.Merge(statTests);
+    tests.Merge(fsyncTests);
 
 	TestResultCollection res = tests.Run();
 	cout << res.ToXML() << endl;

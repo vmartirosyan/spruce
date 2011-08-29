@@ -55,6 +55,8 @@ int StatTest::Main(vector<string> args)
                 return ErrLoopedSymLinks();
             case StatErrNonExistantFile:
                 return ErrNonExistantFile();
+            case StatErrEmptyPath:
+                return ErrEmptyPath ();
 
             default:
 				cerr << "Unsupported operation.";
@@ -97,14 +99,17 @@ Status StatTest::NormExec ()
 // EACCES Search permission is denied for a component of the path prefix.
 Status StatTest::ErrNoAccess ()
 {
-    string dirPath = this->_statDir + "/stat_dir";
+    string dirPath = this->_statDir + "/err_noaccess_dir";
     string filePath = dirPath + "/stat_file";
     struct passwd * noBody;
     struct stat stat_buf;
     const int FILE_MODE = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
    
    
-    mkdir (dirPath.c_str(), FILE_MODE);
+    if (mkdir (dirPath.c_str(), FILE_MODE) == -1) {
+        cerr<<"mkdir() can't create directory.";
+        return Unres;
+    }
    
     StatFile file (filePath);
    
@@ -201,8 +206,7 @@ Status StatTest::ErrNotDir ()
 Status StatTest::ErrFailToRead ()
 {}
 
-// ENOENT A component of path does not name an existing file or path is an 
-// empty string.
+// ENOENT A component of path does not name an existing file 
 Status StatTest::ErrNonExistantFile ()
 {
     struct stat stat_buf;
@@ -211,13 +215,31 @@ Status StatTest::ErrNonExistantFile ()
     
     if (ret != -1) {
         cerr<<"stat must return -1 when a component of path does not name an "
-            "existing file or path is an empty string.";
+            "existing.";
         return Fail;
     }
     
     if (errno != ENOENT) {
         cerr<<"stat must set ENOENT error when a component of path does not name an "
-            "existing file or path is an empty string.";
+            "existing file.";
+        return Fail;
+    }
+    return Success;
+}
+// ENOENT the path is an empty string.
+Status StatTest::ErrEmptyPath ()
+{
+    struct stat stat_buf;
+
+    int ret = stat ("", &stat_buf);
+    
+    if (ret != -1) {
+        cerr<<"stat must return -1 when a path is an empty string.";
+        return Fail;
+    }
+    
+    if (errno != ENOENT) {
+        cerr<<"stat must set ENOENT error when a path is an empty string.";
         return Fail;
     }
     return Success;
@@ -227,5 +249,47 @@ Status StatTest::ErrNonExistantFile ()
 // path argument.
 Status StatTest::ErrLoopedSymLinks ()
 {
+    struct stat stat_buf;
+    string dirPath = this->_statDir + "/err_loop_dir";
+    string link1 = dirPath + "/link1";
+    string link2 = dirPath + "/link2";
+    
+    string filePath = link1 + "/stat_file";
+    const int FILE_MODE = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+   
+    if (mkdir (dirPath.c_str(), FILE_MODE) == -1) {
+        cerr<<"mkdir() can't create directory.";
+        return Unres;
+    }
+    if (symlink (dirPath.c_str(), link1.c_str()) == -1) {
+        cerr<<"symlink() can't create symlink.";
+        return Unres;
+    }
+    if (symlink (link1.c_str(), link2.c_str()) == -1) {
+        cerr<<"symlink() can't create symlink.";
+        return Unres;
+    }
+    if (unlink (link1.c_str()) == -1) {
+        cerr<<"remove() can't remove symlink.";
+        return Unres;
+    }
+    if (symlink (link2.c_str(), link1.c_str()) == -1) {
+        cerr<<"symlink() can't create symlink.";
+        return Unres;
+    }    
+   
+    int ret = stat (filePath.c_str(), &stat_buf);
+    
+    if (ret != -1) {
+        cerr<<"stat must return -1 when a loop exists in symbolic links "
+            "encountered during resolution of the path argument.";
+        return Fail;
+    }    
+    if (errno != ELOOP) {
+        cerr<<"stat must set ELOOP error when a loop exists in symbolic links "
+            "encountered during resolution of the path argument.";
+        return Fail;
+    }
+    return Success;
 
 }

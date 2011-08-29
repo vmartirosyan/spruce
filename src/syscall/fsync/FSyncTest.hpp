@@ -1,4 +1,4 @@
-//      StatTest.hpp
+//      FSyncTest.hpp
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -20,8 +20,8 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#ifndef TEST_STATTEST_H
-#define TEST_STATTEST_H
+#ifndef TEST_FSYNCTEST_H
+#define TEST_FSYNCTEST_H
 
 #include "SyscallTest.hpp"
 #include "exception.hpp"
@@ -35,24 +35,18 @@
 #include <pwd.h>
 
 // Operations
-enum StatSyscalls
+enum FSyncSyscalls
 {
-    STAT_NORM_EXEC,
-    StatErrNoAccess,
-    StatErrNameTooLong,
-    StatErrNotDir,
-    StatErrLoopedSymLinks,
-    StatErrNonExistantFile,
-    StatErrEmptyPath,
+    FSyncNormExec,
  
 };
 
-class StatTest : public SyscallTest
+class FSyncTest : public SyscallTest
 {
 	public:
-		StatTest(Mode mode, int operation, string arguments = "") :
+		FSyncTest(Mode mode, int operation, string arguments = "") :
             
-            SyscallTest(mode, operation, arguments, "stat") 
+            SyscallTest(mode, operation, arguments, "fsync") 
         {
             long size;
             _cwd = NULL;
@@ -61,35 +55,25 @@ class StatTest : public SyscallTest
             if ((_cwd = (char *)malloc((size_t)size)) != NULL)
                 _cwd = getcwd(_cwd, (size_t)size);
             
-            _statDir = (string) _cwd + "/stat_test_dir";
-            mkdir (_statDir.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+            _tmpDir = (string) _cwd + "/fsync_test_dir";
+            mkdir (_tmpDir.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
         }
-		virtual ~StatTest() {
-            system (("rm -rf " + _statDir).c_str());
+		virtual ~FSyncTest() {
+            system (("rm -rf " + _tmpDir).c_str());
             free(_cwd);
         }
         // Tests for basic functionality
         Status NormExec();
         // Tests for error situations
-        Status ErrNoAccess ();
-        Status ErrNameTooLong ();
-        Status ErrNotDir ();
-        Status ErrFailToRead ();
-        Status ErrLoopedSymLinks ();
-        Status ErrNonExistantFile ();
-        Status ErrEmptyPath ();
         
-        string GetTestDirPath() {
-            return _statDir;
-        }
-     
+        
 	protected:
 		virtual int Main(vector<string> args);
     private:
-        string _statDir;
+        string _tmpDir;
         char *_cwd;
 };
 
-#endif /* TEST_STATTEST_H */
+#endif /* TEST_FSYNCTEST_H */
  
