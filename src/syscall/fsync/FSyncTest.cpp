@@ -21,7 +21,6 @@
 //      MA 02110-1301, USA.
 
 #include <FSyncTest.hpp>
-#include "File.hpp"
 
 int FSyncTest::Main(vector<string> args)
 {
@@ -39,6 +38,11 @@ int FSyncTest::Main(vector<string> args)
 		{
             case FSyncNormExec:
                 return NormExec();
+            case FSyncErrInvalidFD:
+                return ErrInvalidFD();
+            case FSyncErrNonFsyncFD:
+                return ErrNonFsyncFD();
+            
          
             default:
 				cerr << "Unsupported operation.";
@@ -66,6 +70,56 @@ Status FSyncTest::NormExec ()
         cerr << "fsync returned non zero value";
         return Fail;
     } 
+    
+    return Success;
+}
+
+
+// EBADF the fildes argument is not a valid descriptor.
+Status FSyncTest::ErrInvalidFD ()
+{
+    if (fsync (-1) != -1) {
+        cerr << "fsync must return -1 when the fildes argument is not a valid "
+            "descriptor";
+        return Fail;
+    }
+    if (errno != EBADF) {
+        cerr<<"fsync must set EBADF error when the fildes argument is not a "
+            "valid descriptor";
+        return Fail;    
+    }
+    
+    return Success;
+}
+
+// EINVAL the fildes argument does not refer to a file on which this operation 
+// is possible.
+Status FSyncTest::ErrNonFsyncFD ()
+{
+    int fds[2];
+    
+    if (pipe (fds) == -1) {
+        cerr<<"pipe returned -1";
+        return Unres;
+    }
+    
+    int ret = fsync (fds[0]);
+    
+    if (close (fds[0]) == -1 || close (fds[1]) == -1) {
+        cerr<<"close returned -1";
+        return Unres;
+    }
+    
+    if (ret != -1) {
+        cerr << "fsync must return -1 when the fildes argument is not a valid "
+            "descriptor";
+        return Fail;
+    }
+    if (errno != EINVAL) {
+        cerr<<"fsync must set EBADF error when the fildes argument is not a "
+            "valid descriptor";
+        return Fail;    
+    }
     
     return Success;
 }
