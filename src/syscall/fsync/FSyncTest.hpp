@@ -24,11 +24,10 @@
 #define TEST_FSYNCTEST_H
 
 #include "SyscallTest.hpp"
-#include "exception.hpp"
+#include "File.hpp"
 
-#include <unistd.h>
+
 #include <linux/fs.h>
-#include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 
@@ -38,13 +37,15 @@
 enum FSyncSyscalls
 {
     FSyncNormExec,
+    FSyncErrInvalidFD,
+    FSyncErrNonFsyncFD,
  
 };
 
 class FSyncTest : public SyscallTest
 {
 	public:
-		FSyncTest(Mode mode, int operation, string arguments = "") :
+		FSyncTest (Mode mode, int operation, string arguments = "") :
             
             SyscallTest(mode, operation, arguments, "fsync") 
         {
@@ -59,17 +60,18 @@ class FSyncTest : public SyscallTest
             mkdir (_tmpDir.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
         }
-		virtual ~FSyncTest() {
+		virtual ~FSyncTest () {
             system (("rm -rf " + _tmpDir).c_str());
             free(_cwd);
         }
         // Tests for basic functionality
-        Status NormExec();
+        Status NormExec ();
         // Tests for error situations
-        
+        Status ErrInvalidFD ();
+        Status ErrNonFsyncFD ();        
         
 	protected:
-		virtual int Main(vector<string> args);
+		virtual int Main (vector<string> args);
     private:
         string _tmpDir;
         char *_cwd;
