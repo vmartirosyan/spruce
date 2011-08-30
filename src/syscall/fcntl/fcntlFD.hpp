@@ -3,7 +3,8 @@
 // 		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
 //
-//      Author: Shahzadyan Khachik <qwerity@gmail.com>
+//      Authors: Shahzadyan Khachik <qwerity@gmail.com>
+//                Ani Tumanyan <ani.tumanyan92@gmail.com>
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -43,7 +44,11 @@ enum fnctlFDSyscalls
 	fcntlFDBadFileDescriptor2,
 	fcntlFDTooManyOpenedFiles,
 	fcntlFDGetSetLease,
-	fcntlFDInvalidArg
+	fcntlFDInvalidArg1,
+	fcntlFDInvalidArg2,
+	fcntlFDGetSetOwn, 
+	fcntlFDBadAdress,
+	fcntlFDResTempUnavailable
 };
 
 class fcntlFD : public SyscallTest
@@ -68,7 +73,12 @@ class fcntlFD : public SyscallTest
 	    Status fcntlFDBadFileDescriptor2Func();
         Status fcntlFDTooManyOpenedFilesFunc();
         Status fcntlFDGetSetLeaseFunc();
-        Status fcntlFDInvalidArgFunc();
+        Status fcntlFDInvalidArg1Func();
+        Status fcntlFDInvalidArg2Func();
+        Status fcntlFDGetSetOwnFunc();
+        Status fcntlFDBadAdressFunc();
+        Status fcntlFDResTempUnavailableFunc();
+        
 	protected:
 		virtual int Main(vector<string> args);
 };
