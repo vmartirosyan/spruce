@@ -3,7 +3,8 @@
 // 		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
 //
-//      Author: Shahzadyan Khachik <qwerity@gmail.com>
+//      Authors: Shahzadyan Khachik <qwerity@gmail.com>
+//               Ani Tumanyan <ani.tumanyan92@gmail.com>  
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -25,6 +26,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <stdio.h>
 
 int fcntlFD::Main(vector<string> args)
@@ -75,8 +77,21 @@ int fcntlFD::Main(vector<string> args)
 			case fcntlFDGetSetLease:
 					return fcntlFDGetSetLeaseFunc();
 					
-			case fcntlFDInvalidArg: 
-					return fcntlFDInvalidArgFunc();
+			case fcntlFDInvalidArg1: 
+					return fcntlFDInvalidArg1Func();
+					
+			case fcntlFDInvalidArg2:
+				return fcntlFDInvalidArg2Func();
+					
+	        case 	fcntlFDGetSetOwn: 
+					return 	fcntlFDGetSetOwnFunc();
+					
+			case  fcntlFDBadAdress: 
+					return fcntlFDBadAdressFunc(); 
+					
+			case fcntlFDResTempUnavailable:
+					return fcntlFDResTempUnavailableFunc();
+					
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;
@@ -723,6 +738,11 @@ Status fcntlFD::fcntlFDBadFileDescriptor1Func()
 		cerr << "Incorrect error set in errno in case of bad file descriptor "<<strerror(errno);
 		return Fail;
 	}
+	if ( unlink ( file ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
 	
 	return Success;
 }
@@ -760,7 +780,11 @@ Status fcntlFD::fcntlFDBadFileDescriptor2Func()
 		cerr << "Incorrect error set in errno in case of bad file descriptor "<<strerror(errno);
 		return Fail;
 	}
-	
+	if ( unlink ( file ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
 	return Success;
 }
 
@@ -785,10 +809,16 @@ Status fcntlFD:: fcntlFDTooManyOpenedFilesFunc()
 
 	   for ( ind = 0; ind < max_files; ++ind )
 	  {
-		 if ( (fd = open (filename, O_CREAT | O_RDONLY, 0444 )) == -1 )
-		
-		 cerr << "Error in opening: "<<strerror(errno);
-		 return Unres;
+		 if ( creat( filename , 0777 ) == -1 )
+		 {
+			 cerr << "Error in creating file: "<<strerror(errno);
+			 return Unres;
+		 }
+		 if ( (fd = open (filename,  O_RDONLY)) == -1 )
+		 {
+		  cerr << "Error in opening: "<<strerror(errno);
+		   return Unres;
+	     }
 	  }
 	  if ( fcntl( 1, F_DUPFD, 1 ) != -1 )
 	  {
@@ -802,6 +832,11 @@ Status fcntlFD:: fcntlFDTooManyOpenedFilesFunc()
 		return Fail;
 	  }
     }
+    if ( unlink ( filename ) == -1 )
+    {
+		cerr << "Error in unlinking: "<<strerror(errno);
+		return Fail;
+	}
 	
 	return Success;
 }
@@ -884,9 +919,10 @@ Status fcntlFD::fcntlFDGetSetLeaseFunc()
 	} 
 	return  Success;
 }
+
 //EINVAL
-// setting negative argument for F_DUPFD operation
-Status fcntlFD:: fcntlFDInvalidArgFunc()
+//case 1: setting negative argument for F_DUPFD operation
+Status fcntlFD:: fcntlFDInvalidArg1Func()
 {
 	const char *file = "somefile";
 	int fd; 
@@ -906,6 +942,167 @@ Status fcntlFD:: fcntlFDInvalidArgFunc()
 		cerr << "Incorrect error set in errno in case of invalid argument "<<strerror(errno);
 		return Fail;
 	}
-	 
+	 if ( unlink ( file ) == -1 )
+	 {
+		 cerr << "Error in unlinking: "<<strerror(errno);
+		 return Fail;
+	 }
 	return Success;
+}
+
+//case 2: setting unallowable  argument for F_SETSIG operation
+Status fcntlFD :: fcntlFDInvalidArg2Func()
+{
+	int fd;
+	const char * file = "somefile_fcntl";
+	if ( (fd= open ( file, O_RDWR | O_CREAT , 0777 )) == -1 )
+	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	} 
+	//setting negative signal number to arg_
+	if ( fcntl ( fd, F_SETSIG, -1 ) != -1 )
+	{
+		cerr << "returns 0 in case of invalid argument as signal ";
+		return Fail;
+	}
+	if ( errno != EINVAL )
+	{
+		cerr << "Incorrect error set in errno in case of"
+		        "invalid argument "<<strerror(errno);
+        		        
+		return Fail;       
+	}
+	if ( unlink ( file ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
+	return Success; 
+}
+
+Status fcntlFD:: fcntlFDGetSetOwnFunc()
+{
+	int fd;
+	const char *file = "smthfile_fcntl";
+	if ( (fd= open( file,O_RDWR | O_CREAT, 0700 )) == -1 )
+	{
+		cerr << "Error in opening and creating: "<<strerror(errno);
+		return Unres;
+	}
+	if ( fcntl ( fd, F_SETOWN, getpid() ) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
+	if ( fcntl( fd, F_GETOWN ) != getpid() )
+	{
+		cerr << "get-set owner failed ";
+		return Fail;
+	}
+	if ( unlink ( file ) == -1 )
+	{
+		cerr << "Error in unlinking: "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
+}
+
+//EFAULT
+Status fcntlFD:: fcntlFDBadAdressFunc()
+{
+	int fd;
+	const char *filename ="filename";
+	
+	if ( (fd = open( filename,O_RDWR | O_CREAT, 0700 )) == -1 )
+	{
+		cerr << "Error in opening: "<<strerror(errno);
+		return Unres;
+	}
+	if ( fcntl ( fd, F_GETLK, (struct flock *)-1 ) != -1 )
+	{
+		cerr << "return 0 in case of bad adress ";
+		return Fail;
+	}
+	if ( errno != EFAULT )
+	{
+		cerr << "Incorrect error set in errno in case of bad adress "<<strerror(errno);
+		return Fail;
+	}
+	if ( unlink ( filename ) == -1 )
+	{
+		cerr << "Error in unlinking: "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
+}
+
+//EAGAIN
+Status fcntlFD :: fcntlFDResTempUnavailableFunc()
+{
+	pid_t pid;
+	struct flock flocks;
+	const char *filename = "filename_fcntl";
+	int fd;
+	
+	if ( (fd=open( filename, O_RDWR | O_CREAT, 0700 ))  == -1 )
+	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	
+	//setting flock structure
+	flocks.l_whence = SEEK_SET;
+	flocks.l_start = 0;
+	flocks.l_len = 0;
+	flocks.l_pid = getpid();
+	flocks.l_type = F_WRLCK ;
+	
+	//setting write lock
+	if ( fcntl ( fd, F_SETLK, &flocks) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
+	
+	pid = fork();
+	
+	if ( pid < 0 )
+	{
+		cerr << "Error in fork: "<<strerror(errno);
+		return Unres;
+	}
+	else
+	{
+	
+	 if ( pid == 0 )  //child process
+	 {
+		if ( fcntl ( fd, F_SETLK , &flocks) != -1 )
+		{
+			cerr << "returns 0 in case of resource temporalily unavailable";
+			return Fail;
+		}
+		if ( errno != EAGAIN )
+		{
+			cerr << "Incorrect error set in errno in case of"
+			        " resource temporalily  unavailable "<<strerror(errno);
+			 return Fail; 
+		}
+		
+	 }
+	 else
+	 {
+		 //parent process waits for child process termination
+		 wait(0);
+		 //cleaning up
+		 if ( unlink ( filename ) == -1 )
+		 {
+			 cerr << "Error in unlinking: "<<strerror(errno);
+			 return Fail;
+	     }
+	 }
+    }
+    return Success;
 }
