@@ -46,9 +46,13 @@ enum fnctlFDSyscalls
 	fcntlFDGetSetLease,
 	fcntlFDInvalidArg1,
 	fcntlFDInvalidArg2,
+	fcntlFDInvalidArg3,
 	fcntlFDGetSetOwn, 
 	fcntlFDBadAdress,
-	fcntlFDResTempUnavailable
+	fcntlFDResTempUnavailable,
+	fcntlFDNoLock,
+    fcntlFDGetSetSig,
+    fcntlFDGetSetOwn_Ex
 };
 
 class fcntlFD : public SyscallTest
@@ -75,9 +79,13 @@ class fcntlFD : public SyscallTest
         Status fcntlFDGetSetLeaseFunc();
         Status fcntlFDInvalidArg1Func();
         Status fcntlFDInvalidArg2Func();
+        Status fcntlFDInvalidArg3Func();
         Status fcntlFDGetSetOwnFunc();
         Status fcntlFDBadAdressFunc();
         Status fcntlFDResTempUnavailableFunc();
+        Status fcntlFDGetSetSigFunc();
+        Status fcntlFDNoLockFunction();
+        Status fcntlFDGetSetOwn_ExFunc();
         
 	protected:
 		virtual int Main(vector<string> args);

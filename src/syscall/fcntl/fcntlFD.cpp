@@ -1,4 +1,4 @@
-//      fnctl.cpp
+//      fnctlFD.cpp
 //
 // 		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -82,6 +82,9 @@ int fcntlFD::Main(vector<string> args)
 					
 			case fcntlFDInvalidArg2:
 				return fcntlFDInvalidArg2Func();
+				
+			case fcntlFDInvalidArg3: 
+					return fcntlFDInvalidArg3Func();
 					
 	        case 	fcntlFDGetSetOwn: 
 					return 	fcntlFDGetSetOwnFunc();
@@ -91,6 +94,15 @@ int fcntlFD::Main(vector<string> args)
 					
 			case fcntlFDResTempUnavailable:
 					return fcntlFDResTempUnavailableFunc();
+					
+			case fcntlFDGetSetSig: 
+						return fcntlFDGetSetSigFunc();
+						
+			case fcntlFDNoLock:
+							return fcntlFDNoLockFunction();
+							
+			case fcntlFDGetSetOwn_Ex:
+						return fcntlFDGetSetOwn_ExFunc();
 					
 			default:
 				cerr << "Unsupported operation.";
@@ -981,6 +993,39 @@ Status fcntlFD :: fcntlFDInvalidArg2Func()
 	return Success; 
 }
 
+// case 3: setting negative argument to l_whence field of flock structure
+// in  locking operations
+Status fcntlFD :: fcntlFDInvalidArg3Func()
+{
+   struct flock flocks;
+   int fd;
+   const char *file = "somefile_name";
+   if ( (fd= open( file, O_RDWR | O_CREAT, 0777)) == -1 )
+   {
+	   cerr << "Error in opening file and creating: "<<strerror(errno);
+	   return Fail;
+   }
+   //setting flock structure
+   	flocks.l_whence = -1;
+	flocks.l_start = 0;
+	flocks.l_len = 0;
+	flocks.l_pid = getpid();
+	flocks.l_type = F_WRLCK ;
+
+   if ( fcntl ( fd, F_SETLK, &flocks) != -1 )
+   {
+	   cerr << "returns 0  in case of invalid argument";
+	   return Fail;
+   }
+   if ( errno != EINVAL )
+   {
+	   cerr << "Incorrect error set in errno in case of invalid argument "<<strerror(errno);
+	   return Fail;
+   }
+     
+	return  Success;
+} 
+
 Status fcntlFD:: fcntlFDGetSetOwnFunc()
 {
 	int fd;
@@ -1105,4 +1150,121 @@ Status fcntlFD :: fcntlFDResTempUnavailableFunc()
 	 }
     }
     return Success;
+}
+
+//ENOLCK
+
+Status fcntlFD :: fcntlFDNoLockFunction()
+{
+	const char *filename = "somefile";
+	int fd;
+	int ind;
+	struct flock flocks[1000000];
+	if ( (fd=open(filename, O_CREAT | O_RDWR , 0700)) == -1 )
+	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	//setting flock structures
+	 for ( ind = 0; ind < 1000000; ++ind )
+	 {
+     flocks[ind].l_whence = SEEK_SET;
+	 flocks[ind].l_start = 0;
+	 flocks[ind].l_len = ind;
+	 flocks[ind].l_pid = getpid();
+	 flocks[ind].l_type = F_WRLCK ;
+     }
+     
+     for ( ind = 0 ; ind < 1000000; ++ind )
+      if ( fcntl( fd, F_SETLK, &flocks[ind] ) == -1 )
+	    {
+		  if ( errno != ENOLCK )
+	     {
+			cerr << "Incorrect error set in errno in case of "
+			        "no locks available "<<strerror(errno);
+			return Fail;
+		 }
+		break;
+	    }
+	
+	   if ( ind == 1000000 )
+	   { 	
+	    cerr << "returns 0 in case of no locks availble ";
+	    return Fail;
+       }
+	 
+	 if ( unlink ( filename ) == -1 )
+	 {
+		 cerr << "Error in unlinking file: "<<strerror(errno);
+		 return Fail;
+	 }
+     return Success;
+}
+
+Status fcntlFD :: fcntlFDGetSetSigFunc()
+{
+	const char *filename = "somefile1";
+	int fd; 
+	
+	if ( (fd = open( filename, O_CREAT | O_RDWR , 0777 )) == -1 )
+	{
+		cerr << "Error in opening and creating: "<<strerror(errno);
+		return Unres;
+	}
+	if ( fcntl( fd, F_SETSIG, SIGIO ) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
+	if ( fcntl( fd, F_GETSIG ) != SIGIO )
+	{
+		cerr<< "get-set signal failed ";
+		return Fail;
+	}
+	if ( unlink ( filename ) == -1 )
+	{
+		cerr << "Error in unlinking: "<<strerror(errno);
+		return Fail;
+	}
+	return Success;
+}
+
+Status fcntlFD :: fcntlFDGetSetOwn_ExFunc()
+{
+	
+	const char *filename = "somefilename";
+	int fd; 
+	struct f_owner_ex owner;
+	struct f_owner_ex owner1; 
+	if ( (fd = open( filename, O_CREAT | O_RDWR , 0777 )) == -1 )
+	{
+		cerr << "Error in creating and opening file: "<<strerror(errno);
+		return Unres;
+	}
+	//setting f_owner_ex structure
+	owner.type =  F_OWNER_PID;
+	owner.pid = getpid();
+	if ( fcntl( fd, F_SETOWN_EX, &owner ) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
+
+	if ( fcntl( fd, F_GETOWN_EX, &owner1 ) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
+	if ( owner1.type != F_OWNER_PID || owner1.pid != getpid() )
+	{
+		cerr << "get-set owner_ex failed";  
+		return Fail;
+	}
+ 
+    if ( unlink ( filename ) == -1 )
+    {
+		cerr << "Error in unlinking: "<<strerror(errno);
+		return Fail;
+	}	
+	     return Success;  
 }
