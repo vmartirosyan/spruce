@@ -66,8 +66,6 @@ int ReadvWritev::Main(vector<string>)
 				return WritevBadfdErrorFunc2();
 			case WritevEfaultErrorOp:
 				return WritevEfaultErrorFunc();
-			case WritevEagainErrorOp:
-				return WritevEagainErrorFunc();
 			case WritevEinvalErrorOp1:
 				return WritevEinvalErrorFunc1();
 			case WritevEinvalErrorOp2:
@@ -284,7 +282,7 @@ Status ReadvWritev::ReadvEfaultErrorFunc()
 	return Success;
 }
 
-// attempt to readv 0 bytes from file descriptor created by timerfd_create()
+// attempt to readv from file descriptor created by timerfd_create()
 Status ReadvWritev::ReadvEinvalErrorFunc1()
 {	
 	int fd = timerfd_create(CLOCK_REALTIME, 0);
@@ -549,54 +547,6 @@ Status ReadvWritev::WritevEfaultErrorFunc()
 		cerr << ex.GetMessage();
 		return Unres;
 	}
-	
-	return Success;
-}
-
-// attempt to writev to nonblocking pipe which is full
-// by default the pipe's size is 64 Kb
-Status ReadvWritev::WritevEagainErrorFunc()
-{
-	int pipe[2];
-	int status = pipe2(pipe, O_NONBLOCK);
-	if (status == -1)
-	{
-		cerr << strerror(errno);
-		return Unres;
-	}
-	
-	char *buf1 = new char [BYTES];
-	char *buf2 = new char [BYTES_COUNT];
-
-	memset(buf1, 0, BYTES);
-	memset(buf2, 0, BYTES_COUNT);
-
-	struct iovec iovAr[BUF_COUNT];
-	
-	iovAr[0].iov_base = buf1;
-	iovAr[0].iov_len = BYTES;
-	iovAr[1].iov_base = buf2;
-	iovAr[1].iov_len = BYTES_COUNT;
-	
-	ssize_t st = writev(pipe[1], iovAr, BUF_COUNT);
-	if (st == -1)
-	{
-		cerr << strerror(errno);
-		delete buf1;
-		delete buf2;
-		return Unres;
-	}
-
-	if (errno != EAGAIN)
-	{
-		cerr << "Expected to get EAGAIN error";
-		delete buf1;
-		delete buf2;
-		return Fail;
-	}
-
-	delete buf1;
-	delete buf2;
 	
 	return Success;
 }

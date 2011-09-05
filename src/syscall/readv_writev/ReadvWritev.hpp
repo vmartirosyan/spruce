@@ -44,7 +44,6 @@ enum ReadvWritevOps
 	WritevBadfdErrorOp1,
 	WritevBadfdErrorOp2,
 	WritevEfaultErrorOp,
-	WritevEagainErrorOp,
 	WritevEinvalErrorOp1,
 	WritevEinvalErrorOp2,
 	WritevEinvalErrorOp3,
@@ -73,7 +72,6 @@ public:
 	Status WritevBadfdErrorFunc1();			//initiating of EBADF error for writev
 	Status WritevBadfdErrorFunc2();			//initiating of EBADF error for writev
 	Status WritevEfaultErrorFunc();			//initiating of EFAULT error for writev
-	Status WritevEagainErrorFunc();			//initiating of EAGAIN error for writev
 	Status WritevEinvalErrorFunc1();		//initiating of EINVAL error for writev
 	Status WritevEinvalErrorFunc2();		//initiating of EINVAL error for writev
 	Status WritevEinvalErrorFunc3();		//initiating of EINVAL error for writev

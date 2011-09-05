@@ -13,6 +13,7 @@
 #include "UnlinkAt.hpp"
 #include "StatTest.hpp"
 #include "FSyncTest.hpp"
+#include "PreadPwrite.hpp"
 #include "Creat.hpp"
 #include <config.hpp>
 
@@ -36,6 +37,7 @@ int main(int argc, char ** argv)
 
     Configuration<StatTest> statConf("${CMAKE_INSTALL_PREFIX}/config/stat.conf");
     Configuration<FSyncTest> fsyncConf("${CMAKE_INSTALL_PREFIX}/config/fsync.conf");
+	Configuration<PreadPwrite> preadPwriteConf("${CMAKE_INSTALL_PREFIX}/config/pread_pwrite.conf");
 
 
 	TestCollection tests1 = conf1.Read();
@@ -53,6 +55,7 @@ int main(int argc, char ** argv)
 	TestCollection tests13 = conf13.Read();
     TestCollection statTests = statConf.Read();
     TestCollection fsyncTests = fsyncConf.Read();
+	TestCollection preadPwriteTests = preadPwriteConf.Read();
 
 	tests.Merge(tests1);
 	tests.Merge(tests2);
@@ -69,6 +72,7 @@ int main(int argc, char ** argv)
 	tests.Merge(tests13);
     tests.Merge(statTests);
     tests.Merge(fsyncTests);
+    tests.Merge(preadPwriteTests);
 
 	TestResultCollection res = tests.Run();
 	cout << res.ToXML() << endl;

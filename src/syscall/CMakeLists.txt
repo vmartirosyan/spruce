@@ -48,6 +48,9 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/unlinkat)
 ADD_SUBDIRECTORY(readv_writev)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/readv_writev)
 
+ADD_SUBDIRECTORY(pread_pwrite)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/pread_pwrite)
+
 ADD_SUBDIRECTORY(creat)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/creat)
 
@@ -68,6 +71,7 @@ TARGET_LINK_LIBRARIES(syscall rename)
 TARGET_LINK_LIBRARIES(syscall unlink)
 TARGET_LINK_LIBRARIES(syscall unlinkat)
 TARGET_LINK_LIBRARIES(syscall readv_writev)
+TARGET_LINK_LIBRARIES(syscall pread_pwrite)
 TARGET_LINK_LIBRARIES(syscall creat)
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${CMAKE_CURRENT_BINARY_DIR}/main.cpp)
