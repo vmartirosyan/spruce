@@ -103,7 +103,11 @@ int fcntlFD::Main(vector<string> args)
 							
 			case fcntlFDGetSetOwn_Ex:
 						return fcntlFDGetSetOwn_ExFunc();
+			case fcntlFDGetSetPipeSize: 
+					return fcntlFDGetSetPipeSizeFunc();
 					
+			case fcntlFDCapAboveLimit:
+						return fcntlFDCapAboveLimitFunc();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;
@@ -1267,4 +1271,59 @@ Status fcntlFD :: fcntlFDGetSetOwn_ExFunc()
 		return Fail;
 	}	
 	     return Success;  
+}
+
+Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
+{
+	int pipefd[2];
+	const char *file = "filename1";
+	int fd;
+	if ( (fd = open ( file, O_CREAT | O_RDWR , 0777 )) == -1 )
+	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	if ( pipe ( pipefd ) == -1 )
+	{
+		cerr << "Error in creating pipe: "<<strerror(errno);
+		return Unres;
+	}
+	//setting pipe's capability to be at least arg_ bytes 
+	if ( fcntl( pipefd[1], F_SETPIPE_SZ, 100) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
+	// checking whether capability of the pipe is at least equal to arg_
+	if ( fcntl ( pipefd[1], F_GETPIPE_SZ ) < 100 )
+	{
+		cerr << "get-set pipe size failed";
+		return Fail;
+	}
+	return Success;
+} 
+//EPERM
+//attemp to set capability to the pipe above limit
+Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
+{
+	
+	int pipefd[2];
+	if (pipe( pipefd ) == -1 )
+	{
+		cerr << "Error in creatong file: "<<strerror(errno);
+		return Unres;
+	}
+	if ( fcntl ( pipefd[1], F_SETPIPE_SZ, 1048580 ) != -1 )
+	{
+		cerr << "returns 0 in case of permission denied because of attemp to set "
+		         "capability above limit";
+		return Fail;
+	}
+	if ( errno != EPERM )
+	{
+		cerr << "Incorrect error set in errno in case of permission denied "<<strerror(errno);
+		return Fail;
+	}
+	
+   return Success; 
 }
