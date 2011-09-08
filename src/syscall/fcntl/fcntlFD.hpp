@@ -52,7 +52,10 @@ enum fnctlFDSyscalls
 	fcntlFDResTempUnavailable,
 	fcntlFDNoLock,
     fcntlFDGetSetSig,
-    fcntlFDGetSetOwn_Ex
+    fcntlFDGetSetOwn_Ex,
+    fcntlFDGetSetPipeSize,
+    fcntlFDCapAboveLimit
+    
 };
 
 class fcntlFD : public SyscallTest
@@ -86,7 +89,8 @@ class fcntlFD : public SyscallTest
         Status fcntlFDGetSetSigFunc();
         Status fcntlFDNoLockFunction();
         Status fcntlFDGetSetOwn_ExFunc();
-        
+        Status fcntlFDGetSetPipeSizeFunc();
+        Status fcntlFDCapAboveLimitFunc();
 	protected:
 		virtual int Main(vector<string> args);
 };
