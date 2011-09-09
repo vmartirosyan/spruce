@@ -96,18 +96,21 @@ int fcntlFD::Main(vector<string> args)
 					return fcntlFDResTempUnavailableFunc();
 					
 			case fcntlFDGetSetSig: 
-						return fcntlFDGetSetSigFunc();
+					return fcntlFDGetSetSigFunc();
 						
 			case fcntlFDNoLock:
-							return fcntlFDNoLockFunction();
+					return fcntlFDNoLockFunction();
 							
 			case fcntlFDGetSetOwn_Ex:
 						return fcntlFDGetSetOwn_ExFunc();
 			case fcntlFDGetSetPipeSize: 
-					return fcntlFDGetSetPipeSizeFunc();
+					   return fcntlFDGetSetPipeSizeFunc();
 					
 			case fcntlFDCapAboveLimit:
 						return fcntlFDCapAboveLimitFunc();
+						
+			case fcntlFDDupWithClExFlag:
+						return fcntlFDDupWithClExFlagFunc();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;
@@ -1276,13 +1279,7 @@ Status fcntlFD :: fcntlFDGetSetOwn_ExFunc()
 Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 {
 	int pipefd[2];
-	const char *file = "filename1";
 	int fd;
-	if ( (fd = open ( file, O_CREAT | O_RDWR , 0777 )) == -1 )
-	{
-		cerr << "Error in opening and creating file: "<<strerror(errno);
-		return Unres;
-	}
 	if ( pipe ( pipefd ) == -1 )
 	{
 		cerr << "Error in creating pipe: "<<strerror(errno);
@@ -1300,6 +1297,7 @@ Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 		cerr << "get-set pipe size failed";
 		return Fail;
 	}
+	
 	return Success;
 } 
 //EPERM
@@ -1327,3 +1325,38 @@ Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 	
    return Success; 
 }
+
+//test for F_DUPFD_CLOEXEC operation
+Status fcntlFD :: fcntlFDDupWithClExFlagFunc()
+{
+	int flags_, fd1, fd2;
+	const char *filename = "somefilename_";
+	if ( (fd1 = open( filename, O_CREAT | O_RDWR , 0777 )) == -1 )
+	{
+		cerr << "Error in creating and opening: "<<strerror(errno);
+		return Unres;
+	}
+	if ( (fd2 = fcntl( fd1,F_DUPFD_CLOEXEC,1)) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	} 
+	if ( (flags_ = fcntl( fd2, F_GETFD)) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Fail;
+	}
+	if ( flags_ != FD_CLOEXEC )
+	{
+		cerr << "setting the close-on-exec flag  for"
+                " the  duplicate  descriptor failed " ;
+         return Fail;       
+	}
+	if ( unlink( filename ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
+	return Success;
+}
+
