@@ -55,7 +55,8 @@ enum fnctlFDSyscalls
     fcntlFDGetSetOwn_Ex,
     fcntlFDGetSetPipeSize,
     fcntlFDCapAboveLimit,
-    fcntlFDDupWithClExFlag
+    fcntlFDDupWithClExFlag,
+    fcntlFDIntrSysCall
     
 };
 
@@ -93,6 +94,7 @@ class fcntlFD : public SyscallTest
         Status fcntlFDGetSetPipeSizeFunc();
         Status fcntlFDCapAboveLimitFunc();
         Status fcntlFDDupWithClExFlagFunc();
+        Status fcntlFDIntrSysCallFunc();
 	protected:
 		virtual int Main(vector<string> args);
 };

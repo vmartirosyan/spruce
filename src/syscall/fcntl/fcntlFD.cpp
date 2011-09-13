@@ -28,6 +28,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <stdio.h>
+#include <sys/utsname.h>
 
 int fcntlFD::Main(vector<string> args)
 {
@@ -111,6 +112,11 @@ int fcntlFD::Main(vector<string> args)
 						
 			case fcntlFDDupWithClExFlag:
 						return fcntlFDDupWithClExFlagFunc();
+						
+			case fcntlFDIntrSysCall: 
+	                   return fcntlFDIntrSysCallFunc();    
+	
+      			
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;
@@ -1280,6 +1286,18 @@ Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 {
 	int pipefd[2];
 	int fd;
+	struct utsname buf;
+	if ( uname ( &buf ) == -1 )
+	{
+		cerr << "Error in uname system call: "<<strerror(errno);
+	}
+	if ( strcmp( buf.release, "2.6.35" ) < 0 )
+	{
+		cerr <<"Kernel version doesn't support this operation ";
+		return Unres;
+	}
+	else
+	{
 	if ( pipe ( pipefd ) == -1 )
 	{
 		cerr << "Error in creating pipe: "<<strerror(errno);
@@ -1297,15 +1315,29 @@ Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 		cerr << "get-set pipe size failed";
 		return Fail;
 	}
-	
+    }
 	return Success;
 } 
 //EPERM
 //attemp to set capability to the pipe above limit
 Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 {
-	
+
+    struct utsname buf;
 	int pipefd[2];
+	//checking if kernel version supports operation
+	if ( uname ( &buf ) == -1 )
+	{
+		cerr << "Error in uname system call:  "<<strerror(errno);
+		return Unres;
+	}
+	if ( strcmp( buf.release, "2.6.35")  < 0 )
+	{
+		cerr <<"Kernel version doesn't support this operation ";
+		return Unres; 
+	}
+	else
+	{
 	if (pipe( pipefd ) == -1 )
 	{
 		cerr << "Error in creatong file: "<<strerror(errno);
@@ -1322,8 +1354,9 @@ Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 		cerr << "Incorrect error set in errno in case of permission denied "<<strerror(errno);
 		return Fail;
 	}
-	
-   return Success; 
+   }
+   return Success;
+    
 }
 
 //test for F_DUPFD_CLOEXEC operation
@@ -1360,3 +1393,68 @@ Status fcntlFD :: fcntlFDDupWithClExFlagFunc()
 	return Success;
 }
 
+Status fcntlFD:: fcntlFDIntrSysCallFunc()
+{
+	struct flock fl;
+	pid_t pid;
+	const char *filename = "filename";
+	int fd;
+	if ( (fd = open( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
+	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	//setting flock structure
+	fl.l_whence = SEEK_SET;
+	fl.l_start = 0;
+	fl.l_len = 0;
+	fl.l_pid = getpid();
+	fl.l_type = F_WRLCK ;
+     
+	if ( fcntl ( fd, F_SETLK, &fl ) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		return Unres;
+	}
+	pid = fork();
+	
+	if ( pid < 0 )
+	{
+		cerr << "Error in fork: "<<strerror(errno);
+		return Unres;
+	}
+	else    
+	{
+		if ( pid == 0 )    /* child proccess*/
+	   {
+	    	if ( fcntl( fd,F_SETLKW, &fl)  == -1 )
+		    {
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Unres;
+		    }
+	    	if ( kill ( getpid(), SIGINT ) == -1 )
+		   {
+			cerr << "Error in kill system call: "<<strerror(errno);
+		    return Unres;	
+          }
+          if ( fcntl( fd, F_SETLKW, &fl ) != -1 )
+          {
+		   cerr << "returns 0 in case of system call was interrupted ";
+		   return Fail;
+	      }
+	     if ( errno != EINTR )
+	      {
+		  cerr << "Incorrect error set in errno in case of "
+	              "interrupted system call: "<<strerror(errno);
+	      return Fail;  
+	      }
+      } 
+      else
+      {
+	  }
+	  
+	}
+	
+    return Success;	
+	
+}
