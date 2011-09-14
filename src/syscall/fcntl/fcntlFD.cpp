@@ -29,6 +29,7 @@
 #include <sys/wait.h>
 #include <stdio.h>
 #include <sys/utsname.h>
+#include <linux/version.h>
 
 int fcntlFD::Main(vector<string> args)
 {
@@ -1284,20 +1285,16 @@ Status fcntlFD :: fcntlFDGetSetOwn_ExFunc()
 
 Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 {
-	int pipefd[2];
-	int fd;
-	struct utsname buf;
-	if ( uname ( &buf ) == -1 )
-	{
-		cerr << "Error in uname system call: "<<strerror(errno);
-	}
-	if ( strcmp( buf.release, "2.6.35" ) < 0 )
-	{
+	
+
+	#if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
 		cerr <<"Kernel version doesn't support this operation ";
 		return Unres;
-	}
-	else
-	{
+	
+	#else
+	
+	int pipefd[2];
+
 	if ( pipe ( pipefd ) == -1 )
 	{
 		cerr << "Error in creating pipe: "<<strerror(errno);
@@ -1315,29 +1312,24 @@ Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 		cerr << "get-set pipe size failed";
 		return Fail;
 	}
-    }
-	return Success;
-} 
+  return Success;
+  #endif
+}
+
 //EPERM
 //attemp to set capability to the pipe above limit
 Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 {
 
-    struct utsname buf;
-	int pipefd[2];
-	//checking if kernel version supports operation
-	if ( uname ( &buf ) == -1 )
-	{
-		cerr << "Error in uname system call:  "<<strerror(errno);
-		return Unres;
-	}
-	if ( strcmp( buf.release, "2.6.35")  < 0 )
-	{
+	
+	
+	#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
+	
 		cerr <<"Kernel version doesn't support this operation ";
 		return Unres; 
-	}
-	else
-	{
+	
+	#else
+	int pipefd[2];
 	if (pipe( pipefd ) == -1 )
 	{
 		cerr << "Error in creatong file: "<<strerror(errno);
@@ -1354,9 +1346,9 @@ Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 		cerr << "Incorrect error set in errno in case of permission denied "<<strerror(errno);
 		return Fail;
 	}
-   }
+   
    return Success;
-    
+   #endif 
 }
 
 //test for F_DUPFD_CLOEXEC operation
