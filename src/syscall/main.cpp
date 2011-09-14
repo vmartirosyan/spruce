@@ -4,6 +4,7 @@
 #include "Close.hpp"
 #include "Link.hpp"
 #include "Chmod.hpp"
+#include "Chown.hpp"
 #include "fcntlFD.hpp"
 #include "getdents.hpp"
 #include "IoctlTest.hpp"
@@ -33,7 +34,7 @@ int main(int argc, char ** argv)
 	Configuration<UnlinkTest> conf11("${CMAKE_INSTALL_PREFIX}/config/unlink.conf");
         Configuration<UnlinkAtTest> conf12("${CMAKE_INSTALL_PREFIX}/config/unlinkat.conf");
         Configuration<CreatTest> conf13("${CMAKE_INSTALL_PREFIX}/config/creat.conf");
-
+    Configuration<Chown> chownConf("${CMAKE_INSTALL_PREFIX}/config/chown.conf");
 
     Configuration<StatTest> statConf("${CMAKE_INSTALL_PREFIX}/config/stat.conf");
     Configuration<FSyncTest> fsyncConf("${CMAKE_INSTALL_PREFIX}/config/fsync.conf");
@@ -56,7 +57,9 @@ int main(int argc, char ** argv)
     TestCollection statTests = statConf.Read();
     TestCollection fsyncTests = fsyncConf.Read();
 	TestCollection preadPwriteTests = preadPwriteConf.Read();
-
+    TestCollection chownTests = chownConf.Read();
+  
+  
 	tests.Merge(tests1);
 	tests.Merge(tests2);
 	tests.Merge(tests3);
@@ -73,7 +76,8 @@ int main(int argc, char ** argv)
     tests.Merge(statTests);
     tests.Merge(fsyncTests);
     tests.Merge(preadPwriteTests);
-
+    tests.Merge(chownTests);
+    
 	TestResultCollection res = tests.Run();
 	cout << res.ToXML() << endl;
 
