@@ -16,6 +16,7 @@
 #include "FSyncTest.hpp"
 #include "PreadPwrite.hpp"
 #include "Creat.hpp"
+#include "Umask.hpp"
 #include <config.hpp>
 
 int main(int argc, char ** argv)
@@ -32,13 +33,14 @@ int main(int argc, char ** argv)
 	Configuration<RenameTest> conf9("${CMAKE_INSTALL_PREFIX}/config/rename.conf");
 	Configuration<ReadvWritev> conf10("${CMAKE_INSTALL_PREFIX}config/readv_writev.conf");
 	Configuration<UnlinkTest> conf11("${CMAKE_INSTALL_PREFIX}/config/unlink.conf");
-        Configuration<UnlinkAtTest> conf12("${CMAKE_INSTALL_PREFIX}/config/unlinkat.conf");
-        Configuration<CreatTest> conf13("${CMAKE_INSTALL_PREFIX}/config/creat.conf");
+    Configuration<UnlinkAtTest> conf12("${CMAKE_INSTALL_PREFIX}/config/unlinkat.conf");
+	Configuration<CreatTest> conf13("${CMAKE_INSTALL_PREFIX}/config/creat.conf");
     Configuration<Chown> chownConf("${CMAKE_INSTALL_PREFIX}/config/chown.conf");
 
     Configuration<StatTest> statConf("${CMAKE_INSTALL_PREFIX}/config/stat.conf");
     Configuration<FSyncTest> fsyncConf("${CMAKE_INSTALL_PREFIX}/config/fsync.conf");
 	Configuration<PreadPwrite> preadPwriteConf("${CMAKE_INSTALL_PREFIX}/config/pread_pwrite.conf");
+	Configuration<Umask> umaskConf("${CMAKE_INSTALL_PREFIX}/config/umask.conf");
 
 
 	TestCollection tests1 = conf1.Read();
@@ -58,6 +60,7 @@ int main(int argc, char ** argv)
     TestCollection fsyncTests = fsyncConf.Read();
 	TestCollection preadPwriteTests = preadPwriteConf.Read();
     TestCollection chownTests = chownConf.Read();
+    TestCollection umaskTests = umaskConf.Read();
   
   
 	tests.Merge(tests1);
@@ -77,6 +80,7 @@ int main(int argc, char ** argv)
     tests.Merge(fsyncTests);
     tests.Merge(preadPwriteTests);
     tests.Merge(chownTests);
+    tests.Merge(umaskTests);
     
 	TestResultCollection res = tests.Run();
 	cout << res.ToXML() << endl;
