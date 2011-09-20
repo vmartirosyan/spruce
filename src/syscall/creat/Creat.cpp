@@ -120,7 +120,6 @@ Status CreatTest::CreatMaxProcessFilesOpen()
 {	
 	
 	
-	
 	long max_files_open=sysconf(_SC_OPEN_MAX);
 	buf=new int[max_files_open+1];
 	for (file_index=0; file_index <= max_files_open; file_index++)
