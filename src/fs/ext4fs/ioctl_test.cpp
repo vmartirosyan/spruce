@@ -21,7 +21,6 @@
 //      MA 02110-1301, USA.
 
 #include <ioctl_test.hpp>
-#include <sys/capability.h>
 #include <sys/mount.h>
 
 int Ext4IoctlTest::_file = -1;	
@@ -174,21 +173,21 @@ Status Ext4IoctlTest::TestSetFlagsNotOwner()
 	int flags = 1;
 	int result = 0;
 	
-	cap_user_header_t header = new __user_cap_header_struct;
-	cap_user_data_t data = new __user_cap_data_struct;
+	//cap_user_header_t header = new __user_cap_header_struct;
+	//cap_user_data_t data = new __user_cap_data_struct;
 	
-	header->version = _LINUX_CAPABILITY_VERSION_3;
-	header->pid = getpid();
+	//header->version = _LINUX_CAPABILITY_VERSION_3;
+	//header->pid = getpid();
 	
-	data->permitted |= CAP_CHOWN;
-	data->inheritable |= CAP_CHOWN;
-	data->effective |= CAP_CHOWN;
+	//data->permitted |= CAP_CHOWN;
+	//data->inheritable |= CAP_CHOWN;
+	//data->effective |= CAP_CHOWN;
 	
-	if ( capset( header, data ) )
-	{
-		cerr << "Cannot set file capabilities: " <<  strerror(errno);
-		return Unres;
-	}
+	//if ( capset( header, data ) )
+	//{
+		//cerr << "Cannot set file capabilities: " <<  strerror(errno);
+		//return Unres;
+	//}
 	
 	if ( fchown(_file, 0, 0) )
 	{
