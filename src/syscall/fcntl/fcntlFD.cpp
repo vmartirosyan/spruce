@@ -858,12 +858,7 @@ Status fcntlFD:: fcntlFDTooManyOpenedFilesFunc()
 		return Fail;
 	  }
     }
-    if ( unlink ( filename ) == -1 )
-    {
-		cerr << "Error in unlinking: "<<strerror(errno);
-		return Fail;
-	}
-	
+  
 	return Success;
 }
 Status fcntlFD::fcntlFDGetSetLeaseFunc()
@@ -1300,18 +1295,18 @@ Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 		cerr << "Error in creating pipe: "<<strerror(errno);
 		return Unres;
 	}
-	////setting pipe's capability to be at least arg_ bytes 
-	//if ( fcntl( pipefd[1], F_SETPIPE_SZ, 100) == -1 )
-	//{
-		//cerr << "Error in fcntl: "<<strerror(errno);
-		//return Fail;
-	//}
-	//// checking whether capability of the pipe is at least equal to arg_
-	//if ( fcntl ( pipefd[1], F_GETPIPE_SZ ) < 100 )
-	//{
-		//cerr << "get-set pipe size failed";
-		//return Fail;
-	//}
+	 //setting pipe's capability to be at least arg_ bytes 
+	 if ( fcntl( pipefd[1], F_SETPIPE_SZ, 100) == -1 )
+	{
+		cerr << "Error in fcntl: "<<strerror(errno);
+		  return Fail;
+	}
+	// checking whether capability of the pipe is at least equal to arg_
+	 if ( fcntl ( pipefd[1], F_GETPIPE_SZ ) < 100 )
+	{
+		 cerr << "get-set pipe size failed";
+		 return Fail;
+	}
   return Success;
   #endif
 }
@@ -1335,12 +1330,12 @@ Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 		cerr << "Error in creatong file: "<<strerror(errno);
 		return Unres;
 	}
-	//if ( fcntl ( pipefd[1], F_SETPIPE_SZ, 1048580 ) != -1 )
-	//{
-		//cerr << "returns 0 in case of permission denied because of attemp to set "
-		         //"capability above limit";
-		//return Fail;
-	//}
+	if ( fcntl ( pipefd[1], F_SETPIPE_SZ, 1048580 ) != -1 )
+	{
+		cerr << "returns 0 in case of permission denied because of attemp to set "
+		         "capability above limit";
+		return Fail;
+	}
 	if ( errno != EPERM )
 	{
 		cerr << "Incorrect error set in errno in case of permission denied "<<strerror(errno);
