@@ -40,7 +40,11 @@ int SelectTest::Main(vector<string>)
 			   return SelectTestInvalidArg2Func();
 			case SelectBadFileDesc:
 				return SelectTestBadFileDescFunc();
-		
+			case SelectNormalCase1:
+			     return SelectTestNormalCase1Func();
+		   case SelectNormalCase2:
+		         return SelectTestNormalCase2Func();
+		    
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -122,7 +126,7 @@ Status SelectTest:: SelectTestInvalidArg2Func()
 //EBADF
 Status SelectTest:: SelectTestBadFileDescFunc()
 {
-	const char *filename = "soemfilename";
+	const char *filename = "somefilename";
 	int fd;
 	fd_set rfds;
 	struct timeval tv;
@@ -157,8 +161,111 @@ Status SelectTest:: SelectTestBadFileDescFunc()
 		         "bad file descriptor "<<strerror(errno);
 		         return Fail;
 	}
+	if ( unlink ( filename ) == -1 )
+	{
+		cerr << "Errror in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
 	
 	return Success;
 }
 
+Status SelectTest :: SelectTestNormalCase1Func()
+{
+	int rfd, wfd;
+	const char *filename1 = "filename1";
+	const char *filename2 = "filename2";
+	char read_buffer[2] ;
+	char write_buffer[2] = "a";
+	struct timeval tv;
+	int max;
+	fd_set rfds, wfds;
+	
+	if ( (rfd = open ( filename1, O_CREAT | O_RDWR , 0777 )) == -1 )
+	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	if ( (wfd = open ( filename2 , O_CREAT | O_RDWR , 0777 )) == -1 )
+	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	max = (rfd > wfd )? rfd : wfd;
+	
+	//setting timeval structure
+	tv.tv_sec = 0;
+	tv.tv_usec = 1;
+	
+	FD_ZERO ( &rfds );
+	FD_SET ( rfd, &rfds );
+	FD_ZERO ( &wfds );
+	FD_SET ( wfd, &wfds );
+	
+	if ( read( rfd, read_buffer, 1 ) == -1 )
+	{
+		cerr << "Error in read system call: "<<strerror(errno);
+		return Unres;
+	}
+	if ( write( wfd, write_buffer, 1 ) == -1 )
+	{
+		cerr << "Error in write system call: "<<strerror(errno);
+		return Unres;
+	}
+    
+	 if (  select( max+1, &rfds, &wfds, NULL, &tv ) != 2 ) // must return 2 because 
+	 {                                                    //  rfds set contains 1 descriptor, 
+	                                                      // and  wfds contains 1 descriptor
+		 cerr << "Select failed "<<strerror(errno);
+		 return Fail;
+	 }
 
+    if ( unlink ( filename1 ) == -1 )
+    {
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
+    if ( unlink ( filename2 ) == -1 )
+    {
+		cerr << "Errror in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
+
+	return Success;
+
+}
+Status SelectTest :: SelectTestNormalCase2Func()
+{
+	int fd;
+	const char *filename = "filename";
+	fd_set rfds, wfds;
+	struct timeval tv;
+	
+	if ( (fd = open ( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
+	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	
+	//setting timeval structure
+	tv.tv_sec = 0; 
+	tv.tv_usec = 1;
+	
+	FD_ZERO( &rfds );
+	FD_SET( fd, &rfds );
+	FD_ZERO( &wfds );
+	FD_SET( fd, &wfds );
+	
+	if ( select ( fd+1, &rfds, &wfds, NULL, &tv ) !=  2 ) //must return 2 because
+	 {                                                 //rfds set contains 1 descriptor and wfds set contains 1 descriptor 
+                                                       //no matter if it's the same
+		cerr << "Select failed: "<<strerror(errno);    
+		return Fail;
+	}
+	if ( unlink ( filename ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
+	return Success;
+}
