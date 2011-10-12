@@ -30,7 +30,9 @@ enum SelectSyscalls
 {
 	SelectInvalidArg1,
 	SelectInvalidArg2,
-	SelectBadFileDesc
+	SelectBadFileDesc,
+	SelectNormalCase1,
+	SelectNormalCase2
 	
 };
 
@@ -46,6 +48,9 @@ protected:
 	Status SelectTestInvalidArg1Func();	
 	Status SelectTestInvalidArg2Func();
 	Status SelectTestBadFileDescFunc();
+	Status SelectTestNormalCase1Func();
+	Status SelectTestNormalCase2Func();
+	
 	
 	
 	virtual int Main(vector<string> args);	

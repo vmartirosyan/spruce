@@ -1,4 +1,4 @@
-//      DupFileDescriptor.hpp
+//      fcntlFD.hpp
 //
 // 		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
