@@ -32,7 +32,9 @@ enum SelectSyscalls
 	SelectInvalidArg2,
 	SelectBadFileDesc,
 	SelectNormalCase1,
-	SelectNormalCase2
+	SelectNormalCase2,
+	SelectNormalCase3,
+	SelectNormalPipeCase
 	
 };
 
@@ -50,7 +52,8 @@ protected:
 	Status SelectTestBadFileDescFunc();
 	Status SelectTestNormalCase1Func();
 	Status SelectTestNormalCase2Func();
-	
+	Status SelectTestNormalCase3Func();
+	Status SelectTestNormalPipeCaseFunc();
 	
 	
 	virtual int Main(vector<string> args);	

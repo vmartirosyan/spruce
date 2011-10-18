@@ -44,7 +44,10 @@ int SelectTest::Main(vector<string>)
 			     return SelectTestNormalCase1Func();
 		   case SelectNormalCase2:
 		         return SelectTestNormalCase2Func();
-		    
+		    case SelectNormalCase3:
+		       return SelectTestNormalCase3Func();
+	        case SelectNormalPipeCase:
+				return SelectTestNormalPipeCaseFunc();
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -269,3 +272,65 @@ Status SelectTest :: SelectTestNormalCase2Func()
 	}
 	return Success;
 }
+
+Status SelectTest:: SelectTestNormalCase3Func()
+{
+	const char *filename = "filename1";
+    int fd;
+    fd_set rfds;
+    struct timeval tv;
+    
+    if ( (fd = open( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
+    {
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	FD_ZERO( &rfds );
+	FD_SET( fd, &rfds );
+	
+	//setting timeval structure
+	tv.tv_sec = 0;
+	tv.tv_usec = 1;
+	
+	if ( select( fd, &rfds, NULL, NULL, &tv ) != 0 ) 
+	{
+		cerr << "Select failed" <<strerror(errno);
+		return Fail;
+	}
+	
+	if ( unlink( filename ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
+	return Success;
+}
+
+Status SelectTest:: SelectTestNormalPipeCaseFunc()
+{
+	int pipefd[2];
+	struct timeval tv;
+	fd_set rfds, wfds;
+	if ( pipe( pipefd ) == -1 )
+	{
+		cerr << "Error in creating pipe: "<<strerror(errno);
+		return Unres;
+	}
+	 FD_ZERO( &rfds );
+	 FD_SET( pipefd[0], &rfds );
+	 FD_ZERO( &wfds );
+	 FD_SET( pipefd[1], &wfds );
+	 
+	//setting timeval structure
+	tv.tv_sec = 0;
+	tv.tv_usec = 1;
+	
+	if ( select( 5, &rfds, &wfds, NULL, &tv ) != 1 )
+	{
+		cerr << "Select failed: "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
+}
+
