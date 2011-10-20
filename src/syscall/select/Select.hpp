@@ -30,7 +30,8 @@ enum SelectSyscalls
 {
 	SelectInvalidArg1,
 	SelectInvalidArg2,
-	SelectBadFileDesc,
+	SelectBadFileDesc1,
+	SelectBadFileDesc2,
 	SelectNormalCase1,
 	SelectNormalCase2,
 	SelectNormalCase3,
@@ -49,7 +50,8 @@ protected:
 	virtual ~SelectTest() {}	
 	Status SelectTestInvalidArg1Func();	
 	Status SelectTestInvalidArg2Func();
-	Status SelectTestBadFileDescFunc();
+	Status SelectTestBadFileDesc1Func();
+	Status SelectTestBadFileDesc2Func();
 	Status SelectTestNormalCase1Func();
 	Status SelectTestNormalCase2Func();
 	Status SelectTestNormalCase3Func();
