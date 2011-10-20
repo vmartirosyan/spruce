@@ -38,8 +38,10 @@ int SelectTest::Main(vector<string>)
 				return SelectTestInvalidArg1Func ();
 			case SelectInvalidArg2:
 			   return SelectTestInvalidArg2Func();
-			case SelectBadFileDesc:
-				return SelectTestBadFileDescFunc();
+			case SelectBadFileDesc1:
+				return SelectTestBadFileDesc1Func();
+			case SelectBadFileDesc2:
+			    return  SelectTestBadFileDesc2Func();
 			case SelectNormalCase1:
 			     return SelectTestNormalCase1Func();
 		   case SelectNormalCase2:
@@ -127,7 +129,8 @@ Status SelectTest:: SelectTestInvalidArg2Func()
 }
 
 //EBADF
-Status SelectTest:: SelectTestBadFileDescFunc()
+//case 1 
+Status SelectTest:: SelectTestBadFileDesc1Func()
 {
 	const char *filename = "somefilename";
 	int fd;
@@ -170,6 +173,46 @@ Status SelectTest:: SelectTestBadFileDescFunc()
 		return Fail;
 	}
 	
+	return Success;
+}
+
+//EBADF
+//case 2
+Status SelectTest:: SelectTestBadFileDesc2Func()
+{
+		int pfd[2];
+	fd_set rfds;
+    struct timeval tv;
+    
+    if( pipe( pfd ) == -1 )
+    {
+		cerr << "Error in creating pipe: "<<strerror(errno);
+		return Unres;
+	}    
+	
+	//setting timeval structure
+	tv.tv_sec = 0;
+	tv.tv_usec = 1;
+	
+	FD_ZERO( &rfds );
+	FD_SET( pfd[0], &rfds );
+	
+	if ( close( pfd[0] ) == -1 )
+	{
+		cerr << "Error in closing pipe: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( select( pfd[0]+1, &rfds, NULL, NULL, &tv ) != -1 )
+	{
+		cerr <<"returns 0 in case of bad file descriptor ";
+		return Fail;
+	}
+	if ( errno != EBADF )
+	{
+		cerr <<"Incorrect error set in errno in case of bad file descriptor: "<<strerror(errno);
+		return Fail;
+	}
 	return Success;
 }
 
@@ -291,7 +334,6 @@ Status SelectTest:: SelectTestNormalCase3Func()
 	//setting timeval structure
 	tv.tv_sec = 0;
 	tv.tv_usec = 1;
-	
 	if ( select( fd, &rfds, NULL, NULL, &tv ) != 0 ) 
 	{
 		cerr << "Select failed" <<strerror(errno);
@@ -310,7 +352,7 @@ Status SelectTest:: SelectTestNormalPipeCaseFunc()
 {
 	int pipefd[2];
 	struct timeval tv;
-	fd_set rfds, wfds;
+	fd_set rfds;
 	if ( pipe( pipefd ) == -1 )
 	{
 		cerr << "Error in creating pipe: "<<strerror(errno);
@@ -318,14 +360,12 @@ Status SelectTest:: SelectTestNormalPipeCaseFunc()
 	}
 	 FD_ZERO( &rfds );
 	 FD_SET( pipefd[0], &rfds );
-	 FD_ZERO( &wfds );
-	 FD_SET( pipefd[1], &wfds );
-	 
+
 	//setting timeval structure
 	tv.tv_sec = 0;
 	tv.tv_usec = 1;
 	
-	if ( select( 5, &rfds, &wfds, NULL, &tv ) != 1 )
+	if ( select( pipefd[0]+1, &rfds, NULL, NULL, &tv ) != 1 )
 	{
 		cerr << "Select failed: "<<strerror(errno);
 		return Fail;
