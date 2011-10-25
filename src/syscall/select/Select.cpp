@@ -68,7 +68,7 @@ Status SelectTest:: SelectTestInvalidArg1Func()
 	int fd;
 	const char *filename = "somefilename";
 	
-	if ( (fd= open ( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
+	if ( (fd = open ( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
 	{
 		cerr << "Error in creating and opening file: "<<strerror(errno);
 		return Unres;
@@ -111,7 +111,7 @@ Status SelectTest:: SelectTestInvalidArg2Func()
 	tv.tv_usec = -1; 
 
     FD_ZERO( &rfds );
-    FD_SET ( 0, &rfds );
+    FD_SET( 0, &rfds );
     
     if ( select( 1, &rfds, NULL, NULL, &tv ) != -1 )
     {
@@ -350,24 +350,37 @@ Status SelectTest:: SelectTestNormalCase3Func()
 
 Status SelectTest:: SelectTestNormalPipeCaseFunc()
 {
-	int pipefd[2];
+	int pfd[2];
 	struct timeval tv;
-	fd_set rfds;
-	if ( pipe( pipefd ) == -1 )
+	fd_set rfds, wfds ;
+	if ( pipe( pfd ) == -1 )
 	{
 		cerr << "Error in creating pipe: "<<strerror(errno);
 		return Unres;
 	}
 	 FD_ZERO( &rfds );
-	 FD_SET( pipefd[0], &rfds );
-
+	 FD_SET( pfd[0], &rfds );
+     FD_ZERO( &wfds );
+	 FD_SET( pfd[1], &wfds );
 	//setting timeval structure
 	tv.tv_sec = 0;
 	tv.tv_usec = 1;
 	
-	if ( select( pipefd[0]+1, &rfds, NULL, NULL, &tv ) != 1 )
+	if ( select( 5, &rfds,&wfds, NULL, &tv ) != 1 )
 	{
 		cerr << "Select failed: "<<strerror(errno);
+		return Fail;
+	}
+	
+	if ( close ( pfd[0] ) == -1 )
+	{
+		cerr << "Error in closing pipe: "<<strerror(errno);
+		return Fail;
+		
+	}
+	if ( close( pfd[1] ) == -1 )
+	{
+		cerr << "Error in closing pipe: "<<strerror(errno);
 		return Fail;
 	}
 	

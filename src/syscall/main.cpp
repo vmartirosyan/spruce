@@ -18,6 +18,7 @@
 #include "Creat.hpp"
 #include "Umask.hpp"
 #include "Select.hpp"
+#include "LseekTest.hpp"
 #include <config.hpp>
 
 int main(int argc, char ** argv)
@@ -43,6 +44,7 @@ int main(int argc, char ** argv)
 	Configuration<PreadPwrite> preadPwriteConf("${CMAKE_INSTALL_PREFIX}/config/pread_pwrite.conf");
 	Configuration<Umask> umaskConf("${CMAKE_INSTALL_PREFIX}/config/umask.conf");
 	Configuration<SelectTest> selectConf("${CMAKE_INSTALL_PREFIX}/config/select.conf");
+	Configuration<LseekTest> lseekConf("${CMAKE_INSTALL_PREFIX}/config/lseek.conf");
  
 
 	TestCollection tests1 = conf1.Read();
@@ -64,6 +66,7 @@ int main(int argc, char ** argv)
     TestCollection chownTests = chownConf.Read();
     TestCollection umaskTests = umaskConf.Read();
     TestCollection selectTests = selectConf.Read();
+    TestCollection lseekTests = lseekConf.Read();
   
   
 	tests.Merge(tests1);
@@ -85,6 +88,7 @@ int main(int argc, char ** argv)
     tests.Merge(chownTests);
     tests.Merge(umaskTests);
     tests.Merge(selectTests);
+    tests.Merge(lseekTests);
     
 	TestResultCollection res = tests.Run();
 	cout << res.ToXML() << endl;
