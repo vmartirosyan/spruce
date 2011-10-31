@@ -26,6 +26,10 @@
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 int LseekTest::Main(vector<string>)
 {
@@ -41,8 +45,14 @@ int LseekTest::Main(vector<string>)
  	           return LseekTestBadFileDesc1Func();
  	       case LseekBadFileDesc2:
  	           return LseekTestBadFileDesc2Func();
- 	       case LseekIllegalSeek:
-				return LseekTestIllegalSeekFunc();
+ 	       case LseekIllegalSeek1:
+				return LseekTestIllegalSeek1Func();
+		 case 	LseekIllegalSeek2:
+				return LseekTestIllegalSeek2Func();
+		 case 	LseekIllegalSeek3:
+				return LseekTestIllegalSeek3Func();
+		case LseekNormalCase: 
+		        return LseekTestNormalCaseFunc();
  	        default:
 				cerr << "Unsupported operation.";
 				return Unres;	
@@ -198,7 +208,8 @@ Status LseekTest:: LseekTestInvalidArg2Func()
 
 
 //ESPIPE
-Status LseekTest:: LseekTestIllegalSeekFunc()
+//case 1: descriptor assosiated with the pipe
+Status LseekTest:: LseekTestIllegalSeek1Func()
 {
 	int pfd[2];
 	int whence = SEEK_CUR;
@@ -234,3 +245,99 @@ Status LseekTest:: LseekTestIllegalSeekFunc()
 	return Success;
 }
 
+//ESPIPE
+//case 2: descriptor assosiated with the socket
+Status LseekTest:: LseekTestIllegalSeek2Func()
+{
+	int whence = SEEK_CUR;
+    int sd ;
+    if ( (sd= socket(AF_INET, SOCK_STREAM, 0)) == -1 )
+    {
+		cerr << "Error in socket system call: "<<strerror(errno);
+		return Unres;
+	}
+    
+    if ( lseek( sd, (loff_t)0, whence ) != -1 )
+    {
+		cerr << "returns 0 in case of illegal seek";
+		return Fail;
+	}
+	
+	if ( errno != ESPIPE )
+	{
+		cerr << "Incorrect error set in errno in case of illegal seek: "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
+}
+
+//ESPIPE
+// case 3: descriptor assosiated with the FIFO
+Status LseekTest:: LseekTestIllegalSeek3Func()
+{
+	
+     const char *filename = "somefilename"; 
+	 int whence = SEEK_CUR;
+	
+    int fifodesc;
+    if ( (fifodesc = mkfifo(filename,  0)) == -1)
+    {
+		cerr << "Error in creating FIFO file: "<<strerror(errno);
+		return Unres;
+	}
+    
+    if ( lseek( fifodesc, (loff_t)0, whence ) != -1 )
+    {
+		cerr << "returns 0 in case of illegal seek" ;
+		return Fail;
+	}
+	
+	if (errno != ESPIPE )
+	{
+		cerr << "Incorrect error set in errno in case of illegal seek "<<strerror(errno);
+		return Fail;
+	}
+	if ( unlink( filename ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
+	return Success;
+}
+
+//Normal functionality tests
+
+Status LseekTest :: LseekTestNormalCaseFunc()
+{
+	int fd; 
+	const char *filename = "somefile";
+	off_t ret_lseek;
+	int somenumber = rand();
+	int whence  = SEEK_SET;
+	
+	if ( (fd = open( filename , O_CREAT | O_RDWR, 0777 )) == -1 )
+	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( (ret_lseek = lseek( fd, (loff_t)somenumber , whence )) == -1 )
+	{
+		cerr << "Error in lseek system call: "<<strerror(errno);
+		return Fail;
+	}
+	
+	if ( ret_lseek != somenumber )
+	{
+		cerr << "lseek failed "; 
+		return Fail;
+	}
+	
+	if ( unlink( filename ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
+	return Success;
+}
