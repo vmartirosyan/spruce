@@ -51,8 +51,20 @@ int LseekTest::Main(vector<string>)
 				return LseekTestIllegalSeek2Func();
 		 case 	LseekIllegalSeek3:
 				return LseekTestIllegalSeek3Func();
-		case LseekNormalCase: 
-		        return LseekTestNormalCaseFunc();
+		case LseekNormalCase1: 
+		        return LseekTestNormalCase1Func();
+		  case LseekNormalCase2:
+			return LseekTestNormalCase2Func();
+			
+		 case Lseek64InvalidArg1:
+				return Lseek64TestInvalidArg1Func();
+		  case Lseek64InvalidArg2:
+			return Lseek64TestInvalidArg2Func();
+		  case Lseek64BadFileDesc1:
+			      return Lseek64TestBadFileDesc1Func();
+		   case Lseek64BadFileDesc2:
+				 return Lseek64TestBadFileDesc2Func();
+			  
  	        default:
 				cerr << "Unsupported operation.";
 				return Unres;	
@@ -308,7 +320,7 @@ Status LseekTest:: LseekTestIllegalSeek3Func()
 
 //Normal functionality tests
 
-Status LseekTest :: LseekTestNormalCaseFunc()
+Status LseekTest :: LseekTestNormalCase1Func()
 {
 	int fd; 
 	const char *filename = "somefile";
@@ -339,5 +351,202 @@ Status LseekTest :: LseekTestNormalCaseFunc()
 		cerr << "Error in unlinking file: "<<strerror(errno);
 		return Fail;
 	}
+	return Success;
+}
+
+Status LseekTest :: LseekTestNormalCase2Func()
+{
+     int fd;
+	const char *filename = "somefilename1";
+    char write_buffer1[BUFSIZ];
+	char write_buffer2[BUFSIZ];
+	char read_buffer[BUFSIZ];
+	struct stat stat_buf;
+	size_t file_size;
+	off_t offset , ret_offset;
+	
+	strcpy( write_buffer1, "abcd" );
+	strcpy( write_buffer2, "efg" );
+	
+	if ( (fd= open( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
+	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
+	{
+		cerr << "Error in write system call: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( fstat( fd, &stat_buf ) ==-1 )
+	{
+		cerr << "Error in fstat system call: "<<strerror(errno);
+		return Unres;
+	}
+	
+	file_size =  stat_buf.st_size;
+	
+	offset = file_size + strlen(write_buffer2);
+	
+	if ( (ret_offset =  lseek( fd, offset, SEEK_SET )) == -1 )
+	{
+		cerr << "Error in lseek system call: "<<strerror(errno);
+		return Fail;
+	}
+	
+	if ( ret_offset != offset )
+	{
+		cerr << "lseek failed 1"<<endl;
+		return Fail;
+	}
+  	
+	if ( write( fd, &write_buffer2, strlen(write_buffer2) ) != strlen(write_buffer2) )
+	{
+		cerr << "Error in write system call: "<<strerror(errno);
+		return Fail;
+	}
+
+	if ( unlink( filename ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
+}
+
+//tests for lseek64 system call
+
+//EINVAL
+Status LseekTest:: Lseek64TestInvalidArg1Func()
+{
+	
+    int fd;  
+	int whence = SEEK_SET;
+	const char *filename = "filename_lseek";
+  
+  	if ( (fd = open( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
+  	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	
+	//setting invalid ( negative ) value to offset
+	
+	if ( lseek64( fd, (off64_t)-1, whence ) != -1 )
+	{
+		cerr << "returns 0 in case of invalid argument";
+		return Fail;
+	}
+    if ( errno != EINVAL )
+    {
+		cerr << " Incorrect error set in errno in case of invalid argument "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( unlink( filename ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
+	 
+	return Success;
+}
+
+Status LseekTest:: Lseek64TestInvalidArg2Func()
+{
+	int fd;
+	const char *filename = "filename_lseek";
+	
+	if ( (fd = open( filename, O_CREAT| O_RDWR, 0777 )) == -1 )
+	{
+		cerr<<"Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	
+	//setting invalid value to whence
+	
+	if ( lseek64( fd, (off64_t)0, -1 ) != -1 )
+	{
+		cerr << "returns 0 in case of in valid argument";
+		return Fail;
+	}
+	
+     if ( errno != EINVAL )
+     {
+		 cerr << "Incorrect error set in errno in case of invalid argument "<<strerror(errno);
+		 return Fail;
+	 }	
+	 
+	 
+	 if ( unlink( filename ) == -1 )
+	 {
+		 cerr << "Error in unlinking file: "<<strerror(errno);
+		 return Fail;
+	 }
+	 
+	return Success;
+}
+
+//EBADF
+Status LseekTest :: Lseek64TestBadFileDesc1Func()
+{
+	int whence = SEEK_SET;
+	
+	//setting invalid file descriptor
+	
+	if ( lseek64( -1, (off64_t)0, whence ) != -1 )
+	{
+		cerr << "returns 0 in case of bad file descriptor";
+		return Fail;
+	}
+	if ( errno != EBADF )
+	{
+		cerr << "Incorrect error set in errno in case of bad file descriptor "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
+} 
+
+Status LseekTest :: Lseek64TestBadFileDesc2Func()
+{
+	int fd;
+	const char *filename = "filename_lseek64";
+	int whence = SEEK_CUR;
+	
+	//open and close file to make descriptor invalid
+	if ( (fd = open( filename, O_CREAT | O_RDWR , 0777 )) == -1 )
+	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( close( fd ) )
+	{
+		cerr << "Error in closing file: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( lseek64( fd, (off64_t)0, whence ) != -1 )
+	{
+		cerr << "returns 0 in case of bad file descriptor";
+		return Fail;
+	}
+	
+	if ( errno != EBADF )
+	{
+		cerr << "Incorrect error set in errno in case of bad file descriptor "<<strerror(errno);
+		return Fail;
+	}
+	
+	if ( unlink( filename ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
+	
 	return Success;
 }

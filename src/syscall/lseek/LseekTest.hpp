@@ -35,7 +35,13 @@ enum LseekSyscalls
 	LseekIllegalSeek1,
 	LseekIllegalSeek2,
 	LseekIllegalSeek3,
-	LseekNormalCase
+	LseekNormalCase1,
+	LseekNormalCase2,
+	Lseek64InvalidArg1,
+	Lseek64InvalidArg2,
+	Lseek64BadFileDesc1,
+	Lseek64BadFileDesc2
+	
 	
 };
 
@@ -55,7 +61,12 @@ protected:
 	Status LseekTestIllegalSeek1Func();
 	Status LseekTestIllegalSeek2Func();
 	Status LseekTestIllegalSeek3Func();
-	Status LseekTestNormalCaseFunc();
+	Status LseekTestNormalCase1Func();
+	Status LseekTestNormalCase2Func();
+	Status Lseek64TestInvalidArg1Func();
+	Status Lseek64TestInvalidArg2Func();
+	Status Lseek64TestBadFileDesc1Func();
+	Status Lseek64TestBadFileDesc2Func();
 	
 	virtual int Main(vector<string> args);	
 };
