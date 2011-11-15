@@ -38,42 +38,43 @@ int LseekTest::Main(vector<string>)
 	{	
          switch (_operation)
 		{
- 	       case LseekInvalidArg1:
- 	           return LseekTestInvalidArg1Func();
- 	       case LseekInvalidArg2:
- 	           return LseekTestInvalidArg2Func();
- 	       case LseekBadFileDesc1:
- 	           return LseekTestBadFileDesc1Func();
- 	       case LseekBadFileDesc2:
- 	           return LseekTestBadFileDesc2Func();
- 	       case LseekIllegalSeek1:
-			   return LseekTestIllegalSeek1Func();
-		   case LseekIllegalSeek2:
-			   return LseekTestIllegalSeek2Func();
-		   case LseekIllegalSeek3:
-			   return LseekTestIllegalSeek3Func();
-		   case LseekNormalCase1: 
-	 	       return LseekTestNormalCase1Func();
-		   case LseekNormalCase2:
-			   return LseekTestNormalCase2Func();
-		   case LseekNormalCase3:
-			   return LseekTestNormalCase3Func();
+			case LseekInvalidArg1:			     			 	   
+				return LseekTestInvalidArg2Func();				
+			case LseekInvalidArg2:				 	       
+				return LseekTestInvalidArg2Func();			 	           
+			case LseekBadFileDesc1:				 	     
+				return LseekTestBadFileDesc1Func();				            
+			case LseekBadFileDesc2:		 	       
+				return LseekTestBadFileDesc2Func();			 	           
+			case LseekIllegalSeek1:		 	       
+				return LseekTestIllegalSeek1Func();						   
+			case LseekIllegalSeek2:		   
+				return LseekTestIllegalSeek2Func();			   
+			case LseekIllegalSeek3:		   
+				return LseekTestIllegalSeek3Func();			   
+			case LseekNormalCase1:  		  
+				return LseekTestNormalCase1Func();	 	       
+			case LseekNormalCase2:		   
+				return LseekTestNormalCase2Func();			   
+			case LseekNormalCase3:		   
+				return LseekTestNormalCase3Func();			   
 		 
-		   case Lseek64InvalidArg1:
-			   return Lseek64TestInvalidArg1Func();
-		   case Lseek64InvalidArg2:
-			   return Lseek64TestInvalidArg2Func();
-		   case Lseek64BadFileDesc1:
-			   return Lseek64TestBadFileDesc1Func();
-		   case Lseek64BadFileDesc2:
-			   return Lseek64TestBadFileDesc2Func();
-		   case Lseek64NormalCase:
-			   return Lseek64TestNormalCaseFunc(); 
-		
+			case Lseek64InvalidArg1:		   
+				return Lseek64TestInvalidArg1Func();			   
+			case Lseek64InvalidArg2:		   
+				return Lseek64TestInvalidArg2Func();			   
+			case Lseek64BadFileDesc1:		   
+				return Lseek64TestBadFileDesc1Func();			   
+			case Lseek64BadFileDesc2:		   
+				return Lseek64TestBadFileDesc2Func();			   
+			case Lseek64NormalCase1:		   
+				return Lseek64TestNormalCase1Func();			    
+			case Lseek64NormalCase2:
+				return Lseek64TestNormalCase2Func();
 		 
  	        default:
 				cerr << "Unsupported operation.";
-				return Unres;	
+				return Unres;   	
 	    }
 	}
 	cerr << "Test was successful";
@@ -654,7 +655,7 @@ Status LseekTest :: Lseek64TestBadFileDesc2Func()
 
 //tests lseek64  normal functionality
 
-Status LseekTest :: Lseek64TestNormalCaseFunc()
+Status LseekTest :: Lseek64TestNormalCase1Func()
 {
 	int whence = 1;
 	int fd, ret_lseek64;
@@ -690,4 +691,92 @@ Status LseekTest :: Lseek64TestNormalCaseFunc()
 	
 
 }
-   
+
+Status LseekTest :: Lseek64TestNormalCase2Func()
+{
+	int fd;
+	const char *filename = "new_lseek64_file";
+	char write_buffer1[BUFSIZ];
+	char write_buffer2[BUFSIZ];
+	char read_buffer[BUFSIZ];
+ 	struct stat stat_buf;
+    size_t file_size;
+	off64_t offset , ret_offset;
+	
+	strcpy( write_buffer1, "abcd" );
+	strcpy( write_buffer2, "efg" );
+	
+	
+     if ( (fd = open( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
+     {
+		 cerr << "Error in opening and creating file: "<<strerror(errno);
+		 return Unres;
+	 }
+	
+	if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
+	{
+		cerr << "Error in write system call: "<<strerror(errno);
+		return Unres;
+	}
+	
+	//getting size of file after writing to it
+	if ( fstat( fd, &stat_buf ) == -1 )
+	{
+		cerr << "Error in fstat system call: "<<strerror(errno);
+		return Unres;
+	}
+	
+	file_size =  stat_buf.st_size;
+	
+	offset = file_size + strlen(write_buffer2);
+	
+	if ( (ret_offset =  lseek64( fd, offset, SEEK_SET )) == -1 )
+	{
+		cerr << "Error in lseek system call: "<<strerror(errno);
+		return Fail;
+	}
+	
+	if ( ret_offset != offset )
+	{
+		cerr << "lseek failed ";
+		return Fail;
+	}
+  	
+	if ( write( fd, &write_buffer2, strlen( write_buffer2 ) ) != strlen(write_buffer2) )
+	{
+		cerr << "Error in write system call: "<<strerror(errno);
+		return Unres;
+	}
+	
+    if ( lseek64( fd, (off64_t)0, SEEK_SET)  == -1 )
+    {
+		 cerr << "Error in lseek system call: "<<strerror(errno);
+		 return Fail;
+     }
+	 
+	if ( read( fd, &read_buffer, (offset +strlen(write_buffer2)) ) == -1 )
+	{
+		cerr << "Error in read system call: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( strncmp( read_buffer, write_buffer1,strlen(write_buffer1) ) != 0  )
+	{
+		cerr << "lseek failed ";
+		return Fail;
+	}
+	
+	if ( strncmp( &read_buffer[offset], write_buffer2, strlen(write_buffer2) ) != 0 )
+	{
+		cerr << "lseek failed ";
+		return Fail;
+	}
+	
+	if ( unlink( filename ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Fail;
+	}
+	return Success;
+}
+  
