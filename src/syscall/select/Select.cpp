@@ -34,22 +34,23 @@ int SelectTest::Main(vector<string>)
 	{	
 		switch (_operation)
 		{
-			case SelectInvalidArg1:
-				return SelectTestInvalidArg1Func ();
-			case SelectInvalidArg2:
-			    return SelectTestInvalidArg2Func();
-			case SelectBadFileDesc1:
-				return SelectTestBadFileDesc1Func();
-			case SelectBadFileDesc2:
-			    return  SelectTestBadFileDesc2Func();
-			case SelectNormalCase1:
-			    return SelectTestNormalCase1Func();
-		    case SelectNormalCase2:
-		        return SelectTestNormalCase2Func();
-		    case SelectNormalCase3:
-		        return SelectTestNormalCase3Func();
-	        case SelectNormalPipeCase:
-				return SelectTestNormalPipeCaseFunc();
+			case SelectInvalidArg1:						
+				return SelectTestInvalidArg1Func ();				
+			case SelectInvalidArg2:			
+				return SelectTestInvalidArg2Func();			    
+			case SelectBadFileDesc1:			
+				return SelectTestBadFileDesc1Func();				
+			case SelectBadFileDesc2:			
+				return  SelectTestBadFileDesc2Func();			    
+			case SelectNormalCase1:			
+				return SelectTestNormalCase1Func(); 			   
+			case SelectNormalCase2:		    
+				return SelectTestNormalCase2Func();		        
+			case SelectNormalCase3:		    
+				return SelectTestNormalCase3Func();		        
+			case SelectNormalPipeCase:	        
+				return SelectTestNormalPipeCaseFunc();	
+						
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		

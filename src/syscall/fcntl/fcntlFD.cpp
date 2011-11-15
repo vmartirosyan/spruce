@@ -52,38 +52,38 @@ int fcntlFD::Main(vector<string> args)
 			case fcntlFDDupFileDescriptor:
 				return dupFileDescriptor();
 				
-		    case fcntlFDGetLock:
-		        return fcntlFDGetLockFunction();
+			case fcntlFDGetLock:		    
+				return fcntlFDGetLockFunction();		        
 		        
-		    case  fcntlFDSetLockWithWait:
-			 return	fcntlFDSetLockWithWaitFunction();
+			case  fcntlFDSetLockWithWait:		    
+				return	fcntlFDSetLockWithWaitFunction();			 
 			 
-		    case  fcntlFDSetLock:
-				return fcntlFDSetLockFunction();
+			case  fcntlFDSetLock:		    
+				return fcntlFDSetLockFunction();				
 				
-	        case fcntlFDNoteDir:
-				return fcntlFDNoteDirFunction();
+			case fcntlFDNoteDir:	        
+				return fcntlFDNoteDirFunction();				
 				
-		    case fcntlFDNoteFile:
-				return fcntlFDNoteFileFunction();
+			case fcntlFDNoteFile:		    
+				return fcntlFDNoteFileFunction();				
 
-		    case fcntlFDBadFileDescriptor1:
-				return fcntlFDBadFileDescriptor1Func();
+			case fcntlFDBadFileDescriptor1:		    
+				return fcntlFDBadFileDescriptor1Func();				
 		
-		    case fcntlFDBadFileDescriptor2:
-				return fcntlFDBadFileDescriptor2Func();
+			case fcntlFDBadFileDescriptor2:		    
+				return fcntlFDBadFileDescriptor2Func();				
 				
-			case fcntlFDTooManyOpenedFiles:
-				return fcntlFDTooManyOpenedFilesFunc();
+			case fcntlFDTooManyOpenedFiles:						
+				return fcntlFDTooManyOpenedFilesFunc();								
 					
-			case fcntlFDGetSetLease:
-				return fcntlFDGetSetLeaseFunc();
+			case fcntlFDGetSetLease:			
+				return fcntlFDGetSetLeaseFunc();				
 					
-			case fcntlFDInvalidArg1: 
-				return fcntlFDInvalidArg1Func();
+			case fcntlFDInvalidArg1:			 
+				return fcntlFDInvalidArg1Func();				
 					
-			case fcntlFDInvalidArg2:
-				return fcntlFDInvalidArg2Func();
+			case fcntlFDInvalidArg2:			
+				return fcntlFDInvalidArg2Func();				
 				
 			case fcntlFDInvalidArg3: 
 				return fcntlFDInvalidArg3Func();
