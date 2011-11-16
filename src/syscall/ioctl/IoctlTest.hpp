@@ -27,14 +27,14 @@
 // Operations
 enum IoctlSyscalls
 {
-    IOCTL_FS_SECRM_FL, /* Secure deletion */
+   // IOCTL_FS_SECRM_FL, /* Secure deletion */
     IOCTL_FS_UNRM_FL,	/* Undelete */
 	IOCTL_FS_COMPR_FL,	/* Compress file */
     IOCTL_FS_SYNC_FL,	 /* Synchronous updates */
     IOCTL_FS_IMMUTABLE_FL,	 /* Immutable file */
-    IOCTL_FS_APPEND_FL,	 /* writes to file may only append */
-    IOCTL_FS_NODUMP_FL,	 /* do not dump file */
-    IOCTL_FS_NOATIME_FL,	 /* do not update atime */
+//    IOCTL_FS_APPEND_FL,	 /* writes to file may only append */
+//    IOCTL_FS_NODUMP_FL,	 /* do not dump file */
+//    IOCTL_FS_NOATIME_FL,	 /* do not update atime */
 
     IOCTL_FS_DIRTY_FL,		
     IOCTL_FS_COMPRBLK_FL,	 /* One or more compressed clusters */

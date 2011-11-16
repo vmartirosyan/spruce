@@ -78,6 +78,7 @@ Status StatTest::NormExec ()
     
     int ret = stat (file.GetPathname().c_str(), &stat_buf);
     
+   
     if (0 != ret) {
         cerr << "stat returned non zero value";
         return Fail;
@@ -92,6 +93,31 @@ Status StatTest::NormExec ()
         cerr << "stat filled stat_buf with wrong st_gid value";
         return Fail;
     }
+    
+    if (stat_buf.st_atime != file.GetATime()) {
+        cerr << "stat filled stat_buf with wrong st_atime value, "
+			"st_atime = " << stat_buf.st_atime << " but it should be " 
+			<< file.GetATime();
+        return Fail;
+    }
+    
+    
+    if (stat_buf.st_atime != file.GetMTime()) {
+        cerr << "stat filled stat_buf with wrong st_atime value, "
+			"st_mtime = " << stat_buf.st_mtime << " but it should be " 
+			<< file.GetMTime();
+        return Fail;
+    }
+    
+    
+    if (stat_buf.st_atime != file.GetCTime()) {
+        cerr << "stat filled stat_buf with wrong st_atime value, "
+			"st_ctime = " << stat_buf.st_ctime << " but it should be " 
+			<< file.GetCTime();
+        return Fail;
+    }
+    
+    
     
     return Success;
 }
@@ -215,7 +241,7 @@ Status StatTest::ErrNonExistantFile ()
     
     if (ret != -1) {
         cerr<<"stat must return -1 when a component of path does not name an "
-            "existing.";
+            "existing file.";
         return Fail;
     }
     
