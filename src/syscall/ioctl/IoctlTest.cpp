@@ -43,10 +43,10 @@ int IoctlTest::Main(vector<string> args)
 	{
 		switch (_operation)
 		{
-            case IOCTL_FS_SYNC_FL:
-                return SetGetFlags(IOCTL_FS_SYNC_FL);
-            case IOCTL_FS_SECRM_FL:
-                return SetGetFlags(FS_SECRM_FL);
+//            case IOCTL_FS_SYNC_FL:
+//                return SetGetFlags(FS_SYNC_FL);
+//            case IOCTL_FS_SECRM_FL:
+//                return SetGetFlags(FS_SECRM_FL);
             case IOCTL_FS_JOURNAL_DATA_FL:
                 return SetGetFlags(FS_JOURNAL_DATA_FL);
             case IOCTL_FS_IMAGIC_FL:
@@ -73,16 +73,16 @@ int IoctlTest::Main(vector<string> args)
                 return SetGetFlags(FS_DIRTY_FL);
             case IOCTL_FS_NOCOMP_FL:
                 return SetGetFlags(FS_NOCOMP_FL);
-            case IOCTL_FS_NOATIME_FL:
-                return SetGetFlags(FS_NOATIME_FL);
-            case IOCTL_FS_NODUMP_FL:
-                return SetGetFlags(FS_NODUMP_FL);
-            case IOCTL_FS_APPEND_FL:
-                return SetGetFlags(FS_APPEND_FL);
+//            case IOCTL_FS_NOATIME_FL:
+//                return SetGetFlags(FS_NOATIME_FL);
+//            case IOCTL_FS_NODUMP_FL:
+//                return SetGetFlags(FS_NODUMP_FL);
+//            case IOCTL_FS_APPEND_FL:
+//                return SetGetFlags(FS_APPEND_FL);
             case IOCTL_FS_ECOMPR_FL:
                 return SetGetFlags(FS_ECOMPR_FL);
-            case IOCTL_FS_IMMUTABLE_FL:
-                return SetGetFlags(FS_IMMUTABLE_FL);
+//            case IOCTL_FS_IMMUTABLE_FL:
+//                return SetGetFlags(FS_IMMUTABLE_FL);
             case IOCTL_FS_COMPR_FL:
                 return SetGetFlags(FS_COMPR_FL);
             case IOCTL_FS_UNRM_FL:

@@ -65,9 +65,28 @@ Status FSyncTest::NormExec ()
         cerr << "write returned -1";
         return Unres;
     }
+    int  ret = fsync (file.GetFileDescriptor());
+    time_t atime = time(NULL);
     
-    if (fsync (file.GetFileDescriptor()) != 0) {
+    if (ret != 0) {
         cerr << "fsync returned non zero value";
+        return Fail;
+    } 
+    
+    struct stat stat_buf;
+    
+    if(stat (file.GetPathname().c_str(), &stat_buf) == -1) {
+		cerr << "stat returned -1";
+		return Unres;
+	}
+
+
+    if (atime != stat_buf.st_atime) {
+        cerr << "fsync haven't updated last access time of the file";
+        return Fail;
+    } 
+    if (atime != stat_buf.st_mtime) {
+        cerr << "fsync haven't updated last modification time of the file";
         return Fail;
     } 
     
@@ -116,7 +135,7 @@ Status FSyncTest::ErrNonFsyncFD ()
         return Fail;
     }
     if (errno != EINVAL) {
-        cerr<<"fsync must set EBADF error when the fildes argument is not a "
+        cerr<<"fsync must set EINVAL error when the fildes argument is not a "
             "valid descriptor";
         return Fail;    
     }

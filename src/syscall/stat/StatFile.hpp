@@ -31,6 +31,10 @@ public:
     StatFile(string pathname) : File(pathname) {
         _uid = getuid();
         _gid = getgid();
+        _st_atime = time(NULL);
+        _st_mtime = _st_atime;
+        _st_ctime = _st_mtime;
+        
     }
     uid_t GetUID() {
         return _uid;
@@ -38,9 +42,21 @@ public:
     gid_t GetGID() {
         return _gid;
     }
+    time_t GetATime() {
+        return _st_atime;
+    }
+    time_t GetMTime() {
+        return _st_mtime;
+    }
+    time_t GetCTime() {
+        return _st_ctime;
+    }
 private:
     uid_t _uid;
     gid_t _gid;
+    time_t _st_atime;
+    time_t _st_mtime;
+    time_t _st_ctime;
 };
 
 
