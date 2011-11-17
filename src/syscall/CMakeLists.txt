@@ -36,6 +36,9 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/stat)
 ADD_SUBDIRECTORY(fsync)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/fsync)
 
+ADD_SUBDIRECTORY(fdatasync)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/fdatasync)
+
 ADD_SUBDIRECTORY(getdents)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/getdents)
 
@@ -79,6 +82,7 @@ TARGET_LINK_LIBRARIES(syscall rt)
 TARGET_LINK_LIBRARIES(syscall ioctl)
 TARGET_LINK_LIBRARIES(syscall stat)
 TARGET_LINK_LIBRARIES(syscall fsync)
+TARGET_LINK_LIBRARIES(syscall fdatasync)
 TARGET_LINK_LIBRARIES(syscall getdents)
 TARGET_LINK_LIBRARIES(syscall rename)
 TARGET_LINK_LIBRARIES(syscall unlink)
