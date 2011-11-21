@@ -29,10 +29,11 @@
 enum MknodSyscalls
 {
 	MknodPathExists,
-	MknodInvalidArg,
+	MknodInvalidArg1,
+	MknodInvalidArg2,
 	MknodBadAdress,
 	MknodTooLongPathName,
-	MknodNotDir,
+	MknodNotDir
 	
 };
 
@@ -46,7 +47,8 @@ public:
 protected:
 	virtual ~MknodTest() {}	
 	Status MknodTestPathExistsFunc();	
-	Status MknodTestInvalidArgFunc();
+	Status MknodTestInvalidArg1Func();
+	Status MknodTestInvalidArg2Func();
 	Status MknodTestBadAdressFunc();
 	Status MknodTestTooLongPathNameFunc();
 	Status MknodTestNotDirFunc();

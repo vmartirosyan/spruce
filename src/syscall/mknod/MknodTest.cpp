@@ -39,15 +39,17 @@ int MknodTest::Main(vector<string>)
 		{
 			case MknodPathExists:
 				return MknodTestPathExistsFunc();
-			case MknodInvalidArg:
-				return MknodTestInvalidArgFunc();
+			case MknodInvalidArg1:
+				return MknodTestInvalidArg1Func();
+			case MknodInvalidArg2:
+				return MknodTestInvalidArg2Func();
 			case MknodBadAdress:
 				return MknodTestBadAdressFunc();
 			case MknodTooLongPathName:
 				return MknodTestTooLongPathNameFunc();
 			case MknodNotDir:
 				return MknodTestNotDirFunc();
-				
+			
  	        default:
 				cerr << "Unsupported operation.";
 				return Unres;   	
@@ -91,7 +93,9 @@ Status MknodTest:: MknodTestPathExistsFunc()
 }
 
 //EINVAL
-Status MknodTest :: MknodTestInvalidArgFunc()
+
+//case 1
+Status MknodTest :: MknodTestInvalidArg1Func()
 {
 	const char *filename = "filename_mknod";
 	
@@ -110,6 +114,27 @@ Status MknodTest :: MknodTestInvalidArgFunc()
 	
 	return Success; 
 	
+}
+
+//case 2
+Status MknodTest :: MknodTestInvalidArg2Func()
+{
+	const char *filename = "filename_mknod";
+	
+	//setting invalid argument to dev
+	if ( mknod( filename, S_IFREG, -1 ) != -1 )
+	{
+		cerr << "returns 0 in case of invalid argument "<<strerror(errno);
+		return Fail;
+	}
+	
+	if ( errno != EINVAL )
+	{
+		cerr << "Incorrect error set in errno in case of invalid argument "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
 }
 
 //EFAULT
