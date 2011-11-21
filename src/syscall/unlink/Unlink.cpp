@@ -41,22 +41,22 @@ int UnlinkTest::Main(vector<string>)
 	{	
 		switch (_operation)
 		{
-			case UnlinkTestTooLongPath:
-				return UnlinkTestTooLongPathFunction ();
-			case UnlinkTestNormalFile:
-			   return UnlinkTestNormalFileFunction();
-			case UnlinkTestIsNotDirectory:
-				return UnlinkTestIsNotDirectoryFunction();
-			case UnlinkTestNoSuchFile :
-				return UnlinkTestNoSuchFileFunction();
-			case UnlinkIsDirectory:
-				return UnlinkIsDirectoryFunction(); 
-			case UnlinkTestEmptyPath:
-				return UnlinkTestEmptyPathFunction();
-			case UnlinkTestNegativeAdress:
-				 return UnlinkTestNegativeAdressFunction();
-			case UnlinkTestPermissionDenied:
-				 return UnlinkTestPermissionDeniedFunction(); 
+			case UnlinkTestTooLongPath:			
+				return UnlinkTestTooLongPathFunction ();				
+			case UnlinkTestNormalFile:			
+				return UnlinkTestNormalFileFunction();			   
+			case UnlinkTestIsNotDirectory:			
+				return UnlinkTestIsNotDirectoryFunction();				
+			case UnlinkTestNoSuchFile:			
+				return UnlinkTestNoSuchFileFunction();				
+			case UnlinkIsDirectory:			
+				return UnlinkIsDirectoryFunction();				 
+			case UnlinkTestEmptyPath:			
+				return UnlinkTestEmptyPathFunction();				
+			case UnlinkTestNegativeAdress:			
+				return UnlinkTestNegativeAdressFunction();				 
+			case UnlinkTestPermissionDenied:			
+				return UnlinkTestPermissionDeniedFunction();  				
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		

@@ -38,22 +38,22 @@ int UnlinkAtTest::Main(vector<string>)
 	{	
 		switch (_operation)
 		{
-			case UnlinkAtTestIsNotDirectory:
-				return UnlinkAtTestIsNotDirectoryFunction();
-			case UnlinkAtTestBadFlagValue:
-			   return UnlinkAtTestBadFlagValueFunction();
-			case UnlinkAtTestBadFileDescriptor1:
-				return UnlinkAtTestBadFileDescriptor1Function();
-		    case  UnlinkAtTestBadFileDescriptor2:
-		        return  UnlinkAtTestBadFileDescriptor2Function();
-		     case UnlinkAtTestNormalUnlink:
-				return UnlinkAtTestNormalUnlinkFunction();
-			case  UnlinkAtTestNormalRemove:
-				return UnlinkAtTestNormalRemoveFunction();
-			case UnlinkAtTestRemove1:
-				return UnlinkAtTestRemove1Function();
-			case UnlinkAtTestRemove2:
-				return UnlinkAtTestRemove2Function();
+			case UnlinkAtTestIsNotDirectory:			
+				return UnlinkAtTestIsNotDirectoryFunction();				
+			case UnlinkAtTestBadFlagValue:			
+				return UnlinkAtTestBadFlagValueFunction();			   
+			case UnlinkAtTestBadFileDescriptor1:			
+				return UnlinkAtTestBadFileDescriptor1Function();				
+			case  UnlinkAtTestBadFileDescriptor2:		    
+				return  UnlinkAtTestBadFileDescriptor2Function();		        
+			case UnlinkAtTestNormalUnlink:		     
+				return UnlinkAtTestNormalUnlinkFunction();				
+			case  UnlinkAtTestNormalRemove:			
+				return UnlinkAtTestNormalRemoveFunction();				
+			case UnlinkAtTestRemove1:			
+				return UnlinkAtTestRemove1Function();				
+			case UnlinkAtTestRemove2:			
+				return UnlinkAtTestRemove2Function();				
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		

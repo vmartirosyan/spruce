@@ -76,47 +76,47 @@ int fcntlFD::Main(vector<string> args)
 			case fcntlFDTooManyOpenedFiles:						
 				return fcntlFDTooManyOpenedFilesFunc();								
 					
-			case fcntlFDGetSetLease:			
-				return fcntlFDGetSetLeaseFunc();				
+			case fcntlFDGetSetLease:						
+				return fcntlFDGetSetLeaseFunc();								
 					
-			case fcntlFDInvalidArg1:			 
-				return fcntlFDInvalidArg1Func();				
+			case fcntlFDInvalidArg1:						 
+				return fcntlFDInvalidArg1Func();								
 					
-			case fcntlFDInvalidArg2:			
-				return fcntlFDInvalidArg2Func();				
+			case fcntlFDInvalidArg2:						
+				return fcntlFDInvalidArg2Func();								
 				
-			case fcntlFDInvalidArg3: 
-				return fcntlFDInvalidArg3Func();
+			case fcntlFDInvalidArg3:			 
+				return fcntlFDInvalidArg3Func();				
 					
-	        case fcntlFDGetSetOwn: 
-				return 	fcntlFDGetSetOwnFunc();
+			case fcntlFDGetSetOwn:	         
+				return 	fcntlFDGetSetOwnFunc();				
 					
-			case  fcntlFDBadAdress: 
-				return fcntlFDBadAdressFunc(); 
+			case  fcntlFDBadAdress:			 
+				return fcntlFDBadAdressFunc();				 
 					
-			case fcntlFDResTempUnavailable:
-				return fcntlFDResTempUnavailableFunc();
+			case fcntlFDResTempUnavailable:			
+				return fcntlFDResTempUnavailableFunc();				
 					
-			case fcntlFDGetSetSig: 
-				return fcntlFDGetSetSigFunc();
+			case fcntlFDGetSetSig:			 
+				return fcntlFDGetSetSigFunc();				
 						
-			case fcntlFDNoLock:
-				return fcntlFDNoLockFunction();
+			case fcntlFDNoLock:			
+				return fcntlFDNoLockFunction();				
 							
-			case fcntlFDGetSetOwn_Ex:
-				return fcntlFDGetSetOwn_ExFunc();
+			case fcntlFDGetSetOwn_Ex:			
+				return fcntlFDGetSetOwn_ExFunc();				
 						
-			case fcntlFDGetSetPipeSize: 
-				return fcntlFDGetSetPipeSizeFunc();
+			case fcntlFDGetSetPipeSize:			 
+				return fcntlFDGetSetPipeSizeFunc();				
 					
-			case fcntlFDCapAboveLimit:
-				return fcntlFDCapAboveLimitFunc();
+			case fcntlFDCapAboveLimit:			
+				return fcntlFDCapAboveLimitFunc();				
 						
-			case fcntlFDDupWithClExFlag:
-			    return fcntlFDDupWithClExFlagFunc();
+			case fcntlFDDupWithClExFlag:			
+				return fcntlFDDupWithClExFlagFunc();			    
 						
-			case fcntlFDIntrSysCall: 
-	            return fcntlFDIntrSysCallFunc();    
+			case fcntlFDIntrSysCall:			 
+				return fcntlFDIntrSysCallFunc();	                
 	
       			
 			default:
