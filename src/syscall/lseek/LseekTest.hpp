@@ -42,7 +42,7 @@ enum LseekSyscalls
 	Lseek64InvalidArg2,
 	Lseek64BadFileDesc1,
 	Lseek64BadFileDesc2,
-	Lseek64NormalCase1
+	Lseek64NormalCase1,
 	Lseek64NormalCase2
 	
 	
