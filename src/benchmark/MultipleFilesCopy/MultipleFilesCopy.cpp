@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <memory>
 #include "UnixCommand.hpp"
-#include "MultipleFilesCopy.hpp"
+#include <MultipleFilesCopy.hpp>
 
 int MultipleFilesCopy::Main(vector<string>)
 {

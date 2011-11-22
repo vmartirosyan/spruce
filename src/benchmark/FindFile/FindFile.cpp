@@ -23,7 +23,7 @@
 
 #include <stdlib.h>
 #include <memory>
-#include "FindFile.hpp"
+#include <FindFile.hpp>
 #include "UnixCommand.hpp"
 
 using std::auto_ptr;

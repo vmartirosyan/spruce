@@ -22,7 +22,7 @@
 
 #include <stdlib.h>
 #include <memory>
-#include "LargeFile.hpp"
+#include <LargeFile.hpp>
 #include "UnixCommand.hpp"
 
 using std::auto_ptr;

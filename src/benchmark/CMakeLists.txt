@@ -46,10 +46,23 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/benchmark/SearchMapFile)
 
 
 
-ADD_EXECUTABLE(benchmark ${CMAKE_CURRENT_BINARY_DIR}/main.cpp)
-TARGET_LINK_LIBRARIES(benchmark utils MultipleFilesCreation MultipleFilesDeletion 
-	MultipleFilesCompression LargeFileCreation FindFile LargeFileCopyTest MultipleFilesDecompression MultipleFilesCopy 
-	MultipleFilesCatting CattingLargeFile SearchMapFile SplitLargeFile)
+ADD_EXECUTABLE(benchmark	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
+							${CMAKE_CURRENT_SOURCE_DIR}/MultipleFilesCreation/Creator.cpp
+							${CMAKE_CURRENT_SOURCE_DIR}/MultipleFilesDeletion/Deleter.cpp
+							${CMAKE_CURRENT_SOURCE_DIR}/MultipleFilesCompression/Compressor.cpp
+							${CMAKE_CURRENT_SOURCE_DIR}/LargeFileCreation/LargeFile.cpp
+							${CMAKE_CURRENT_SOURCE_DIR}/FindFile/FindFile.cpp
+							${CMAKE_CURRENT_SOURCE_DIR}/LargeFileCopyTest/LargeFileCopyTest.cpp
+							${CMAKE_CURRENT_SOURCE_DIR}/MultipleFilesDecompression/Decompressor.cpp
+							${CMAKE_CURRENT_SOURCE_DIR}/MultipleFilesCopy/MultipleFilesCopy.cpp
+							${CMAKE_CURRENT_SOURCE_DIR}/MultipleFilesCatting/MultipleFilesCatting.cpp
+							${CMAKE_CURRENT_SOURCE_DIR}/CattingLargeFile/CattingLargeFile.cpp
+							${CMAKE_CURRENT_SOURCE_DIR}/SearchMapFile/SearchMapFile.cpp
+							${CMAKE_CURRENT_SOURCE_DIR}/SplitLargeFile/SplitLargeFile.cpp)
+TARGET_LINK_LIBRARIES(benchmark utils)
+#TARGET_LINK_LIBRARIES(benchmark utils MultipleFilesCreation MultipleFilesDeletion 
+#	MultipleFilesCompression LargeFileCreation FindFile LargeFileCopyTest MultipleFilesDecompression MultipleFilesCopy 
+#	MultipleFilesCatting CattingLargeFile SearchMapFile SplitLargeFile)
 	
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${CMAKE_CURRENT_BINARY_DIR}/main.cpp)
 

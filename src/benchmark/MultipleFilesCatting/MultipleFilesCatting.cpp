@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <memory>
 #include "UnixCommand.hpp"
-#include "MultipleFilesCatting.hpp"
+#include <MultipleFilesCatting.hpp>
 
 int MultipleFilesCatting::Main(vector<string>)
 {

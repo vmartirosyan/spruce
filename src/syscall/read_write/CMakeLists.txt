@@ -6,4 +6,4 @@ project (Spruce)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-ADD_LIBRARY(read_write STATIC ReadWriteFile.cpp)
+#ADD_LIBRARY(read_write STATIC ReadWriteFile.cpp)

@@ -6,5 +6,5 @@ project (Spruce)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-ADD_LIBRARY(chmod STATIC Chmod.cpp)
+#ADD_LIBRARY(chmod STATIC Chmod.cpp)
 
