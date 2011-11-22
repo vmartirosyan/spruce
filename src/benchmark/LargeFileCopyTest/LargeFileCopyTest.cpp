@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <memory>
 #include "UnixCommand.hpp"
-#include "LargeFileCopyTest.hpp"
+#include <LargeFileCopyTest.hpp>
 
 int LargeFileCopyTest::Main(vector<string>)
 {

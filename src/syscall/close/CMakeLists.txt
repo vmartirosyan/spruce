@@ -4,5 +4,5 @@ message("Configuring dup syscall checker module.")
 
 project (Spruce)
 
-ADD_LIBRARY(close STATIC Close.cpp)
+#ADD_LIBRARY(close STATIC Close.cpp)
 

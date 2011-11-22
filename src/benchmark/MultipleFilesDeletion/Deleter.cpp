@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <memory>
 #include "UnixCommand.hpp"
-#include "Deleter.hpp"
+#include <Deleter.hpp>
 
 int DeleterTest::Main(vector<string>)
 {

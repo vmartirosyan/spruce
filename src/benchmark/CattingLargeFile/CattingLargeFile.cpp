@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <memory>
 #include "UnixCommand.hpp"
-#include "CattingLargeFile.hpp"
+#include <CattingLargeFile.hpp>
 
 int CattingLargeFile::Main(vector<string>)
 {

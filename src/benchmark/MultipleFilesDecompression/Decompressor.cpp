@@ -22,7 +22,7 @@
 
 #include <stdlib.h>
 #include <memory>
-#include "Decompressor.hpp"
+#include <Decompressor.hpp>
 #include "UnixCommand.hpp"
 
 using std::auto_ptr;

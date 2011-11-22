@@ -6,5 +6,5 @@ project (Spruce)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-ADD_LIBRARY(fsync STATIC FSyncTest.cpp)
+#ADD_LIBRARY(fsync STATIC FSyncTest.cpp)
 
