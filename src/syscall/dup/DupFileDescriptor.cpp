@@ -19,7 +19,7 @@
 //      along with this program; if not, write to the Free Software
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
-#include "DupFileDescriptor.hpp"
+#include <DupFileDescriptor.hpp>
 #include "File.hpp"
 #include <unistd.h>
 #include <fcntl.h>
@@ -256,7 +256,7 @@ int DupFileDescriptorTest::Dup3Test(vector<string> args)
 			cerr << "System call fcntl failed: " << strerror(errno);
 			status = Unres;
 		}
-		else if(cloexecFlagOff(newFlag))
+		else if(!cloexecFlagOff(newFlag))
 		{
 			cerr << "System call dup3 failed: O_CLOEXEC flag isn't off" << strerror(errno);
 			status = Fail;
@@ -299,7 +299,7 @@ int DupFileDescriptorTest::Dup3Test(vector<string> args)
 
 int DupFileDescriptorTest::DupErrEBADFTest(vector<string> args)
 {
-	int fd = 3;
+	int fd = -1;
 	int newFd = dup(fd);
 	
 	if(newFd != -1 || errno != EBADF)
@@ -313,8 +313,8 @@ int DupFileDescriptorTest::DupErrEBADFTest(vector<string> args)
 int DupFileDescriptorTest::Dup2ErrEBADFTest(vector<string> args)
 {
 	int status = Success;
-	int fd = 3;
-	int newFd = 4;
+	int fd = -1;
+	int newFd = -1;
 	
 	if(dup2(fd, newFd) != -1 || errno != EBADF) 
 	{
@@ -345,12 +345,12 @@ int DupFileDescriptorTest::Dup2ErrEBADFTest(vector<string> args)
 int DupFileDescriptorTest::Dup3ErrEBADFTest(vector<string> args)
 {
 	int status = Success;
-	int fd = 3;
-	int newFd = 4;
+	int fd = -1;
+	int newFd = -2;
 	
 	if(dup3(fd, newFd, 0) != -1 || errno != EBADF)
 	{
-		cerr << "EBADF error expected: first argument fd is not an open fd";
+		cerr << "EBADF error expected: first argument fd is not an open fd. Error code: " << strerror(errno);
 		status = Fail;
 	}
 	
@@ -371,7 +371,7 @@ int DupFileDescriptorTest::Dup3ErrEBADFTest(vector<string> args)
 		cerr << ex.GetMessage();
 		status = Unres;
 	}
-	return Success;
+	return status;
 }
 
 int DupFileDescriptorTest::Dup3ErrEINVALTest(vector<string> args)
@@ -388,7 +388,7 @@ int DupFileDescriptorTest::Dup3ErrEINVALTest(vector<string> args)
 			status = Fail;
 		}
 		
-		newFd = 4;
+		newFd = -1;
 		if(dup3(fd, newFd, 1) != -1 || errno != EINVAL)
 		{
 			cerr << "EINVAL error expected: flags contain invalid value";

@@ -26,6 +26,7 @@
 #include "SyscallTest.hpp"
 #include <sys/stat.h>
 
+// Operations
 enum DupFileDescriptorSyscalls
 {
 	Dup,
