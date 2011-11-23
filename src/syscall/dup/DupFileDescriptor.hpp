@@ -24,12 +24,17 @@
 #define DUP_FILE_DESCRIPTOR_H
 
 #include "SyscallTest.hpp"
+#include <sys/stat.h>
 
 enum DupFileDescriptorSyscalls
 {
 	Dup,
 	Dup2,
-	Dup3
+	Dup3,
+	DupErrEBADF,
+	Dup2ErrEBADF,
+	Dup3ErrEBADF,
+	Dup3ErrEINVAL	
 };
 
 class DupFileDescriptorTest : public SyscallTest
@@ -46,5 +51,15 @@ private:
 	int DupTest(vector<string> args);
 	int Dup2Test(vector<string> args);
 	int Dup3Test(vector<string> args);
+	int DupErrEBADFTest(vector<string> args);
+	int Dup2ErrEBADFTest(vector<string> args);
+	int Dup2ErrEBUSYTest(vector<string> args);
+	int Dup3ErrEBADFTest(vector<string> args);
+	int Dup3ErrEINVALTest(vector<string> args);
+	int Dup3ErrEBUSYTest(vector<string> args);
+		
+	bool statsEqual(struct stat stat1, struct stat stat2);
+	bool cloexecFlagOff(int flag);
+	bool statusFlagsEqual(int flag1, int flag2);
 };
 #endif /* DUP_TEST_H */
