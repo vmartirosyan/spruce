@@ -33,7 +33,9 @@ enum MknodSyscalls
 	MknodInvalidArg2,
 	MknodBadAdress,
 	MknodTooLongPathName,
-	MknodNotDir
+	MknodNotDir,
+	MknodPermDenied,
+	MknodNoFile
 	
 };
 
@@ -52,6 +54,8 @@ protected:
 	Status MknodTestBadAdressFunc();
 	Status MknodTestTooLongPathNameFunc();
 	Status MknodTestNotDirFunc();
+	Status MknodTestPermDeniedFunc();
+	Status MknodTestNoFileFunc();
 	
 	virtual int Main(vector<string> args);	
 };

@@ -49,6 +49,10 @@ int MknodTest::Main(vector<string>)
 				return MknodTestTooLongPathNameFunc();
 			case MknodNotDir:
 				return MknodTestNotDirFunc();
+			case MknodPermDenied:
+				return MknodTestPermDeniedFunc();
+			case MknodNoFile:
+				return MknodTestNoFileFunc();
 			
  	        default:
 				cerr << "Unsupported operation.";
@@ -180,7 +184,6 @@ Status MknodTest :: MknodTestTooLongPathNameFunc()
 	return Success;
 }
 
-
 //ENOTDIR
 Status MknodTest :: MknodTestNotDirFunc()
 {
@@ -211,6 +214,59 @@ Status MknodTest :: MknodTestNotDirFunc()
 	if ( unlink( otherfilename.c_str() ) == -1 )
 	{
 		cerr << "Error in unlinking file:  "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
+}
+
+//EACCES
+Status MknodTest :: MknodTestPermDeniedFunc()
+{
+	string filename = "file", dirname = "directory";
+	string pathname = dirname + "/" + filename;
+	
+	if ( mkdir( dirname.c_str(), 0000 ) == -1 )
+	{
+		cerr << "Error in creating directory: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( mknod( pathname.c_str(), S_IFREG | 0777 , 0 ) != -1 )
+	{
+		cerr << "returns 0 in case of premission denied "<<strerror(errno);
+		return Fail;
+	}
+	
+	if ( errno != EACCES )
+	{
+		cerr << "Incorrect error set in errno in case of permission denied "<<strerror(errno);
+		return Fail;
+	}
+	
+	if ( rmdir( dirname.c_str() ) == -1 )
+	{
+		cerr << "Error in removing directory: "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
+}
+
+//ENOENT
+Status MknodTest :: MknodTestNoFileFunc()
+{
+	const char *filename = "";
+	
+	if ( mknod( filename, S_IFREG | 0777, 0 ) != -1 )
+	{
+		cerr << "returns 0 in case of no such file or directory "<<strerror(errno);
+		return Fail;
+	}
+	
+	if ( errno != ENOENT )
+	{
+		cerr << "Incorrect error set in errno in case of no such file or directory "<<strerror(errno);
 		return Fail;
 	}
 	
