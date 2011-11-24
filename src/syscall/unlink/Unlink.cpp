@@ -42,21 +42,22 @@ int UnlinkTest::Main(vector<string>)
 		switch (_operation)
 		{
 			case UnlinkTestTooLongPath:			
-				return UnlinkTestTooLongPathFunction ();				
+				return UnlinkTestTooLongPathFunc();				
 			case UnlinkTestNormalFile:			
-				return UnlinkTestNormalFileFunction();			   
+				return UnlinkTestNormalFileFunc();			   
 			case UnlinkTestIsNotDirectory:			
-				return UnlinkTestIsNotDirectoryFunction();				
+				return UnlinkTestIsNotDirectoryFunc();				
 			case UnlinkTestNoSuchFile:			
-				return UnlinkTestNoSuchFileFunction();				
+				return UnlinkTestNoSuchFileFunc();				
 			case UnlinkIsDirectory:			
-				return UnlinkIsDirectoryFunction();				 
+				return UnlinkIsDirectoryFunc();				 
 			case UnlinkTestEmptyPath:			
-				return UnlinkTestEmptyPathFunction();				
+				return UnlinkTestEmptyPathFunc();				
 			case UnlinkTestNegativeAdress:			
-				return UnlinkTestNegativeAdressFunction();				 
+				return UnlinkTestNegativeAdressFunc();				 
 			case UnlinkTestPermissionDenied:			
-				return UnlinkTestPermissionDeniedFunction();  				
+				return UnlinkTestPermissionDeniedFunc(); 
+				 				
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -66,7 +67,7 @@ int UnlinkTest::Main(vector<string>)
 	return Success;
 }
 
-Status UnlinkTest::UnlinkTestNormalFileFunction ()
+Status UnlinkTest::UnlinkTestNormalFileFunc ()
 {
 	
 	int ret_unlink;
@@ -95,7 +96,7 @@ Status UnlinkTest::UnlinkTestNormalFileFunction ()
 
 }
 
-Status UnlinkTest::UnlinkTestTooLongPathFunction ()
+Status UnlinkTest::UnlinkTestTooLongPathFunc ()
 {
 	int ret_unlink;
 	char longpathname[PATH_MAX + 2];
@@ -121,7 +122,7 @@ Status UnlinkTest::UnlinkTestTooLongPathFunction ()
 	return Success;
 }
 
-Status UnlinkTest::UnlinkTestIsNotDirectoryFunction ()
+Status UnlinkTest::UnlinkTestIsNotDirectoryFunc ()
 {
 	int ret_unlink;
 	const char *pathname = "something/file.txt";
@@ -153,7 +154,7 @@ Status UnlinkTest::UnlinkTestIsNotDirectoryFunction ()
 	return Success;
 }
 
-Status UnlinkTest::UnlinkTestNoSuchFileFunction ()
+Status UnlinkTest::UnlinkTestNoSuchFileFunc ()
 {
 	int ret_unlink;
 	int fd;
@@ -189,7 +190,7 @@ Status UnlinkTest::UnlinkTestNoSuchFileFunction ()
 	 return Success;
 }
 
-Status UnlinkTest::UnlinkIsDirectoryFunction ()
+Status UnlinkTest::UnlinkIsDirectoryFunc ()
 {
 	int ret_mkdir;
 	int ret_unlink;
@@ -218,7 +219,7 @@ Status UnlinkTest::UnlinkIsDirectoryFunction ()
 	return Success;
 }
 
-Status UnlinkTest::UnlinkTestEmptyPathFunction ()
+Status UnlinkTest::UnlinkTestEmptyPathFunc ()
 {
 	int ret_unlink;
 	const char *pathname = "";
@@ -237,7 +238,7 @@ Status UnlinkTest::UnlinkTestEmptyPathFunction ()
 	return Success;
 }
 
-Status UnlinkTest::UnlinkTestNegativeAdressFunction ()
+Status UnlinkTest::UnlinkTestNegativeAdressFunc ()
 {
 	const char *pathname =(char *)-1;
 	int ret_unlink = unlink ( pathname );
@@ -255,26 +256,61 @@ Status UnlinkTest::UnlinkTestNegativeAdressFunction ()
 	return Success;
 }
 
-Status UnlinkTest::UnlinkTestPermissionDeniedFunction()
+Status UnlinkTest::UnlinkTestPermissionDeniedFunc()
 {
-	int ret_unlink;
-	const char *pathname = "/dev/loop1";
+	string dirname = "dirname_unlink", filename = "filename_unlink";
+	string pathname = dirname + "/" + filename;
+	int fd;
 	
-	ret_unlink = unlink ( pathname );
-	
-	if ( ret_unlink == 0 )
+	if ( mkdir ( dirname.c_str(), 0777 ) == -1 )
 	{
-		cerr << " returns 0 in case of permission denied ";
+		cerr << "Error in creating directory: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( (fd = open( pathname.c_str(), O_CREAT | O_RDWR, 0777 )) == -1 )
+	{
+		cerr << "Error in opening and creating file: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( chmod( dirname.c_str(), 0000) == -1 )
+    {
+		cerr << "Error in changing mode of directory: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( unlink( pathname.c_str() ) != -1 )
+	{
+		cerr << "returns 0 in case of permission denied. ";
 		return Fail;
 	}
 	
 	if ( errno != EACCES )
 	{
-		cerr << "Incorrect error set in errno in case of permission denied "<<strerror(errno);
+		cerr << "Incorrect error set in errno in case of  permission denied "<<strerror(errno);
 		return Fail;
 	}
-
-	return Success;
 	
+	//cleaning up
+	if ( chmod( dirname.c_str(), 0777 ) == -1 )
+	{
+		cerr << "Error in changing mode of directory: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( unlink( pathname.c_str() ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( rmdir( dirname.c_str() ) == -1 )
+	{
+		cerr << "Error in removing directory: "<<strerror(errno);
+		return Unres;
+	}
+	
+	return Success;
 }
 

@@ -47,14 +47,14 @@ public:
 	}
 protected:
 	virtual ~UnlinkTest() {}	
-	Status UnlinkTestTooLongPathFunction();	
-	Status UnlinkTestNormalFileFunction();
-	Status UnlinkTestIsNotDirectoryFunction();
-	Status UnlinkTestNoSuchFileFunction();
-	Status UnlinkIsDirectoryFunction();
-	Status UnlinkTestEmptyPathFunction();
-	Status UnlinkTestNegativeAdressFunction();
-	Status UnlinkTestPermissionDeniedFunction();
+	Status UnlinkTestTooLongPathFunc();	
+	Status UnlinkTestNormalFileFunc();
+	Status UnlinkTestIsNotDirectoryFunc();
+	Status UnlinkTestNoSuchFileFunc();
+	Status UnlinkIsDirectoryFunc();
+	Status UnlinkTestEmptyPathFunc();
+	Status UnlinkTestNegativeAdressFunc();
+	Status UnlinkTestPermissionDeniedFunc();
 	virtual int Main(vector<string> args);	
 };
 #endif
