@@ -1,4 +1,5 @@
 //      fnctlFD.cpp
+//      fnctlFD.cpp
 //
 // 		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -1033,6 +1034,11 @@ Status fcntlFD :: fcntlFDInvalidArg3Func()
 	   return Fail;
    }
      
+    if ( unlink( file ) == -1 )
+    {
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Unres;
+	} 
 	return  Success;
 } 
 
