@@ -29,13 +29,15 @@
 enum MknodSyscalls
 {
 	MknodPathExists,
+	MknodIsSymLink,
 	MknodInvalidArg1,
 	MknodInvalidArg2,
 	MknodBadAdress,
 	MknodTooLongPathName,
 	MknodNotDir,
 	MknodPermDenied,
-	MknodNoFile
+	MknodNoFile1,
+	MknodNoFile2
 	
 };
 
@@ -49,13 +51,15 @@ public:
 protected:
 	virtual ~MknodTest() {}	
 	Status MknodTestPathExistsFunc();	
-	Status MknodTestInvalidArg1Func();
+	Status MknodTestIsSymLinkFunc();	
+	Status MknodTestInvalidArg1Func();  
 	Status MknodTestInvalidArg2Func();
 	Status MknodTestBadAdressFunc();
 	Status MknodTestTooLongPathNameFunc();
 	Status MknodTestNotDirFunc();
 	Status MknodTestPermDeniedFunc();
-	Status MknodTestNoFileFunc();
+	Status MknodTestNoFile1Func();
+	Status MknodTestNoFile2Func();
 	
 	virtual int Main(vector<string> args);	
 };
