@@ -40,11 +40,12 @@ using std::string;
 class File
 {	
 	public:
-		explicit File(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR)) : 
+		explicit File(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_RDWR) : 
 		_pathname(pathname),
-		_mode(mode)
+		_mode(mode),
+		_flags(flags)
 		{
-			_fd = creat(pathname.c_str(), _mode);
+			_fd = open(pathname.c_str(), _mode | O_CREAT, _flags);
 			if (_fd == -1)
 			{								
 				throw Exception("Cannot create file " + _pathname + 
@@ -87,6 +88,7 @@ class File
 		string _pathname;
 		int _fd;
 		mode_t _mode;
+		int _flags;
 };
 
 #endif /* FILE_H */
