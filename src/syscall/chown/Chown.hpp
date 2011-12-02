@@ -1,6 +1,9 @@
-//      ReadWriteFile.hpp
+//      Chown.hpp
 //      
-//      Copyright 2011 Gurgen Suren
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Gurgen Torozyan <gurgen.torozyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -15,6 +18,7 @@
 //      You should have received a copy of the GNU General Public License
 //      along with this program; if not, write to the Free Software
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.ranklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
 #ifndef CHOWN_H
