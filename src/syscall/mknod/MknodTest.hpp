@@ -37,7 +37,9 @@ enum MknodSyscalls
 	MknodNotDir,
 	MknodPermDenied,
 	MknodNoFile1,
-	MknodNoFile2
+	MknodNoFile2,
+	MknodNormalCase1
+	MknodNormalCase2
 	
 };
 
@@ -60,6 +62,8 @@ protected:
 	Status MknodTestPermDeniedFunc();
 	Status MknodTestNoFile1Func();
 	Status MknodTestNoFile2Func();
+	Status MknodTestNormalCase1Func();
+	Status MknodTestNormalCase2Func();
 	
 	virtual int Main(vector<string> args);	
 };

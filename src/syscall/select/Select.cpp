@@ -220,8 +220,8 @@ Status SelectTest:: SelectTestBadFileDesc2Func()
 Status SelectTest :: SelectTestNormalCase1Func()
 {
 	int rfd, wfd;
-	const char *filename1 = "filename1";
-	const char *filename2 = "filename2";
+	const char *filename1 = "filename1_select";
+	const char *filename2 = "filename2_select";
 	char read_buffer[2] ;
 	char write_buffer[2] = "a";
 	struct timeval tv;
@@ -319,7 +319,7 @@ Status SelectTest :: SelectTestNormalCase2Func()
 
 Status SelectTest:: SelectTestNormalCase3Func()
 {
-	const char *filename = "filename1";
+	const char *filename = "filename1_lseek";
     int fd;
     fd_set rfds;
     struct timeval tv;
