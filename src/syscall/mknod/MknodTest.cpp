@@ -57,7 +57,10 @@ int MknodTest::Main(vector<string>)
 				return MknodTestNoFile1Func();
 			case MknodNoFile2:
 				return MknodTestNoFile2Func();
-			
+			case MknodNormalCase1:
+				return MknodTestNormalCase1Func();
+			case MknodNormalCase2:
+				return MknodTestNormalCase2Func();
  	        default:
 				cerr << "Unsupported operation.";
 				return Unres;   	
@@ -308,6 +311,11 @@ Status MknodTest :: MknodTestNotDirFunc()
 //EACCES
 Status MknodTest :: MknodTestPermDeniedFunc()
 {
+	if ( getuid() == 0 )
+	{
+		//This test is not for root
+		return Success;
+	}
 	string filename = "file", dirname = "directory";
 	string pathname = dirname + "/" + filename;
 	
@@ -319,13 +327,21 @@ Status MknodTest :: MknodTestPermDeniedFunc()
 	
 	if ( mknod( pathname.c_str(), S_IFREG | 0777 , 0 ) != -1 )
 	{
-		cerr << "returns 0 in case of permission denied ";
+		cerr << "returns 0 in case of permission denied. ";
+		if ( rmdir( dirname.c_str() ) == -1 )
+		{
+			cerr << "Error in removing directory: "<<strerror(errno);
+		}
 		return Fail;
 	}
 	
 	if ( errno != EACCES )
 	{
 		cerr << "Incorrect error set in errno in case of permission denied "<<strerror(errno);
+		if ( rmdir( dirname.c_str() ) == -1 )
+		{
+			cerr << "Error in removing directory: "<<strerror(errno);
+		}
 		return Fail;
 	}
 	
@@ -407,4 +423,107 @@ Status MknodTest :: MknodTestNoFile2Func()
 	}
 	
 	return Success;
+}
+
+Status MknodTest :: MknodTestNormalCase1Func()
+{
+	struct stat st_buf;
+	const char *node_name = "nodename";
+	
+	if ( mknod( node_name, S_IFREG | 0777, 0 ) == -1 )
+	{
+		cerr << "Mknod failed with error: "<<strerror(errno);
+		return Fail;
+	}
+    if ( stat( node_name, &st_buf ) == -1 )
+    {
+		cerr << "Error in stat system call: "<<strerror(errno);
+		return Unres;
+	}
+    
+    if ( st_buf.st_uid != getuid() )
+    {
+		cerr << "Mknod failed. ";
+		return Fail;
+	}
+	
+	if ( (st_buf.st_mode & S_IFREG | 0777) == 0 )
+	{
+		cerr << "Mknod failed. ";
+		return Fail;
+	}
+	
+	if ( unlink( node_name ) == -1 )
+	{
+		cerr << "Error in unlinking node: "<<strerror(errno);
+		return Unres;
+	}
+	
+   return Success;
+		
+}
+
+Status MknodTest :: MknodTestNormalCase2Func()
+{
+	
+	if ( getuid()  != 0 )
+	{
+		cerr << "This test should be executed by root. ";
+		return Unres;
+	}
+	struct test_cases
+	{
+		int mode;
+		string msg;
+	} Test [] = {
+	{S_IFREG | 0777,		"ordinary file with mode 0777"},
+	{S_IFIFO | 0777,		" fifo special with mode 0777"},
+	{S_IFCHR | 0777,		"character special with mode 0777"},
+	{S_IFBLK | 0777,		"block special with mode 0777 "}
+	};
+	const char *node_name = "node_name";
+	struct stat st;
+	Status status = Success;
+	int n = sizeof(Test)/(sizeof(int) + sizeof(string));
+	
+	for ( int i = 0; i < n; ++i )
+	{
+		if ( mknod( node_name, Test[i].mode, 0 ) == -1 )
+		{
+			cerr << "For "<<Test[i].msg.c_str() << "mknod failed with error: "<<strerror(errno);
+			status = Fail;
+			continue;
+		}
+		if ( stat( node_name, &st ) == -1 )
+		{
+			cerr << "For " <<Test[i].msg.c_str() << "stat failed with error: "<<strerror(errno);
+			return Unres; 
+		}
+		
+		if ( st.st_uid != getuid() )
+		{
+			cerr << "For "<<Test[i].msg.c_str()<<" mknod failed. "; 
+			status = Fail;
+		}
+		
+		if( (st.st_mode & Test[i].mode)  == 0 )
+		{
+			cerr << "For "<<Test[i].msg.c_str() << " mknod failed. ";
+			status = Fail;
+		}
+		
+		if ( st.st_nlink != 1 )
+		{
+			cerr << "For "<<Test[i].msg.c_str() << " mknod failed. ";
+			status = Fail;
+		}
+
+		if ( unlink( node_name ) == -1 )
+		{
+			cerr << "Error in unlinking node: "<<strerror(errno);
+			return Unres;
+		}
+	}
+	
+	return status;
 }

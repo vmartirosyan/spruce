@@ -258,6 +258,11 @@ Status UnlinkTest::UnlinkTestNegativeAdressFunc ()
 
 Status UnlinkTest::UnlinkTestPermissionDeniedFunc()
 {
+	if ( getuid() ==  0 )
+	{
+		//This test is not for root
+		return Success;
+	}
 	string dirname = "dirname_unlink", filename = "filename_unlink";
 	string pathname = dirname + "/" + filename;
 	int fd;

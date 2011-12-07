@@ -87,7 +87,7 @@ int LseekTest::Main(vector<string>)
 Status LseekTest:: LseekTestBadFileDesc1Func()
 {
 	
-	const char  *filename = "filename1";
+	const char  *filename = "filename_lseek";
 	int fd;
 	int whence = SEEK_CUR;
 	
@@ -114,7 +114,11 @@ Status LseekTest:: LseekTestBadFileDesc1Func()
 		cerr << "Incorrect error set in errno in case of bad file descriptor: "<<strerror(errno);
 		return Fail;
 	}
-	
+	if ( unlink( filename ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Unres;
+	}
 	return Success;
 }
 
@@ -159,7 +163,7 @@ Status LseekTest:: LseekTestBadFileDesc2Func()
 //case 1: invalid value of whence
 Status LseekTest:: LseekTestInvalidArg1Func()
 {
-	const char  *filename = "filename1";
+	const char  *filename = "filename1_lseek";
 	int fd;
 	int whence = -1;
 	
@@ -194,7 +198,7 @@ Status LseekTest:: LseekTestInvalidArg1Func()
 //case 2: invalid value of offset
 Status LseekTest:: LseekTestInvalidArg2Func()
 {
-	const char  *filename = "filename1";
+	const char  *filename = "filename1_lseek";
 	int fd;
 	int whence = SEEK_CUR;
 	
