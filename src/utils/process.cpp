@@ -74,7 +74,7 @@ ProcessResult * Process::Execute(vector<string> args)
 	{
 		return new ProcessResult(Unres, "Cannot wait for child process. " + (string)strerror(errno));
 	}
-	
+
 	// Probably normal end of test. Let's collect the result;
 	char buf[10240];
 	int bytes = read(fds[0], buf, 10240);
@@ -87,6 +87,9 @@ ProcessResult * Process::Execute(vector<string> args)
 	dup(_stdin);
 	dup(_stdout);
 	dup(_stderr);
+	close(_stdin);
+	close(_stdout);
+	close(_stderr);
 	
 	return new ProcessResult(WEXITSTATUS(status), (string)buf);
 }
