@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <sys/utsname.h>
 #include <linux/version.h>
+#include "File.hpp"
 
 int fcntlFD::Main(vector<string> args)
 {
@@ -822,44 +823,41 @@ Status fcntlFD:: fcntlFDTooManyOpenedFilesFunc()
 	pid_t pid;
 	const char* filename = "smthfile";
 	
-	pid = fork();
+	int max_files = getdtablesize() ;
+	cerr << "max_files: " << max_files;
 	
-	if ( pid < 0 )
+	try 
+	{		
+		File file(filename);
+		   
+		for ( ind = 0; fd < max_files - 1; ++ind )
+		{
+		 
+			if ( (fd = open (filename,  O_RDONLY)) == -1 )
+			{
+				cerr << "Error in opening " << ind << "-th file: " << strerror(errno);
+				return Unres;
+			}
+			
+		}
+		
+		if ( fcntl( 1, F_DUPFD, 1 ) != -1 )
+		{
+			 cerr << "returns 0 in case of too many opened files";
+			 return Fail;
+		}
+		if ( errno != EMFILE )
+		{
+			cerr << "Incorrect error set in errno in case of too many opened files"
+				<< strerror(errno);
+			return Fail;
+		}
+	}
+	catch (Exception ex) 
 	{
-		cerr << "Error in fork: "<<strerror(errno);
+		cerr << ex.GetMessage();
 		return Unres;
 	}
-	
-	if ( !pid  )
-	{
-	  //child process
-	   int max_files = getdtablesize();
-
-	   for ( ind = 0; ind < max_files; ++ind )
-	  {
-		 if ( creat( filename , 0777 ) == -1 )
-		 {
-			 cerr << "Error in creating file: "<<strerror(errno);
-			 return Unres;
-		 }
-		 if ( (fd = open (filename,  O_RDONLY)) == -1 )
-		 {
-		  cerr << "Error in opening: "<<strerror(errno);
-		   return Unres;
-	     }
-	  }
-	  if ( fcntl( 1, F_DUPFD, 1 ) != -1 )
-	  {
-		 cerr << "returns 0 in case of too many opened files "<<strerror(errno);
-		 return Fail;
-	  }
-     if ( errno != EMFILE )
-     {
-		cerr << "Incorrect error set in errno in case of too many opened files"
-		     << strerror(errno);
-		return Fail;
-	  }
-    }
   
 	return Success;
 }
