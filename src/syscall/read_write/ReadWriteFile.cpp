@@ -319,30 +319,24 @@ Status ReadWriteFileTest::WriteEagainErrorTest()
 	int status = pipe2(pipe, O_NONBLOCK);
 	if (status == -1)
 	{
-		cerr << strerror(errno);
+		cerr << "Cannot create pipe: " << strerror(errno);
 		return Unres;
 	}
 	
-	int bytes = 64 * 1024 + 1;
-	char *buf;
+	int bytes = PIPE_BUF;//64 * 1024;
+	
+	char buf[bytes];
 	memset(buf, '0', bytes);
 		
-	ssize_t st = write(pipe[1], buf, bytes);
-	if (st == -1)
-	{
-		cerr << strerror(errno);
-		free(buf);
-		return Unres;
-	}
+	ssize_t st = write(pipe[1], buf, bytes);		
 	
+	st = write(pipe[1], buf, bytes);
 	if (errno != EAGAIN || st != -1)
 	{
-		cerr << "Expected to get EAGAIN error";
-		free(buf);
+		cerr << "Expected to get EAGAIN error. Error :" << strerror(errno) << " Bytes written: " << st;		
 		return Fail;
 	}
 
-	free(buf);
 	return Success;
 }
 
