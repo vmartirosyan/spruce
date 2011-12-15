@@ -43,71 +43,8 @@ int IoctlTest::Main(vector<string> args)
 	{
 		switch (_operation)
 		{
-//            case IOCTL_FS_SYNC_FL:
-//                return SetGetFlags(FS_SYNC_FL);
-//            case IOCTL_FS_SECRM_FL:
-//                return SetGetFlags(FS_SECRM_FL);
-            case IOCTL_FS_JOURNAL_DATA_FL:
-                return SetGetFlags(FS_JOURNAL_DATA_FL);
-            case IOCTL_FS_IMAGIC_FL:
-                return SetGetFlags(FS_IMAGIC_FL);
-            case IOCTL_FS_INDEX_FL:
-                return SetGetFlags(FS_INDEX_FL);
-            case IOCTL_FS_BTREE_FL:
-                return SetGetFlags(FS_BTREE_FL);
-            case IOCTL_FS_RESERVED_FL:
-                return SetGetFlags(FS_RESERVED_FL);
-            case IOCTL_FS_DIRECTIO_FL:
-                return SetGetFlags(IOCTL_FS_DIRECTIO_FL);
-            case IOCTL_FS_EXTENT_FL:
-                return SetGetFlags(FS_EXTENT_FL);
-            case IOCTL_FS_TOPDIR_FL:
-                return SetGetFlags(FS_TOPDIR_FL);
-            case IOCTL_FS_NOTAIL_FL:
-                return SetGetFlags(FS_NOTAIL_FL);
-            case IOCTL_FS_DIRSYNC_FL:
-                return SetGetFlags(FS_DIRSYNC_FL);
-            case IOCTL_FS_COMPRBLK_FL:
-                return SetGetFlags(FS_COMPRBLK_FL);
-            case IOCTL_FS_DIRTY_FL:
-                return SetGetFlags(FS_DIRTY_FL);
-            case IOCTL_FS_NOCOMP_FL:
-                return SetGetFlags(FS_NOCOMP_FL);
-//            case IOCTL_FS_NOATIME_FL:
-//                return SetGetFlags(FS_NOATIME_FL);
-//            case IOCTL_FS_NODUMP_FL:
-//                return SetGetFlags(FS_NODUMP_FL);
-//            case IOCTL_FS_APPEND_FL:
-//                return SetGetFlags(FS_APPEND_FL);
-            case IOCTL_FS_ECOMPR_FL:
-                return SetGetFlags(FS_ECOMPR_FL);
-//            case IOCTL_FS_IMMUTABLE_FL:
-//                return SetGetFlags(FS_IMMUTABLE_FL);
-            case IOCTL_FS_COMPR_FL:
-                return SetGetFlags(FS_COMPR_FL);
-            case IOCTL_FS_UNRM_FL:
-                return SetGetFlags(FS_UNRM_FL);
-                
-                
-            case IOCTL_FIGETBSZ:
-                return SetGetFlags(FIGETBSZ);
-            //case IOCTL_FS_IOC_FIEMAP:
-            //return SetGetFlags(FS_IOC_FIEMAP);
-            case IOCTL_FIOQSIZE:
-                return SetGetFlags(FIOQSIZE);
-            case IOCTL_FITHAW:
-                return SetGetFlags(FITHAW);
-            case IOCTL_FIFREEZE:
-                return SetGetFlags(FIFREEZE);
-            case IOCTL_FIOASYNC:
-                return SetGetFlags(FIOASYNC);
-            case IOCTL_FIONBIO:
-                return SetGetFlags(FIONBIO);
-            case IOCTL_FIONCLEX:
-                return SetGetFlags(FIONCLEX);
-            case IOCTL_FIOCLEX:
-                return SetGetFlags(FIOCLEX);
-    
+            case IOCTL_SETGET_VERSION:
+				return SetGetVersion();
             case IOCTL_INVALID_FD:
                 return InvalidFD();
             case IOCTL_INVALID_ARGP:
@@ -185,42 +122,43 @@ Status IoctlTest::InvalidArgp()
 	return Success;
 }
 
-// Tests different ioctl flags
-Status IoctlTest::SetGetFlags(int flag) {
+
+// Tests FS_IOC_GETVERSION, FS_IOC_SETVERSION for ioctl 
+Status IoctlTest::SetGetVersion() {
     try 
 	{		
         File file("newfile");
 		int fd = file.GetFileDescriptor();		
-        int set_flags = flag; 
-        int get_flags = 0;
-        int old_flags = 0;
+        int set_version = 15; 
+        int get_version = 0;
+        int old_version = 0;
         
-		if (ioctl(fd, FS_IOC_GETFLAGS, &old_flags) == -1 ) {
+		if (ioctl(fd, FS_IOC_GETVERSION, &old_version) == -1 ) {
             cerr << "Error backing up old values. " << strerror(errno);
             return Unres;
         }
+        ioctl(fd, FS_IOC_GETVERSION, &old_version);
         
-		if (ioctl(fd, FS_IOC_SETFLAGS, &set_flags) == -1 ) {
+		if (ioctl(fd, FS_IOC_SETVERSION, &set_version) == -1 ) {
             cerr << "Error setting flag." << strerror(errno);
             return Unres;
         }
-        if (ioctl(fd, FS_IOC_GETFLAGS, &get_flags) == -1 ) {
+        if (ioctl(fd, FS_IOC_GETVERSION, &get_version) == -1 ) {
             cerr << "Error getting newly set flags." << strerror(errno);
             return Unres;
         }
         
         // restore old flags
-        if (ioctl(fd, FS_IOC_SETFLAGS, &old_flags) == -1 ) {
+        if (ioctl(fd, FS_IOC_SETVERSION, &old_version) == -1 ) {
             cerr << "Error restoring old values." << strerror(errno);
             return Unres;
         }
                                 
-        if((get_flags & set_flags) == 0) {
-            cerr << "Set get flags does not match. " << strerror(errno);
+        if(get_version != set_version) {
+            cerr << "Set get flags does not match. set version to  = " << 
+				set_version << " get version = " << get_version << " old = " << old_version;
             return Fail;
         }
-        
-        return Success;
 	}
 	catch (Exception ex) 
 	{

@@ -60,6 +60,7 @@ Status FSyncTest::NormExec ()
 {
     const char * buf = "abcdefg";
     File file (this->_tmpDir + "/fsync_test");
+    sleep(1);
     
     if (write (file.GetFileDescriptor(), buf, strlen(buf)) == -1) {
         cerr << "write returned -1";
@@ -69,7 +70,7 @@ Status FSyncTest::NormExec ()
     time_t atime = time(NULL);
     
     if (ret != 0) {
-        cerr << "fsync returned non zero value";
+        cerr << "fsync returned non zero value " << strerror(errno);
         return Fail;
     } 
     
@@ -80,15 +81,14 @@ Status FSyncTest::NormExec ()
 		return Unres;
 	}
 
-
-    if (atime != stat_buf.st_atime) {
-        cerr << "fsync haven't updated last access time of the file";
-        return Fail;
-    } 
     if (atime != stat_buf.st_mtime) {
-        cerr << "fsync haven't updated last modification time of the file";
+        cerr << "fsync hasn't updated last modification time of the file";
         return Fail;
-    } 
+    }
+    if (atime != stat_buf.st_atime) {
+        cerr << "fsync hasn't updated last access time of the file";
+        return Fail;
+    }
     
     return Success;
 }
