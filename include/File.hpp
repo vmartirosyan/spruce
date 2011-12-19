@@ -45,7 +45,7 @@ class File
 		_mode(mode),
 		_flags(flags)
 		{
-			_fd = open(pathname.c_str(), _mode | O_CREAT, _flags);
+			_fd = open(pathname.c_str(), _mode | O_CREAT, _flags );
 			if (_fd == -1)
 			{								
 				throw Exception("Cannot create file " + _pathname + 

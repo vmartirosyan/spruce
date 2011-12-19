@@ -31,7 +31,7 @@
 #include <sys/param.h>
 #include <errno.h>
 #include <string.h>
-
+#include "File.hpp"
 
 
 
@@ -73,9 +73,9 @@ Status UnlinkTest::UnlinkTestNormalFileFunc ()
 	int ret_unlink;
 	const char *pathname = "file.txt";
 	
-	if( creat( pathname, 0775 ) == -1 )
+	if ( open( pathname, O_CREAT | O_RDWR, 0775 ) == -1 )
 	{
-		cerr << "Unable to creat file "<< strerror(errno) ;
+		cerr << "Error in opening and creating file: "<<strerror(errno);
 		return Unres;
 	}
    
@@ -85,13 +85,13 @@ Status UnlinkTest::UnlinkTestNormalFileFunc ()
 		cerr<< "Error occured during unlinking normal file" << strerror(errno);
 		return Unres;
 	}
-	;
+	
 	if ( open( pathname, O_RDWR )!= -1 )
 	{
 		cerr<< " Error: opened unlinked file ";
 		return Fail;
 	}
-	
+    
 	return Success;
 
 }

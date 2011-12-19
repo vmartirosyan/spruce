@@ -30,7 +30,7 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include "File.hpp"
 
 int LseekTest::Main(vector<string>)
 {
@@ -91,10 +91,9 @@ Status LseekTest:: LseekTestBadFileDesc1Func()
 	int fd;
 	int whence = SEEK_CUR;
 	
-	if ( ( fd = open( filename, O_CREAT | O_RDWR , 0777 ) ) == -1 )
+	if ( ( fd = open( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
 	{
 		cerr << "Error in creating and opening file: "<<strerror(errno);
-		return Unres;
 	}
 	
 	if ( close( fd )  == -1 )
@@ -119,6 +118,7 @@ Status LseekTest:: LseekTestBadFileDesc1Func()
 		cerr << "Error in unlinking file: "<<strerror(errno);
 		return Unres;
 	}
+	
 	return Success;
 }
 
@@ -167,30 +167,28 @@ Status LseekTest:: LseekTestInvalidArg1Func()
 	int fd;
 	int whence = -1;
 	
-	if ( ( fd = open( filename, O_CREAT | O_RDWR , 0777 ) ) == -1 )
+	try
 	{
-		cerr << "Error in creating and opening file: "<<strerror(errno);
+        File file( filename, 0777, O_RDWR | O_CREAT );
+        fd = file.GetFileDescriptor();
+        
+		if ( lseek( fd, (loff_t)0, whence ) != -1 )
+		{
+			cerr << "returns 0 in case of invalid argument";
+			return Fail;
+		}
+	
+		if ( errno != EINVAL )
+		{
+			cerr << "Incorrect error set in errno in case of invalid argument: "<<strerror(errno);
+			return Fail;
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
 	}
-
-	
-	if ( lseek( fd, (loff_t)0, whence ) != -1 )
-	{
-		cerr << "returns 0 in case of invalid argument";
-		return Fail;
-	}
-	
-	if ( errno != EINVAL )
-	{
-		cerr << "Incorrect error set in errno in case of invalid argument: "<<strerror(errno);
-		return Fail;
-	}
-	if ( unlink( filename ) == -1 )
-	{
-		cerr << "Error in unlinking file: "<<strerror(errno);
-		return Fail;
-	}
-	
 	return Success;
 }
 
@@ -202,30 +200,29 @@ Status LseekTest:: LseekTestInvalidArg2Func()
 	int fd;
 	int whence = SEEK_CUR;
 	
-	if ( ( fd = open( filename, O_CREAT | O_RDWR , 0777 ) ) == -1 )
+	try
 	{
-		cerr << "Error in creating and opening file: "<<strerror(errno);
+		File file( filename, 0777, O_RDWR | O_CREAT );
+		fd = file.GetFileDescriptor();
+		//setting invalid value to offset 
+		if ( lseek( fd, (loff_t)-1, whence ) != -1 )
+		{
+			cerr << "returns 0 in case of invalid argument ";
+			return Fail;
+		}
+	
+		if ( errno != EINVAL )
+		{
+			cerr << "Incorrect error set in errno in case of invalid argument: "<<strerror(errno);
+			return Fail;
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
 	}
-
-	//setting invalid value to offset 
-	if ( lseek( fd, (loff_t)-1, whence ) != -1 )
-	{
-		cerr << "returns 0 in case of invalid argument ";
-		return Fail;
-	}
 	
-	if ( errno != EINVAL )
-	{
-		cerr << "Incorrect error set in errno in case of invalid argument: "<<strerror(errno);
-		return Fail;
-	}
-	
-	if ( unlink( filename ) == -1 )
-	{
-		cerr << "Error in unlinking file : "<<strerror(errno);
-		return Fail;
-	}
 	return Success;
 }
 
@@ -339,29 +336,28 @@ Status LseekTest :: LseekTestNormalCase1Func()
 	int somenumber = rand();
 	int whence  = SEEK_SET;
 	
-	if ( (fd = open( filename , O_CREAT | O_RDWR, 0777 )) == -1 )
+	try
 	{
-		cerr << "Error in opening and creating file: "<<strerror(errno);
+		File file( filename, 0777, O_RDWR | O_CREAT );
+		fd = file.GetFileDescriptor();
+		if ( (ret_lseek = lseek( fd, (loff_t)somenumber , whence )) == -1 )
+		{
+			cerr << "Error in lseek system call: "<<strerror(errno);
+			return Fail;
+		}
+	
+		if ( ret_lseek != somenumber )
+		{
+			cerr << "lseek failed "; 
+			return Fail;
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
 	}
 	
-	if ( (ret_lseek = lseek( fd, (loff_t)somenumber , whence )) == -1 )
-	{
-		cerr << "Error in lseek system call: "<<strerror(errno);
-		return Fail;
-	}
-	
-	if ( ret_lseek != somenumber )
-	{
-		cerr << "lseek failed "; 
-		return Fail;
-	}
-	
-	if ( unlink( filename ) == -1 )
-	{
-		cerr << "Error in unlinking file: "<<strerror(errno);
-		return Fail;
-	}
 	return Success;
 }
 
@@ -379,50 +375,48 @@ Status LseekTest :: LseekTestNormalCase2Func()
 	strcpy( write_buffer1, "abcd" );
 	strcpy( write_buffer2, "efg" );
 	
-	if ( (fd= open( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
+	try
 	{
-		cerr << "Error in opening and creating file: "<<strerror(errno);
-		return Unres;
-	}
+		File file( filename, O_RDWR | O_CREAT,0777 );
+		fd = file.GetFileDescriptor();
+		if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
+		{
+			cerr << "Error in write system call: "<<strerror(errno);
+			return Unres;
+		}
 	
-	if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
-	{
-		cerr << "Error in write system call: "<<strerror(errno);
-		return Unres;
-	}
+		if ( fstat( fd, &stat_buf ) ==-1 )
+		{
+			cerr << "Error in fstat system call: "<<strerror(errno);
+			return Unres;
+		}
 	
-	if ( fstat( fd, &stat_buf ) ==-1 )
-	{
-		cerr << "Error in fstat system call: "<<strerror(errno);
-		return Unres;
-	}
+		file_size =  stat_buf.st_size;
 	
-	file_size =  stat_buf.st_size;
+		offset = file_size + strlen(write_buffer2);
 	
-	offset = file_size + strlen(write_buffer2);
+		if ( (ret_offset =  lseek( fd, offset, SEEK_SET )) == -1 )
+		{
+			cerr << "Error in lseek system call: "<<strerror(errno);
+			return Fail;
+		}
 	
-	if ( (ret_offset =  lseek( fd, offset, SEEK_SET )) == -1 )
-	{
-		cerr << "Error in lseek system call: "<<strerror(errno);
-		return Fail;
-	}
-	
-	if ( ret_offset != offset )
-	{
-		cerr << "lseek failed 1"<<endl;
-		return Fail;
-	}
+		if ( ret_offset != offset )
+		{
+			cerr << "lseek failed 1"<<endl;
+			return Fail;
+		}
   	
-	if ( write( fd, &write_buffer2, strlen(write_buffer2) ) != strlen(write_buffer2) )
-	{
-		cerr << "Error in write system call: "<<strerror(errno);
-		return Fail;
+		if ( write( fd, &write_buffer2, strlen(write_buffer2) ) != strlen(write_buffer2) )
+		{
+			cerr << "Error in write system call: "<<strerror(errno);
+			return Fail;
+		}
 	}
-
-	if ( unlink( filename ) == -1 )
+	catch( Exception ex )
 	{
-		cerr << "Error in unlinking file: "<<strerror(errno);
-		return Fail;
+		cerr << ex.GetMessage();
+		return Unres;
 	}
 	
 	return Success;
@@ -444,75 +438,74 @@ Status LseekTest :: LseekTestNormalCase3Func()
 	strcpy( write_buffer2, "efg" );
 	
 	
-     if ( (fd = open( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
-     {
-		 cerr << "Error in opening and creating file: "<<strerror(errno);
-		 return Unres;
-	 }
+   try
+   {
+		File file( filename, O_RDWR | O_CREAT ,0777);
+		fd = file.GetFileDescriptor();
 	
-	if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
-	{
-		cerr << "Error in write system call: "<<strerror(errno);
-		return Unres;
-	}
+		if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
+		{
+			cerr << "Error in write system call: "<<strerror(errno);
+			return Unres;
+		}
 	
-	//getting size of file after writing to it
-	if ( fstat( fd, &stat_buf ) == -1 )
-	{
-		cerr << "Error in fstat system call: "<<strerror(errno);
-		return Unres;
-	}
+		//getting size of file after writing to it
+		if ( fstat( fd, &stat_buf ) == -1 )
+		{
+			cerr << "Error in fstat system call: "<<strerror(errno);
+			return Unres;
+		}
 	
-	file_size =  stat_buf.st_size;
+		file_size =  stat_buf.st_size;
 	
-	offset = file_size + strlen(write_buffer2);
+		offset = file_size + strlen(write_buffer2);
 	
-	if ( (ret_offset =  lseek( fd, offset, SEEK_SET )) == -1 )
-	{
-		cerr << "Error in lseek system call: "<<strerror(errno);
-		return Fail;
-	}
+		if ( (ret_offset =  lseek( fd, offset, SEEK_SET )) == -1 )
+		{
+			cerr << "Error in lseek system call: "<<strerror(errno);
+			return Fail;
+		}
 	
-	if ( ret_offset != offset )
-	{
-		cerr << "lseek failed "<<endl;
-		return Fail;
-	}
+		if ( ret_offset != offset )
+		{
+			cerr << "lseek failed "<<endl;
+			return Fail;
+		}
   	
-	if ( write( fd, &write_buffer2, strlen( write_buffer2 ) ) != strlen(write_buffer2) )
-	{
-		cerr << "Error in write system call: "<<strerror(errno);
-		return Fail;
-	}
+		if ( write( fd, &write_buffer2, strlen( write_buffer2 ) ) != strlen(write_buffer2) )
+		{
+			cerr << "Error in write system call: "<<strerror(errno);
+			return Fail;
+		}
 	
-    if ( lseek( fd, (loff_t)0, SEEK_SET)  == -1 )
-    {
-		 cerr << "Error in lseek system call: "<<strerror(errno);
-		 return Fail;
-     }
+		if ( lseek( fd, (loff_t)0, SEEK_SET)  == -1 )
+		{
+			cerr << "Error in lseek system call: "<<strerror(errno);
+			return Fail;
+		}
 	 
-	if ( read( fd, &read_buffer, (offset +strlen(write_buffer2)) ) == -1 )
+		if ( read( fd, &read_buffer, (offset +strlen(write_buffer2)) ) == -1 )
+		{
+			cerr << "Error in read system call: "<<strerror(errno);
+			return Unres;
+		}
+	
+		if ( strncmp( read_buffer, write_buffer1,strlen(write_buffer1) ) != 0  )
+		{
+			cerr << "lseek failed ";
+			return Fail;
+		}
+	
+		if ( strncmp( &read_buffer[offset], write_buffer2, strlen(write_buffer2) ) != 0 )
+		{
+			cerr << "lseek failed 2";
+			return Fail;
+		}
+	}
+	catch( Exception ex )
 	{
-		cerr << "Error in read system call: "<<strerror(errno);
+		cerr << ex.GetMessage();
 		return Unres;
-	}
-	
-	if ( strncmp( read_buffer, write_buffer1,strlen(write_buffer1) ) != 0  )
-	{
-		cerr << "lseek failed ";
-		return Fail;
-	}
-	
-	if ( strncmp( &read_buffer[offset], write_buffer2, strlen(write_buffer2) ) != 0 )
-	{
-		cerr << "lseek failed 2";
-		return Fail;
-	}
-	
-	if ( unlink( filename ) == -1 )
-	{
-		cerr << "Error in unlinking file: "<<strerror(errno);
-		return Fail;
 	}
 	return Success;
 	
@@ -529,31 +522,29 @@ Status LseekTest:: Lseek64TestInvalidArg1Func()
 	int whence = SEEK_SET;
 	const char *filename = "filename_lseek";
   
-  	if ( (fd = open( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
-  	{
-		cerr << "Error in opening and creating file: "<<strerror(errno);
+	try
+	{
+		File file( filename );
+		fd = file.GetFileDescriptor();
+		//setting invalid ( negative ) value to offset
+	
+		if ( lseek64( fd, (off64_t)-1, whence ) != -1 )
+		{
+			cerr << "returns 0 in case of invalid argument";
+			return Fail;
+		}
+		if ( errno != EINVAL )
+		{
+			cerr << " Incorrect error set in errno in case of invalid argument "<<strerror(errno);
+			return Unres;
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
 	}
 	
-	//setting invalid ( negative ) value to offset
-	
-	if ( lseek64( fd, (off64_t)-1, whence ) != -1 )
-	{
-		cerr << "returns 0 in case of invalid argument";
-		return Fail;
-	}
-    if ( errno != EINVAL )
-    {
-		cerr << " Incorrect error set in errno in case of invalid argument "<<strerror(errno);
-		return Unres;
-	}
-	
-	if ( unlink( filename ) == -1 )
-	{
-		cerr << "Error in unlinking file: "<<strerror(errno);
-		return Fail;
-	}
-	 
 	return Success;
 }
 //EINVAL
@@ -563,33 +554,30 @@ Status LseekTest:: Lseek64TestInvalidArg2Func()
 	int fd;
 	const char *filename = "filename_lseek";
 	
-	if ( (fd = open( filename, O_CREAT| O_RDWR, 0777 )) == -1 )
+	try
 	{
-		cerr<<"Error in opening and creating file: "<<strerror(errno);
+		File file( filename, O_RDWR | O_CREAT, 0777);
+		fd = file.GetFileDescriptor();
+		
+		//setting invalid value to whence
+		if ( lseek64( fd, (off64_t)0, -1 ) != -1 )
+		{
+			cerr << "returns 0 in case of in valid argument";
+			return Fail;
+		}
+	
+		if ( errno != EINVAL )
+		{
+			cerr << "Incorrect error set in errno in case of invalid argument "<<strerror(errno);
+			return Fail;
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
 	}
 	
-	//setting invalid value to whence
-	
-	if ( lseek64( fd, (off64_t)0, -1 ) != -1 )
-	{
-		cerr << "returns 0 in case of in valid argument";
-		return Fail;
-	}
-	
-     if ( errno != EINVAL )
-     {
-		 cerr << "Incorrect error set in errno in case of invalid argument "<<strerror(errno);
-		 return Fail;
-	 }	
-	 
-	 
-	 if ( unlink( filename ) == -1 )
-	 {
-		 cerr << "Error in unlinking file: "<<strerror(errno);
-		 return Fail;
-	 }
-	 
 	return Success;
 }
 
@@ -666,29 +654,26 @@ Status LseekTest :: Lseek64TestNormalCase1Func()
 	const char *filename = "lseek64_file";
 	off64_t offset = rand();
 	
-	if ( ( fd = open( filename, O_CREAT | O_RDWR , 0777 )) == -1 )
+	try
 	{
-		cerr << "Error in opening and creating file: "<<strerror(errno);
+		File file( filename );
+		fd = file.GetFileDescriptor();
+		if ( (ret_lseek64 = lseek64( fd, ( off64_t )offset, whence )) == -1 )
+		{
+			cerr << "Error in lseek64 system call: "<<strerror(errno);
+			return Fail;
+		}
+	
+		if ( ret_lseek64 != offset )
+		{
+			cerr << "lseek64 failed ";
+			return Fail;
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
-	}
-	
-	if ( (ret_lseek64 = lseek64( fd, ( off64_t )offset, whence )) == -1 )
-	{
-		cerr << "Error in lseek64 system call: "<<strerror(errno);
-		return Fail;
-		
-	}
-	
-	if ( ret_lseek64 != offset )
-	{
-		cerr << "lseek64 failed ";
-		return Fail;
-	}
-	
-	if ( unlink( filename ) == -1 )
-	{
-		cerr << "Error in unlinking file: "<<strerror(errno);
-		return Fail;
 	}
 	
 	return Success;
@@ -699,7 +684,7 @@ Status LseekTest :: Lseek64TestNormalCase1Func()
 Status LseekTest :: Lseek64TestNormalCase2Func()
 {
 	int fd;
-	const char *filename = "new_lseek64_file";
+	const char *filename = "new_lseek64_file_";
 	char write_buffer1[BUFSIZ];
 	char write_buffer2[BUFSIZ];
 	char read_buffer[BUFSIZ];
@@ -710,76 +695,74 @@ Status LseekTest :: Lseek64TestNormalCase2Func()
 	strcpy( write_buffer1, "abcd" );
 	strcpy( write_buffer2, "efg" );
 	
-	
-     if ( (fd = open( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
-     {
-		 cerr << "Error in opening and creating file: "<<strerror(errno);
-		 return Unres;
-	 }
-	
-	if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
+	try
 	{
-		cerr << "Error in write system call: "<<strerror(errno);
-		return Unres;
-	}
+		File file( filename , O_CREAT | O_RDWR , 0777);
+		fd = file.GetFileDescriptor();
+		if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
+		{
+			cerr << "Error in write system call: "<<strerror(errno);
+			return Unres;
+		}
 	
-	//getting size of file after writing to it
-	if ( fstat( fd, &stat_buf ) == -1 )
-	{
-		cerr << "Error in fstat system call: "<<strerror(errno);
-		return Unres;
-	}
+		//getting size of file after writing to it
+		if ( fstat( fd, &stat_buf ) == -1 )
+		{
+			cerr << "Error in fstat system call: "<<strerror(errno);
+			return Unres;
+		}
 	
-	file_size =  stat_buf.st_size;
+		file_size =  stat_buf.st_size;
 	
-	offset = file_size + strlen(write_buffer2);
+		offset = file_size + strlen(write_buffer2);
 	
-	if ( (ret_offset =  lseek64( fd, offset, SEEK_SET )) == -1 )
-	{
-		cerr << "Error in lseek system call: "<<strerror(errno);
-		return Fail;
-	}
+		if ( (ret_offset =  lseek64( fd, offset, SEEK_SET )) == -1 )
+		{
+			cerr << "Error in lseek system call: "<<strerror(errno);
+			return Fail;
+		}
 	
-	if ( ret_offset != offset )
-	{
-		cerr << "lseek failed ";
-		return Fail;
-	}
+		if ( ret_offset != offset )
+		{
+			cerr << "lseek failed ";
+			return Fail;
+		}
   	
-	if ( write( fd, &write_buffer2, strlen( write_buffer2 ) ) != strlen(write_buffer2) )
-	{
-		cerr << "Error in write system call: "<<strerror(errno);
-		return Unres;
-	}
+		if ( write( fd, &write_buffer2, strlen( write_buffer2 ) ) != strlen(write_buffer2) )
+		{
+			cerr << "Error in write system call: "<<strerror(errno);
+			return Unres;
+		}
 	
-    if ( lseek64( fd, (off64_t)0, SEEK_SET)  == -1 )
-    {
-		 cerr << "Error in lseek system call: "<<strerror(errno);
-		 return Fail;
-     }
+		if ( lseek64( fd, (off64_t)0, SEEK_SET)  == -1 )
+		{
+			cerr << "Error in lseek system call: "<<strerror(errno);
+			return Fail;
+		}
 	 
-	if ( read( fd, &read_buffer, (offset +strlen(write_buffer2)) ) == -1 )
+		if ( read( fd, &read_buffer, (offset +strlen(write_buffer2)) ) == -1 )
+		{
+			cerr << "Error in read system call: "<<strerror(errno);
+			return Unres;
+		}
+	
+		if ( strncmp( read_buffer, write_buffer1,strlen(write_buffer1) ) != 0  )
+		{
+			cerr << "lseek failed ";
+			return Fail;
+		}
+	
+		if ( strncmp( &read_buffer[offset], write_buffer2, strlen(write_buffer2) ) != 0 )
+		{
+			cerr << "lseek failed ";
+			return Fail;
+		}
+	
+	}
+	catch( Exception ex )
 	{
-		cerr << "Error in read system call: "<<strerror(errno);
+		cerr << ex.GetMessage();
 		return Unres;
-	}
-	
-	if ( strncmp( read_buffer, write_buffer1,strlen(write_buffer1) ) != 0  )
-	{
-		cerr << "lseek failed ";
-		return Fail;
-	}
-	
-	if ( strncmp( &read_buffer[offset], write_buffer2, strlen(write_buffer2) ) != 0 )
-	{
-		cerr << "lseek failed ";
-		return Fail;
-	}
-	
-	if ( unlink( filename ) == -1 )
-	{
-		cerr << "Error in unlinking file: "<<strerror(errno);
-		return Fail;
 	}
 	return Success;
 }

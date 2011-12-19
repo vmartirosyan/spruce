@@ -30,6 +30,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "File.hpp"
 
 int MknodTest::Main(vector<string>)
 {
@@ -78,43 +79,42 @@ Status MknodTest:: MknodTestPathExistsFunc()
 	struct test_cases {	
 	int mode;
 	string msg;
- } Test[] = { 
-   {S_IFREG | 0777,		"ordinary file with mode 0777 "},
-   {S_IFIFO | 0777,		" fifo special with mode 0777 "},
-   {S_IFCHR | 0777,		" character special with mode 0777 "},
-   {S_IFBLK | 0777,		" block special with mode 0777 "}
+    } Test[] = { 
+   {S_IFREG | 0777,	 "ordinary file with mode 0777 "},
+   {S_IFIFO | 0777,	 " fifo special with mode 0777 "},
+   {S_IFCHR | 0777,	 " character special with mode 0777 "},
+   {S_IFBLK | 0777,	 " block special with mode 0777 "}
     };
     int n = sizeof( Test )/ ( sizeof(string) + sizeof( int ));
 	Status status = Success;
 	const char *filename = "filename_mknod";
 	int fd;
-	
-	 for ( int i = 0; i < n; ++i )
-	 {
-		 if ( (fd = open( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
-		 {
-			 cerr << "Error in creating and opening file: "<<strerror(errno);
-			 return Unres;
-		 }
+	for ( int i = 0; i < n; ++i )
+	{
+	  if ( (fd = open( filename, O_CREAT | O_RDWR, 0777 )) == -1 )
+	  {
+		cerr << "Error in opening file: "<<strerror(errno);
+		return Unres;
+	  }
+	  if ( mknod( filename, Test[i].mode , 0 ) != -1 )
+	  {
+		cerr << "For" << Test[i].msg.c_str() << " mknod returns 0 in case of File exists. ";
+		status = Fail; 
+	  }
 		 
-		 if ( mknod( filename, Test[i].mode , 0 ) != -1 )
-		 {
-			cerr << "For" << Test[i].msg.c_str() << " mknod returns 0 in case of File exists. ";
-			status = Fail; 
-		 }
-		 
-		 if ( errno != EEXIST )
-		 {
-			 cerr << "For" << Test[i].msg.c_str() << " mknod sets incorrect error set in errno"
+	  if ( errno != EEXIST )
+	  {
+		cerr << "For" << Test[i].msg.c_str() << " mknod sets incorrect error set in errno"
 													"in case of File exists: "<<strerror(errno)<< ". ";
-		   status = Fail;
-		 }
-		 if ( unlink( filename ) == -1 )
-		 {
-			 cerr << "Error in unlinking file: "<<strerror(errno);
-			 return Unres;
-		 }
-     }
+		status = Fail;
+	  }
+	  if ( unlink( filename ) == -1 )
+	  {
+	     cerr << "Error in unlinking file: "<<strerror(errno);
+		 return Unres;
+	  }  
+	}
+
 	return status;
 }
 
@@ -125,11 +125,11 @@ Status MknodTest :: MknodTestIsSymLinkFunc()
 	struct test_cases {	
 	int mode;
 	string msg;
- } Test[] = { 
-   {S_IFREG | 0777,		"ordinary file with mode 0777 "},
-   {S_IFIFO | 0777,		" fifo special with mode 0777 "},
-   {S_IFCHR | 0777,		" character special with mode 0777 "},
-   {S_IFBLK | 0777,		" block special with mode 0777 "}
+     } Test[] = { 
+   {S_IFREG | 0777,	 "ordinary file with mode 0777 "},
+   {S_IFIFO | 0777,	 " fifo special with mode 0777 "},
+   {S_IFCHR | 0777,	 " character special with mode 0777 "},
+   {S_IFBLK | 0777,	 " block special with mode 0777 "}
     };
 	int n = sizeof( Test )/ ( sizeof(string) + sizeof( int ));	
    	Status status  = Success;
@@ -138,32 +138,33 @@ Status MknodTest :: MknodTestIsSymLinkFunc()
 	
 	for ( int i = 0; i < n; ++i )
 	{
-		if ( symlink( node_name, link ) == -1 )
-		{
+	   if ( symlink( node_name, link ) == -1 )
+		  {
 			cerr << "Error in creating symbolic link: "<<strerror(errno);
 			return Unres;
-		}
+		   }
 		
-		if ( mknod( link, Test[i].mode , 0 ) != -1 )
-		{
+	   if ( mknod( link, Test[i].mode , 0 ) != -1 )
+	   {
 			   cerr <<"For"<< Test[i].msg.c_str() << " mknod returns 0 in case of File exists. ";
 			   status = Fail;
-		 }
+		}
 		 
-		 if ( errno != EEXIST )
-		 {
+	   if ( errno != EEXIST )
+	   {
 			 cerr << "For" << Test[i].msg.c_str() << " mknod sets incorrect error set in errno "
 			                                      "in case of File exists" << strerror(errno) << ". ";
 			 status = Fail;
-		 }
+		}
 	      
-	      if ( unlink( link ) == -1 )
-	      {
+	    if ( unlink( link ) == -1 )
+	    {
 			  cerr << "Error in ulinking file: "<<strerror(errno);
 			  return Unres;
-		  }	   
-		
+		 }	 	
 	}
+	
+
 	
 	return status;
 	
