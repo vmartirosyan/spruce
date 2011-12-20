@@ -72,6 +72,18 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/lseek)
 ADD_SUBDIRECTORY(mknod)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/mknod)
 
+ADD_SUBDIRECTORY(mmap)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/mmap)
+
+ADD_SUBDIRECTORY(msync)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/msync)
+
+ADD_SUBDIRECTORY(mlock)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/mlock)
+
+ADD_SUBDIRECTORY(mprotect)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/mprotect)
+
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${CMAKE_CURRENT_BINARY_DIR}/main.cpp)
 
 ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
@@ -97,6 +109,10 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/umask/Umask.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/unlink/Unlink.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/unlinkat/UnlinkAT.cpp
+						${CMAKE_CURRENT_SOURCE_DIR}/mmap/MmapMemory.cpp
+						${CMAKE_CURRENT_SOURCE_DIR}/msync/MsyncMemory.cpp
+						${CMAKE_CURRENT_SOURCE_DIR}/mlock/MlockMemory.cpp
+						${CMAKE_CURRENT_SOURCE_DIR}/mprotect/MprotectMemory.cpp
 						)
 						
 
