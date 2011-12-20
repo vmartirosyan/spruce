@@ -1232,11 +1232,14 @@ Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 {
 	
 
-	#if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
-		cerr <<"Kernel version doesn't support this operation ";
-		return Unres;
-	
-	#else
+#if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
+	cerr <<"Kernel version doesn't support this operation ";
+	return Unres;
+#endif
+#ifndef F_SETPIPE_SZ
+	cerr << "Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined";
+	return Unres;
+#endif
 	
 	int pipefd[2];
 
@@ -1257,8 +1260,7 @@ Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 		 cerr << "get-set pipe size failed";
 		 return Fail;
 	}
-  return Success;
-  #endif
+  return Success;  
 }
 
 //EPERM
@@ -1266,14 +1268,15 @@ Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 {
 
-	
-	
-	#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
-	
-		cerr <<"Kernel version doesn't support this operation ";
-		return Unres; 
-	
-	#else
+#if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
+	cerr <<"Kernel version doesn't support this operation ";
+	return Unres;
+#endif
+#ifndef F_SETPIPE_SZ
+	cerr << "Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined";
+	return Unres;
+#endif
+
 	int pipefd[2];
 	if (pipe( pipefd ) == -1 )
 	{
@@ -1293,7 +1296,7 @@ Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 	}
    
    return Success;
-   #endif 
+
 }
 
 //test for F_DUPFD_CLOEXEC operation
