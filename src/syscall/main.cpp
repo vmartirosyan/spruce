@@ -21,6 +21,10 @@
 #include "Select.hpp"
 #include "LseekTest.hpp"
 #include "MknodTest.hpp"
+#include "MmapMemory.hpp"
+#include "MlockMemory.hpp"
+#include "MsyncMemory.hpp"
+#include "MprotectMemory.hpp"
 #include <config.hpp>
 
 int main(int argc, char ** argv)
@@ -51,7 +55,11 @@ int main(int argc, char ** argv)
 		Configuration<SelectTest> selectConf("${CMAKE_INSTALL_PREFIX}/config/select.conf");
 		Configuration<LseekTest> lseekConf("${CMAKE_INSTALL_PREFIX}/config/lseek.conf");
 		Configuration<MknodTest> mknodConf("${CMAKE_INSTALL_PREFIX}/config/mknod.conf");
-		
+		Configuration<MmapMemoryTest> mmapConf("${CMAKE_INSTALL_PREFIX}/config/mmap.conf");
+		Configuration<MsyncMemoryTest> msyncConf("${CMAKE_INSTALL_PREFIX}/config/msync.conf");
+		Configuration<MlockMemoryTest> mlockConf("${CMAKE_INSTALL_PREFIX}/config/mlock.conf");
+		Configuration<MprotectMemoryTest> mprotectConf("${CMAKE_INSTALL_PREFIX}/config/mprotect.conf");
+    
 		TestCollection tests1 = conf1.Read();
 		TestCollection tests2 = conf2.Read();
 		TestCollection tests3 = conf3.Read();
@@ -74,6 +82,11 @@ int main(int argc, char ** argv)
 		TestCollection selectTests = selectConf.Read();
 		TestCollection lseekTests = lseekConf.Read();
 		TestCollection mknodTests = mknodConf.Read();
+		TestCollection mmapTests = mmapConf.Read();
+		TestCollection msyncTests = msyncConf.Read();
+		TestCollection mlockTests = mlockConf.Read();
+		TestCollection mprotectTests = mprotectConf.Read();
+		
 	  
 	  
 		tests.Merge(tests1);
@@ -98,6 +111,10 @@ int main(int argc, char ** argv)
 		tests.Merge(selectTests);
 		tests.Merge(lseekTests);
 		tests.Merge(mknodTests);
+		tests.Merge(mmapTests);
+		tests.Merge(msyncTests);
+		tests.Merge(mlockTests);
+		tests.Merge(mprotectTests);
 	}
 	catch (Exception ex)
 	{
