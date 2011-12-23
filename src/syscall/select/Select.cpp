@@ -140,7 +140,7 @@ Status SelectTest:: SelectTestBadFileDesc1Func()
 	struct timeval tv;
 	
 	//open and close file to make file descriptor invalid
-	if ( ( fd = open ( filename, O_CREAT | O_RDWR , 0777 ) ) == -1 )
+	if ( ( fd = open ( filename, O_CREAT | O_RDWR, 0777 ) ) == -1 )
 	{
 		cerr << "Error in opening and creating file: "<<strerror(errno);
 		return Unres;
@@ -231,8 +231,8 @@ Status SelectTest :: SelectTestNormalCase1Func()
 	
 	try
 	{
-		File file1( filename1, O_RDWR | O_CREAT , 0777);
-		File file2( filename2, O_RDWR | O_CREAT , 0777);
+		File file1( filename1, 0777, O_RDWR | O_CREAT);
+		File file2( filename2, 0777,O_RDWR | O_CREAT);
 		rfd = file1.GetFileDescriptor();
 		wfd = file2.GetFileDescriptor();
 

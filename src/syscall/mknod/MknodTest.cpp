@@ -477,10 +477,10 @@ Status MknodTest :: MknodTestNormalCase2Func()
 		int mode;
 		string msg;
 	} Test [] = {
-	{S_IFREG | 0777,		"ordinary file with mode 0777"},
-	{S_IFIFO | 0777,		" fifo special with mode 0777"},
-	{S_IFCHR | 0777,		"character special with mode 0777"},
-	{S_IFBLK | 0777,		"block special with mode 0777 "}
+	{S_IFREG | 0777,	"ordinary file with mode 0777"},
+	{S_IFIFO | 0777,	" fifo special with mode 0777"},
+	{S_IFCHR | 0777,	"character special with mode 0777"},
+	{S_IFBLK | 0777,	"block special with mode 0777 "}
 	};
 	const char *node_name = "node_name";
 	struct stat st;

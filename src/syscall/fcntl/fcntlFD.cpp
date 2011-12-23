@@ -142,7 +142,7 @@ Status fcntlFD::dupFileDescriptor()
 
 	try
 	{
-		File file( "test_", O_RDWR, 0777);
+		File file( "test_", 0777, O_RDWR );
 		fd = file.GetFileDescriptor();
 		if( (new_fd = fcntl(fd, F_DUPFD, _arg)) == -1 )
 		{
@@ -210,7 +210,7 @@ Status fcntlFD::get_setFileStatusFlagsIgnore()
 
 	try
 	{
-		File file( "filename" , O_CREAT, 0777 );
+		File file( "filename" ,0777,O_CREAT);
 		fd = file.GetFileDescriptor();
 	
 		// set File Descriptor Flags
@@ -290,7 +290,7 @@ Status fcntlFD::get_setFileStatusFlags()
 	
 	try
 	{
-		File file( "test", O_CREAT, 0777 );
+		File file( "test", 0777, O_CREAT );
 		fd = file.GetFileDescriptor();
 		// set File Descriptor Flags
 		set_flags = O_APPEND | O_DIRECT | O_NOATIME | O_NONBLOCK;
@@ -426,7 +426,7 @@ Status fcntlFD::fcntlFDSetLockFunction ()
 	int fd, type, ret_fcntl;
 	try
 	{
-		File file( filename, O_RDWR | O_CREAT, 0777 );
+		File file( filename, 0777 ,O_RDWR | O_CREAT);
 		fd = file.GetFileDescriptor();
 	
 		//setting flock structure
@@ -823,7 +823,7 @@ Status fcntlFD::fcntlFDGetSetLeaseFunc()
 	try
 	{
 		//read lease ( F_SETLEASE & F_RDLCK )
-		File file1( filename1, O_RDONLY | O_CREAT, 0777 );
+		File file1( filename1, 0777, O_RDONLY | O_CREAT );
 		fd1 = file1.GetFileDescriptor();
 		
 		if ( fcntl( fd1, F_SETLEASE, F_RDLCK ) == -1 )
@@ -948,7 +948,7 @@ Status fcntlFD :: fcntlFDInvalidArg3Func()
 
 	try
 	{
-		File file( filename, O_RDWR | O_CREAT, 0777 );
+		File file( filename, 0777, O_RDWR | O_CREAT );
 		fd = file.GetFileDescriptor();
 		
 		//setting flock structure
