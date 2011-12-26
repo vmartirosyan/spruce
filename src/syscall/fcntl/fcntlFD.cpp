@@ -1,4 +1,5 @@
 //      fnctlFD.cpp
+//      fnctlFD.cpp
 //
 // 		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -30,6 +31,7 @@
 #include <stdio.h>
 #include <sys/utsname.h>
 #include <linux/version.h>
+#include "File.hpp"
 
 int fcntlFD::Main(vector<string> args)
 {
@@ -138,71 +140,65 @@ Status fcntlFD::dupFileDescriptor()
 	char* nbuff = new char[6];
 	long _arg = rand()%99;
 
-	if((fd = open("test", O_CREAT | O_RDWR)) < 0)
-	{	
-		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
-	    return Unres;
-    }
-
-	if( (new_fd = fcntl(fd, F_DUPFD, _arg)) == -1 )
+	try
 	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
+		File file( "test_", 0777, O_RDWR );
+		fd = file.GetFileDescriptor();
+		if( (new_fd = fcntl(fd, F_DUPFD, _arg)) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+
+		if ( write(fd, &buff, 5) == -1 )
+		{
+			cerr << "Error in writing: "<<strerror(errno);
+			return Unres;
+		}
+	
+		if ( lseek(fd, 0, SEEK_SET) == -1 )
+		{
+			cerr << "Error: "<<strerror(errno);
+			return Unres;
+		}
+		if( read(new_fd, nbuff, 5) == -1 )
+		{
+			cerr << "Error in writing: "<<strerror(errno);
+			return Unres;
+		}
+
+		if ( close(new_fd) == -1 )
+		{
+			cerr << "Error in closing file: "<<strerror(errno);
+			return Unres;
+		}
+	
+		if(new_fd == EINVAL)
+		{
+			cerr << "arg is negative or is greater than the maximum allowable value." << endl;
+			return Fail;
+		}
+
+		if(new_fd == EMFILE)
+		{
+			cerr << "the process already has the maximum number of file descriptors open" << endl;
+			return Fail;
+		}
+
+		if((strcmp(buff, nbuff) != 0) || (new_fd < _arg))
+		{
+			delete [] nbuff;
+			cerr << "Return wrong file descriptor";
+			return Fail;
+		}
 	}
-
-	if ( write(fd, &buff, 5) == -1 )
+	
+	catch( Exception ex )
 	{
-		cerr << "Error in writing: "<<strerror(errno);
+		cerr << ex.GetMessage();
 		return Unres;
 	}
 	
-	if ( lseek(fd, 0, SEEK_SET) == -1 )
-	{
-		cerr << "Error: "<<strerror(errno);
-		return Unres;
-	}
-	if( read(new_fd, nbuff, 5) == -1 )
-	{
-		cerr << "Error in writing: "<<strerror(errno);
-		return Unres;
-	}
-
-	if ( close(fd) == -1 )
-	{
-		cerr << "Error in closing: "<<strerror(errno);
-		return Unres;
-	}
-	if ( close(new_fd) == -1 )
-	{
-		cerr << "Error in closing file: "<<strerror(errno);
-		return Unres;
-	}
-	
-	if ( unlink("test") == -1 )
-	{
-		cerr << "Error in unlinking: "<<strerror(errno);
-		return Unres;
-	}
-
-	if(new_fd == EINVAL)
-	{
-		cerr << "arg is negative or is greater than the maximum allowable value." << endl;
-		return Fail;
-	}
-
-	if(new_fd == EMFILE)
-	{
-		cerr << "the process already has the maximum number of file descriptors open" << endl;
-		return Fail;
-	}
-
-	if((strcmp(buff, nbuff) != 0) || (new_fd < _arg))
-	{
-		delete [] nbuff;
-		cerr << "Return wrong file descriptor";
-		return Fail;
-	}
-
 	return Success;
 }
 
@@ -212,44 +208,37 @@ Status fcntlFD::get_setFileStatusFlagsIgnore()
 	long set_flags;
 	long get_flags;
 
-	if((fd = open("test", O_CREAT)) < 0)
+	try
 	{
-			cerr << "Can't open file\n errno: " << strerror(errno) << endl;
-			return Unres;
-	}
+		File file( "filename" ,0777,O_CREAT);
+		fd = file.GetFileDescriptor();
+	
+		// set File Descriptor Flags
+		set_flags = O_WRONLY | O_RDWR | O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC;
+		if ( fcntl(fd, F_SETFL, set_flags) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
 
-	// set File Descriptor Flags
-	set_flags = O_WRONLY | O_RDWR | O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC;
-	if ( fcntl(fd, F_SETFL, set_flags) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
-
-	// get File Descriptor Flags
-	if ( (get_flags = fcntl(fd, F_GETFL)) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
-
- 	if ( close(fd) == -1 )
- 	{
-		cerr << "Error in closing file: "<<strerror(errno);
+		// get File Descriptor Flags
+		if ( (get_flags = fcntl(fd, F_GETFL)) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+		if (set_flags & get_flags != 0)
+		{
+			cerr << "Must Ignore setted flags, but does not!: " << strerror(errno);
+			return Fail;
+		}
+    }
+    catch( Exception ex )
+    {
+		cerr << ex.GetMessage();
 		return Unres;
 	}
-	if ( unlink("test") == -1 )
-	{
-		cerr << "Error in unlinking: "<<strerror(errno);
-		return Unres;
-	}
-
-	if(set_flags & get_flags != 0)
-	{
-		cerr << "Must Ignore setted flags, but does not!: " << strerror(errno);
-		return Fail;
-	}
-
+	
 	return Success;
 }
 
@@ -259,42 +248,35 @@ Status fcntlFD::get_setFileStatusFlagsIgnoreRDONLY()
 	long set_flags;
 	long get_flags;
 
-	if((fd = open("test", O_CREAT)) < 0)
+   try
+   {
+		File file( "filename" );
+		fd = file.GetFileDescriptor();
+		// set File Descriptor Flags
+		set_flags = O_RDONLY;
+		if( fcntl(fd, F_SETFL, set_flags) == -1 )
 		{
-			cerr << "Can't open file\n errno: " << strerror(errno) << endl;
-			return Unres;
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
 		}
 
-	// set File Descriptor Flags
-	set_flags = O_RDONLY;
-	if( fcntl(fd, F_SETFL, set_flags) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
+		// get File Descriptor Flags
+		if( (get_flags = fcntl(fd, F_GETFL)) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
 
-	// get File Descriptor Flags
-	if( (get_flags = fcntl(fd, F_GETFL)) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
-
-	if ( close(fd) == -1 )
-	{
-		cerr << "Error in closing: "<<strerror(errno);
+		if(set_flags & get_flags != 0)
+		{
+			cerr << "Must Ignore setted flags, but does not!: " << strerror(errno);
+			return Fail;
+		}
+    }
+    catch( Exception ex )
+    {
+		cerr << ex.GetMessage();
 		return Unres;
-	}
-	if( unlink("test") == -1 )
-	{
-		cerr << "Error in unlinking: "<<strerror(errno);
-		return Unres;
-	}
-
-	if(set_flags & get_flags != 0)
-	{
-		cerr << "Must Ignore setted flags, but does not!: " << strerror(errno);
-		return Fail;
 	}
 
 	return Success;
@@ -305,43 +287,36 @@ Status fcntlFD::get_setFileStatusFlags()
 	int fd;
 	long set_flags;
 	long get_flags;
-
-	if((fd = open("test", O_CREAT)) < 0)
+	
+	try
 	{
-		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
-		return Unres;
-	}
+		File file( "test", 0777, O_CREAT );
+		fd = file.GetFileDescriptor();
+		// set File Descriptor Flags
+		set_flags = O_APPEND | O_DIRECT | O_NOATIME | O_NONBLOCK;
+		if ( fcntl(fd, F_SETFL, set_flags) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
 
-	// set File Descriptor Flags
-	set_flags = O_APPEND | O_DIRECT | O_NOATIME | O_NONBLOCK;
-	if ( fcntl(fd, F_SETFL, set_flags) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
-
-	// get File Descriptor Flags
-	if( (get_flags = fcntl(fd, F_GETFL)) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
-
-	if ( close(fd) == -1 )
-	{
-		cerr << "Error in closing: "<<strerror(errno);
-		return Unres;
-	}
-	if ( unlink("test") == -1 )
-    {
-		cerr << "Error in unlinking: "<<strerror(errno);
-		return Unres;
+		// get File Descriptor Flags
+		if( (get_flags = fcntl(fd, F_GETFL)) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+		if(set_flags != get_flags)
+		{
+			cerr << "Can't get right file descriptor flags: " << strerror(errno);
+			return Fail;
+		}
     }
     
-	if(set_flags != get_flags)
-	{
-		cerr << "Can't get right file descriptor flags: " << strerror(errno);
-		return Fail;
+    catch( Exception ex )
+    {
+		cerr << ex.GetMessage();
+		return Unres;
 	}
 
 	return Success;
@@ -353,46 +328,38 @@ Status fcntlFD::get_setFileDescriptorFlags()
 	long set_flags = FD_CLOEXEC;
 	long get_flags;
 
-	if((fd = open("test", O_CREAT | O_WRONLY)) < 0)
+	try
 	{
-		cerr << "Can't open file\n errno: " << strerror(errno) << endl;
+		File file( "test" );
+		fd = file.GetFileDescriptor();
+		// set File Descriptor Flags
+		if ( fcntl(fd, F_SETFD, set_flags) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+
+		// get File Descriptor Flags
+		if ( (get_flags = fcntl(fd, F_GETFD)) == -1 )
+		{
+			cerr <<"Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+
+		if(FD_CLOEXEC == get_flags)
+		{
+			return Success;
+		}
+		else
+		{
+			cerr << "Cannot get right file descriptor flags: " << strerror(errno);
+			return Fail;
+		}
+	}
+	catch ( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
-	}
-
-	// set File Descriptor Flags
-	if ( fcntl(fd, F_SETFD, set_flags) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
-
-	// get File Descriptor Flags
-	if ( (get_flags = fcntl(fd, F_GETFD)) == -1 )
-	{
-		cerr <<"Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
-
-	if ( close(fd) == -1 )
-	{
-		cerr << "Error in closing: "<<strerror(errno);
-		return Unres;
-		
-	}
-	if ( unlink("test") == -1 )
-	{
-		cerr << "Error in unlinking: "<<strerror(errno);
-		return Unres; 
-	}
-
-	if(FD_CLOEXEC == get_flags)
-	{
-		return Success;
-	}
-	else
-	{
-		cerr << "Cannot get right file descriptor flags: " << strerror(errno);
-		return Fail;
 	}
 }
 
@@ -405,40 +372,48 @@ Status fcntlFD:: fcntlFDGetLockFunction()
 	const char *filename  = "fcntl_file.txt";
 	int fd, ret_fcntl;
 	struct flock flocks;
-	if ((fd= open( filename, O_RDWR | O_CREAT, 0700 )) == -1 )
+	
+	try
 	{
-		cerr << "Error: "<<strerror(errno);
-		return Unres;
-	}
-
-	//setting flock structure
-    
-	flocks.l_whence = SEEK_SET;
-	flocks.l_start = 0;
-	flocks.l_len = 0;
-	flocks.l_pid = getpid();
-	flocks.l_type = F_RDLCK ;
+		File file( filename );
+		fd = file.GetFileDescriptor();
+	
+		//setting flock structure
+		flocks.l_whence = SEEK_SET;
+		flocks.l_start = 0;
+		flocks.l_len = 0;
+		flocks.l_pid = getpid();
+		flocks.l_type = F_RDLCK ;
    
-    ret_fcntl = fcntl( fd, F_GETLK, &flocks );
+		ret_fcntl = fcntl( fd, F_GETLK, &flocks );
    
-   if ( ret_fcntl == -1 )
-   {
-	 cerr << "Error: "<<strerror(errno);
+		if ( ret_fcntl == -1 )
+		{
+			cerr << "Error: "<<strerror(errno);
 
-	 if ( unlink( filename ) == -1 )
-	   cerr << "Error in unlinking: "<<strerror(errno);
-	   return Fail;
-   }
+			if ( unlink( filename ) == -1 )
+				cerr << "Error in unlinking: "<<strerror(errno);
+				
+			return Fail;
+		
+		}
   
-    if( flocks.l_type != F_UNLCK && flocks.l_whence!=SEEK_SET&&
+		if( flocks.l_type != F_UNLCK && flocks.l_whence!=SEEK_SET&&
         flocks.l_start != 0 && flocks.l_len != 0 )
-  {
-	 cerr <<"incompatible locks prevent this lock\n"
-	        "PID of the process holding this lock "<< flocks.l_pid ; 
-	 if ( unlink( filename ) == -1 )
-      cerr << "Error in unlinking file: "<<strerror(errno);
-	 return Fail;
+		{
+			cerr <<"incompatible locks prevent this lock\n"
+				"PID of the process holding this lock "<< flocks.l_pid ; 
+			if ( unlink( filename ) == -1 )
+				cerr << "Error in unlinking file: "<<strerror(errno);
+			return Fail;
+		}
   }
+  catch( Exception ex )
+  {
+	  cerr << ex.GetMessage();
+	  return Unres;
+  }
+  
 	return Success;
 }
 
@@ -449,52 +424,46 @@ Status fcntlFD::fcntlFDSetLockFunction ()
 	const char *filename  = "fcntl_file.txt";
 	struct flock flocks;
 	int fd, type, ret_fcntl;
-	if ((fd= open( filename, O_RDWR | O_CREAT, 0700 )) == -1 )
+	try
 	{
-		cerr << "Error in opening: "<<strerror(errno);
-		return Fail;
-	}
-
-	//setting flock structure
-    
-	flocks.l_whence = SEEK_SET;
-	flocks.l_start = 0;
-	flocks.l_len = 0;
-	flocks.l_pid = getpid();
+		File file( filename, 0777 ,O_RDWR | O_CREAT);
+		fd = file.GetFileDescriptor();
+	
+		//setting flock structure
+		flocks.l_whence = SEEK_SET;
+		flocks.l_start = 0;
+		flocks.l_len = 0;
+		flocks.l_pid = getpid();
 	
    
-   for ( type = 0; type < 2; ++type )
-   {
-    flocks.l_type = type ? F_RDLCK : F_WRLCK;
-    ret_fcntl = fcntl( fd, F_SETLK, &flocks );
+		for ( type = 0; type < 2; ++type )
+		{
+			flocks.l_type = type ? F_RDLCK : F_WRLCK;
+			ret_fcntl = fcntl( fd, F_SETLK, &flocks );
    
-      if ( ret_fcntl == -1 )
-     {
-	   if ( errno == EACCES || EAGAIN )
-	    cerr << "conflicting lock is held by another process" << strerror(errno);
-	   if ( unlink ( filename ) == -1 )
-	         cerr << "Error in unlinking file: "<<strerror(errno);
-	         
-	   return Fail;
-    }
-   }
+			if ( ret_fcntl == -1 )
+			{
+				if ( errno == EACCES || EAGAIN )
+					cerr << "conflicting lock is held by another process" << strerror(errno);         
+				return Fail;
+			}
+		}
    
-	flocks.l_type = F_UNLCK;
-	if ( ret_fcntl == -1 )
-	{
-	  if (errno == EACCES || EAGAIN )
-	    cerr << "conflicting lock is held by another process "<<strerror(errno);
-	    if ( unlink ( filename ) == -1 )
-	      cerr << "Error in unlinking file "<<strerror(errno);
-	      return Fail;
-	  }
+		flocks.l_type = F_UNLCK;
+		if ( ret_fcntl == -1 )
+		{
+			if (errno == EACCES || EAGAIN )
+				cerr << "conflicting lock is held by another process "<<strerror(errno);
+			return Fail;
+		}
 	  
-   if ( unlink( filename ) == -1 )
-   {
-	   cerr << "Error in unlinking file: "<<strerror(errno);
-	   return Fail;
-   }
-    
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	
    return Success;
 }
 
@@ -504,48 +473,44 @@ Status fcntlFD::fcntlFDSetLockWithWaitFunction()
 	const char *filename  = "fcntl_file.txt";
 	struct flock flocks;
 	int fd, type, ret_fcntl;
-	if ((fd= open( filename, O_RDWR | O_CREAT, 0700 )) == -1 )
-	{
-		cerr << "Error: "<<strerror(errno);
-		return Unres;
-	}
 
-	//setting flock structure
-    
-	flocks.l_whence = SEEK_SET;
-	flocks.l_start = 0;
-	flocks.l_len = 0;
-	flocks.l_pid = getpid();
+	try
+	{
+		File file( filename );
+		fd = file.GetFileDescriptor();
+	
+		//setting flock structure
+		flocks.l_whence = SEEK_SET;
+		flocks.l_start = 0;
+		flocks.l_len = 0;
+		flocks.l_pid = getpid();
 	
    
-   for ( type = 0; type < 2; ++type )
-   {
-    flocks.l_type = type ? F_RDLCK : F_WRLCK;
-    ret_fcntl = fcntl( fd, F_SETLK, &flocks );
+		for ( type = 0; type < 2; ++type )
+		{
+			flocks.l_type = type ? F_RDLCK : F_WRLCK;
+			ret_fcntl = fcntl( fd, F_SETLK, &flocks );
    
-   if ( ret_fcntl == -1 )
-   {
-	 if ( errno == EINTR )
-	   cerr << "signal is caught while waiting, then the call is interrupted " << strerror(errno);
-	 if ( unlink ( filename ) == -1 )
-	   cerr << "Error in unlinking file "<<strerror(errno);
-	   return Fail;
+			if ( ret_fcntl == -1 )
+			{
+				if ( errno == EINTR )
+					cerr << "signal is caught while waiting, then the call is interrupted " << strerror(errno);
+				return Fail;
+			}
+		}
+		flocks.l_type = F_UNLCK;
+		if ( ret_fcntl == -1 )
+		{
+			if (errno == EINTR )
+				cerr << "signal is caught while waiting, then the call is interrupted  "<<strerror(errno);
+			return Fail;
+	    }
+	    
    }
-  }
-	flocks.l_type = F_UNLCK;
-	if ( ret_fcntl == -1 )
-	{
-	  if (errno == EINTR )
-	    cerr << "signal is caught while waiting, then the call is interrupted  "<<strerror(errno);
-	    if ( unlink ( filename ) == -1 )
-	      cerr << "Error in unlinking file "<<strerror(errno);
-	      return Fail;
-	  }
-	  
-   if ( unlink( filename ) == -1 )
+   catch( Exception ex )
    {
-	   cerr << "Error in unlinking file "<<strerror(errno);
-	   return Fail;
+	   cerr << ex.GetMessage();
+	   return Unres;
    }
    
    return Success;
@@ -557,8 +522,8 @@ Status fcntlFD::fcntlFDSetLockWithWaitFunction()
 //directory change notification
 Status fcntlFD::fcntlFDNoteDirFunction()
 {
-	  int  dirfd;
-	 const char *  dirname = "fcntl_directory";
+	 int  dirfd;
+	 const char *dirname = "fcntl_directory";
 
 
     //DN_CREATE
@@ -738,37 +703,33 @@ Status fcntlFD::fcntlFDBadFileDescriptor1Func()
 	struct flock flocks;
 	int fd;
 	
-    if ( creat ( file, 0777 ) == -1 )
+	try
 	{
-		cerr << "Error in creating file: "<<strerror(errno);
-		return Unres;
-	}
-	if ( (fd =open( file, O_RDONLY )) == -1 ) // file opened only for reading
-	{
-		cerr << "Error in opening file: "<<strerror(errno);
-		return Unres;
-	}
-	//setting flock structure
-	flocks.l_whence = SEEK_SET;
-	flocks.l_start = 0;
-	flocks.l_len = 0;
-	flocks.l_pid = getpid();
-	flocks.l_type = F_WRLCK; // write lock 
+		File file( file );
+		fd = file.GetFileDescriptor();
 	
-	if ( fcntl ( fd, F_SETLK, &flocks ) != -1 )
-	{
-		cerr << "returns 0 in case of bad file descriptor ";
-		return Fail;
-	}
-	if ( errno != EBADF )
-	{
-		cerr << "Incorrect error set in errno in case of bad file descriptor "<<strerror(errno);
-		return Fail;
-	}
-	if ( unlink ( file ) == -1 )
-	{
-		cerr << "Error in unlinking file: "<<strerror(errno);
-		return Fail;
+		//setting flock structure
+		flocks.l_whence = SEEK_SET;
+		flocks.l_start = 0;
+		flocks.l_len = 0;
+		flocks.l_pid = getpid();
+		flocks.l_type = F_WRLCK; // write lock 
+	
+		if ( fcntl ( fd, F_SETLK, &flocks ) != -1 )
+		{
+			cerr << "returns 0 in case of bad file descriptor ";
+			return Fail;
+		}
+		if ( errno != EBADF )
+		{
+			cerr << "Incorrect error set in errno in case of bad file descriptor "<<strerror(errno);
+			return Fail;
+		}
+    }
+    catch( Exception ex )
+    {
+		cerr << ex.GetMessage();
+		return Unres;
 	}
 	
 	return Success;
@@ -780,13 +741,10 @@ Status fcntlFD::fcntlFDBadFileDescriptor2Func()
 	const char *file = "some_file_1";
 	int fd;
 	
-    if ( creat ( file, 0777 ) == -1 )
-	{
-		cerr << "Error in creating file: "<<strerror(errno);
-		return Unres;
-	}
+		
+  
 	//open and close file to make file descriptor invalid
-	if ( (fd =open( file, O_RDONLY )) == -1 )
+	if ( (fd =open( file,O_CREAT | O_RDONLY )) == -1 )
 	{
 		cerr << "Error in opening file: "<<strerror(errno);
 		return Unres;
@@ -807,12 +765,8 @@ Status fcntlFD::fcntlFDBadFileDescriptor2Func()
 		cerr << "Incorrect error set in errno in case of bad file descriptor "<<strerror(errno);
 		return Fail;
 	}
-	if ( unlink ( file ) == -1 )
-	{
-		cerr << "Error in unlinking file: "<<strerror(errno);
-		return Fail;
-	}
-	return Success;
+
+   return Success;
 }
 
 Status fcntlFD:: fcntlFDTooManyOpenedFilesFunc()
@@ -821,44 +775,41 @@ Status fcntlFD:: fcntlFDTooManyOpenedFilesFunc()
 	pid_t pid;
 	const char* filename = "smthfile";
 	
-	pid = fork();
+	int max_files = getdtablesize() ;
+	cerr << "max_files: " << max_files;
 	
-	if ( pid < 0 )
+	try 
+	{		
+		File file(filename);
+		   
+		for ( ind = 0; fd < max_files - 1; ++ind )
+		{
+		 
+			if ( (fd = open (filename,  O_RDONLY)) == -1 )
+			{
+				cerr << "Error in opening " << ind << "-th file: " << strerror(errno);
+				return Unres;
+			}
+			
+		}
+		
+		if ( fcntl( 1, F_DUPFD, 1 ) != -1 )
+		{
+			 cerr << "returns 0 in case of too many opened files";
+			 return Fail;
+		}
+		if ( errno != EMFILE )
+		{
+			cerr << "Incorrect error set in errno in case of too many opened files "
+				<< strerror(errno);
+			return Fail;
+		}
+	}
+	catch (Exception ex) 
 	{
-		cerr << "Error in fork: "<<strerror(errno);
+		cerr << ex.GetMessage();
 		return Unres;
 	}
-	
-	if ( !pid  )
-	{
-	  //child process
-	   int max_files = getdtablesize();
-
-	   for ( ind = 0; ind < max_files; ++ind )
-	  {
-		 if ( creat( filename , 0777 ) == -1 )
-		 {
-			 cerr << "Error in creating file: "<<strerror(errno);
-			 return Unres;
-		 }
-		 if ( (fd = open (filename,  O_RDONLY)) == -1 )
-		 {
-		  cerr << "Error in opening: "<<strerror(errno);
-		   return Unres;
-	     }
-	  }
-	  if ( fcntl( 1, F_DUPFD, 1 ) != -1 )
-	  {
-		 cerr << "returns 0 in case of too many opened files "<<strerror(errno);
-		 return Fail;
-	  }
-     if ( errno != EMFILE )
-     {
-		cerr << "Incorrect error set in errno in case of too many opened files"
-		     << strerror(errno);
-		return Fail;
-	  }
-    }
   
 	return Success;
 }
@@ -868,77 +819,58 @@ Status fcntlFD::fcntlFDGetSetLeaseFunc()
 	 const char *filename1 = "file1.txt";
      const char *filename2 = "file2.txt";
   
-     	
-     //read lease ( F_SETLEASE & F_RDLCK )
-	  if ( (fd1 = open(filename1, O_RDONLY | O_CREAT, 0777)) == -1 )
-  {
-	  cerr << "Error in opening file: "<<strerror(errno);
-	  return Unres;
-  }   
-	if ( fcntl( fd1, F_SETLEASE, F_RDLCK ) == -1 )
+
+	try
 	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-	   if ( unlink ( filename1 ) == -1 )
-			cerr << "Error in unlinking: "<<strerror(errno);
-		return Fail;
-	}
-	
-	if ( fcntl( fd1, F_GETLEASE ) != F_RDLCK )
-	{
-		cerr << "get-set lease failed for read lease" ;
-		if ( unlink ( filename1 ) == -1 )
-		cerr << "Error in  unlinking: "<<strerror(errno);
-		return  Fail;
-	}
-	
-	if ( unlink ( filename1 ) == -1 )
-	{
-		cerr << "Error in unlinking: "<<strerror(errno);
-		return Fail;
-	}
-	
-	// write lease ( F_SETLEASE & F_WRLCK )
-	 if ( (fd2 = open(filename2, O_RDWR | O_CREAT, 0777)) == -1 )
-	{
-		cerr << "Error in opening: "<< strerror(errno);
-		return Unres;
+		//read lease ( F_SETLEASE & F_RDLCK )
+		File file1( filename1, 0777, O_RDONLY | O_CREAT );
+		fd1 = file1.GetFileDescriptor();
 		
+		if ( fcntl( fd1, F_SETLEASE, F_RDLCK ) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+	
+		if ( fcntl( fd1, F_GETLEASE ) != F_RDLCK )
+		{
+			cerr << "get-set lease failed for read lease" ;
+			return  Fail;
+		}
+	
+	
+		// write lease ( F_SETLEASE & F_WRLCK )
+		File file2 ( filename2, 0777, O_CREAT | O_RDWR );
+		fd2 = file2.GetFileDescriptor();
+		if ( fcntl ( fd2, F_SETLEASE, F_WRLCK ) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+		if ( fcntl( fd2, F_GETLEASE ) != F_WRLCK )
+		{
+			cerr << "get-set lease failed for write lease ";
+			return Fail;
+		}
+	
+		// removing lease ( F_SETLEASE & F_UNLCK )
+		if ( fcntl ( fd2, F_SETLEASE , F_UNLCK ) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+		if ( fcntl ( fd2, F_GETLEASE ) != F_UNLCK )
+		{
+			cerr << "get-set lease failed for remove lease ";
+			return Fail;		
+		}
 	}
-	if ( fcntl ( fd2, F_SETLEASE, F_WRLCK ) == -1 )
+	catch( Exception ex )
 	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		if ( unlink (filename2) == -1 )
-			cerr << "Error in unlinking: "<<strerror(errno);
-		 return Fail;
-	}
-	if ( fcntl( fd2, F_GETLEASE ) != F_WRLCK )
-	{
-		cerr << "get-set lease failed for write lease ";
-		if ( unlink(filename2) == -1 )
-			cerr << "Error in unlinking: "<<strerror(errno);
-		return Fail;
+		cerr << ex.GetMessage();
+		return Unres;
 	}
 	
-	// removing lease ( F_SETLEASE & F_UNLCK )
-	if ( fcntl ( fd2, F_SETLEASE , F_UNLCK ) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		if ( unlink (filename2) == -1 )
-		  cerr << "Error in unlinking: "<<strerror(errno);
-		return Fail;
-	}
-	if ( fcntl ( fd2, F_GETLEASE ) != F_UNLCK )
-	{
-		cerr << "get-set lease failed for remove lease ";
-		if ( unlink (filename2) == -1 )
-			cerr << "Error in unlinking: "<<strerror(errno);
-        return Fail;		
-	}
-	if ( unlink (filename2) == -1 )
-	{
-		cerr << "Error in unlinking: "<<strerror(errno);
-		return Fail;
-	} 
 	return  Success;
 }
 
@@ -948,27 +880,28 @@ Status fcntlFD:: fcntlFDInvalidArg1Func()
 {
 	const char *file = "somefile";
 	int fd; 
-	if ( (fd= open ( file, O_RDWR | O_CREAT, 0777)) == -1 )
+	
+	try
 	{
-		cerr << "Error in opening and creating: "<<strerror(errno);
+		File file( file );
+		fd = file.GetFileDescriptor();
+		//setting negative value to arg_
+		if ( fcntl ( fd, F_DUPFD, -1 ) != -1 )
+		{
+			cerr << "returns 0 in case of invalid argument ";
+			return Fail;
+		}
+		if ( errno != EINVAL )
+		{
+			cerr << "Incorrect error set in errno in case of invalid argument "<<strerror(errno);
+			return Fail;
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
 	}
-	//setting negative value to arg_
-	if ( fcntl ( fd, F_DUPFD, -1 ) != -1 )
-	{
-		cerr << "returns 0 in case of invalid argument ";
-		return Fail;
-	}
-	if ( errno != EINVAL )
-	{
-		cerr << "Incorrect error set in errno in case of invalid argument "<<strerror(errno);
-		return Fail;
-	}
-	 if ( unlink ( file ) == -1 )
-	 {
-		 cerr << "Error in unlinking: "<<strerror(errno);
-		 return Fail;
-	 }
 	return Success;
 }
 
@@ -977,29 +910,31 @@ Status fcntlFD :: fcntlFDInvalidArg2Func()
 {
 	int fd;
 	const char * file = "somefile_fcntl";
-	if ( (fd= open ( file, O_RDWR | O_CREAT , 0777 )) == -1 )
+
+	try
 	{
-		cerr << "Error in opening and creating file: "<<strerror(errno);
-		return Unres;
-	} 
-	//setting negative signal number to arg_
-	if ( fcntl ( fd, F_SETSIG, -1 ) != -1 )
-	{
-		cerr << "returns 0 in case of invalid argument as signal ";
-		return Fail;
-	}
-	if ( errno != EINVAL )
-	{
-		cerr << "Incorrect error set in errno in case of"
-		        "invalid argument "<<strerror(errno);
+		File file( file );
+		fd = file.GetFileDescriptor();
+		//setting negative signal number to arg_
+		if ( fcntl ( fd, F_SETSIG, -1 ) != -1 )
+		{
+			cerr << "returns 0 in case of invalid argument as signal ";
+			return Fail;
+		}
+		if ( errno != EINVAL )
+		{
+			cerr << "Incorrect error set in errno in case of"
+					"invalid argument "<<strerror(errno);
         		        
-		return Fail;       
+			return Fail;       
+		}
 	}
-	if ( unlink ( file ) == -1 )
+	catch( Exception ex )
 	{
-		cerr << "Error in unlinking file: "<<strerror(errno);
-		return Fail;
+		cerr << ex.GetMessage();
+		return Unres;
 	}
+	
 	return Success; 
 }
 
@@ -1009,30 +944,37 @@ Status fcntlFD :: fcntlFDInvalidArg3Func()
 {
    struct flock flocks;
    int fd;
-   const char *file = "somefile_name";
-   if ( (fd= open( file, O_RDWR | O_CREAT, 0777)) == -1 )
-   {
-	   cerr << "Error in opening file and creating: "<<strerror(errno);
-	   return Fail;
-   }
-   //setting flock structure
-   	flocks.l_whence = -1;
-	flocks.l_start = 0;
-	flocks.l_len = 0;
-	flocks.l_pid = getpid();
-	flocks.l_type = F_WRLCK ;
+   const char *filename = "somefile_name";
 
-   if ( fcntl ( fd, F_SETLK, &flocks) != -1 )
-   {
-	   cerr << "returns 0  in case of invalid argument";
-	   return Fail;
-   }
-   if ( errno != EINVAL )
-   {
-	   cerr << "Incorrect error set in errno in case of invalid argument "<<strerror(errno);
-	   return Fail;
-   }
-     
+	try
+	{
+		File file( filename, 0777, O_RDWR | O_CREAT );
+		fd = file.GetFileDescriptor();
+		
+		//setting flock structure
+		flocks.l_whence = -1;
+		flocks.l_start = 0;
+		flocks.l_len = 0;
+		flocks.l_pid = getpid();
+		flocks.l_type = F_WRLCK ;
+
+		if ( fcntl ( fd, F_SETLK, &flocks) != -1 )
+		{
+			cerr << "returns 0  in case of invalid argument";
+			return Fail;
+		}
+		if ( errno != EINVAL )
+		{
+			cerr << "Incorrect error set in errno in case of invalid argument "<<strerror(errno);
+			return Fail;
+		}
+    }
+    catch( Exception ex )
+    {
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	
 	return  Success;
 } 
 
@@ -1040,25 +982,26 @@ Status fcntlFD:: fcntlFDGetSetOwnFunc()
 {
 	int fd;
 	const char *file = "smthfile_fcntl";
-	if ( (fd= open( file,O_RDWR | O_CREAT, 0700 )) == -1 )
+	
+	try
 	{
-		cerr << "Error in opening and creating: "<<strerror(errno);
+		File file( file );
+		fd = file.GetFileDescriptor();
+		if ( fcntl ( fd, F_SETOWN, getpid() ) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+		if ( fcntl( fd, F_GETOWN ) != getpid() )
+		{
+			cerr << "get-set owner failed ";
+			return Fail;
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
-	}
-	if ( fcntl ( fd, F_SETOWN, getpid() ) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
-	if ( fcntl( fd, F_GETOWN ) != getpid() )
-	{
-		cerr << "get-set owner failed ";
-		return Fail;
-	}
-	if ( unlink ( file ) == -1 )
-	{
-		cerr << "Error in unlinking: "<<strerror(errno);
-		return Fail;
 	}
 	
 	return Success;
@@ -1070,25 +1013,26 @@ Status fcntlFD:: fcntlFDBadAdressFunc()
 	int fd;
 	const char *filename ="filename";
 	
-	if ( (fd = open( filename,O_RDWR | O_CREAT, 0700 )) == -1 )
+	try
 	{
-		cerr << "Error in opening: "<<strerror(errno);
+		File file( filename );
+		fd = file.GetFileDescriptor();
+			
+		if ( fcntl ( fd, F_GETLK, (struct flock *)-1 ) != -1 )
+		{
+			cerr << "return 0 in case of bad adress ";
+			return Fail;
+		}
+		if ( errno != EFAULT )
+		{
+			cerr << "Incorrect error set in errno in case of bad adress "<<strerror(errno);
+			return Fail;
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
-	}
-	if ( fcntl ( fd, F_GETLK, (struct flock *)-1 ) != -1 )
-	{
-		cerr << "return 0 in case of bad adress ";
-		return Fail;
-	}
-	if ( errno != EFAULT )
-	{
-		cerr << "Incorrect error set in errno in case of bad adress "<<strerror(errno);
-		return Fail;
-	}
-	if ( unlink ( filename ) == -1 )
-	{
-		cerr << "Error in unlinking: "<<strerror(errno);
-		return Fail;
 	}
 	
 	return Success;
@@ -1163,33 +1107,33 @@ Status fcntlFD :: fcntlFDResTempUnavailableFunc()
 }
 
 //ENOLCK
-
 Status fcntlFD :: fcntlFDNoLockFunction()
 {
 	const char *filename = "somefile";
+	struct flock flocks[1000000];
 	int fd;
 	int ind;
-	struct flock flocks[1000000];
-	if ( (fd=open(filename, O_CREAT | O_RDWR , 0700)) == -1 )
+
+	try
 	{
-		cerr << "Error in opening and creating file: "<<strerror(errno);
-		return Unres;
-	}
-	//setting flock structures
-	 for ( ind = 0; ind < 1000000; ++ind )
-	 {
-     flocks[ind].l_whence = SEEK_SET;
-	 flocks[ind].l_start = 0;
-	 flocks[ind].l_len = ind;
-	 flocks[ind].l_pid = getpid();
-	 flocks[ind].l_type = F_WRLCK ;
-     }
+		File file( filename );
+		fd = file.GetFileDescriptor();
+		
+		//setting flock structures
+		for ( ind = 0; ind < 1000000; ++ind )
+		{
+			flocks[ind].l_whence = SEEK_SET;
+			flocks[ind].l_start = 0;
+			flocks[ind].l_len = ind;
+			flocks[ind].l_pid = getpid();
+			flocks[ind].l_type = F_WRLCK ;
+		}
      
-     for ( ind = 0 ; ind < 1000000; ++ind )
-      if ( fcntl( fd, F_SETLK, &flocks[ind] ) == -1 )
+		for ( ind = 0 ; ind < 1000000; ++ind )
+		if ( fcntl( fd, F_SETLK, &flocks[ind] ) == -1 )
 	    {
 		  if ( errno != ENOLCK )
-	     {
+		{
 			cerr << "Incorrect error set in errno in case of "
 			        "no locks available "<<strerror(errno);
 			return Fail;
@@ -1203,11 +1147,13 @@ Status fcntlFD :: fcntlFDNoLockFunction()
 	    return Fail;
        }
 	 
-	 if ( unlink ( filename ) == -1 )
-	 {
-		 cerr << "Error in unlinking file: "<<strerror(errno);
-		 return Fail;
-	 }
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	
      return Success;
 }
 
@@ -1215,27 +1161,28 @@ Status fcntlFD :: fcntlFDGetSetSigFunc()
 {
 	const char *filename = "somefile1";
 	int fd; 
-	
-	if ( (fd = open( filename, O_CREAT | O_RDWR , 0777 )) == -1 )
+	try
 	{
-		cerr << "Error in opening and creating: "<<strerror(errno);
+		File file( filename );
+		fd = file.GetFileDescriptor();
+		if ( fcntl( fd, F_SETSIG, SIGIO ) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+		if ( fcntl( fd, F_GETSIG ) != SIGIO )
+		{
+			cerr<< "get-set signal failed ";
+			return Fail;
+		}
+		
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
 	}
-	if ( fcntl( fd, F_SETSIG, SIGIO ) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
-	if ( fcntl( fd, F_GETSIG ) != SIGIO )
-	{
-		cerr<< "get-set signal failed ";
-		return Fail;
-	}
-	if ( unlink ( filename ) == -1 )
-	{
-		cerr << "Error in unlinking: "<<strerror(errno);
-		return Fail;
-	}
+
 	return Success;
 }
 
@@ -1246,48 +1193,53 @@ Status fcntlFD :: fcntlFDGetSetOwn_ExFunc()
 	int fd; 
 	struct f_owner_ex owner;
 	struct f_owner_ex owner1; 
-	if ( (fd = open( filename, O_CREAT | O_RDWR , 0777 )) == -1 )
+
+	try
 	{
-		cerr << "Error in creating and opening file: "<<strerror(errno);
+		File file( filename );
+		fd = file.GetFileDescriptor();
+		
+		//setting f_owner_ex structure
+		owner.type =  F_OWNER_PID;
+		owner.pid = getpid();
+		if ( fcntl( fd, F_SETOWN_EX, &owner ) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+
+		if ( fcntl( fd, F_GETOWN_EX, &owner1 ) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+		if ( owner1.type != F_OWNER_PID || owner1.pid != getpid() )
+		{
+			cerr << "get-set owner_ex failed";  
+			return Fail;
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
 	}
-	//setting f_owner_ex structure
-	owner.type =  F_OWNER_PID;
-	owner.pid = getpid();
-	if ( fcntl( fd, F_SETOWN_EX, &owner ) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
-
-	if ( fcntl( fd, F_GETOWN_EX, &owner1 ) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
-	if ( owner1.type != F_OWNER_PID || owner1.pid != getpid() )
-	{
-		cerr << "get-set owner_ex failed";  
-		return Fail;
-	}
- 
-    if ( unlink ( filename ) == -1 )
-    {
-		cerr << "Error in unlinking: "<<strerror(errno);
-		return Fail;
-	}	
-	     return Success;  
+ 	
+	return Success;  
 }
 
 Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 {
 	
 
-	#if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
-		cerr <<"Kernel version doesn't support this operation ";
-		return Unres;
-	
-	#else
+#if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
+	cerr <<"Kernel version doesn't support this operation ";
+	return Unres;
+#endif
+#ifndef F_SETPIPE_SZ
+	cerr << "Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined";
+	return Unres;
+#endif
 	
 	int pipefd[2];
 
@@ -1308,8 +1260,7 @@ Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 		 cerr << "get-set pipe size failed";
 		 return Fail;
 	}
-  return Success;
-  #endif
+  return Success;  
 }
 
 //EPERM
@@ -1317,14 +1268,15 @@ Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 {
 
-	
-	
-	#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
-	
-		cerr <<"Kernel version doesn't support this operation ";
-		return Unres; 
-	
-	#else
+#if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
+	cerr <<"Kernel version doesn't support this operation ";
+	return Unres;
+#endif
+#ifndef F_SETPIPE_SZ
+	cerr << "Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined";
+	return Unres;
+#endif
+
 	int pipefd[2];
 	if (pipe( pipefd ) == -1 )
 	{
@@ -1344,7 +1296,7 @@ Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 	}
    
    return Success;
-   #endif 
+
 }
 
 //test for F_DUPFD_CLOEXEC operation
@@ -1352,32 +1304,35 @@ Status fcntlFD :: fcntlFDDupWithClExFlagFunc()
 {
 	int flags_, fd1, fd2;
 	const char *filename = "somefilename_";
-	if ( (fd1 = open( filename, O_CREAT | O_RDWR , 0777 )) == -1 )
+
+	try
 	{
-		cerr << "Error in creating and opening: "<<strerror(errno);
+		File file( filename );
+		fd1 = file.GetFileDescriptor();
+		
+		if ( (fd2 = fcntl( fd1,F_DUPFD_CLOEXEC,1)) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		} 
+		if ( (flags_ = fcntl( fd2, F_GETFD)) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+		if ( flags_ != FD_CLOEXEC )
+		{
+			cerr << "setting the close-on-exec flag  for"
+					" the  duplicate  descriptor failed " ;
+			return Fail;       
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
 		return Unres;
 	}
-	if ( (fd2 = fcntl( fd1,F_DUPFD_CLOEXEC,1)) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	} 
-	if ( (flags_ = fcntl( fd2, F_GETFD)) == -1 )
-	{
-		cerr << "Error in fcntl: "<<strerror(errno);
-		return Fail;
-	}
-	if ( flags_ != FD_CLOEXEC )
-	{
-		cerr << "setting the close-on-exec flag  for"
-                " the  duplicate  descriptor failed " ;
-         return Fail;       
-	}
-	if ( unlink( filename ) == -1 )
-	{
-		cerr << "Error in unlinking file: "<<strerror(errno);
-		return Fail;
-	}
+	
 	return Success;
 }
 
