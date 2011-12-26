@@ -738,7 +738,7 @@ Status fcntlFD::fcntlFDBadFileDescriptor1Func()
 //case 2: fd is not opened file descriptor
 Status fcntlFD::fcntlFDBadFileDescriptor2Func()
 {	
-	const char *file = "somefilename_fcntl1";
+	const char *file = "fcntlfile";
 	int fd;
 	
 		
@@ -765,7 +765,11 @@ Status fcntlFD::fcntlFDBadFileDescriptor2Func()
 		cerr << "Incorrect error set in errno in case of bad file descriptor "<<strerror(errno);
 		return Fail;
 	}
-
+	if ( unlink( file ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Unres;
+	}
    return Success;
 }
 
