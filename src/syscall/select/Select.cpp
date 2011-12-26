@@ -68,7 +68,7 @@ Status SelectTest:: SelectTestInvalidArg1Func()
 	fd_set rfds;
 	struct timeval tv;
 	int fd;
-	const char *filename = "somefilename";
+	const char *filename = "somefilename_lseek";
 	
 	try
 	{
@@ -134,7 +134,7 @@ Status SelectTest:: SelectTestInvalidArg2Func()
 //case 1 
 Status SelectTest:: SelectTestBadFileDesc1Func()
 {
-	const char *filename = "somefilename";
+	const char *filename = "somefilename_1";
 	int fd;
 	fd_set rfds;
 	struct timeval tv;
