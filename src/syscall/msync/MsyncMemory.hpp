@@ -1,9 +1,9 @@
-//      Close.hpp
+//      MsyncMemory.hpp
 //      
-//      Copyright (C) 2011, Institute for System Programming
+//		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
 //      Author:
-//			Gurgen Torozyan <gurgen.torozyan@gmail.com>
+//      	Ruzanna Karakozova <r.karakozova@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -20,33 +20,37 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#ifndef CLOSE_H
-#define CLOSE_H
+#ifndef MSYNC_MEMORY_H
+#define MLOCK_MEMORY_H
 
 #include "SyscallTest.hpp"
+#include <sys/stat.h>
 
-enum CloseSyscalls
+// Operations
+enum MlockMemorySyscalls
 {
-	CorrectDescriptor,
-	CorrectDescriptorUnlink,
-	BadFileDescriptor,
-	WasInterrupted,
-	IoError
-
+	Msync,
+	MsyncErrEINVAL,
+	MsyncErrENOMEM
 };
 
-class Close : public SyscallTest
-{			
-public:	
-	Close(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "close")
+class MsyncMemoryTest: public SyscallTest
+{
+public:
+	MsyncMemoryTest(Mode mode, int operation, string arguments = "") :
+		SyscallTest(mode, operation, arguments, "sync")
 	{			
 	}
-	virtual ~Close() {}	
-	Status CloseBadFileDescriptorTest();	
-	Status CloseCorrectDescriptorTest();
-	Status CloseCorrectDescriptorUnlinkTest();
+	
+	virtual ~MsyncMemoryTest() {}
+	
 protected:
-	virtual int Main(vector<string> args);	
-};
-#endif
+	virtual int Main(vector<string> args);
+	
+private:
+	int MsyncTest(vector<string> args);
+	int MsyncErrEINVALTest(vector<string> args);
+	int MsyncErrENOMEMTest(vector<string> args);
+}; 
+#endif /*MLOCK_MEMORY_H*/
+ 

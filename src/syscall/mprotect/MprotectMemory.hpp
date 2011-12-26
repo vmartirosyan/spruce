@@ -1,9 +1,9 @@
-//      Close.hpp
+//      DupFileDescriptor.hpp
 //      
-//      Copyright (C) 2011, Institute for System Programming
+//		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
 //      Author:
-//			Gurgen Torozyan <gurgen.torozyan@gmail.com>
+//      	Ruzanna Karakozova <r.karakozova@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -20,33 +20,37 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#ifndef CLOSE_H
-#define CLOSE_H
+#ifndef MPROTECT_MEMORY_H
+#define MPROTECT_MEMORY_H
 
 #include "SyscallTest.hpp"
+#include <sys/stat.h>
 
-enum CloseSyscalls
+// Operations
+enum MprotectMemorySyscalls
 {
-	CorrectDescriptor,
-	CorrectDescriptorUnlink,
-	BadFileDescriptor,
-	WasInterrupted,
-	IoError
-
+	Mprotect,
+	MprotectErrEACCES,
+	MprotectErrENOMEM
 };
 
-class Close : public SyscallTest
-{			
-public:	
-	Close(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "close")
+class MprotectMemoryTest: public SyscallTest
+{
+public:
+	MprotectMemoryTest(Mode mode, int operation, string arguments = "") :
+		SyscallTest(mode, operation, arguments, "mmap")
 	{			
 	}
-	virtual ~Close() {}	
-	Status CloseBadFileDescriptorTest();	
-	Status CloseCorrectDescriptorTest();
-	Status CloseCorrectDescriptorUnlinkTest();
+	
+	virtual ~MprotectMemoryTest() {}
+	
 protected:
-	virtual int Main(vector<string> args);	
-};
-#endif
+	virtual int Main(vector<string> args);
+	
+private:
+	int MprotectTest(vector<string> args);
+	int MprotectErrEACCESTest(vector<string> args);
+	int MprotectErrENOMEMTest(vector<string> args);
+}; 
+#endif /*MPROTECT_MEMORY_H*/
+ 
