@@ -277,7 +277,7 @@ Status MknodTest :: MknodTestTooLongPathNameFunc()
 Status MknodTest :: MknodTestNotDirFunc()
 {
 	string filename = "file_mknod";
-	string otherfilename = "somefile";
+	string otherfilename = "somefile1";
 	string pathname = otherfilename + "/" + filename;
 	
 	if ( open( otherfilename.c_str(), O_CREAT | O_RDWR, 0777) == -1 )

@@ -297,7 +297,7 @@ Status LseekTest:: LseekTestIllegalSeek2Func()
 Status LseekTest:: LseekTestIllegalSeek3Func()
 {
 	
-     const char *filename = "somefilename"; 
+     const char *filename = "somefilename_"; 
 	 int whence = SEEK_CUR;
 	
     int fifodesc;
@@ -331,7 +331,7 @@ Status LseekTest:: LseekTestIllegalSeek3Func()
 Status LseekTest :: LseekTestNormalCase1Func()
 {
 	int fd; 
-	const char *filename = "somefile";
+	const char *filename = "some_filename";
 	off_t ret_lseek;
 	int somenumber = rand();
 	int whence  = SEEK_SET;
