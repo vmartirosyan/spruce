@@ -25,6 +25,7 @@
 #include <sys/mman.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <linux/version.h>
 
 int MlockMemoryTest:: Main(vector<string> args)
 {
@@ -139,7 +140,8 @@ int MlockMemoryTest:: MlockErrENOMEMTest(vector<string> args)
 		cerr << "ENOMEM error expected: address range doesn't correspond to mapped pages";
 		status = Fail;
 	}
-
+	
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,9)
 	try
 	{
 		struct rlimit rlim;
@@ -187,6 +189,7 @@ int MlockMemoryTest:: MlockErrENOMEMTest(vector<string> args)
 		cerr << ex.GetMessage();
 		status = Unres;
 	}
+#endif
 	
 	return status;
 }
