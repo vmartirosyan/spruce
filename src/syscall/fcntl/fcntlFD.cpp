@@ -1241,7 +1241,7 @@ Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 #ifndef F_SETPIPE_SZ
 	cerr << "Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined";
 	return Unres;
-#endif
+#else
 	
 	int pipefd[2];
 
@@ -1262,7 +1262,8 @@ Status fcntlFD::fcntlFDGetSetPipeSizeFunc()
 		 cerr << "get-set pipe size failed";
 		 return Fail;
 	}
-  return Success;  
+  return Success; 
+#endif 
 }
 
 //EPERM
@@ -1277,7 +1278,7 @@ Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 #ifndef F_SETPIPE_SZ
 	cerr << "Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined";
 	return Unres;
-#endif
+#else
 
 	int pipefd[2];
 	if (pipe( pipefd ) == -1 )
@@ -1298,7 +1299,7 @@ Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 	}
    
    return Success;
-
+#endif
 }
 
 //test for F_DUPFD_CLOEXEC operation
