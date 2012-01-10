@@ -741,8 +741,6 @@ Status fcntlFD::fcntlFDBadFileDescriptor2Func()
 	const char *file = "fcntlfile";
 	int fd;
 	
-		
-  
 	//open and close file to make file descriptor invalid
 	if ( (fd =open( file,O_CREAT | O_RDWR )) == -1 )
 	{
