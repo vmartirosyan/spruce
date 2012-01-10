@@ -44,7 +44,7 @@ class MlockMemoryTest: public SyscallTest
 {
 public:
 	MlockMemoryTest(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "mmap")
+		SyscallTest(mode, operation, arguments, "mlock")
 	{			
 	}
 	

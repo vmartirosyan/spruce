@@ -38,7 +38,7 @@ class MprotectMemoryTest: public SyscallTest
 {
 public:
 	MprotectMemoryTest(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "mmap")
+		SyscallTest(mode, operation, arguments, "mprotect")
 	{			
 	}
 	

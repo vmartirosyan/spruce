@@ -45,7 +45,7 @@ int MlockMemoryTest:: Main(vector<string> args)
 			case MunlockErrENOMEM:
 				return MunlockErrENOMEMTest(args);
 			case Mlockall:
-				return MlockTest(args);
+				return MlockallTest(args);
 			case MlockallErrEINVAL:
 				return MlockallErrEINVALTest(args);
 			case Munlockall:
@@ -67,11 +67,16 @@ int MlockMemoryTest:: MlockTest(vector<string> args)
 	{
 		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
 		int fd = file.GetFileDescriptor();
-		size_t length = 3;
 		int prot = PROT_READ;
 		int flags = MAP_PRIVATE;
-		off_t offset = 0;
-	
+		off_t offset = 0;	
+		char * buff = (char *)"abc";
+		size_t length = strlen(buff);		
+		if(write(fd, buff, length) == -1)
+		{
+			cerr << "write failed: " << strerror(errno);
+			return Unres;
+ 		}
 		void * addr = mmap(0, length, prot, flags, fd, offset);
 		if(addr == MAP_FAILED)
 		{
@@ -143,7 +148,9 @@ int MlockMemoryTest:: MlockErrENOMEMTest(vector<string> args)
 			cerr << "System call getrlimit failed: " << strerror(errno);
 			status = Unres;
 		}
-	
+		
+		struct rlimit rlimOld = rlim; 
+		
 		rlim.rlim_cur = 1;
 		if(setrlimit(RLIMIT_MEMLOCK, &rlim) == -1)
 		{
@@ -168,6 +175,12 @@ int MlockMemoryTest:: MlockErrENOMEMTest(vector<string> args)
 			cerr << "ENOMEM error expected: RLIMIT_MEMLOCK is set";
 			status = Fail;
 		}	 
+
+		if(setrlimit(RLIMIT_MEMLOCK, &rlimOld) == -1)
+		{
+			cerr << "System call setrlimit failed: " << strerror(errno);
+			status = Unres;		
+		}
 	}
 	catch(Exception ex)
 	{
@@ -260,18 +273,26 @@ int MlockMemoryTest:: MlockallTest(vector<string> args)
 	{
 		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
 		int fd = file.GetFileDescriptor();
-		size_t length = 3;
 		int prot = PROT_READ;
-		int flags = MAP_PRIVATE;
-		off_t offset = 0;
-	
+		int flags = MAP_PRIVATE ;
+		off_t offset = 0;	
+		char * buff = (char *)"abc";
+		size_t length = strlen(buff);		
+		
+		if(write(fd, buff, length) == -1)
+		{
+			cerr << "write failed: " << strerror(errno);
+			return Unres;
+ 		}
+		
 		void * addr = mmap(0, length, prot, flags, fd, offset);
 		if(addr == MAP_FAILED)
 		{
 			cerr << "System call mmap failed: " << strerror(errno);
 			return Unres;	
 		}
-		if(mlockall(MCL_CURRENT) == -1)
+		
+		if(mlockall(MCL_FUTURE) == -1)
 		{
 			cerr << "System call mlockall failed: " << strerror(errno);
 			return Fail;
@@ -282,7 +303,7 @@ int MlockMemoryTest:: MlockallTest(vector<string> args)
 		cerr << ex.GetMessage();
 		return Unres;
 	}
-	
+
 	return Success;
 }
 
@@ -317,7 +338,6 @@ int MlockMemoryTest:: MlockallErrEINVALTest(vector<string> args)
 	
 	return Success;	
 }
-
 
 int MlockMemoryTest:: MunlockallTest(vector<string> args)
 {
