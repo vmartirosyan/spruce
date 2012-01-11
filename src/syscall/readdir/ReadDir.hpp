@@ -31,7 +31,9 @@ enum ReadDirSyscalls
 	ReadDirBadFileDesc1,
 	ReadDirBadFileDesc2,
 	ReadDirIsNotDirect,
-	ReadDirBadAddress
+	ReadDirBadAddress,
+	ReadDirNoSuchDir,
+	ReadDirNormalCase
 };
 
 class ReadDirTest : public SyscallTest
@@ -48,7 +50,8 @@ protected:
 	Status ReadDirTestBadFileDesc2Func();
 	Status ReadDirTestBadAddressFunc();
 	Status ReadDirTestIsNotDirectFunc();
-	
+	Status ReadDirTestNoSuchDirFunc();
+	Status ReadDirTestNormalCaseFunc();
 	
 	virtual int Main(vector<string> args);	
 };

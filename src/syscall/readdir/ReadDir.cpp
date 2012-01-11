@@ -23,6 +23,7 @@
 #include <ReadDir.hpp>
 
 #include <File.hpp>
+#include <Directory.hpp>
 #include <sys/types.h>
 #include <sys/param.h>
 #include <fcntl.h>
@@ -45,6 +46,10 @@ int ReadDirTest::Main(vector<string>)
 				return ReadDirTestIsNotDirectFunc();
 			case ReadDirBadAddress:
 				return ReadDirTestBadAddressFunc();
+			case ReadDirNoSuchDir:
+				return ReadDirTestNoSuchDirFunc();
+			case ReadDirNormalCase:
+				return ReadDirTestNormalCaseFunc();
 			
 			default:
 				cerr << "Unsupported operation.";
@@ -55,18 +60,20 @@ int ReadDirTest::Main(vector<string>)
 	return Success;
 }
 
-struct linux_direct {
+struct old_linux_dirent {
 	 long           d_ino;
      off_t          d_off;
      unsigned short d_reclen;
      char           d_name[];
 };
 
+//EBADF
+//case 1: setting negative directory descriptor
 Status ReadDirTest:: ReadDirTestBadFileDesc1Func()
 {
-	char buf[1024];
+	old_linux_dirent direct;
 
-	if ( syscall( SYS_readdir, -1, buf, 0 ) != -1 )
+	if ( syscall( SYS_readdir, -1, &direct, 0 ) != -1 )
 	{
 		cerr << "returns 0 in case of bad file descriptor: "<<strerror(errno);
 		return Fail;
@@ -80,31 +87,31 @@ Status ReadDirTest:: ReadDirTestBadFileDesc1Func()
 	return Success;
 }
 
+//EBADF
+//case 2: setting opened - closed directory descriptor
 Status ReadDirTest:: ReadDirTestBadFileDesc2Func()
 {
-	char buf[1024];
+	old_linux_dirent direct;
 	const char *dirname = "directory";
 	int fd;
 	
-	if ( mkdir( dirname, 0777 ) == -1 )
+	if ( mkdir ( dirname, 0777 ) == -1 )
 	{
-		cerr << "Error in mkdir: "<<strerror(errno);
+		cerr << "Error in creating directory: "<<strerror(errno);
 		return Unres;
 	}
-	
 	if ( (fd = open( dirname, O_RDONLY | O_DIRECTORY )) == -1 )
 	{
-		cerr << "Error in opening and creating directory: "<<strerror(errno);
+		cerr << "Error in opening directory: "<<strerror(errno);
 		return Unres;
 	}
-	
 	if ( close( fd ) == -1 )
 	{
 		cerr << "Error in closing directory: "<<strerror(errno);
 		return Unres;
 	}
 	
-	if ( syscall( SYS_readdir, fd, buf, 0 ) != -1 )
+	if ( syscall( SYS_readdir, fd, &direct, 0 ) != -1 )
 	{
 		cerr << "returns 0 in case of bad file descriptor: "<<strerror(errno);
 		return Fail;
@@ -116,55 +123,57 @@ Status ReadDirTest:: ReadDirTestBadFileDesc2Func()
 		return Unres;
 	}
 	
+
+	
 	return Success;
 }
 
+//EFAULT
 Status ReadDirTest:: ReadDirTestBadAddressFunc()
 {
-	const char* dirname = "directory";
-	int fd;
+	const char *dirname = "dirname";
+	try
+	{
+		Directory direct( dirname );
+		int fd = direct.GetdirectoryDescriptor();
+		
+		//setting invalid(negative) value to the pointer 
+		if ( syscall( SYS_readdir, fd, -1, 0 ) != -1 )
+		{
+			cerr << "returns 0 in case of bad address. ";
+			return Fail;
+		}
 	
-	if ( mkdir( dirname, 0777 ) == -1 )
-	{
-		cerr << "Error in creating directory: "<<strerror(errno);
-		return Unres;
+		if ( errno != EFAULT )
+		{
+			cerr << "Incorrect error set in errno in case of bad address "<<strerror(errno);
+			return Fail;
+		}
+		
 	}
-	if ( (fd = open( dirname, O_RDONLY | O_DIRECTORY )) == -1 )
+	catch( Exception ex )
 	{
-		cerr << "Error in opening directory: "<<strerror(errno);
-		return Unres;
-	}
-	
-	if ( syscall( SYS_readdir, fd, -1, 0 ) != -1 )
-	{
-		cerr << "returns 0 in case of bad address. ";
-		return Fail;
-	}
-	
-	if ( errno != EFAULT )
-	{
-		cerr << "Incorrect error set in errno in case of bad address "<<strerror(errno);
-		return Fail;
-	}
-	
-	if ( rmdir ( dirname ) == -1 )
-	{
-		cerr << "Error in removong directory: "<<strerror(errno);
+		cerr << ex.GetMessage();
 		return Unres;
 	}
 	return Success;
 }
 
+
+
+//ENOTDIR
+//setting ordinary file descriptor
 Status ReadDirTest:: ReadDirTestIsNotDirectFunc()
 {
 	int fd;
 	const char *filename = "filename";
-	char buf[1024];
+	old_linux_dirent direct;
+	
 	try
 	{
 		File file( filename );
 		fd = file.GetFileDescriptor();
-		if ( syscall( SYS_readdir, fd, buf, 0 ) != -1 )
+		if ( syscall( SYS_readdir, fd, &direct, 0 ) != -1 )
 		{
 			cerr << "returns 0 in case of is not directory ";
 			return Fail;
@@ -180,6 +189,77 @@ Status ReadDirTest:: ReadDirTestIsNotDirectFunc()
 		cerr << ex.GetMessage();
 		return Unres;
 	}
+	
 	return Success;
 }
 
+//ENOENT
+//setting removed directory descriptor
+Status ReadDirTest:: ReadDirTestNoSuchDirFunc()
+{
+	old_linux_dirent direct;
+	int fd;
+	const char *dirname = "dirname";
+	
+	if ( mkdir( dirname, 0777 ) == -1 )
+	{
+		cerr << "Error in creating directory: "<<strerror(errno);
+		return Unres;
+	}
+	if ( (fd = open( dirname, O_RDONLY | O_DIRECTORY )) == -1 )
+	{
+		cerr << "Error in opening directory: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( rmdir( dirname ) == -1 )
+	{
+		cerr << "Error in removing directory: "<<strerror(errno);
+		return Unres;
+	}
+	
+	if ( syscall( SYS_readdir, fd, &direct, 0 ) != -1 )
+	{
+		cerr << "returns 0 in case of no such directory. ";
+		return Fail;
+	}
+	if ( errno != ENOENT )
+	{
+		cerr << "Incorrect error set in errno on case of no such directory: "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
+} 
+
+Status ReadDirTest:: ReadDirTestNormalCaseFunc()
+{
+	old_linux_dirent dir;
+	int fd;
+	const char *dirname = "dirname";
+	
+	try
+	{
+		Directory direct( dirname );
+		fd = direct.GetdirectoryDescriptor();
+		
+		if ( syscall( SYS_readdir, fd, &dir, 0 ) == -1 )
+		{
+			cerr << " Readdir failed. ";
+			return Fail;
+		}
+	
+		if ( strcmp(dir.d_name, ".") != 0 || dir.d_reclen != 1 )
+		{
+			cerr << "Readdir failed. ";
+			return Fail;
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	
+	return Success;
+} 
