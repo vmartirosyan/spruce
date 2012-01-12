@@ -26,6 +26,7 @@
 #include "MsyncMemory.hpp"
 #include "MprotectMemory.hpp"
 #include "ReadDir.hpp"
+#include "Readlink.hpp"
 #include <config.hpp>
 
 int main(int argc, char ** argv)
@@ -61,7 +62,7 @@ int main(int argc, char ** argv)
 		Configuration<MlockMemoryTest> mlockConf("${CMAKE_INSTALL_PREFIX}/config/mlock.conf");
 		Configuration<MprotectMemoryTest> mprotectConf("${CMAKE_INSTALL_PREFIX}/config/mprotect.conf");
 		Configuration<ReadDirTest> readdirConf("${CMAKE_INSTALL_PREFIX}/config/readdir.conf");
-    
+		Configuration<ReadlinkTest> readlinkConf("${CMAKE_INSTALL_PREFIX}/config/readlink.conf");
 		TestCollection tests1 = conf1.Read();
 		TestCollection tests2 = conf2.Read();
 		TestCollection tests3 = conf3.Read();
@@ -89,6 +90,7 @@ int main(int argc, char ** argv)
 		TestCollection mlockTests = mlockConf.Read();
 		TestCollection mprotectTests = mprotectConf.Read();
 		TestCollection readdirTests = readdirConf.Read();
+		TestCollection readlinkTests = readlinkConf.Read();
 		
 	  
 	  
@@ -119,6 +121,7 @@ int main(int argc, char ** argv)
 		tests.Merge(mlockTests);
 		tests.Merge(mprotectTests);
 		tests.Merge(readdirTests);
+		tests.Merge(readlinkTests);
 	}
 	catch (Exception ex)
 	{
