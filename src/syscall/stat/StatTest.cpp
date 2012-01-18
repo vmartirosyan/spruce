@@ -80,7 +80,7 @@ Status StatTest::NormExec ()
     
    
     if (0 != ret) {
-        cerr << "stat returned non zero value";
+        cerr << "stat returned non zero value " << strerror(errno);
         return Fail;
     } 
     
@@ -117,8 +117,6 @@ Status StatTest::NormExec ()
         return Fail;
     }
     
-    
-    
     return Success;
 }
 
@@ -133,28 +131,28 @@ Status StatTest::ErrNoAccess ()
    
    
     if (mkdir (dirPath.c_str(), FILE_MODE) == -1) {
-        cerr<<"mkdir() can't create directory.";
+        cerr<<"mkdir() can't create directory. " << strerror(errno);
         return Unres;
     }
    
     StatFile file (filePath);
    
     if (0 != chmod (filePath.c_str(), FILE_MODE)) {
-        cerr<<"Can not chmod file";
+        cerr<<"Can not chmod file " << strerror(errno);
         return Unres;
     }
     if (0 != chmod (dirPath.c_str(), FILE_MODE)) {
-        cerr<<"can not chmod directory";
+        cerr<<"can not chmod directory " << strerror(errno);
         return Unres;
     }
     
     // Change root to nobody
     if((noBody = getpwnam("nobody")) == NULL) {
-        cerr<< "Can not set user to nobody";
+        cerr<< "Can not set user to nobody "  << strerror(errno);
         return Unres;
     }
     if (0 != setuid(noBody->pw_uid)) {
-        cerr<<"Can not set uid";
+        cerr<<"Can not set uid "  << strerror(errno);
         return Unres;
     }
     
@@ -169,7 +167,8 @@ Status StatTest::ErrNoAccess ()
     
     if (errno != EACCES) {
         cerr<<"stat must set EACCES error when search(execute) bit is not set "
-            "for a component of the path prefix";
+            "for a component of the path prefix. The following error was set "
+            << strerror(errno);
         return Fail;
     }
     return Success;
@@ -180,10 +179,10 @@ Status StatTest::ErrNoAccess ()
 Status StatTest::ErrNameTooLong ()
 {
     struct stat stat_buf;
-    char tooLongPath[PATH_MAX + 1];
+    const int length = PATH_MAX + 1;
+    char tooLongPath[length];
     
-    for(int i = 0; i <= PATH_MAX; i++)
-        tooLongPath[i] = 'a';    
+    memset(tooLongPath, 'a', length);    
     
     int ret = stat (tooLongPath, &stat_buf);
     if (ret != -1) {
@@ -194,7 +193,8 @@ Status StatTest::ErrNameTooLong ()
     
     if (errno != ENAMETOOLONG) {
         cerr<<"stat must set ENAMETOOLONG error when length of the path "
-            "argument exceeds {PATH_MAX}";
+            "argument exceeds {PATH_MAX}. The following error was set:"
+            << strerror(errno);
         return Fail;
     }
     
@@ -221,7 +221,8 @@ Status StatTest::ErrNotDir ()
     
     if (errno != ENOTDIR) {
         cerr<<"stat must set ENOTDIR error when a component of the path prefix "
-            "is not a directory.";
+            "is not a directory. The following error was set: " 
+            << strerror(errno);
         return Fail;
     }
     return Success;
@@ -247,7 +248,7 @@ Status StatTest::ErrNonExistantFile ()
     
     if (errno != ENOENT) {
         cerr<<"stat must set ENOENT error when a component of path does not name an "
-            "existing file.";
+            "existing file. The following error was set: " << strerror(errno);
         return Fail;
     }
     return Success;
@@ -265,7 +266,8 @@ Status StatTest::ErrEmptyPath ()
     }
     
     if (errno != ENOENT) {
-        cerr<<"stat must set ENOENT error when a path is an empty string.";
+        cerr<<"stat must set ENOENT error when a path is an empty string."
+			"The following error was set: " << strerror(errno);
         return Fail;
     }
     return Success;
@@ -284,23 +286,23 @@ Status StatTest::ErrLoopedSymLinks ()
     const int FILE_MODE = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
    
     if (mkdir (dirPath.c_str(), FILE_MODE) == -1) {
-        cerr<<"mkdir() can't create directory.";
+        cerr<<"mkdir() can't create directory. " << strerror(errno);
         return Unres;
     }
     if (symlink (dirPath.c_str(), link1.c_str()) == -1) {
-        cerr<<"symlink() can't create symlink.";
+        cerr<<"symlink() can't create symlink. " << strerror(errno);
         return Unres;
     }
     if (symlink (link1.c_str(), link2.c_str()) == -1) {
-        cerr<<"symlink() can't create symlink.";
+        cerr<<"symlink() can't create symlink. " << strerror(errno);
         return Unres;
     }
     if (unlink (link1.c_str()) == -1) {
-        cerr<<"remove() can't remove symlink.";
+        cerr<<"remove() can't remove symlink. " << strerror(errno);
         return Unres;
     }
     if (symlink (link2.c_str(), link1.c_str()) == -1) {
-        cerr<<"symlink() can't create symlink.";
+        cerr<<"symlink() can't create symlink. " << strerror(errno);
         return Unres;
     }    
    
@@ -313,7 +315,8 @@ Status StatTest::ErrLoopedSymLinks ()
     }    
     if (errno != ELOOP) {
         cerr<<"stat must set ELOOP error when a loop exists in symbolic links "
-            "encountered during resolution of the path argument.";
+            "encountered during resolution of the path argument. The following"
+            " error was set: " << strerror(errno);
         return Fail;
     }
     return Success;

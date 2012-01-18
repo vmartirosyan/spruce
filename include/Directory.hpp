@@ -42,14 +42,20 @@ using std::string;
 class Directory
 {	
 	public:
-		Directory(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR)) : 
+		Directory(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_DIRECTORY ) : 
 		_pathname(pathname),
-		_mode(mode)
+		_mode(mode),
+		_flags(flags)
 		{
-			_fd = mkdir(pathname.c_str(), _mode);
-			if (_fd == -1)
+			if (mkdir(_pathname.c_str(), _mode) == -1)
 			{								
 				throw Exception("Cannot create directory " + _pathname + 
+				": error = " + static_cast<string>(strerror(errno)));
+			}
+			_fd = open( _pathname.c_str(), _flags );
+			if ( _fd == -1 )
+			{
+				throw Exception("Cannot open directory " + _pathname + 
 				": error = " + static_cast<string>(strerror(errno)));
 			}
 		}
@@ -72,13 +78,20 @@ class Directory
 			{
 			}
 		}
+		
 		string GetPathname() const 
 		{ 
 			return _pathname;
 		}
+		
 		int GetdirectoryDescriptor() const
 		{
 			return _fd;
+		}
+		
+		int GetFlags() const
+		{
+			return _flags;
 		}
 		
 		mode_t GetMode() const
@@ -89,6 +102,7 @@ class Directory
 		string _pathname;
 		int _fd;
 		mode_t _mode;
+		int _flags;
 };
 
 #endif

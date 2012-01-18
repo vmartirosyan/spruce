@@ -297,7 +297,7 @@ Status LseekTest:: LseekTestIllegalSeek2Func()
 Status LseekTest:: LseekTestIllegalSeek3Func()
 {
 	
-     const char *filename = "somefilename"; 
+     const char *filename = "somefilename_"; 
 	 int whence = SEEK_CUR;
 	
     int fifodesc;
@@ -331,7 +331,7 @@ Status LseekTest:: LseekTestIllegalSeek3Func()
 Status LseekTest :: LseekTestNormalCase1Func()
 {
 	int fd; 
-	const char *filename = "somefile";
+	const char *filename = "some_filename";
 	off_t ret_lseek;
 	int somenumber = rand();
 	int whence  = SEEK_SET;
@@ -377,7 +377,7 @@ Status LseekTest :: LseekTestNormalCase2Func()
 	
 	try
 	{
-		File file( filename, O_RDWR | O_CREAT,0777 );
+		File file( filename, 0777, O_RDWR | O_CREAT);
 		fd = file.GetFileDescriptor();
 		if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
 		{
@@ -440,7 +440,7 @@ Status LseekTest :: LseekTestNormalCase3Func()
 	
    try
    {
-		File file( filename, O_RDWR | O_CREAT ,0777);
+		File file( filename, 0777 ,O_RDWR | O_CREAT );
 		fd = file.GetFileDescriptor();
 	
 		if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
@@ -556,7 +556,7 @@ Status LseekTest:: Lseek64TestInvalidArg2Func()
 	
 	try
 	{
-		File file( filename, O_RDWR | O_CREAT, 0777);
+		File file( filename, 0777 ,O_RDWR | O_CREAT);
 		fd = file.GetFileDescriptor();
 		
 		//setting invalid value to whence
@@ -697,7 +697,7 @@ Status LseekTest :: Lseek64TestNormalCase2Func()
 	
 	try
 	{
-		File file( filename , O_CREAT | O_RDWR , 0777);
+		File file( filename ,0777, O_CREAT | O_RDWR );
 		fd = file.GetFileDescriptor();
 		if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
 		{

@@ -277,7 +277,7 @@ Status MknodTest :: MknodTestTooLongPathNameFunc()
 Status MknodTest :: MknodTestNotDirFunc()
 {
 	string filename = "file_mknod";
-	string otherfilename = "somefile";
+	string otherfilename = "somefile1";
 	string pathname = otherfilename + "/" + filename;
 	
 	if ( open( otherfilename.c_str(), O_CREAT | O_RDWR, 0777) == -1 )
@@ -477,10 +477,10 @@ Status MknodTest :: MknodTestNormalCase2Func()
 		int mode;
 		string msg;
 	} Test [] = {
-	{S_IFREG | 0777,		"ordinary file with mode 0777"},
-	{S_IFIFO | 0777,		" fifo special with mode 0777"},
-	{S_IFCHR | 0777,		"character special with mode 0777"},
-	{S_IFBLK | 0777,		"block special with mode 0777 "}
+	{S_IFREG | 0777,	"ordinary file with mode 0777"},
+	{S_IFIFO | 0777,	" fifo special with mode 0777"},
+	{S_IFCHR | 0777,	"character special with mode 0777"},
+	{S_IFBLK | 0777,	"block special with mode 0777 "}
 	};
 	const char *node_name = "node_name";
 	struct stat st;
