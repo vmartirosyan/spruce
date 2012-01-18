@@ -47,6 +47,7 @@ enum Status
 	Unres,
 	Timeout,
 	Signaled,
+	Unsupported,
 	Unknown
 };
 

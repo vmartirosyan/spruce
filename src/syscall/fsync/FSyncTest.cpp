@@ -62,10 +62,11 @@ Status FSyncTest::NormExec ()
     File file (this->_tmpDir + "/fsync_test");
     sleep(1);
     
+    
     if (write (file.GetFileDescriptor(), buf, strlen(buf)) == -1) {
         cerr << "write returned -1";
         return Unres;
-    }
+    }    
     int  ret = fsync (file.GetFileDescriptor());
     time_t atime = time(NULL);
     
