@@ -34,6 +34,10 @@
 
 int ReadDirTest::Main(vector<string>)
 {
+#if __WORDSIZE==64
+	cerr << "readdir is not supported on x86-64 architecture";
+	return Unsupported;
+#else
 	if ( _mode == Normal )
 	{	
 		switch (_operation)
@@ -58,7 +62,10 @@ int ReadDirTest::Main(vector<string>)
 	}
 	cerr << "Test was successful";
 	return Success;
+#endif
 }
+
+#if __WORDSIZE!=64
 
 struct old_linux_dirent {
 	 long           d_ino;
@@ -263,3 +270,5 @@ Status ReadDirTest:: ReadDirTestNormalCaseFunc()
 	
 	return Success;
 } 
+
+#endif
