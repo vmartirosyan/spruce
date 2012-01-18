@@ -142,7 +142,7 @@ Status fcntlFD::dupFileDescriptor()
 
 	try
 	{
-		File file( "test_", O_RDWR, 0777);
+		File file( "test_", 0777, O_RDWR );
 		fd = file.GetFileDescriptor();
 		if( (new_fd = fcntl(fd, F_DUPFD, _arg)) == -1 )
 		{
@@ -210,7 +210,7 @@ Status fcntlFD::get_setFileStatusFlagsIgnore()
 
 	try
 	{
-		File file( "filename" , O_CREAT, 0777 );
+		File file( "filename" ,0777,O_CREAT);
 		fd = file.GetFileDescriptor();
 	
 		// set File Descriptor Flags
@@ -290,7 +290,7 @@ Status fcntlFD::get_setFileStatusFlags()
 	
 	try
 	{
-		File file( "test", O_CREAT, 0777 );
+		File file( "test", 0777, O_CREAT );
 		fd = file.GetFileDescriptor();
 		// set File Descriptor Flags
 		set_flags = O_APPEND | O_DIRECT | O_NOATIME | O_NONBLOCK;
@@ -426,7 +426,7 @@ Status fcntlFD::fcntlFDSetLockFunction ()
 	int fd, type, ret_fcntl;
 	try
 	{
-		File file( filename, O_RDWR | O_CREAT, 0777 );
+		File file( filename, 0777 ,O_RDWR | O_CREAT);
 		fd = file.GetFileDescriptor();
 	
 		//setting flock structure
@@ -476,7 +476,7 @@ Status fcntlFD::fcntlFDSetLockWithWaitFunction()
 
 	try
 	{
-		File file( filename );
+		File file( filename, 0777, O_RDONLY );
 		fd = file.GetFileDescriptor();
 	
 		//setting flock structure
@@ -699,13 +699,13 @@ Status fcntlFD::fcntlFDNoteFileFunction()
 Status fcntlFD::fcntlFDBadFileDescriptor1Func()
 {
 	
-	const char *file = "some_file_1";
+	const char *filename = "some_file1";
 	struct flock flocks;
 	int fd;
 	
 	try
 	{
-		File file( file );
+		File file( filename, 0777, O_RDONLY );
 		fd = file.GetFileDescriptor();
 	
 		//setting flock structure
@@ -738,13 +738,11 @@ Status fcntlFD::fcntlFDBadFileDescriptor1Func()
 //case 2: fd is not opened file descriptor
 Status fcntlFD::fcntlFDBadFileDescriptor2Func()
 {	
-	const char *file = "some_file_1";
+	const char *file = "fcntlfile";
 	int fd;
 	
-		
-  
 	//open and close file to make file descriptor invalid
-	if ( (fd =open( file,O_CREAT | O_RDONLY )) == -1 )
+	if ( (fd =open( file,O_CREAT | O_RDWR )) == -1 )
 	{
 		cerr << "Error in opening file: "<<strerror(errno);
 		return Unres;
@@ -765,7 +763,11 @@ Status fcntlFD::fcntlFDBadFileDescriptor2Func()
 		cerr << "Incorrect error set in errno in case of bad file descriptor "<<strerror(errno);
 		return Fail;
 	}
-
+	if ( unlink( file ) == -1 )
+	{
+		cerr << "Error in unlinking file: "<<strerror(errno);
+		return Unres;
+	}
    return Success;
 }
 
@@ -823,7 +825,7 @@ Status fcntlFD::fcntlFDGetSetLeaseFunc()
 	try
 	{
 		//read lease ( F_SETLEASE & F_RDLCK )
-		File file1( filename1, O_RDONLY | O_CREAT, 0777 );
+		File file1( filename1, 0777, O_RDONLY | O_CREAT );
 		fd1 = file1.GetFileDescriptor();
 		
 		if ( fcntl( fd1, F_SETLEASE, F_RDLCK ) == -1 )
@@ -878,12 +880,12 @@ Status fcntlFD::fcntlFDGetSetLeaseFunc()
 //case 1: setting negative argument for F_DUPFD operation
 Status fcntlFD:: fcntlFDInvalidArg1Func()
 {
-	const char *file = "somefile";
+	const char *filename = "somefile1";
 	int fd; 
 	
 	try
 	{
-		File file( file );
+		File file( filename );
 		fd = file.GetFileDescriptor();
 		//setting negative value to arg_
 		if ( fcntl ( fd, F_DUPFD, -1 ) != -1 )
@@ -909,11 +911,11 @@ Status fcntlFD:: fcntlFDInvalidArg1Func()
 Status fcntlFD :: fcntlFDInvalidArg2Func()
 {
 	int fd;
-	const char * file = "somefile_fcntl";
+	const char * filename = "somefile_fcntl";
 
 	try
 	{
-		File file( file );
+		File file( filename );
 		fd = file.GetFileDescriptor();
 		//setting negative signal number to arg_
 		if ( fcntl ( fd, F_SETSIG, -1 ) != -1 )
@@ -948,7 +950,7 @@ Status fcntlFD :: fcntlFDInvalidArg3Func()
 
 	try
 	{
-		File file( filename, O_RDWR | O_CREAT, 0777 );
+		File file( filename, 0777, O_RDWR | O_CREAT );
 		fd = file.GetFileDescriptor();
 		
 		//setting flock structure
@@ -981,11 +983,11 @@ Status fcntlFD :: fcntlFDInvalidArg3Func()
 Status fcntlFD:: fcntlFDGetSetOwnFunc()
 {
 	int fd;
-	const char *file = "smthfile_fcntl";
+	const char *filename = "smthfile_fcntl";
 	
 	try
 	{
-		File file( file );
+		File file( filename );
 		fd = file.GetFileDescriptor();
 		if ( fcntl ( fd, F_SETOWN, getpid() ) == -1 )
 		{
@@ -1189,7 +1191,7 @@ Status fcntlFD :: fcntlFDGetSetSigFunc()
 Status fcntlFD :: fcntlFDGetSetOwn_ExFunc()
 {
 	
-	const char *filename = "somefilename";
+	const char *filename = "somefilename_1";
 	int fd; 
 	struct f_owner_ex owner;
 	struct f_owner_ex owner1; 
@@ -1304,7 +1306,7 @@ Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 Status fcntlFD :: fcntlFDDupWithClExFlagFunc()
 {
 	int flags_, fd1, fd2;
-	const char *filename = "somefilename_";
+	const char *filename = "somefilename_1";
 
 	try
 	{
