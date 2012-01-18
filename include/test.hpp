@@ -72,9 +72,10 @@ public:
 	}
 	string ToXML()
 	{
-		string result = "";
+		string result = "<TestResults>";
 		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
-			result += (*i)->ToXML() + "\n";
+			result += "\n<TestResult>" + (*i)->ToXML() + "\n</TestResult>";
+		result += "\n</TestResults>";
 			
 		return result;
 	}
