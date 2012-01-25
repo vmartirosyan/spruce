@@ -33,6 +33,7 @@ char * StatusMessages[] = {
 	(char * )"Unresolved",
 	(char * )"Timeout",
 	(char * )"Signaled",
+	(char * )"Unsupported",
 	(char * )"Unknown"
 	};
 	
@@ -80,5 +81,12 @@ string TestResult::StatusToString()
 
 string TestResult::ToXML()
 {
-	return OperationToString() + " : " + StatusToString() + " : " + _output + " : Arguments: " + _arguments;
+	// Just for debugging
+	// return OperationToString() + " : " + StatusToString() + " : " + _output + " : Arguments: " + _arguments;
+	// The real XML...
+	return "\n\t<Operation>" + OperationToString() + "</Operation>\n\t<Status>" + StatusToString() + "</Status>\n\t<Output>" +
+		_output +  "</Output>\n\t<Arguments>" + _arguments + "</Arguments>";
+	
+	//return _arguments;
+	
 }

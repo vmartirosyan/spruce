@@ -47,7 +47,7 @@ protected:
 			argv[i + 1] = (char*)args[i].c_str();
 		argv[args.size() + 1] = (char*)0;
 		execvp(argv[0], argv);
-		cerr << "Error running Main method: " << strerror(errno);
+		cerr << "Cannot execute unix command: " << argv[0] << " Error: " << strerror(errno);
 		return static_cast<int>(Unres);
 	}
 protected:

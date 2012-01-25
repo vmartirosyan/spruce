@@ -63,7 +63,6 @@ Status Umask::UmaskBasicFunc()
 		
 		firstCallSkiped = true;
 		
-		unlink("testfile");
 		int fd = creat("testfile", 0777);
 		if(fd == -1)
 		{
@@ -74,6 +73,7 @@ Status Umask::UmaskBasicFunc()
 		if(fstat(fd, &statbuf) != 0) 
 		{
 			cerr << "Cannot fstat file";
+			unlink("testfile");
 			return Unres;
 		}
 		
@@ -82,8 +82,10 @@ Status Umask::UmaskBasicFunc()
 		{
 			cerr << "Set by the function mask should be " 
 				 << (~setMask & 0777) << ", but it is " << mode;
+			unlink("testfile");
 			return Fail;
 		}
+		unlink("testfile");
 	}
 	
 	return Success;

@@ -349,6 +349,7 @@ Status RenameTest::RenameHardLinksTest()
 		}
 		
 		unlink("name");
+		unlink("new");
 	}
 	catch(Exception ex)
 	{

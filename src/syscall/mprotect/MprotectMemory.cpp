@@ -1,4 +1,4 @@
-//      DupFileDescriptor.hpp
+//      MprotectMemory.cpp
 //      
 //		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -78,11 +78,6 @@ int MprotectMemoryTest:: MprotectTest(vector<string> args)
 			cerr << "System call mprotect failed: " << strerror(errno);
 			status = Fail;
 		}		
-		else
-		{
-			
-		}
-		
 	}
 	catch(Exception ex)
 	{
@@ -97,8 +92,8 @@ int MprotectMemoryTest:: MprotectErrEACCESTest(vector<string> args)
 	int status = Success;
 	try
 	{
-		File file("file1", S_IRUSR | S_IWUSR, O_RDONLY);
-		int fd = file.GetFileDescriptor();
+		File file1("file1", S_IRUSR | S_IWUSR, O_RDONLY);
+		int fd = file1.GetFileDescriptor();
 		size_t length = 3;
 		int prot = PROT_READ;
 		int flags = MAP_SHARED;
@@ -112,9 +107,10 @@ int MprotectMemoryTest:: MprotectErrEACCESTest(vector<string> args)
 		}
 		else if(mprotect(addr, length, PROT_WRITE) != -1 || errno != EACCES)
 		{
-			cerr << "EACCES error expected: file is read-only, PROT_WRITE can't be set" << strerror(errno);
+			cerr << "EACCES error expected: file is read-only, PROT_WRITE can't be set";
 			status = Fail;
-		}		
+		}
+
 	}
 	catch(Exception ex)
 	{
