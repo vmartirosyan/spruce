@@ -34,7 +34,8 @@ class SyscallTestResult : public TestResult
 		}
 		virtual string ToXML()
 		{						
-			return TestResult::ToXML() + " " + _syscallName;
+			return TestResult::ToXML() + 
+				"\n\t<SysCall>" + _syscallName + "</SysCall>";
 		}
 	protected:
 		string _syscallName;

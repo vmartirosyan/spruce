@@ -24,6 +24,7 @@
 #include "File.hpp"
 #include <sys/mman.h>
 #include <sys/user.h>
+#include <linux/version.h>
 
 int MmapMemoryTest:: Main(vector<string> args)
 {
@@ -108,8 +109,7 @@ int MmapMemoryTest:: MmapTest(vector<string> args)
 
 int MmapMemoryTest:: MmapErrEINVALTest(vector<string> args)
 {
-	int status = Success;
-	
+	int status = Success;	
 	try
 	{
 		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
@@ -128,12 +128,14 @@ int MmapMemoryTest:: MmapErrEINVALTest(vector<string> args)
 			status = Fail;	
 		}
 		
+	#if  LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,12)
 		addr = mmap(0, 0, prot, flags, fd, offset);
 		if(addr != MAP_FAILED || errno != EINVAL)
 		{
 			cerr << "EINVAL error expected: length contains 0 value";
 			status = Fail;	
 		}
+	#endif
 		
 		addr = mmap(0, length, prot, MAP_PRIVATE | MAP_SHARED, fd, offset);
 		if(addr != MAP_FAILED || errno != EINVAL)

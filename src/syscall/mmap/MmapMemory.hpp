@@ -40,7 +40,7 @@ enum MmapMemorySyscalls
 	Mmap2,
 	Mmap2ErrEINVAL,
 	Mmap2ErrEBADF,
-	Mmap2ErrEACCES,	
+	Mmap2ErrEACCES	
 };
 
 class MmapMemoryTest: public SyscallTest
@@ -57,7 +57,6 @@ protected:
 	virtual int Main(vector<string> args);
 	
 private:
-    int MapTest(void * (*map)(void *, size_t, int, int, int, off_t));
 	int MmapTest(vector<string> args);
 	int MmapErrEINVALTest(vector<string> args);
 	int MmapErrEBADFTest(vector<string> args);

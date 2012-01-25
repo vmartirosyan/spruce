@@ -45,9 +45,12 @@ public:
 		SyscallTest(mode, operation, arguments, "dup")
 	{			
 	}
+
 	virtual ~DupFileDescriptorTest() {}	
+	
 protected:
 	virtual int Main(vector<string> args);			
+
 private:
 	int DupTest(vector<string> args);
 	int Dup2Test(vector<string> args);

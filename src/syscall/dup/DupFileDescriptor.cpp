@@ -2,9 +2,10 @@
 //      
 //		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
-//      Author:
+//      Authors:
 //      	Narek Saribekyan <narek.saribekyan@gmail.com>
-//      
+//      	Ruzanna Karakozova <r.karakozova@gmail.com>
+
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
 //      the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +20,7 @@
 //      along with this program; if not, write to the Free Software
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
+
 #include <DupFileDescriptor.hpp>
 #include "File.hpp"
 #include <unistd.h>
@@ -26,10 +28,8 @@
 #include <errno.h>
 #include <linux/kdev_t.h>
 
-
 int DupFileDescriptorTest::Main(vector<string> args)
-{
-	// TODO: Write test for dup/dup2/dup3 system call	
+{	
 	if (_mode == Normal)
 	{		
 		switch (_operation)
@@ -62,6 +62,7 @@ int DupFileDescriptorTest::Main(vector<string> args)
 int DupFileDescriptorTest::DupTest(vector<string> args)
 {	
 	int status = Success;
+	
 	try 
 	{		
 		File file("newfile");
@@ -134,10 +135,10 @@ int DupFileDescriptorTest::DupTest(vector<string> args)
 	return status;
 }
 
-
 int DupFileDescriptorTest::Dup2Test(vector<string> args)
 {	
 	int status = Success;
+	
 	try 
 	{		
 		File file1("newfile1");
@@ -219,12 +220,14 @@ int DupFileDescriptorTest::Dup2Test(vector<string> args)
 		cerr << ex.GetMessage();
 		return Unres;
 	}
+	
 	return status;
 }
 
 int DupFileDescriptorTest::Dup3Test(vector<string> args)
 {
 	int status = Success;
+	
 	try 
 	{		
 		File file1("newfile1");
@@ -307,6 +310,7 @@ int DupFileDescriptorTest::DupErrEBADFTest(vector<string> args)
 		cerr << "EBADF error expected";
 		return Fail;
 	}
+	
 	return Success;
 }
 
@@ -339,6 +343,7 @@ int DupFileDescriptorTest::Dup2ErrEBADFTest(vector<string> args)
 		cerr << ex.GetMessage();
 		status = Unres;
 	}
+	
 	return status;
 }
 
@@ -371,6 +376,7 @@ int DupFileDescriptorTest::Dup3ErrEBADFTest(vector<string> args)
 		cerr << ex.GetMessage();
 		status = Unres;
 	}
+	
 	return status;
 }
 
@@ -400,6 +406,7 @@ int DupFileDescriptorTest::Dup3ErrEINVALTest(vector<string> args)
 		cerr << ex.GetMessage();
 		status = Unres;
 	}
+	
 	return status;
 }
 
@@ -492,6 +499,7 @@ bool DupFileDescriptorTest::cloexecFlagOff(int flag)
 	{
 		return false;
 	}	
+	
 	return true;
 }
 
@@ -501,5 +509,6 @@ bool DupFileDescriptorTest::statusFlagsEqual(int flag1, int flag2)
 	{
 		return false;
 	}	
+	
 	return true;
 }
