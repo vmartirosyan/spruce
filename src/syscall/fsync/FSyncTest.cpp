@@ -63,12 +63,16 @@ Status FSyncTest::NormExec ()
     sleep(1);
     
     
+    time_t time_before = time(NULL);
+
     if (write (file.GetFileDescriptor(), buf, strlen(buf)) == -1) {
         cerr << "write returned -1";
         return Unres;
     }    
+    
     int  ret = fsync (file.GetFileDescriptor());
-    time_t atime = time(NULL);
+    close(file.GetFileDescriptor());
+    time_t time_after = time(NULL);
     
     if (ret != 0) {
         cerr << "fsync returned non zero value " << strerror(errno);
@@ -82,15 +86,10 @@ Status FSyncTest::NormExec ()
 		return Unres;
 	}
 
-    if (atime != stat_buf.st_mtime) {
-        cerr << "fsync hasn't updated last modification time of the file";
+    if (stat_buf.st_mtime < time_before || stat_buf.st_mtime > time_after) {
+        cerr << "fsync hasn't updated last modification time of the file"<<endl;
         return Fail;
     }
-    if (atime != stat_buf.st_atime) {
-        cerr << "fsync hasn't updated last access time of the file";
-        return Fail;
-    }
-    
     return Success;
 }
 
