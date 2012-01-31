@@ -53,5 +53,5 @@ int main(int argc, char ** argv)
 	
 	TestResultCollection res = tests.Run();
 		
-	cout << res.ToXML() << endl;
+	cout << "<Benchmark>\n" << res.ToXML() << "</Benchmark>" << endl;
 }

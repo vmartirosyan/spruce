@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-<xsl:template match="/TestResults">
+<xsl:output
+    method="html"    
+    doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+    indent="yes"
+    encoding="utf-8" />
+
+<xsl:template match="/SpruceLog">
 <html>
 	<head>
 		<style>
@@ -24,8 +30,8 @@
 		</style>
 		<title>Test log</title>
 	</head>
-
 	<body>
+		<H2>Syscalls</H2>
 		<script language="javascript">
 			function ShowHideTest(object, ID)
 			{					
@@ -59,6 +65,7 @@
 						<xsl:if test="Status!='Success'"><xsl:value-of select="Output" /></xsl:if>
 					</div>
 				</xsl:for-each>
+				<hr />
 				Total Tests: <xsl:value-of select="count(//TestResult[SysCall=$SysCall])" /><br />
 				<span class="Success">Tests passed: <xsl:value-of select="count(//TestResult[SysCall=$SysCall and Status='Success'])" /></span> <br/>
 				<span class="Failed">Tests failed: <xsl:value-of select="count(//TestResult[SysCall=$SysCall and Status='Failed'])" /></span> <br/>
@@ -88,7 +95,7 @@
 			</xsl:for-each>
 		</div>
 		<br />
-		<span class="Unsupported">Total tests unresolved: <xsl:value-of select="count(//TestResult[Status='Unsupported'])" /></span>
+		<span class="Unsupported">Total tests unsupported: <xsl:value-of select="count(//TestResult[Status='Unsupported'])" /></span>
 		<a href="#" style="text-decoration:none">
 			<xsl:attribute name="onclick">ShowHideTest(this, 'TestsUnsupported')</xsl:attribute> +</a>
 		<div id="TestsUnsupported"  style="border: solid 1px black; padding: 5px; display:none;" class="Unsupported">

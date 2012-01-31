@@ -48,7 +48,6 @@ int main(int argc, char ** argv)
 		Configuration<UnlinkAtTest> conf12("${CMAKE_INSTALL_PREFIX}/config/unlinkat.conf");
 		Configuration<CreatTest> conf13("${CMAKE_INSTALL_PREFIX}/config/creat.conf");
 		Configuration<Chown> chownConf("${CMAKE_INSTALL_PREFIX}/config/chown.conf");
-
 		Configuration<StatTest> statConf("${CMAKE_INSTALL_PREFIX}/config/stat.conf");
 		Configuration<FSyncTest> fsyncConf("${CMAKE_INSTALL_PREFIX}/config/fsync.conf");
 		Configuration<FDataSyncTest> fdatasyncConf("${CMAKE_INSTALL_PREFIX}/config/fdatasync.conf");
@@ -63,6 +62,7 @@ int main(int argc, char ** argv)
 		Configuration<MprotectMemoryTest> mprotectConf("${CMAKE_INSTALL_PREFIX}/config/mprotect.conf");
 		Configuration<ReadDirTest> readdirConf("${CMAKE_INSTALL_PREFIX}/config/readdir.conf");
 		Configuration<ReadlinkTest> readlinkConf("${CMAKE_INSTALL_PREFIX}/config/readlink.conf");
+		
 		TestCollection tests1 = conf1.Read();
 		TestCollection tests2 = conf2.Read();
 		TestCollection tests3 = conf3.Read();
@@ -131,7 +131,9 @@ int main(int argc, char ** argv)
 
     
 	TestResultCollection res = tests.Run();
-	cout << res.ToXML() << endl;
+	//cerr << "bla bla" << endl;
+	cerr << "<Syscall>\n" << res.ToXML() << "</Syscall>" << endl;
+	//cerr << res.ToXML() << endl;
 
 	/*tests.AddTest(new DupFileDescriptorTest(Normal, Dup));
 	tests.AddTest(new DupFileDescriptorTest(Normal, Dup));

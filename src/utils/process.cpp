@@ -26,7 +26,7 @@ ProcessResult::~ProcessResult()
 {
 }
 
-
+#include <fstream>
 ProcessResult * Process::Execute(vector<string> args)
 {
 	// Duplicate the stdin/stdout/stderr descriptors
@@ -62,7 +62,7 @@ ProcessResult * Process::Execute(vector<string> args)
 		return new ProcessResult(Unres, "Cannot create child process. " + (string)strerror(errno));		
 	}
 	
-	if ( ChildId == 0 ) // Child process. Run the main method
+	if ( ChildId == 0 ) // Child process. Run the Main method
 	{
 		cerr << " ";
 		_exit(Main(args));
@@ -76,9 +76,21 @@ ProcessResult * Process::Execute(vector<string> args)
 	}
 
 	// Probably normal end of test. Let's collect the result;
-	char buf[10240];
-	int bytes = read(fds[0], buf, 10240);
-	buf[bytes] = 0;
+	string Output = "";
+	char buf[10000];
+	int bytes;
+	std::ofstream of("log");
+	while ( true )
+	{
+		bytes = read( fds[0], buf, 9999 );
+		of << "Bytes read: " << bytes << endl;
+		buf[bytes] = 0;
+		of << buf << endl;
+		Output += (string)buf;
+		of.flush();
+		if (bytes != 9999)
+			break;
+	}
 	
 	// Restore the stdin, stdout and stderr descriptors
 	close(fds[0]);
@@ -91,5 +103,5 @@ ProcessResult * Process::Execute(vector<string> args)
 	close(_stdout);
 	close(_stderr);
 	
-	return new ProcessResult(WEXITSTATUS(status), (string)buf);
+	return new ProcessResult(WEXITSTATUS(status), Output);
 }

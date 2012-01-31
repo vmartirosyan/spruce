@@ -55,8 +55,8 @@ int main(int argc, char ** argv)
 	mkdir( MountPoint.c_str(), 0x0777 );
 	mount ( DeviceName.c_str(), MountPoint.c_str(), "ext4", 0 ,0);
 	
-	//Configuration<Ext4IoctlTest> conf("${CMAKE_INSTALL_PREFIX}/config/ext4fs.conf");
-	Configuration<Ext4IoctlTest> conf("/home/vmartirosyan/workspace/spruce/config/ext4fs.conf");
+	Configuration<Ext4IoctlTest> conf("${CMAKE_INSTALL_PREFIX}/config/ext4fs.conf");
+	//Configuration<Ext4IoctlTest> conf("/home/vmartirosyan/workspace/spruce/config/ext4fs.conf");
 	
 	TestCollection tests = conf.Read();	
 	
