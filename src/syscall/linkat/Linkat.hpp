@@ -1,4 +1,4 @@
-//      Link.hpp
+//      Linkat.hpp
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -19,37 +19,29 @@
 //      along with this program; if not, write to the Free Software
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
-
-#ifndef LINK_H
-#define LINK_H
+#ifndef LINKAT_H
+#define LINKAT_H
 
 #include "SyscallTest.hpp"
 
 // Operations
-enum LinkSyscalls
+enum LinkatSyscalls
 {
 
-	LinkTestTooLongNewPath,
-	LinkTestNewPathAleadyExist,
-	LinkTestOldPathIsDirectory,
-	LinkTestNormalFile,
-	LinkTestIsNotDirectory
+	LinkatTestIsNotDirectory,
+	LinkatTestInvalidFileDescriptor
 };
 
-class LinkTest : public SyscallTest
+class LinkatTest : public SyscallTest
 {			
 public:	
-	LinkTest(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "Link")
+	LinkatTest(Mode mode, int operation, string arguments = "") :
+		SyscallTest(mode, operation, arguments, "linkat")
 	{			
 	}
-	virtual ~LinkTest() {}	
-
-	Status LinkTooLongNewPath();
-	Status LinkNewPathAlreadyExist();
-	Status LinkOldPathIsDirectory();
-	Status LinkNormalLink();
-	Status LinkIsNotDirectory();
+	virtual ~LinkatTest() {}	
+	Status LinkatIsNotDirectory();
+	Status LinkatInvalidDescriptor();
 
 protected:
 	virtual int Main(vector<string> args);	

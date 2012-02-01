@@ -90,6 +90,15 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/readdir)
 ADD_SUBDIRECTORY(readlink)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/readlink)
 
+ADD_SUBDIRECTORY(openat)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/openat)
+
+ADD_SUBDIRECTORY(open)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/open)
+
+ADD_SUBDIRECTORY(linkat)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/linkat)
+
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${CMAKE_CURRENT_BINARY_DIR}/main.cpp)
 
 ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
@@ -97,6 +106,9 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/chown/Chown.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/close/Close.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/creat/Creat.cpp
+						${CMAKE_CURRENT_SOURCE_DIR}/open/Open.cpp
+						${CMAKE_CURRENT_SOURCE_DIR}/openat/Openat.cpp
+						${CMAKE_CURRENT_SOURCE_DIR}/linkat/Linkat.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/dup/DupFileDescriptor.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/fcntl/fcntlFD.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/fdatasync/FDataSyncTest.cpp

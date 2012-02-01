@@ -26,6 +26,9 @@
 #include "MsyncMemory.hpp"
 #include "MprotectMemory.hpp"
 #include "ReadDir.hpp"
+#include "Open.hpp"
+#include "Openat.hpp"
+#include "Linkat.hpp"
 #include "Readlink.hpp"
 #include <config.hpp>
 
@@ -62,6 +65,9 @@ int main(int argc, char ** argv)
 		Configuration<MprotectMemoryTest> mprotectConf("${CMAKE_INSTALL_PREFIX}/config/mprotect.conf");
 		Configuration<ReadDirTest> readdirConf("${CMAKE_INSTALL_PREFIX}/config/readdir.conf");
 		Configuration<ReadlinkTest> readlinkConf("${CMAKE_INSTALL_PREFIX}/config/readlink.conf");
+		Configuration<Openat> openatConf("${CMAKE_INSTALL_PREFIX}/config/openat.conf");
+		Configuration<Open> openConf("${CMAKE_INSTALL_PREFIX}/config/open.conf");
+		Configuration<LinkatTest> linkatConf("${CMAKE_INSTALL_PREFIX}/config/linkat.conf");
 		
 		TestCollection tests1 = conf1.Read();
 		TestCollection tests2 = conf2.Read();
@@ -91,6 +97,9 @@ int main(int argc, char ** argv)
 		TestCollection mprotectTests = mprotectConf.Read();
 		TestCollection readdirTests = readdirConf.Read();
 		TestCollection readlinkTests = readlinkConf.Read();
+		TestCollection openatTests = openatConf.Read();
+		TestCollection openTests = openConf.Read();
+		TestCollection linkatTests = linkatConf.Read();
 		
 	  
 	  
@@ -122,6 +131,9 @@ int main(int argc, char ** argv)
 		tests.Merge(mprotectTests);
 		tests.Merge(readdirTests);
 		tests.Merge(readlinkTests);
+		tests.Merge(openatTests);
+		tests.Merge(openTests);
+		tests.Merge(linkatTests);
 	}
 	catch (Exception ex)
 	{
