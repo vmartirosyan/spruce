@@ -381,9 +381,7 @@ Status Open:: openMaxFileNumOpened()
 
 Status Open::openNoSuchDev()
 {
-	
-   
-    int  stat, fd;
+	int  stat, fd;
 	const char * filename = "nodevtest";
 	
     stat = mknod(filename, S_IFCHR | 0666, 0);
@@ -395,11 +393,12 @@ Status Open::openNoSuchDev()
 	}
 
 	fd = open(filename, O_WRONLY);
+	
 	 
 	if(fd != -1)
 	{
 		cerr<<"Open returned normal file decriptor when there is no device to open ";
-		
+		unlink(filename);
 		return Fail;
 	}
 	else 	
@@ -407,9 +406,9 @@ Status Open::openNoSuchDev()
 		if(errno != ENODEV && errno != ENXIO)
 		{
 		
-			
+				cerr << "Error code: " << errno << " ";
 				cerr<<"Incorrect error set in errno when no corresponding device exists "<< strerror(errno);
-			
+				unlink(filename);
 				return Fail;
 			
 		}
@@ -432,22 +431,21 @@ Status Open ::openNoDevWRBL()
 
 	fd = open(filename, O_NONBLOCK | O_WRONLY);
 	
+	unlink(filename);
+	
 	if(fd != -1)
 	{
 		cerr<<"Open returned normal file decriptor when there is no device to open ";
 		return Fail;
 	}
-	else 	
-	
-			if(errno != ENXIO)
-			{
-			
-				cerr<<"Incorrect error set in errno when no corresponding device exists "<< strerror(errno);
-				return Fail;
-			}
+	else if(errno != ENXIO)
+	{		
+		cerr<<"Incorrect error set in errno when no corresponding device exists "<< strerror(errno);
+		return Fail;
+	}
 		
-
-	unlink(filename);
+	return Success;
+	
 }
 
 
@@ -455,7 +453,8 @@ Status Open::openPathisExecutable()
 {
 	int fd = 0,fd_exec=0;
 
-	const char* filename = "bin/spruce";
+	const char* filename = "${CMAKE_INSTALL_PREFIX}bin/spruce";
+	cout << "filename: " << filename << endl;
 	//const char* filename = "/home/gurgen/buildscript/bin/spruce";
 	
 		

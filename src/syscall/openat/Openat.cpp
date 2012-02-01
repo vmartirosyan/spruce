@@ -510,22 +510,20 @@ Status Openat::openatNoSuchDev()
 	if(ret_val != -1)
 	{
 		cerr<<"Openat returned normal file decriptor when there is no device to open ";
+		unlink(filename);
 		return Fail;
 	}
-	else 	
-	
-		if(errno != ENODEV)
-		{
-			if(errno != ENXIO)
-			{
-			
+	else 		
+		if(errno != ENODEV && errno != ENXIO)
+			{				
 				cerr<<"Incorrect error set in errno when no corresponding device exists "<< strerror(errno);
+				unlink(filename);
 				return Fail;
 			}
-		}
+		
 
 	unlink(filename);
-return Success;
+	return Success;
 }
 
 Status Openat ::openatNoDevWRBL()
@@ -555,6 +553,7 @@ Status Openat ::openatNoDevWRBL()
 	if(ret_val != -1)
 	{
 		cerr<<"Openat returned normal file decriptor when there is no device to open ";
+		unlink(filename);
 		return Fail;
 	}
 	else 	
@@ -563,18 +562,20 @@ Status Openat ::openatNoDevWRBL()
 			{
 			
 				cerr<<"Incorrect error set in errno when no corresponding device exists "<< strerror(errno);
+				unlink(filename);
 				return Fail;
 			}
 		
 
 	unlink(filename);
+	return Success;
 }
 
 
 Status Openat::openatPathisExecutable()
 {
 	int ret_val = 0 , fd2 ,dir_fd;
-	const char* filename = "bin/spruce";
+	const char* filename = "${CMAKE_INSTALL_PREFIX}bin/spruce";
 		
 	
 	
