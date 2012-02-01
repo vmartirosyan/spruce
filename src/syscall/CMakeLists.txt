@@ -106,8 +106,8 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/chown/Chown.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/close/Close.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/creat/Creat.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/open/Open.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/openat/Openat.cpp
+						${CMAKE_CURRENT_BINARY_DIR}/open/Open.cpp
+						${CMAKE_CURRENT_BINARY_DIR}/openat/Openat.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/linkat/Linkat.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/dup/DupFileDescriptor.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/fcntl/fcntlFD.cpp
