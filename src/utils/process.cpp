@@ -79,15 +79,12 @@ ProcessResult * Process::Execute(vector<string> args)
 	string Output = "";
 	char buf[10000];
 	int bytes;
-	std::ofstream of("log");
 	while ( true )
 	{
-		bytes = read( fds[0], buf, 9999 );
-		of << "Bytes read: " << bytes << endl;
-		buf[bytes] = 0;
-		of << buf << endl;
+		bytes = read( fds[0], buf, 9999 );		
+		buf[bytes] = 0;		
 		Output += (string)buf;
-		of.flush();
+				
 		if (bytes != 9999)
 			break;
 	}
