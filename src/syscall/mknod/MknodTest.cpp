@@ -30,6 +30,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <pwd.h>
 #include "File.hpp"
 
 int MknodTest::Main(vector<string>)
@@ -489,6 +490,7 @@ Status MknodTest :: MknodTestNormalCase2Func()
 	
 	for ( int i = 0; i < n; ++i )
 	{
+		cerr << Test[i].msg.c_str() << endl;
 		if ( mknod( node_name, Test[i].mode, 0 ) == -1 )
 		{
 			cerr << "For "<<Test[i].msg.c_str() << "mknod failed with error: "<<strerror(errno);

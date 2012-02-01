@@ -34,10 +34,6 @@
 
 int ReadDirTest::Main(vector<string>)
 {
-#if __WORDSIZE==64
-	cerr << "readdir is not supported on x86-64 architecture";
-	return Unsupported;
-#else
 	if ( _mode == Normal )
 	{	
 		switch (_operation)
@@ -48,8 +44,10 @@ int ReadDirTest::Main(vector<string>)
 				return ReadDirTestBadFileDesc2Func();
 			case ReadDirIsNotDirect:
 				return ReadDirTestIsNotDirectFunc();
-			case ReadDirBadAddress:
-				return ReadDirTestBadAddressFunc();
+			case ReadDirBadAddress1:
+				return ReadDirTestBadAddress1Func();
+			case ReadDirBadAddress2:
+				return ReadDirTestBadAddress2Func();
 			case ReadDirNoSuchDir:
 				return ReadDirTestNoSuchDirFunc();
 			case ReadDirNormalCase:
@@ -62,16 +60,13 @@ int ReadDirTest::Main(vector<string>)
 	}
 	cerr << "Test was successful";
 	return Success;
-#endif
 }
 
-#if __WORDSIZE!=64
-
 struct old_linux_dirent {
-	 long           d_ino;
-     off_t          d_off;
-     unsigned short d_reclen;
-     char           d_name[];
+	long           d_ino;
+	off_t          d_off;
+	unsigned short d_reclen;
+	char           d_name[];
 };
 
 //EBADF
@@ -82,7 +77,7 @@ Status ReadDirTest:: ReadDirTestBadFileDesc1Func()
 
 	if ( syscall( SYS_readdir, -1, &direct, 0 ) != -1 )
 	{
-		cerr << "returns 0 in case of bad file descriptor: "<<strerror(errno);
+		cerr << "returns success in case of bad file descriptor: "<<strerror(errno);
 		return Fail;
 	}
 	if ( errno != EBADF )
@@ -120,7 +115,7 @@ Status ReadDirTest:: ReadDirTestBadFileDesc2Func()
 	
 	if ( syscall( SYS_readdir, fd, &direct, 0 ) != -1 )
 	{
-		cerr << "returns 0 in case of bad file descriptor: "<<strerror(errno);
+		cerr << "returns success in case of bad file descriptor: "<<strerror(errno);
 		return Fail;
 	}
 	
@@ -136,7 +131,8 @@ Status ReadDirTest:: ReadDirTestBadFileDesc2Func()
 }
 
 //EFAULT
-Status ReadDirTest:: ReadDirTestBadAddressFunc()
+//case 1: setting negative value to the pointer
+Status ReadDirTest:: ReadDirTestBadAddress1Func()
 {
 	const char *dirname = "dirname";
 	try
@@ -147,7 +143,7 @@ Status ReadDirTest:: ReadDirTestBadAddressFunc()
 		//setting invalid(negative) value to the pointer 
 		if ( syscall( SYS_readdir, fd, -1, 0 ) != -1 )
 		{
-			cerr << "returns 0 in case of bad address. ";
+			cerr << "returns success in case of bad address. ";
 			return Fail;
 		}
 	
@@ -166,6 +162,34 @@ Status ReadDirTest:: ReadDirTestBadAddressFunc()
 	return Success;
 }
 
+//EFAULT
+//case 2: setting NULL-pointer
+Status  ReadDirTest:: ReadDirTestBadAddress2Func()
+{
+	const char *dirname = "directory";
+	try
+	{
+		Directory direct( dirname );
+		int fd = direct.GetdirectoryDescriptor();
+		
+		if ( syscall( SYS_readdir, fd, NULL, 0 ) != -1 )
+		{
+			cerr << "returns success in case of bad address. ";
+			return Fail;
+		}
+		if ( errno != EFAULT )
+		{
+			cerr << "Incorrect error set in errno in case of bad address: "<<strerror(errno);
+			return Fail;
+		}
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	return Success;
+} 
 
 
 //ENOTDIR
@@ -182,12 +206,12 @@ Status ReadDirTest:: ReadDirTestIsNotDirectFunc()
 		fd = file.GetFileDescriptor();
 		if ( syscall( SYS_readdir, fd, &direct, 0 ) != -1 )
 		{
-			cerr << "returns 0 in case of is not directory ";
+			cerr << "returns success in case of is not directory ";
 			return Fail;
 		}
 		if ( errno != ENOTDIR )
 		{
-			cerr << "Incorrect error set in errno in case of "<<strerror(errno);
+			cerr << "Incorrect error set in errno in case of is not directory: "<<strerror(errno);
 			return Fail;
 		}
 	}
@@ -227,7 +251,7 @@ Status ReadDirTest:: ReadDirTestNoSuchDirFunc()
 	
 	if ( syscall( SYS_readdir, fd, &direct, 0 ) != -1 )
 	{
-		cerr << "returns 0 in case of no such directory. ";
+		cerr << "returns successs in case of no such  directroy. ";
 		return Fail;
 	}
 	if ( errno != ENOENT )
@@ -270,5 +294,3 @@ Status ReadDirTest:: ReadDirTestNormalCaseFunc()
 	
 	return Success;
 } 
-
-#endif

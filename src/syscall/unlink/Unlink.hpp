@@ -35,7 +35,8 @@ enum UnlinkSyscalls
 	UnlinkIsDirectory,
 	UnlinkTestEmptyPath,
 	UnlinkTestNegativeAdress,
-	UnlinkTestPermissionDenied
+	UnlinkTestPermissionDenied,
+	UnlinkTestNormalCase
 };
 
 class UnlinkTest : public SyscallTest
@@ -55,6 +56,7 @@ protected:
 	Status UnlinkTestEmptyPathFunc();
 	Status UnlinkTestNegativeAdressFunc();
 	Status UnlinkTestPermissionDeniedFunc();
+	Status UnlinkTestNormalCaseFunc();
 	virtual int Main(vector<string> args);	
 };
 #endif

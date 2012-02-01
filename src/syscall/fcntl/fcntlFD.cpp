@@ -31,6 +31,9 @@
 #include <stdio.h>
 #include <sys/utsname.h>
 #include <linux/version.h>
+#include <pwd.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "File.hpp"
 
 int fcntlFD::Main(vector<string> args)
@@ -206,15 +209,20 @@ Status fcntlFD::get_setFileStatusFlagsIgnore()
 {
 	int fd;
 	long set_flags;
-	long get_flags;
+	long get_flags1, get_flags2;
 
 	try
 	{
 		File file( "filename" ,0777,O_CREAT);
 		fd = file.GetFileDescriptor();
-	
+		
+		if( (get_flags1 = fcntl( fd, F_GETFL )) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Unres;
+		}
 		// set File Descriptor Flags
-		set_flags = O_WRONLY | O_RDWR | O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC;
+		set_flags = O_WRONLY | O_RDWR | O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC ;
 		if ( fcntl(fd, F_SETFL, set_flags) == -1 )
 		{
 			cerr << "Error in fcntl: "<<strerror(errno);
@@ -222,14 +230,14 @@ Status fcntlFD::get_setFileStatusFlagsIgnore()
 		}
 
 		// get File Descriptor Flags
-		if ( (get_flags = fcntl(fd, F_GETFL)) == -1 )
+		if ( (get_flags2 = fcntl(fd, F_GETFL)) == -1 )
 		{
 			cerr << "Error in fcntl: "<<strerror(errno);
 			return Fail;
 		}
-		if (set_flags & get_flags != 0)
+		if ( get_flags1 !=  get_flags2 )
 		{
-			cerr << "Must Ignore setted flags, but does not!: " << strerror(errno);
+			cerr << "Must Ignore setted flags, but does not! ";
 			return Fail;
 		}
     }
@@ -269,7 +277,7 @@ Status fcntlFD::get_setFileStatusFlagsIgnoreRDONLY()
 
 		if(set_flags & get_flags != 0)
 		{
-			cerr << "Must Ignore setted flags, but does not!: " << strerror(errno);
+			cerr << "Must Ignore setted flags, but does not! " ;
 			return Fail;
 		}
     }
@@ -286,14 +294,20 @@ Status fcntlFD::get_setFileStatusFlags()
 {
 	int fd;
 	long set_flags;
-	long get_flags;
+	long get_flags, get_flags1;
 	
 	try
 	{
-		File file( "test", 0777, O_CREAT );
+		File file( "filename", 0777, O_CREAT );
 		fd = file.GetFileDescriptor();
+		
+		if ( (get_flags1 = fcntl( fd, F_GETFL )) == -1 )
+		{
+			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
 		// set File Descriptor Flags
-		set_flags = O_APPEND | O_DIRECT | O_NOATIME | O_NONBLOCK;
+		set_flags =  O_APPEND | O_DIRECT | O_NOATIME | O_NONBLOCK ;
 		if ( fcntl(fd, F_SETFL, set_flags) == -1 )
 		{
 			cerr << "Error in fcntl: "<<strerror(errno);
@@ -306,9 +320,9 @@ Status fcntlFD::get_setFileStatusFlags()
 			cerr << "Error in fcntl: "<<strerror(errno);
 			return Fail;
 		}
-		if(set_flags != get_flags)
+		if( (set_flags | get_flags1) != get_flags)
 		{
-			cerr << "Can't get right file descriptor flags: " << strerror(errno);
+			cerr << "Can't get right file descriptor flags! ";
 			return Fail;
 		}
     }
@@ -352,7 +366,7 @@ Status fcntlFD::get_setFileDescriptorFlags()
 		}
 		else
 		{
-			cerr << "Cannot get right file descriptor flags: " << strerror(errno);
+			cerr << "Cannot get right file descriptor flags! ";
 			return Fail;
 		}
 	}
@@ -476,7 +490,7 @@ Status fcntlFD::fcntlFDSetLockWithWaitFunction()
 
 	try
 	{
-		File file( filename, 0777, O_RDONLY );
+		File file( filename, 0777, O_RDWR );
 		fd = file.GetFileDescriptor();
 	
 		//setting flock structure
@@ -494,7 +508,11 @@ Status fcntlFD::fcntlFDSetLockWithWaitFunction()
 			if ( ret_fcntl == -1 )
 			{
 				if ( errno == EINTR )
+				{
 					cerr << "signal is caught while waiting, then the call is interrupted " << strerror(errno);
+					return Fail;
+				}
+				cerr << "Set Lock with wait failed with error: "<< strerror(errno);
 				return Fail;
 			}
 		}
@@ -502,7 +520,11 @@ Status fcntlFD::fcntlFDSetLockWithWaitFunction()
 		if ( ret_fcntl == -1 )
 		{
 			if (errno == EINTR )
-				cerr << "signal is caught while waiting, then the call is interrupted  "<<strerror(errno);
+			{
+					cerr << "signal is caught while waiting, then the call is interrupted  "<<strerror(errno);
+					return Fail;
+			}
+			cerr << "Set Lock with wait failed with error: "<<strerror(errno);
 			return Fail;
 	    }
 	    
@@ -1279,14 +1301,37 @@ Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 	cerr << "Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined";
 	return Unres;
 #else
-
+	struct passwd pw;
+	int pipe_max_size, fd;
+	char buf[1024];
 	int pipefd[2];
+	
+	pw = *getpwnam("nobody");
+	if ( setuid( pw.pw_uid ) == -1 )
+	 {
+		 cerr << "Error in setuid: "<<strerror(errno);
+		 return Unres;
+	 }
+	
+	if ( (fd = open( "/proc/sys/fs/pipe-max-size",O_CREAT, 0777 )) == -1 )
+	{
+		cerr << "Error in opening /proc/sys/fs/pipe-max-size file: "<<strerror(errno);
+		return Unres;
+	}		
+	if ( read( fd, buf, 1024 ) == -1 )
+	{
+		cerr << "Error in read system call: "<<strerror(errno);
+		return Unres;
+	}
+	pipe_max_size = atoi( buf );
+	
+	
 	if (pipe( pipefd ) == -1 )
 	{
 		cerr << "Error in creatong file: "<<strerror(errno);
 		return Unres;
 	}
-	if ( fcntl ( pipefd[1], F_SETPIPE_SZ, 1048580 ) != -1 )
+	if ( fcntl ( pipefd[1], F_SETPIPE_SZ, pipe_max_size +10 ) != -1 )
 	{
 		cerr << "returns 0 in case of permission denied because of attemp to set "
 		         "capability above limit";
@@ -1297,7 +1342,11 @@ Status fcntlFD :: fcntlFDCapAboveLimitFunc ()
 		cerr << "Incorrect error set in errno in case of permission denied "<<strerror(errno);
 		return Fail;
 	}
-   
+	if ( close( fd ) == -1 )
+	{
+		cerr << "Error in close: "<<strerror(errno);
+		return Unres;
+	}
    return Success;
 #endif
 }
