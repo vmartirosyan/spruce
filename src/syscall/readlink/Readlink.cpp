@@ -463,33 +463,44 @@ int ReadlinkTest:: SymlinkErrEACCESTest(vector<string> args)
 
 int ReadlinkTest:: SymlinkErrEEXISTTest(vector<string> args)
 {
-	int status = Success;
-	const char * slink = "slinkfile";
-	try
-	{		
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
-		if(symlink(file.GetPathname().c_str(), slink) != 0)
-		{
-			cerr << "System call symlink failed: " << strerror(errno);
-			return Unres;
-		}	
-		
-		if(symlink(file.GetPathname().c_str(), slink) != -1 || errno != EEXIST)
-		{
-			cerr << "EEXIST error expected: slink already exists";
-			status = Fail;
-		}
-	}
-	catch(Exception e)
+	if(geteuid() != 0)
 	{
-		cerr << e.GetMessage();
-		return Unres;
-	}	
+		int status = Success;
+		const char * dirPathname = "symlinkFolder";
+		if(mkdir(dirPathname, (mode_t)(S_IRUSR)) == -1 && errno != EEXIST)	
+		{
+			cerr << "System call mkdir failed: " << strerror(errno);
+			return Unres;
+		}
+		try
+		{	
+			const char * slink = "symlinkFolder/slinkfile2";
+			File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+			if(symlink(file.GetPathname().c_str(), slink) != -1 || errno != EACCES)
+			{
+				cerr << "EACCES error expected: write access to the directory containing slink is denied";
+				status = Fail;
+				
+				if(unlink(slink) != 0 && errno != ENOENT)
+					cerr << "System call unlink failed: " << strerror(errno);			
+			}	
+		}
+		catch(Exception e)
+		{
+			cerr << e.GetMessage();
+			status = Unres;
+		}
 	
-	if(unlink(slink) != 0)
-		cerr << "System call unlink failed: " << strerror(errno);
+		if(rmdir(dirPathname) != 0)
+			cerr << "System call rmdir failed: " << strerror(errno);
 		
-	return status;
+		return status;
+	}
+	else
+	{
+		cerr << "The user should not be root";
+		return Unres;
+	}
 }
 
 int ReadlinkTest:: SymlinkErrENOENTTest(vector<string> args)
