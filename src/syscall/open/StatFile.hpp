@@ -1,10 +1,10 @@
-//      Link.hpp
+//      StatFile.hpp
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
 //      Author:
-//			Suren Gishyan <gsuren@gmail.com>
-//
+//			Suren Grigoryan <suren.grigoryan@gmail.com>
+//      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
 //      the Free Software Foundation; either version 2 of the License, or
@@ -20,38 +20,45 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#ifndef LINK_H
-#define LINK_H
+#ifndef STAT_FILE_H
+#define STAT_FILE_H
 
-#include "SyscallTest.hpp"
+#include "File.hpp"
 
-// Operations
-enum LinkSyscalls
+class StatFile : public File 
 {
-
-	LinkTestTooLongNewPath,
-	LinkTestNewPathAleadyExist,
-	LinkTestOldPathIsDirectory,
-	LinkTestNormalFile,
-	LinkTestIsNotDirectory
+public:
+    StatFile(string pathname) : File(pathname) {
+        _uid = getuid();
+        _gid = getgid();
+        _st_atime = time(NULL);
+        _st_mtime = _st_atime;
+        _st_ctime = _st_mtime;
+        
+    }
+    uid_t GetUID() {
+        return _uid;
+    }
+    gid_t GetGID() {
+        return _gid;
+    }
+    time_t GetATime() {
+        return _st_atime;
+    }
+    time_t GetMTime() {
+        return _st_mtime;
+    }
+    time_t GetCTime() {
+        return _st_ctime;
+    }
+private:
+    uid_t _uid;
+    gid_t _gid;
+    time_t _st_atime;
+    time_t _st_mtime;
+    time_t _st_ctime;
 };
 
-class LinkTest : public SyscallTest
-{			
-public:	
-	LinkTest(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "Link")
-	{			
-	}
-	virtual ~LinkTest() {}	
 
-	Status LinkTooLongNewPath();
-	Status LinkNewPathAlreadyExist();
-	Status LinkOldPathIsDirectory();
-	Status LinkNormalLink();
-	Status LinkIsNotDirectory();
 
-protected:
-	virtual int Main(vector<string> args);	
-};
-#endif
+#endif /*STAT_FILE_H*/

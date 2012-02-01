@@ -1,7 +1,10 @@
 //      Link.cpp
 //      
-//      Copyright 2011  Gurgen Suren <sgishyan@gmail.com>
-//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Suren Gishyan <gsuren@gmail.com>
+//
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
 //      the Free Software Foundation; either version 2 of the License, or
@@ -30,8 +33,6 @@ int LinkTest::Main(vector<string>)
 		{
 			case LinkTestTooLongNewPath:
 				return LinkTooLongNewPath();
-			case LinkTestTooLongOldPath:
-			   return LinkTooLongOldPath();
 			case LinkTestNewPathAleadyExist:
 				return LinkNewPathAlreadyExist();
 			case LinkTestOldPathIsDirectory:
@@ -49,31 +50,7 @@ int LinkTest::Main(vector<string>)
 	return Success;
 }
 
-Status LinkTest::LinkTooLongOldPath()
-{	
-	
-	
-	const char* filename="testfile.txt";
-	const char* tooLongfilename="abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
-	int ret_val = link(filename,tooLongfilename);
-	if(ret_val==0)
-	{
-			cerr << "Link return 0 in case of too long old path name";
-			return Fail;
-	}
-	else
-	{
-		if(errno!=ENAMETOOLONG)
-		{
-				
-				cerr << "Incorrect error set in errno in case of too long file name "<<strerror(errno);
-				return Fail;
-		}
-	}
-	return Success;
-	
-	
-}
+
 
 
 
@@ -82,7 +59,7 @@ Status LinkTest::LinkTooLongNewPath()
 	
 	
 	int ret_val;
-	const char* filename="testfile.txt";
+	const char* filename="link_testfile.txt";
 	const char* tooLongfilename="abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
 	
 	try
@@ -122,8 +99,8 @@ Status LinkTest::LinkNewPathAlreadyExist()
 
 	int fd ;
 	int ret_val;
-	const char* filename1="testfile1.txt";
-	const char* filename2="testfile1.txt";
+	const char* filename1="link_testfile.txt";
+	const char* filename2="link_testfile.txt";
 	try
 	{
 		File file1(filename1, S_IWUSR);
@@ -209,8 +186,8 @@ Status LinkTest::LinkNormalLink()
 	size_t  COUNT=6;
 	ssize_t write_count;
 	ssize_t read_count;
-	const char* filename="testfile1.txt";
-	const char* filename_link="testfile2.txt";
+	const char* filename="link_testfile1.txt";
+	const char* filename_link="link_testfile2.txt";
 
 	fd_orig=open(filename,O_RDWR| O_CREAT, S_IRWXU);
 	
@@ -277,9 +254,9 @@ Status LinkTest::LinkIsNotDirectory()
 {
 
 	int ret_val;
-	const char* notDirectoryPath="filename2.txt/linkname";
-	const char* filename2="filename2.txt";
-	const char* filename="filename.txt";
+	const char* notDirectoryPath="link_testfile.txt/linkname";
+	const char* filename2="link_testfile.txt";
+	const char* filename="link_testfile1.txt";
 	
 	
 	
