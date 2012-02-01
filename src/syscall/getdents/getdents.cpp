@@ -78,7 +78,7 @@ Status GetDentsTest::deleteDir(string dirName)
 	int st = rmdir(dirName.c_str());
 	if (st == -1)
 	{
-		cerr << strerror(errno);
+		cerr << "Error while deleting dir: " << dirName << "Error: " << strerror(errno);
 		return Unknown;
 	}
 	return Success;
@@ -99,6 +99,13 @@ string GetDentsTest::randomName(int number)
 
 int GetDentsTest::Main(vector<string>)
 {
+	Status status = createDirWithFiles(directory, 3);
+	//cerr << "status = " << status ;
+	if (status != Success)
+	{		
+		cerr << "Cannot create directory " << directory << endl;
+		return Unres;
+	}
 	if ( _mode == Normal )
 	{	
 		switch (_operation)
@@ -133,7 +140,7 @@ Status GetDentsTest::GetDentsEbadfErrorTest()
 	status = syscall(SYS_getdents, -1, buf, count);
 	if (status != -1 || errno != EBADF)
 	{
-		cerr << strerror(errno);
+		cerr << "aaaa " << strerror(errno) << endl;
 		return Fail;
 	}
 
@@ -146,7 +153,7 @@ Status GetDentsTest::GetDentsEfaultErrorTest()
 	int fd = open(directory.c_str(), O_RDONLY | O_DIRECTORY);
 	if (fd == -1)
 	{
-		cerr << strerror(errno);
+		cerr << "bbbb " << strerror(errno) << endl;
 		return Unres;
 	}
 	
@@ -158,7 +165,7 @@ Status GetDentsTest::GetDentsEfaultErrorTest()
 	
 	if (status != -1 || errno != EFAULT)
 	{
-		cerr << strerror(errno);
+		cerr << "cccc " << strerror(errno) << endl;
 		return Fail;
 	}
 
@@ -171,7 +178,7 @@ Status GetDentsTest::GetDentsEinvalErrorTest()
 	int fd = open(directory.c_str(), O_RDONLY | O_DIRECTORY);
 	if (fd == -1)
 	{
-		cerr << strerror(errno);
+		cerr << "dddd " << strerror(errno) << endl;
 		return Unres;
 	}
 	
@@ -184,7 +191,7 @@ Status GetDentsTest::GetDentsEinvalErrorTest()
 	
 	if (status != -1 || errno != EINVAL)
 	{
-		cerr << strerror(errno);
+		cerr << "eeee " << strerror(errno) << endl;
 		return Fail;
 	}
 
@@ -206,7 +213,7 @@ Status GetDentsTest::GetDentsEnotdirErrorTest()
 	
 	if (status != -1 || errno != ENOTDIR)
 	{
-		cerr << strerror(errno);
+		cerr << "ffff " << strerror(errno) << endl;
 		return Fail;
 	}
 
@@ -219,7 +226,7 @@ Status GetDentsTest::GetDentsGeneralTest()
 	int fd = open(directory.c_str(), O_RDONLY | O_DIRECTORY);
 	if (fd == -1)
 	{
-		cerr << strerror(errno);
+		cerr << "gggg " << strerror(errno) << endl;
 		return Unres;
 	}
 	
@@ -231,7 +238,7 @@ Status GetDentsTest::GetDentsGeneralTest()
 	nread = syscall(SYS_getdents, fd, buf, count);
 	if (nread == -1)
 	{
-		cerr << strerror(errno);
+		cerr << "hhhh " << strerror(errno) << endl;
 		return Unres;
 	}
 	
