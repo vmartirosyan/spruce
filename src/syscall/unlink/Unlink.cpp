@@ -44,7 +44,9 @@ int UnlinkTest::Main(vector<string>)
 			case UnlinkTestTooLongPath:			
 				return UnlinkTestTooLongPathFunc();				
 			case UnlinkTestNormalFile:			
-				return UnlinkTestNormalFileFunc();			   
+				return UnlinkTestNormalFileFunc();	
+			case UnlinkTestNormalCase:
+				return UnlinkTestNormalCaseFunc();
 			case UnlinkTestIsNotDirectory:			
 				return UnlinkTestIsNotDirectoryFunc();				
 			case UnlinkTestNoSuchFile:			
@@ -319,3 +321,39 @@ Status UnlinkTest::UnlinkTestPermissionDeniedFunc()
 	return Success;
 }
 
+Status UnlinkTest:: UnlinkTestNormalCaseFunc()
+{
+	int fd;
+	const char *filename = "file_";
+	const char *symlink_name = "symlink";
+	try
+	{
+		File file( filename );
+		fd = file.GetFileDescriptor();
+		
+		if ( symlink( file.GetPathname().c_str(), symlink_name ) == -1 )
+		{
+			cerr << "Error in symlink() : "<<strerror(errno);
+			return Fail;
+		}
+		
+		if ( unlink( symlink_name ) == -1 )
+		{
+			cerr << "Unlink failed: "<<strerror(errno);
+			return Fail;
+		}
+		
+		if( open( file.GetPathname().c_str(), O_RDWR ) == -1 )
+		{
+			cerr << "Unlink failed.";
+			return Fail;
+		}
+		
+	}
+	catch( Exception ex )
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+	return Success;
+}

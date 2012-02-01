@@ -31,7 +31,8 @@ enum ReadDirSyscalls
 	ReadDirBadFileDesc1,
 	ReadDirBadFileDesc2,
 	ReadDirIsNotDirect,
-	ReadDirBadAddress,
+	ReadDirBadAddress1,
+	ReadDirBadAddress2,
 	ReadDirNoSuchDir,
 	ReadDirNormalCase
 };
@@ -48,7 +49,8 @@ protected:
 	Status ReadDirTestInvalidArgFunc();	
 	Status ReadDirTestBadFileDesc1Func();
 	Status ReadDirTestBadFileDesc2Func();
-	Status ReadDirTestBadAddressFunc();
+	Status ReadDirTestBadAddress1Func();
+	Status ReadDirTestBadAddress2Func();
 	Status ReadDirTestIsNotDirectFunc();
 	Status ReadDirTestNoSuchDirFunc();
 	Status ReadDirTestNormalCaseFunc();
