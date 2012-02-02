@@ -66,7 +66,7 @@ TestResultCollection TestCollection::Run()
 	for ( unsigned int index = 0 ; index < _tests.size(); ++index)
 	{
 		Results.AddResult( (TestResult *)_tests[index]->Execute() );
-		delete _tests[index];
+		//delete _tests[index];
 	}	
 	
 	return Results;

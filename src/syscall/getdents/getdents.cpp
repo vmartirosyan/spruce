@@ -86,7 +86,7 @@ Status GetDentsTest::deleteDir(string dirName)
 
 string GetDentsTest::randomName(int number)
 {
-	srand ( time(NULL) );
+	//srand ( time(NULL) );
 	
 	string name = "";
 	for (int i = 0; i < number; ++i)
@@ -94,6 +94,7 @@ string GetDentsTest::randomName(int number)
 		int ch = rand() % 26 + 97;
 		name += char(ch);
 	}
+	cerr << "dirname " << name << endl;
 	return name;
 }
 
