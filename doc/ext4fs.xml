@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" id="ext4fs">
+	<bookinfo>
+		<title>Spruce : Filesystems : Ext4 </title>
+		<authorgroup>
+			<author>
+				<firstname>Vahram</firstname>
+				<surname>Martirosyan</surname>
+			</author>	
+		</authorgroup>	
+		
+	</bookinfo>
+	<chapter id="overview" name="Overview" >
+	<info>
+		<title>Ext4FS module overview</title>
+	</info>
+		<para>
+			This is the Ext4 FS  module documentaion of the Spruce system. This module is designated to cover as much ext4fs-specific code as possible.
+			One of the most important segments of such code is the ioctl system call backend. In case of Ext4 FS it is called ext4_ioctl and is situated in fs/ext4/ioctl.c. 
+		</para>	
+		<para>
+			The module covers the following Ext4fs-specific features: 
+			<itemizedlist>
+				<listitem>Getting and setting flags</listitem>
+				<listitem>Clearing non-allowed flags</listitem>
+				<listitem>Getting and setting version</listitem>
+				<listitem>Online resize</listitem>
+				<listitem>Online defragmentation</listitem>
+				<listitem>Delayed block allocation</listitem>
+				<listitem>Test on unsupported operation</listitem>				
+			</itemizedlist>
+		</para>
+	</chapter>
+	<chapter id="run" >
+	<info>
+		<title>How to execute the module</title>
+	</info>
+		<para>
+			It is not recommended to run the Ext4 FS module alone, but if you know what are you doing then here are some hints which can help you to execute the module in several scenarios. 
+		</para>	
+		<para>
+			The module execution can be controlled by it's configuration file (ext4fs.conf in config directory).
+			It consists of several lines each describing a single test. Lines must have the following format:
+			<emphasis>OPERATION_IDENTIFIER ARG1 ARG2 ... ARGN.</emphasis>
+			
+			All the possible operation identifiers are listed below.
+			
+			<itemizedlist>
+				<listitem>
+					<emphasis role="bold">Ext4IoctlSetFlagsGetFlags</emphasis> - Try to set and then get some flag value.
+				</listitem>
+				<listitem>
+					<emphasis role="bold">Ext4IoctlClearExtentsFlags</emphasis> - Try to clear the Extents flag, which is not allowed!
+				</listitem>
+				<listitem>
+					<emphasis role="bold">Ext4IoctlSetFlagsNotOwner</emphasis> - Try to set flags not having permission to that (not the file owner or have no capabilities.
+				</listitem>
+				<listitem>
+					<emphasis role="bold">Ext4IoctlSetVersionGetVersion</emphasis> - Try to set and then get the version.
+				</listitem>
+				<!--listitem>
+					<em>Ext4IoctlWaitForReadonly</em> - 
+				</listitem-->
+				<listitem>
+					<emphasis role="bold">Ext4IoctlGroupExtend</emphasis> - Online resize test.
+				</listitem>
+				<listitem>
+					<emphasis role="bold">Ext4IoctlMoveExtent</emphasis> - Online defragmentation test.
+				</listitem>
+				<!--listitem>
+					<em>Ext4IoctlGroupAdd</em> - 
+				</listitem-->
+				<!--listitem>
+					<em>Ext4IoctlMigrate</em> - Try to set and then get some generic flag
+				</listitem-->
+				<listitem>
+					<emphasis role="bold">Ext4IoctlAllocDABlocks</emphasis> - Delayed allocation test.
+				</listitem>
+				<!--listitem>
+					<em>Ext4IoctlFitrim</em> - Try to set and then get some generic flag
+				</listitem-->
+				<listitem>
+					<emphasis role="bold">Ext4IoctlUnsupported</emphasis> - Try to execute an unsupported command
+				</listitem>
+			</itemizedlist>
+		</para>
+	</chapter>
+</book>
