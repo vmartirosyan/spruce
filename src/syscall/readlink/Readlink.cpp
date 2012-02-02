@@ -23,6 +23,7 @@
 #include <Readlink.hpp>
 #include "File.hpp"
 #include <pwd.h>
+#include <unistd.h>
 
 int ReadlinkTest:: Main(vector<string> args)
 {
@@ -430,11 +431,7 @@ int ReadlinkTest:: SymlinkTest(vector<string> args)
 
 int ReadlinkTest:: SymlinkErrEACCESTest(vector<string> args)
 {
-	if(geteuid() == 0)
-	{
-		cerr << "The user should not be root";
-		return Unres;
-	}
+	uid_t uid = getuid();	
 	
 	int status = Success;
 	const char * dirPathname = "symlinkFolder";
@@ -443,12 +440,39 @@ int ReadlinkTest:: SymlinkErrEACCESTest(vector<string> args)
 		cerr << "System call mkdir failed: " << strerror(errno);
 		return Unres;
 	}
+
 	try
 	{
 		const char * slink = "symlinkFolder/slinkfile2";
 		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
-		if(symlink(file.GetPathname().c_str(), slink) != -1 || errno != EACCES)
+		
+		if(uid == 0)
 		{
+			passwd * pwd_nobody = getpwnam("nobody");
+			if(chown(dirPathname, pwd_nobody->pw_uid, pwd_nobody->pw_gid) != 0)
+			{
+				cerr << "System call chown failed: " << strerror(errno);
+				return Unres;
+			}	
+			if(seteuid(pwd_nobody->pw_uid) != 0)
+			{
+				cerr << "System call seteuid failed: " << strerror(errno);
+				return Unres; 
+			}
+		}
+		
+		int res = symlink(file.GetPathname().c_str(), slink);
+		
+		if(seteuid(uid) != 0)
+		{
+			cerr << "System call seteuid failed: " << strerror(errno);
+			return Unres;
+		}
+		
+				
+		if(res != -1 || errno != EACCES)
+		{
+			cerr << strerror(errno) << endl;
 			cerr << "EACCES error expected: write access to the directory containing slink is denied";
 			status = Fail;
 			
@@ -462,6 +486,7 @@ int ReadlinkTest:: SymlinkErrEACCESTest(vector<string> args)
 		status = Unres;
 	}
 	
+
 	if(rmdir(dirPathname) != 0)
 		cerr << "System call rmdir failed: " << strerror(errno);
 		
