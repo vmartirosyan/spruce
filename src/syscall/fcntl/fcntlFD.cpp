@@ -806,15 +806,10 @@ Status fcntlFD:: fcntlFDTooManyOpenedFilesFunc()
 	{		
 		File file(filename);
 		   
-		for ( ind = 0; fd < max_files - 1; ++ind )
+		for ( ind = 0; ind < max_files - 1; ++ind )
 		{
 		 
-			if ( (fd = open (filename,  O_RDONLY)) == -1 )
-			{
-				cerr << "Error in opening " << ind << "-th file: " << strerror(errno);
-				return Unres;
-			}
-			
+			fd = open (filename,  O_RDONLY);
 		}
 		
 		if ( fcntl( 1, F_DUPFD, 1 ) != -1 )
