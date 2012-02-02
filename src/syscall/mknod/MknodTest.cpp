@@ -486,11 +486,10 @@ Status MknodTest :: MknodTestNormalCase2Func()
 	const char *node_name = "node_name";
 	struct stat st;
 	Status status = Success;
-	int n = sizeof(Test)/(sizeof(int) + sizeof(string));
+ 	int n = sizeof(Test)/sizeof(test_cases);
 	
-	for ( int i = 0; i < n; ++i )
+	for ( int i = 0; i < n - 1; ++i )
 	{
-		cerr << Test[i].msg.c_str() << endl;
 		if ( mknod( node_name, Test[i].mode, 0 ) == -1 )
 		{
 			cerr << "For "<<Test[i].msg.c_str() << "mknod failed with error: "<<strerror(errno);
@@ -499,7 +498,7 @@ Status MknodTest :: MknodTestNormalCase2Func()
 		}
 		if ( stat( node_name, &st ) == -1 )
 		{
-			cerr << "For " <<Test[i].msg.c_str() << "stat failed with error: "<<strerror(errno);
+			cerr << "For " <<Test[i].msg.c_str() << " stat failed with error: "<<strerror(errno);
 			return Unres; 
 		}
 		
