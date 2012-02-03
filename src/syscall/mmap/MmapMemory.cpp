@@ -252,6 +252,7 @@ int MmapMemoryTest:: MunmapTest(vector<string> args)
 
 int MmapMemoryTest:: MunmapErrTest(vector<string> args)
 {
+	int status = Success;
 	try
 	{
 		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
@@ -271,13 +272,14 @@ int MmapMemoryTest:: MunmapErrTest(vector<string> args)
 		if(munmap(addr, -1) != -1)
 		{
 			cerr << "Error expected: length contains invalid value";
-			return Fail;
+			status = Fail;
 		}
 		
-		if(munmap((void *)0xFFFFFFFF, -1) != -1)
+		int pageSize = getpagesize();
+		if(munmap((void *)(pageSize + 1), length) != -1)
 		{
 			cerr << "Error expected: addr contains invalid value";
-			return Fail;
+			status = Fail;
 		}	
 	}
 	catch(Exception ex)
@@ -286,7 +288,7 @@ int MmapMemoryTest:: MunmapErrTest(vector<string> args)
 		return Unres;
 	}
 	
-	return Success;
+	return status;
 }
 
 int MmapMemoryTest:: MremapTest(vector<string> args)
