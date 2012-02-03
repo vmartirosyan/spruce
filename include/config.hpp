@@ -96,7 +96,14 @@ protected:
 		if (data.Operation == "")
 			return NULL;
 		//cerr << data.Operation << " " << data.Arguments << endl;
-		return new T(Normal, Operation::Parse(data.Operation), data.Arguments);
+		try
+		{
+			return new T(Normal, Operation::Parse(data.Operation), data.Arguments);
+		}
+		catch (Exception e)
+		{
+			cerr << "Cannot create test. Error: " << e.GetMessage() << endl;
+		}
 	}
 };
 
