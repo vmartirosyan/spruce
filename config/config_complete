@@ -1,6 +1,6 @@
 modules=syscall;
-fs=ext4;xfs;
-partition=/dev/sda4
-mount_at=/mnt/spruce_test
+fs=ext4;
+partition=/dev/sda2
+mount_at=/mnt/spruce
 browser=firefox
 logfolder=/tmp
