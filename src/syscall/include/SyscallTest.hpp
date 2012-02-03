@@ -24,6 +24,10 @@
 #define SYSCALL_TEST_H
 
 #include <test.hpp>
+#include <stdlib.h>
+#include <sstream>
+using std::stringstream;
+
 
 class SyscallTestResult : public TestResult 
 {
@@ -33,9 +37,13 @@ class SyscallTestResult : public TestResult
 		{						
 		}
 		virtual string ToXML()
-		{						
-			return TestResult::ToXML() + 
-				"\n\t<SysCall>" + _syscallName + "</SysCall>";
+		{
+			
+			stringstream str;
+			str << rand();
+			
+			return "<SysCall Name=\"" + _syscallName + "\" Id=\"" + str.str() + " \">" + TestResult::ToXML() + 
+				"\n\t" +  "</SysCall>";
 		}
 	protected:
 		string _syscallName;

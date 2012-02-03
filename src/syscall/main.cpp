@@ -31,9 +31,11 @@
 #include "Linkat.hpp"
 #include "Readlink.hpp"
 #include <config.hpp>
+#include <time.h>
 
 int main(int argc, char ** argv)
 {
+	srand(time(0));
 	TestCollection tests;
 	try
 	{
@@ -144,7 +146,7 @@ int main(int argc, char ** argv)
     
 	TestResultCollection res = tests.Run();
 	//cerr << "bla bla" << endl;
-	cerr << "<Syscall>\n" << res.ToXML() << "</Syscall>" << endl;
+	cerr << "<Syscalls>\n" << res.ToXML() << "</Syscalls>" << endl;
 	//cerr << res.ToXML() << endl;
 
 	/*tests.AddTest(new DupFileDescriptorTest(Normal, Dup));

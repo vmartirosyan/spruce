@@ -34,11 +34,13 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <iterator>
 #include <unistd.h>
 #include <getopt.h>
 #include <UnixCommand.hpp>
 #include <string.h>
 #include <errno.h>
+#include <sys/mount.h>
 
 using std::ifstream;		
 using std::ofstream; 		
@@ -50,6 +52,7 @@ using std::endl;
 using std::vector;
 using std::auto_ptr;
 using std::stringstream;
+using std::ostream_iterator;
 
 
 typedef map<string,string> ConfigValues;
@@ -58,7 +61,10 @@ ConfigValues ParseOptions(int argc, char ** argv);
 ConfigValues ParseConfigFile(string FilePath);
 
 const int ModuleCount = 2;
-string ModulesAvailable[] = {"benchmark", "syscall"};
+vector<string> ModulesAvailable;
+vector<string> FSAvailable;
+
+vector<string> SplitString(string str, char delim, vector<string> AllowedValues );
 
 enum ErrorCodes
 {
@@ -70,11 +76,18 @@ enum ErrorCodes
 
 int main(int argc, char ** argv)
 {
+	//Prepare the allowed modules list
+	ModulesAvailable.push_back("syscall");
+	ModulesAvailable.push_back("benchmark");
+	
+	// Prepare the allowed FS list
+	FSAvailable.push_back("ext4");
+	FSAvailable.push_back("btrfs");
+	FSAvailable.push_back("xfs");	
+	
 	// Parse the arguments
 	ConfigValues options = ParseOptions(argc, argv);
 	ConfigValues configValues;
-	for ( ConfigValues::const_iterator i = options.begin(); i != options.end(); ++i )
-		cout << i->first << "=" << i->second << endl;;
 	
 	// Parse the configuration file
 	ConfigValues::const_iterator configFile;
@@ -101,50 +114,37 @@ int main(int argc, char ** argv)
 		return NOMODULES;
 	}
 	// Split the module list into module names
-	size_t SplitterPos = 0, OldPos = 0;
-	vector<string> Modules;
-	while (true)	
+	vector<string> Modules = SplitString(configValues["modules"], ';', ModulesAvailable);
+	
+	// Get the filesystem names to be tested
+	vector<string> FileSystems;
+	if ( configValues.find("fs") != configValues.end() )
 	{
-		SplitterPos = configValues["modules"].find(';', OldPos);
-		if ( SplitterPos == string::npos )
-		{
-			break;
-		}
-		string ModuleName = configValues["modules"].substr(OldPos, SplitterPos - OldPos );
-		cout << "Module name: " << ModuleName << endl;
-		OldPos = SplitterPos + 1;
-		if ( find(&ModulesAvailable[0], &ModulesAvailable[ModuleCount], ModuleName) == ModulesAvailable + ModuleCount)
-		{
-			cerr << "Warning. Unknown module " << ModuleName << endl;
-			continue;
-		}
-		Modules.push_back(ModuleName);
+		FileSystems = SplitString(configValues["fs"], ';', FSAvailable);
 	}
-	string ModuleName = configValues["modules"].substr(OldPos, configValues["modules"].size() - 1 );
-	cout << "Module name: " << ModuleName << endl;	
-	if ( find(ModulesAvailable, ModulesAvailable + ModuleCount, ModuleName) == ModulesAvailable + ModuleCount)
-	{
-		cerr << "Warning. Unknown module " << ModuleName << endl;		
-	}
-	else	
-		Modules.push_back(ModuleName);
-		
+	else
+		FileSystems.push_back("current");
+	
 	// Find out the partition to be tested on. If there is no partition provided
 	// Spruce will use the current partition. 
 	// By default tests will be executed in the /tmp folder
-	/*if ( configValues.find("partition") != configValues.end() )
+	string partition = "current";
+	string MountAt = "none";
+	if ( configValues.find("partition") != configValues.end() )
 	{
-		string partition = configValues.find("partition");
+		partition = configValues["partition"];
+		if ( configValues.find("mount_at") != configValues.end() )
+			MountAt = configValues["mount_at"];
 	}
 	else
 	{
-		cerr << "Warning. No partition name provided. Using /tmp folder."
+		cerr << "Warning. No partition name provided. Using /tmp folder." << endl;
 		if ( chdir("/tmp") )
 		{
 			cerr << "Cannot change to /tmp folder. Aborting." << endl;
 			return FAULT;
 		}
-	}*/
+	}
 		
 	// Where the output must be stored?
 	string logfolder = "/tmp";
@@ -186,34 +186,98 @@ int main(int argc, char ** argv)
 	
 	// Go through the modules, execute them
 	// and collect the output
-	stringstream str;
-	str << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n\
+	
+	for ( vector<string>::iterator fs = FileSystems.begin(); fs != FileSystems.end(); ++fs )
+	{
+		stringstream str;
+		str << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n\
 			<?xml-stylesheet type=\"application/xml\" href=\"" << logfolder << "/processor.xslt\"?>\n\
 			<SpruceLog>";
 			
-	for (vector<string>::iterator i = Modules.begin(); i != Modules.end(); ++i)
-	{
-		UnixCommand command(( (string)("${CMAKE_INSTALL_PREFIX}bin/" + (*i)).c_str()));
-		//auto_ptr<ProcessResult> result(command.Execute());
-		ProcessResult * result(command.Execute());
-		str << result->GetOutput() << endl;
+		
+		// Unmount the MountAt folder first (just in case)		
+		if ( umount( MountAt.c_str() ) != 0 && errno != EINVAL)
+		{
+			cerr << "Cannot unmount folder " << MountAt << endl;
+			cerr << "Error: " << strerror(errno) << endl;
+			continue;
+		}
+			
+		// If there are any filesystems mentioned, then let's create the filesystem
+		UnixCommand mkfs("mkfs." + *fs);
+		vector<string> args;		
+		args.push_back(partition);		
+		if ( *fs == "xfs" ) //Force if necessary
+			args.push_back("-f");
+		ProcessResult * res;
+		res = mkfs.Execute(args);
+		if ( res->GetStatus() != Success )
+		{
+			cerr << "Cannot create " << *fs << " filesystem on device " << partition << endl;
+			cerr << "Error: " << res->GetOutput() << endl;
+			continue;
+		}
+		
+		
+		
+		// Then mount the filesystem
+		if ( mount(partition.c_str(), MountAt.c_str(), fs->c_str(), 0, 0) != 0 )
+		{
+			cerr << "Cannot mount " << partition << " at folder " << MountAt << endl;
+			cerr << "Error: " << strerror(errno) << endl;
+			continue;
+		}
+		
+		// Now change current dir to the newly mounted partition folder
+		if ( chdir(MountAt.c_str()) != 0 )
+		{
+			cerr << "Cannot change current dir to " << MountAt << endl;
+			cerr << "Error: " << strerror(errno) << endl;
+			continue;
+		}
+		
+		
+		for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
+		{
+			cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
+			UnixCommand command(( (string)("${CMAKE_INSTALL_PREFIX}bin/" + (*module)).c_str()));
+			//auto_ptr<ProcessResult> result(command.Execute());
+			ProcessResult * result(command.Execute());
+			str << "<FS Name=\"" << *fs << "\" />" << result->GetOutput() << endl;
+		}
+		
+		str << "</SpruceLog>";
+		// Forward the output to the log file	
+		ofstream of((configValues["logfolder"] + "/spruce_log_" + *fs + ".xml").c_str());
+		of << str.str();
+		of.close();
+		
+		// Now change current dir to log folder to free the MountAt folder (to unmount later)
+		if ( chdir(logfolder.c_str()) != 0 )
+		{
+			cerr << "Cannot change current dir to " << MountAt << endl;
+			cerr << "Error: " << strerror(errno) << endl;
+			continue;
+		}
+		
+		// Unmount the MountAt folder first (just in case)		
+		if ( umount( MountAt.c_str() ) != 0 && errno != EINVAL)
+		{
+			cerr << "Cannot unmount folder " << MountAt << endl;
+			cerr << "Error: " << strerror(errno) << endl;
+			continue;
+		}
+		
+		// Open the log file in the selected browser
+		string browser_args = logfolder + "/spruce_log_" + *fs + ".xml";
+		if ( browser == "chrome" )
+		{
+			browser = "chromium";
+			browser_args += " --allow-file-access-from-files --user-data-dir /tmp";
+		}
+		string command = "bash -c '" + browser + " " + browser_args + " &'";
+		system(command.c_str());
 	}
-	str << "</SpruceLog>";
-	// Forward the output to the log file	
-	ofstream of((configValues["logfolder"] + "/spruce_log.xml").c_str());
-	of << str.str();
-	of.close();
-	
-	// Open the log file in the selected browser
-	string browser_args = logfolder + "/spruce_log.xml";
-	if ( browser == "chrome" )
-	{
-		browser = "chromium-browser";
-		browser_args += " --allow-file-access-from-files --user-data-dir /tmp";
-	}
-	string command = "bash -c '" + browser + " " + browser_args + " &'";
-	system(command.c_str());
-	
 	
 	return 0;
 }
@@ -268,18 +332,30 @@ ConfigValues ParseConfigFile(string FilePath)
 	return vals;
 }
 
-vector<string> SplitString(string str, char delim)
+vector<string> SplitString(string str, char delim, vector<string> AllowedValues )
 {
 	vector<string> pieces;
 	size_t PrevPos = 0, CurPos;
+	if ( str.find( delim, PrevPos ) == string::npos)
+	{
+		pieces.push_back(str);
+		return pieces;
+	}
+	
 	while ( ( CurPos = str.find( delim, PrevPos ) ) != string::npos )
 	{
-		pieces.push_back(str.substr(PrevPos, CurPos - PrevPos));
-		PrevPos = CurPos;
+		string piece = str.substr(PrevPos, CurPos - PrevPos);		
+		if ( find(AllowedValues.begin(), AllowedValues.end(), piece) != AllowedValues.end() )
+			pieces.push_back(piece);
+		PrevPos = CurPos + 1;
 	}
 	// If the last symbol is not a delimiter, then take the remaining string also
 	if ( str[str.size() - 1] != delim )
-		pieces.push_back(str.substr(PrevPos, string::npos));
+	{
+		string piece = str.substr(PrevPos, string::npos);
+		if ( find(AllowedValues.begin(), AllowedValues.end(), piece) != AllowedValues.end() )
+			pieces.push_back(piece);
+	}
 	return pieces;
 	
 }
