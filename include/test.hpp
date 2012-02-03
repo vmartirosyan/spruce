@@ -42,10 +42,10 @@ public:
 		ProcessResult((int)s, output),
 		_operation(op),
 		_arguments(args) {}
-	TestResult(TestResult const & tr) : ProcessResult(tr),
-	 _operation(tr._operation),
-	 _arguments(tr._arguments) 
-	 {}
+	TestResult(TestResult const & tr) : 
+		ProcessResult(tr),
+		_operation(tr._operation),
+		_arguments(tr._arguments) {}
 	 	 	 
 	virtual string ToXML();
 protected:
@@ -55,7 +55,7 @@ protected:
 	virtual string OperationToString()
 	{
 		return Operation::ToString((Operations)_operation);
-	};
+	}
 };
 
 class TestResultCollection 
@@ -116,9 +116,7 @@ public:
 	{
 		for ( vector<Test *>::iterator i = _tests.begin(); i != _tests.end(); ++i )
 		{
-			if ( *i )
-				delete (*i);
-			*i = NULL;
+			delete (*i);
 		}
 	}	
 private:
