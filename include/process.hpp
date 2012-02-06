@@ -40,11 +40,11 @@ public:
 	
 	virtual ~ProcessResult();
 	
-	int GetStatus()
+	int GetStatus() const
 	{
 		return _status;
 	}
-	string GetOutput()
+	string GetOutput() const
 	{
 		return _output;
 	}		
