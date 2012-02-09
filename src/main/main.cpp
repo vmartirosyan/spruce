@@ -42,9 +42,9 @@
 #include <errno.h>
 #include <sys/mount.h>
 
-using std::ifstream;		
-using std::ofstream; 		
-using std::map;			
+using std::ifstream;
+using std::ofstream;
+using std::map;
 using std::string;
 using std::cout;
 using std::cerr;
@@ -60,7 +60,7 @@ typedef map<string,string> ConfigValues;
 ConfigValues ParseOptions(int argc, char ** argv);
 ConfigValues ParseConfigFile(string FilePath);
 
-const int ModuleCount = 2;
+
 vector<string> ModulesAvailable;
 vector<string> FSAvailable;
 
@@ -359,4 +359,3 @@ vector<string> SplitString(string str, char delim, vector<string> AllowedValues 
 	return pieces;
 	
 }
-

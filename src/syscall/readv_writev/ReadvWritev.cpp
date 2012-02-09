@@ -381,17 +381,15 @@ Status ReadvWritev::ReadvEinvalErrorFunc3()
 // attempt to readv, when sum of iov_len values overflows an ssize_t value
 Status ReadvWritev::ReadvEinvalErrorFunc4()
 {	
-    char buf1[] = "asdf";
-    char buf2[] = "qwerty";
+    char * buf1 = new char[10];
+    char * buf2 = new char[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
 	iovAr[0].iov_base = buf1;
-	iovAr[0].iov_len = 0xFFFFFFFF;
+	iovAr[0].iov_len = SSIZE_MAX / 2;
 	iovAr[1].iov_base = buf2;
-	iovAr[1].iov_len = 1;
-	
-	cerr << "SSIZE_MAX = " << SSIZE_MAX << endl;
+	iovAr[1].iov_len = SSIZE_MAX / 2 + 1;
 	
 	try
 	{
@@ -406,15 +404,15 @@ Status ReadvWritev::ReadvEinvalErrorFunc4()
 		
 		ssize_t status = readv(fd, iovAr, BUF_COUNT);
 		
-		if(status != -1)
+		if( status != -1 )
 		{
-			cerr<<"readv should return -1 when sum of iov_len values overflows, but it did not";
+			cerr << "readv should return -1 when sum of iov_len values overflows, but it did not";
 			return Fail;
 		}
 				
 		if (errno != EINVAL)
 		{
-			cerr << "Expecting to get EINVAL error, but wrong error set in errno: "<< strerror(errno) <<" errno=" << errno <<"  "<< EBADF << endl;
+			cerr << "Expecting to get EINVAL error, but wrong error set in errno: "<< strerror(errno) << endl;
 			return Fail;
 		}
 	} 
@@ -635,15 +633,15 @@ Status ReadvWritev::WritevEinvalErrorFunc2()
 // attempt to writev, when sum of iov_len values overflows an ssize_t value
 Status ReadvWritev::WritevEinvalErrorFunc3()
 {	
-    string buf1;
-	string buf2;
+    char buf1[] = "asdf";
+	char buf2[] = "qwerty";
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
-	iovAr[0].iov_len = 0xFFFFFFFF;
-	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
-	iovAr[1].iov_len = 1;
+	iovAr[0].iov_base = buf1;
+	iovAr[0].iov_len = SSIZE_MAX / 2;
+	iovAr[1].iov_base = buf2;
+	iovAr[1].iov_len = SSIZE_MAX / 2  + 1;
 	
 	try
 	{

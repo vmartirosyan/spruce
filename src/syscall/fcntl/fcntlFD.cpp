@@ -141,7 +141,7 @@ Status fcntlFD::dupFileDescriptor()
 	int new_fd;
 	const char buff[6] = "apero";
 	char* nbuff = new char[6];
-	long _arg = rand()%99;
+	long _arg = rand() % 99;
 
 	try
 	{
@@ -150,6 +150,18 @@ Status fcntlFD::dupFileDescriptor()
 		if( (new_fd = fcntl(fd, F_DUPFD, _arg)) == -1 )
 		{
 			cerr << "Error in fcntl: "<<strerror(errno);
+			return Fail;
+		}
+		
+		if(errno == EINVAL)
+		{
+			cerr << "arg is negative or is greater than the maximum allowable value." << endl;
+			return Fail;
+		}
+
+		if(errno == EMFILE)
+		{
+			cerr << "the process already has the maximum number of file descriptors open" << endl;
 			return Fail;
 		}
 
@@ -176,17 +188,7 @@ Status fcntlFD::dupFileDescriptor()
 			return Unres;
 		}
 	
-		if(new_fd == EINVAL)
-		{
-			cerr << "arg is negative or is greater than the maximum allowable value." << endl;
-			return Fail;
-		}
-
-		if(new_fd == EMFILE)
-		{
-			cerr << "the process already has the maximum number of file descriptors open" << endl;
-			return Fail;
-		}
+		
 
 		if((strcmp(buff, nbuff) != 0) || (new_fd < _arg))
 		{
