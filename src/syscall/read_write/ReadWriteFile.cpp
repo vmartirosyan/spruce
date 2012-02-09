@@ -30,6 +30,8 @@
 #include <ReadWriteFile.hpp>
 #include "File.hpp"
 
+#define M_PIPE_SIZE 64*1024
+
 int ReadWriteFileTest::Main(vector<string>)
 {
 	if ( _mode == Normal )
@@ -323,15 +325,27 @@ Status ReadWriteFileTest::WriteEagainErrorTest()
 		return Unres;
 	}
 	
-	int bytes = PIPE_BUF;//64 * 1024;
+	int bytes = M_PIPE_SIZE ;//64 * 1024;
 	
 	char buf[bytes];
 	memset(buf, '0', bytes);
 		
 	ssize_t st = write(pipe[1], buf, bytes);		
+	if(st == -1)
+	{
+		cerr<< "write Fail"<<strerror(errno);
+		return Unres;
+	}
 	
-	st = write(pipe[1], buf, bytes);
-	if (errno != EAGAIN || st != -1)
+	st = write(pipe[1], buf, 1);
+	
+	if(st != -1)
+	{
+		cerr<<"write should fail because of pipe size overflow but write did not returns -1";
+		return Fail;
+	}
+	
+	if (errno != EAGAIN)
 	{
 		cerr << "Expected to get EAGAIN error. Error :" << strerror(errno) << " Bytes written: " << st;		
 		return Fail;

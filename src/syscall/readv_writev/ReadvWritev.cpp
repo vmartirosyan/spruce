@@ -387,19 +387,32 @@ Status ReadvWritev::ReadvEinvalErrorFunc4()
 	struct iovec iovAr[BUF_COUNT];
 	
 	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
-	iovAr[0].iov_len = SSIZE_MAX;
+	iovAr[0].iov_len = SSIZE_MAX/2;
 	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
-	iovAr[1].iov_len = 1;
+	iovAr[1].iov_len = SSIZE_MAX/2+2;
 	
 	try
 	{
 		File file("testfile.txt");
 		size_t fd = open("testfile.txt", O_RDWR);
 		
-		ssize_t status = readv(fd, iovAr, BUF_COUNT);
-		if (errno != EINVAL || status != -1)
+		if(fd == -1)
 		{
-			cerr << "Expecting to get EINVAL error";
+			cerr<<"Unable open file."<<strerror(errno);
+			return Unres;
+		}
+		
+		ssize_t status = readv(fd, iovAr, BUF_COUNT);
+		
+		if(status != -1)
+		{
+			cerr<<"readv should return -1 when sum of iov_len values overflows, but it did not";
+			return Fail;
+		}
+				
+		if (errno != EINVAL)
+		{
+			cerr << "Expecting to get EINVAL error, but wrong error set in errno:"<<strerror(errno) <<"errno="<<errno<<"  "<<EBADF<<endl;
 			return Fail;
 		}
 	} 
