@@ -168,16 +168,16 @@ Status ReadvWritev::ReadvEagainErrorFunc()
 		cerr << strerror(errno);
 		return Unres;
 	}
-	
-	string buf1;
-	string buf2;
+	char  buf1[10];
+	char  buf2[10];
 		
 	struct iovec iovAr[BUF_COUNT];
-
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
+	
+	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
+	iovAr[1].iov_base = buf2;
 	iovAr[1].iov_len = BYTES_COUNT;
+	
 	
 	ssize_t readv_status = readv(pipe[0], iovAr, BUF_COUNT);
 	if (errno != EAGAIN || readv_status != -1)
@@ -192,14 +192,14 @@ Status ReadvWritev::ReadvEagainErrorFunc()
 // attempt to readv from a file, which was opened in write mode
 Status ReadvWritev::ReadvBadfdErrorFunc1()
 {
-	string buf1;
-	string buf2;
+    char  buf1[10];
+	char  buf2[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
+	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
+	iovAr[1].iov_base = buf2;
 	iovAr[1].iov_len = BYTES_COUNT;
 	
 	try
@@ -227,14 +227,14 @@ Status ReadvWritev::ReadvBadfdErrorFunc1()
 // attempt to readv from -1 file descriptor
 Status ReadvWritev::ReadvBadfdErrorFunc2()
 {
-	string buf1;
-	string buf2;
+    char  buf1[10];
+	char  buf2[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
+	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
+	iovAr[1].iov_base = buf2;
 	iovAr[1].iov_len = BYTES_COUNT;
 
 	ssize_t status = readv(-1, iovAr, BUF_COUNT);
@@ -250,14 +250,13 @@ Status ReadvWritev::ReadvBadfdErrorFunc2()
 // attempt to readv to the buffer which is -1
 Status ReadvWritev::ReadvEfaultErrorFunc()
 {
-	string buf1;
-	string buf2;
+	
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = reinterpret_cast<void *>(-1);
+	iovAr[0].iov_base = (void *)(-1);
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = reinterpret_cast<void *>(-1);
+	iovAr[1].iov_base = (void *)(-1);
 	iovAr[1].iov_len = BYTES_COUNT;
 	
 	try
@@ -292,14 +291,14 @@ Status ReadvWritev::ReadvEinvalErrorFunc1()
 		return Unres;
 	}
                
-    string buf1;
-	string buf2;
+    char  buf1[10];
+	char  buf2[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
+	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
+	iovAr[1].iov_base = buf2;
 	iovAr[1].iov_len = BYTES_COUNT;
 	
     ssize_t status = readv(fd, iovAr, BUF_COUNT);
@@ -315,14 +314,14 @@ Status ReadvWritev::ReadvEinvalErrorFunc1()
 // attempt to readv, when third argument is less then 0
 Status ReadvWritev::ReadvEinvalErrorFunc2()
 {	
-    string buf1;
-	string buf2;
+    char  buf1[10];
+	char  buf2[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
+	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
+	iovAr[1].iov_base = buf2;
 	iovAr[1].iov_len = BYTES_COUNT;
 	
 	try
@@ -348,25 +347,25 @@ Status ReadvWritev::ReadvEinvalErrorFunc2()
 // attempt to readv, when third argument is greater then permitted maximum
 Status ReadvWritev::ReadvEinvalErrorFunc3()
 {	
-    string buf1;
-	string buf2;
+    char buf1[10];
+	char buf2[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
+	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
+	iovAr[1].iov_base = buf2;
 	iovAr[1].iov_len = BYTES_COUNT;
 	
 	try
 	{
 		File file("testfile.txt");
-		size_t fd = open("testfile.txt", O_RDWR);
+		size_t fd = file.GetFileDescriptor();
 		
 		ssize_t status = readv(fd, iovAr, IOV_MAX + 1);
 		if (errno != EINVAL || status != -1)
 		{
-			cerr << "Expecting to get EINVAL error";
+			cerr << "Expecting to get EINVAL error "<<strerror(errno);
 			return Fail;
 		}
 	} 
@@ -381,15 +380,24 @@ Status ReadvWritev::ReadvEinvalErrorFunc3()
 // attempt to readv, when sum of iov_len values overflows an ssize_t value
 Status ReadvWritev::ReadvEinvalErrorFunc4()
 {	
+	
+#if __WORDSIZE==64	
+	cerr << "EINVAL error cannot be simulated on x86-64 architecture.";		
+	return Unsupported;
+	
+#else
+	
     char * buf1 = new char[10];
     char * buf2 = new char[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
 	iovAr[0].iov_base = buf1;
-	iovAr[0].iov_len = SSIZE_MAX / 2;
+	iovAr[0].iov_len = SSIZE_MAX/2+1;
 	iovAr[1].iov_base = buf2;
-	iovAr[1].iov_len = SSIZE_MAX / 2 + 1;
+	iovAr[1].iov_len = SSIZE_MAX/2+1;
+	
+	
 	
 	try
 	{
@@ -422,6 +430,7 @@ Status ReadvWritev::ReadvEinvalErrorFunc4()
 	}
 	
 	return Success;
+#endif
 }
 
 // attempt to readv from a directory
@@ -442,14 +451,14 @@ Status ReadvWritev::ReadvIsdirErrorFunc()
 		return Unres;
 	}
 	
-	string buf1;
-	string buf2;
+    char  buf1[10];
+	char  buf2[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
+	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
+	iovAr[1].iov_base = buf2;
 	iovAr[1].iov_len = BYTES_COUNT;
 
 	ssize_t status = readv(fd, iovAr, BUF_COUNT);
@@ -472,14 +481,14 @@ Status ReadvWritev::ReadvIsdirErrorFunc()
 // attempt to writev to a file, which was opened in read mode
 Status ReadvWritev::WritevBadfdErrorFunc1()
 {
-	string buf1;
-	string buf2;
+    char  buf1[10];
+	char  buf2[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
+	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
+	iovAr[1].iov_base = buf2;
 	iovAr[1].iov_len = BYTES_COUNT;
 	
 	try
@@ -509,14 +518,14 @@ Status ReadvWritev::WritevBadfdErrorFunc1()
 // attempt to writev to -1 file descriptor
 Status ReadvWritev::WritevBadfdErrorFunc2()
 {
-	string buf1;
-	string buf2;
+	char  buf1[10];
+	char  buf2[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
+	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
+	iovAr[1].iov_base = buf2;
 	iovAr[1].iov_len = BYTES_COUNT;
 
 	ssize_t status = writev(-1, iovAr, BUF_COUNT);
@@ -532,13 +541,14 @@ Status ReadvWritev::WritevBadfdErrorFunc2()
 // attempt to writev to the buffer which is -1
 Status ReadvWritev::WritevEfaultErrorFunc()
 {
-	string buf1;
+
+	char  buf1[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
+	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = reinterpret_cast<void *>(-1);
+	iovAr[1].iov_base = (void *)(-1);
 	iovAr[1].iov_len = BYTES_COUNT;
 	
 	try
@@ -567,14 +577,14 @@ Status ReadvWritev::WritevEfaultErrorFunc()
 // attempt to writev, when third argument is less then 0
 Status ReadvWritev::WritevEinvalErrorFunc1()
 {	
-    string buf1;
-	string buf2;
+    char  buf1[10];
+	char  buf2[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
+	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
+	iovAr[1].iov_base = buf2;
 	iovAr[1].iov_len = BYTES_COUNT;
 	
 	try
@@ -600,14 +610,14 @@ Status ReadvWritev::WritevEinvalErrorFunc1()
 // attempt to writev, when third argument is greater then permitted maximum
 Status ReadvWritev::WritevEinvalErrorFunc2()
 {	
-    string buf1;
-	string buf2;
+    char buf1[10];
+	char buf2[10];
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = const_cast<char *>(buf1.c_str());
+	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = const_cast<char *>(buf2.c_str());
+	iovAr[1].iov_base = buf2;
 	iovAr[1].iov_len = BYTES_COUNT;
 	
 	try
@@ -618,7 +628,7 @@ Status ReadvWritev::WritevEinvalErrorFunc2()
 		ssize_t status = writev(fd, iovAr, IOV_MAX + 1);
 		if (errno != EINVAL || status != -1)
 		{
-			cerr << "Expecting to get EINVAL error";
+			cerr << "Expecting to get EINVAL error"<<strerror(errno);
 			return Fail;
 		}
 	} 
@@ -633,13 +643,20 @@ Status ReadvWritev::WritevEinvalErrorFunc2()
 // attempt to writev, when sum of iov_len values overflows an ssize_t value
 Status ReadvWritev::WritevEinvalErrorFunc3()
 {	
+	
+#if __WORDSIZE==64	
+	cerr << "EINVAL error cannot be simulated on x86-64 architecture.";		
+	return Unsupported;
+	
+#else
+	
     char buf1[] = "asdf";
 	char buf2[] = "qwerty";
 		
 	struct iovec iovAr[BUF_COUNT];
 	
 	iovAr[0].iov_base = buf1;
-	iovAr[0].iov_len = SSIZE_MAX / 2;
+	iovAr[0].iov_len = SSIZE_MAX / 2 + 1;
 	iovAr[1].iov_base = buf2;
 	iovAr[1].iov_len = SSIZE_MAX / 2  + 1;
 	
@@ -661,5 +678,6 @@ Status ReadvWritev::WritevEinvalErrorFunc3()
 	}
 	
 	return Success;
+#endif
 }
 
