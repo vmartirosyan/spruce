@@ -137,7 +137,6 @@ Status IoctlTest::SetGetVersion() {
             cerr << "Error backing up old values. " << strerror(errno);
             return Unres;
         }
-        ioctl(fd, FS_IOC_GETVERSION, &old_version);
         
 		if (ioctl(fd, FS_IOC_SETVERSION, &set_version) == -1 ) {
             cerr << "Error setting flag." << strerror(errno);
