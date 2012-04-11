@@ -453,7 +453,7 @@ Status Open::openPathisExecutable()
 {
 	int fd = 0,fd_exec=0;
 
-	const char* filename = "${CMAKE_INSTALL_PREFIX}bin/spruce";
+	const char* filename = "${CMAKE_INSTALL_PREFIX}/bin/spruce";
 	cout << "filename: " << filename << endl;
 	//const char* filename = "/home/gurgen/buildscript/bin/spruce";
 	
