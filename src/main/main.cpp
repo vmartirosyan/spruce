@@ -26,6 +26,7 @@
 // executes the tests depending on the configuration values
 // collects the output and visualizes it.
 
+#include <iterator>
 #include <sstream>
 #include <algorithm>
 #include <fstream>
@@ -41,6 +42,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/mount.h>
+#include <sys/stat.h>
 
 using std::ifstream;
 using std::ofstream;
@@ -53,6 +55,7 @@ using std::vector;
 using std::auto_ptr;
 using std::stringstream;
 using std::ostream_iterator;
+using std::back_insert_iterator;
 
 
 typedef map<string,string> ConfigValues;
@@ -129,12 +132,15 @@ int main(int argc, char ** argv)
 	// Spruce will use the current partition. 
 	// By default tests will be executed in the /tmp folder
 	string partition = "current";
-	string MountAt = "none";
+	string MountAt = "/tmp/spruce_test";
+	vector<string> MountOpts;
 	if ( configValues.find("partition") != configValues.end() )
 	{
 		partition = configValues["partition"];
 		if ( configValues.find("mount_at") != configValues.end() )
 			MountAt = configValues["mount_at"];
+		if ( configValues.find("mount_opts") != configValues.end() )
+			MountOpts = SplitString(configValues["mount_opts"], ' ', vector<string>());
 	}
 	else
 	{
@@ -173,7 +179,7 @@ int main(int argc, char ** argv)
 	vector<string> args;
 	
 	args.push_back("cp");
-	args.push_back("${CMAKE_INSTALL_PREFIX}config/processor.xslt");
+	args.push_back("${CMAKE_INSTALL_PREFIX}/share/spruce/config/processor.xslt");
 	args.push_back(logfolder);
 	
 	UnixCommand copy("cp");
@@ -182,7 +188,14 @@ int main(int argc, char ** argv)
 		cerr << "Cannot copy the transformation file. Error " << strerror(errno) << endl;
 		return FAULT;
 	}
-			
+		
+	// Create the mount point	
+	if ( mkdir(MountAt.c_str(), S_IRUSR | S_IWUSR ) == -1 && errno != EEXIST )
+	{
+		cerr << "Cannot create folder " << MountAt << endl;
+		cerr << "Error: " << strerror(errno) << endl;
+		return errno;
+	}
 	
 	// Go through the modules, execute them
 	// and collect the output
@@ -194,6 +207,7 @@ int main(int argc, char ** argv)
 			<?xml-stylesheet type=\"application/xml\" href=\"" << logfolder << "/processor.xslt\"?>\n\
 			<SpruceLog>";
 			
+		
 		
 		// Unmount the MountAt folder first (just in case)		
 		if ( umount( MountAt.c_str() ) != 0 && errno != EINVAL)
@@ -221,13 +235,29 @@ int main(int argc, char ** argv)
 		
 		
 		// Then mount the filesystem
+		UnixCommand mnt("mount");
+		vector<string> mnt_args;		
+		mnt_args.push_back(partition);
+		mnt_args.push_back(MountAt);
+		
+		mnt_args.insert(mnt_args.end(), MountOpts.begin(), MountOpts.end());
+		//std::copy(mnt_args.begin(), mnt_args.end(), std::ostream_iterator<string>(cerr));		
+		
+		res = mnt.Execute(mnt_args);
+		if ( res->GetStatus() != Success )
+		{
+			cerr << "Cannot mount " << partition << " at folder " << MountAt << endl;
+			cerr << "Error: " << strerror(errno) << endl;
+			continue;
+		}
+		/*
 		if ( mount(partition.c_str(), MountAt.c_str(), fs->c_str(), 0, 0) != 0 )
 		{
 			cerr << "Cannot mount " << partition << " at folder " << MountAt << endl;
 			cerr << "Error: " << strerror(errno) << endl;
 			continue;
 		}
-		
+		*/
 		// Now change current dir to the newly mounted partition folder
 		if ( chdir(MountAt.c_str()) != 0 )
 		{
@@ -240,7 +270,7 @@ int main(int argc, char ** argv)
 		for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
 		{
 			cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
-			UnixCommand command(( (string)("${CMAKE_INSTALL_PREFIX}bin/" + (*module)).c_str()));
+			UnixCommand command(( (string)("${CMAKE_INSTALL_PREFIX}/bin/" + (*module)).c_str()));
 			//auto_ptr<ProcessResult> result(command.Execute());
 			ProcessResult * result(command.Execute());
 			str << "<FS Name=\"" << *fs << "\" />" << result->GetOutput() << endl;
@@ -345,7 +375,7 @@ vector<string> SplitString(string str, char delim, vector<string> AllowedValues 
 	while ( ( CurPos = str.find( delim, PrevPos ) ) != string::npos )
 	{
 		string piece = str.substr(PrevPos, CurPos - PrevPos);		
-		if ( find(AllowedValues.begin(), AllowedValues.end(), piece) != AllowedValues.end() )
+		if ( !AllowedValues.empty() && find(AllowedValues.begin(), AllowedValues.end(), piece) != AllowedValues.end() )
 			pieces.push_back(piece);
 		PrevPos = CurPos + 1;
 	}
