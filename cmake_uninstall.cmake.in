@@ -19,8 +19,3 @@ foreach (file ${files})
         message(STATUS "File \"$ENV{DESTDIR}${file}\" does not exist.")
     endif (EXISTS "$ENV{DESTDIR}${file}")
 endforeach(file)
-execute_process(
-            COMMAND @CMAKE_COMMAND@ -E remove "$ENV{DESTDIR}"
-            OUTPUT_VARIABLE rm_out
-            RESULT_VARIABLE rm_retval
-        )
