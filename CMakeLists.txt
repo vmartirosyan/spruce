@@ -3,8 +3,10 @@ include (ExternalProject)
 
 project (Spruce)
 
-# Let's install Spruce in /opt/spruce
-SET( CMAKE_INSTALL_PREFIX "/opt/spruce/")
+# By default install Spruce to /opt/spruce
+IF (NOT CMAKE_INSTALL_PREFIX)
+	SET( CMAKE_INSTALL_PREFIX "/opt/spruce/")
+ENDIF (NOT CMAKE_INSTALL_PREFIX)
 
 SET (LIBRARY_OUTPUT_PATH
  ${PROJECT_BINARY_DIR}/lib
