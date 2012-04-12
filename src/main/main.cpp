@@ -140,7 +140,7 @@ int main(int argc, char ** argv)
 		if ( configValues.find("mount_at") != configValues.end() )
 			MountAt = configValues["mount_at"];
 		if ( configValues.find("mount_opts") != configValues.end() )
-			MountOpts = SplitString(configValues["mount_opts"], ' ', vector<string>());
+			MountOpts = SplitString(configValues["mount_opts"], ';', vector<string>());
 	}
 	else
 	{
@@ -240,8 +240,8 @@ int main(int argc, char ** argv)
 		mnt_args.push_back(partition);
 		mnt_args.push_back(MountAt);
 		
-		mnt_args.insert(mnt_args.end(), MountOpts.begin(), MountOpts.end());
-		//std::copy(mnt_args.begin(), mnt_args.end(), std::ostream_iterator<string>(cerr));		
+		if ( !MountOpts.empty() )
+			mnt_args.insert(mnt_args.end(), MountOpts.begin(), MountOpts.end());
 		
 		res = mnt.Execute(mnt_args);
 		if ( res->GetStatus() != Success )
@@ -368,14 +368,15 @@ vector<string> SplitString(string str, char delim, vector<string> AllowedValues 
 	size_t PrevPos = 0, CurPos;
 	if ( str.find( delim, PrevPos ) == string::npos)
 	{
-		pieces.push_back(str);
+		if ( !str.empty() )
+			pieces.push_back(str);
 		return pieces;
 	}
 	
 	while ( ( CurPos = str.find( delim, PrevPos ) ) != string::npos )
 	{
 		string piece = str.substr(PrevPos, CurPos - PrevPos);		
-		if ( !AllowedValues.empty() && find(AllowedValues.begin(), AllowedValues.end(), piece) != AllowedValues.end() )
+		if ( AllowedValues.empty() || find(AllowedValues.begin(), AllowedValues.end(), piece) != AllowedValues.end() )
 			pieces.push_back(piece);
 		PrevPos = CurPos + 1;
 	}
@@ -383,7 +384,7 @@ vector<string> SplitString(string str, char delim, vector<string> AllowedValues 
 	if ( str[str.size() - 1] != delim )
 	{
 		string piece = str.substr(PrevPos, string::npos);
-		if ( find(AllowedValues.begin(), AllowedValues.end(), piece) != AllowedValues.end() )
+		if ( !piece.empty() && (AllowedValues.empty() || find(AllowedValues.begin(), AllowedValues.end(), piece) != AllowedValues.end() ) )
 			pieces.push_back(piece);
 	}
 	return pieces;
