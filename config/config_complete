@@ -1,6 +1,6 @@
 modules=syscall;
-fs=ext4;
+fs=ext4;xfs
 partition=/dev/sda9
 browser=firefox
 logfolder=/tmp
-mount_opts=
+mount_opts=-r;-v
