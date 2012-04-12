@@ -3,4 +3,4 @@ fs=ext4;
 partition=/dev/sda9
 browser=firefox
 logfolder=/tmp
-mount_opts=-r
+mount_opts=
