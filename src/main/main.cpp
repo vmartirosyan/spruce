@@ -87,6 +87,7 @@ int main(int argc, char ** argv)
 	FSAvailable.push_back("ext4");
 	FSAvailable.push_back("btrfs");
 	FSAvailable.push_back("xfs");	
+	FSAvailable.push_back("jfs");	
 	
 	// Parse the arguments
 	ConfigValues options = ParseOptions(argc, argv);
@@ -221,7 +222,7 @@ int main(int argc, char ** argv)
 		UnixCommand mkfs("mkfs." + *fs);
 		vector<string> args;		
 		args.push_back(partition);		
-		if ( *fs == "xfs" ) //Force if necessary
+		if ( *fs == "xfs" || *fs == "jfs") //Force if necessary
 			args.push_back("-f");
 		ProcessResult * res;
 		res = mkfs.Execute(args);
