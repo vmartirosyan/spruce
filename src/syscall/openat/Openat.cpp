@@ -575,7 +575,7 @@ Status Openat ::openatNoDevWRBL()
 Status Openat::openatPathisExecutable()
 {
 	int ret_val = 0 , fd2 ,dir_fd;
-	const char* filename = "${CMAKE_INSTALL_PREFIX}bin/spruce";
+	const char* filename = "${CMAKE_INSTALL_PREFIX}/bin/spruce";
 		
 	
 	
