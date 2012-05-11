@@ -84,6 +84,7 @@ int main(int argc, char ** argv)
 	FSAvailable.push_back("ext4");
 	FSAvailable.push_back("btrfs");
 	FSAvailable.push_back("xfs");	
+	FSAvailable.push_back("jfs");
 	
 	// Parse the arguments
 	ConfigValues options = ParseOptions(argc, argv);
@@ -186,7 +187,7 @@ int main(int argc, char ** argv)
 	
 	// Go through the modules, execute them
 	// and collect the output
-	
+	cerr << "Executing modules." << endl;
 	for ( vector<string>::iterator fs = FileSystems.begin(); fs != FileSystems.end(); ++fs )
 	{
 		stringstream str;
@@ -202,12 +203,12 @@ int main(int argc, char ** argv)
 			cerr << "Error: " << strerror(errno) << endl;
 			continue;
 		}
-			
+		cout << "Unmounted" << endl;
 		// If there are any filesystems mentioned, then let's create the filesystem
 		UnixCommand mkfs("mkfs." + *fs);
 		vector<string> args;		
 		args.push_back(partition);		
-		if ( *fs == "xfs" ) //Force if necessary
+		if ( *fs == "xfs" || *fs == "jfs" ) //Force if necessary
 			args.push_back("-f");
 		ProcessResult * res;
 		res = mkfs.Execute(args);
@@ -217,7 +218,7 @@ int main(int argc, char ** argv)
 			cerr << "Error: " << res->GetOutput() << endl;
 			continue;
 		}
-		
+		cout << "Mkfs complete" << endl;
 		
 		
 		// Then mount the filesystem
@@ -227,7 +228,7 @@ int main(int argc, char ** argv)
 			cerr << "Error: " << strerror(errno) << endl;
 			continue;
 		}
-		
+		cout << "Mounted" << endl;
 		// Now change current dir to the newly mounted partition folder
 		if ( chdir(MountAt.c_str()) != 0 )
 		{
@@ -235,7 +236,7 @@ int main(int argc, char ** argv)
 			cerr << "Error: " << strerror(errno) << endl;
 			continue;
 		}
-		
+		cout << "Changed dir" << endl;
 		
 		for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
 		{
@@ -314,9 +315,10 @@ ConfigValues ParseConfigFile(string FilePath)
 			return vals;
 		}
 		while ( !FileReader.eof() && FileReader.good() )
-		{
+		{			
 			string CurrentLine;
 			FileReader >> CurrentLine;
+			//cerr << "Config line: " << CurrentLine << endl;
 			size_t EqPos = CurrentLine.find('=');
 			if ( EqPos == string::npos ) // wrong formatted line?
 				continue;
@@ -359,3 +361,4 @@ vector<string> SplitString(string str, char delim, vector<string> AllowedValues 
 	return pieces;
 	
 }
+
