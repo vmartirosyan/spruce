@@ -94,7 +94,7 @@ string GetDentsTest::randomName(int number)
 		int ch = rand() % 26 + 97;
 		name += char(ch);
 	}
-	cerr << "dirname " << name << endl;
+	//cerr << "dirname " << name << endl;
 	return name;
 }
 
