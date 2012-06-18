@@ -326,7 +326,7 @@ struct ext4_group_desc
 #define EXT4_OTHER_FLMASK (EXT4_NODUMP_FL | EXT4_NOATIME_FL)
 
 /* Mask out flags that are inappropriate for the given type of inode. */
-static inline __u32 ext4_mask_flags(umode_t mode, __u32 flags)
+/*static inline __u32 ext4_mask_flags(umode_t mode, __u32 flags)
 {
 	if (S_ISDIR(mode))
 		return flags;
@@ -334,7 +334,7 @@ static inline __u32 ext4_mask_flags(umode_t mode, __u32 flags)
 		return flags & EXT4_REG_FLMASK;
 	else
 		return flags & EXT4_OTHER_FLMASK;
-}
+}*/
 
 /*
  * Inode flags used for atomic set/get

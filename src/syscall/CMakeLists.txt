@@ -99,6 +99,9 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/open)
 ADD_SUBDIRECTORY(linkat)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/linkat)
 
+ADD_SUBDIRECTORY(xattr)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/xattr)
+
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${CMAKE_CURRENT_BINARY_DIR}/main.cpp)
 
 ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
@@ -133,6 +136,7 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/mprotect/MprotectMemory.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/readdir/ReadDir.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/readlink/Readlink.cpp
+						${CMAKE_CURRENT_SOURCE_DIR}/xattr/Xattr.cpp
 						)
 						
 

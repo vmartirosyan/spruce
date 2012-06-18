@@ -30,6 +30,7 @@
 #include "Openat.hpp"
 #include "Linkat.hpp"
 #include "Readlink.hpp"
+#include "Xattr.hpp"
 #include <config.hpp>
 #include <time.h>
 
@@ -70,6 +71,7 @@ int main(int argc, char ** argv)
 		Configuration<Openat> openatConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/openat.conf");
 		Configuration<Open> openConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/open.conf");
 		Configuration<LinkatTest> linkatConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/linkat.conf");
+		Configuration<Xattr> xattrConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/xattr.conf");
 		
 		TestCollection tests1 = conf1.Read();
 		TestCollection tests2 = conf2.Read();
@@ -102,6 +104,7 @@ int main(int argc, char ** argv)
 		TestCollection openatTests = openatConf.Read();
 		TestCollection openTests = openConf.Read();
 		TestCollection linkatTests = linkatConf.Read();
+		TestCollection xattrTests = xattrConf.Read();
 		
 	  
 	  
@@ -136,6 +139,7 @@ int main(int argc, char ** argv)
 		tests.Merge(openatTests);
 		tests.Merge(openTests);
 		tests.Merge(linkatTests);
+		tests.Merge(xattrTests);
 	}
 	catch (Exception ex)
 	{
