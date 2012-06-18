@@ -1,4 +1,4 @@
-//      process.hpp
+//      Xattr.hpp
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -20,49 +20,39 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#ifndef PROCESS_HPP
-#define PROCESS_HPP
+#ifndef XATTR_H
+#define XATTR_H
 
-#include "common.hpp"
-#include <errno.h>
-#include <sys/wait.h>
 #include <sys/types.h>
-#include <string.h>
-#include <unistd.h>
+#include <attr/xattr.h>
+#include "SyscallTest.hpp"
 
-class ProcessResult
+
+// Operations
+enum XattrOps
 {
-public:
-	ProcessResult(int s, string output):
-		_status(s),	_output(output) {}
-								
-	ProcessResult(ProcessResult const & pr) :
-		_status(pr._status), _output(pr._output) {}
-	
-	virtual ~ProcessResult();
-	
-	int GetStatus() const
-	{
-		return _status;
-	}
-	string GetOutput() const
-	{
-		return _output;
-	}		
-protected:
-	int _status;
-	string _output;
+	XATTR_GET_SET,
+	XATTR_LIST_SET,
+	XATTR_LIST_REMOVE
 };
 
-class Process
-{
+class Xattr : public SyscallTest
+{			
 public:	
-	virtual ProcessResult * Execute(vector<string> args = vector<string>());
-	
-	virtual ~Process() {}
+	Xattr(Mode mode, int operation, string arguments = "") :
+		SyscallTest(mode, operation, arguments, "xattr")
+	{			
+				  
+		
+	}
+	virtual ~Xattr()
+	{
+	}	
+	Status XattrGetSet();
+		
+	   
 protected:
-	virtual int Main(vector<string> args) = 0;
+	virtual int Main(vector<string> args);	
+	
 };
-
-#endif /* PROCESS_HPP */
-
+#endif
