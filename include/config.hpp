@@ -103,6 +103,7 @@ protected:
 		catch (Exception e)
 		{
 			cerr << "Cannot create test. Error: " << e.GetMessage() << endl;
+			return NULL;
 		}
 	}
 };

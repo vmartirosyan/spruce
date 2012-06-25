@@ -23,22 +23,46 @@
 #ifndef EXT4FS_TEST_H
 #define EXT4FS_TEST_H
 
-#include "test.hpp"
+#include <test.hpp>
+#include <stdlib.h>
+#include <sstream>
+using std::stringstream;
 
 class Ext4fsTestResult : public TestResult
 {
 public:
-	Ext4fsTestResult(ProcessResult pr, int op, string args):
-		TestResult(pr, op, args) {}
+	Ext4fsTestResult(TestResult* tr, string syscallName):
+		TestResult(*tr),  _syscallName(syscallName)
+	{}
+	virtual string ToXML()
+	{
+		
+		stringstream str;
+		str << rand();
+		
+		return "<Ext4FS Name=\"" + _syscallName + "\" Id=\"" + str.str() + " \">" + TestResult::ToXML() + 
+			"\n\t" +  "</Ext4FS>";
+	}
+protected:
+	string _syscallName;
 };
 
 class Ext4fsTest : public Test
 {
 public:
-	Ext4fsTest(Mode m, int op, string a):
-		Test(m, op, a)
-	{		
+	Ext4fsTest(Mode m, int op, string a, string syscallName):
+		Test(m, op, a), _syscallName(syscallName) 
+	{
 	}
+	virtual Ext4fsTestResult* Execute(vector<string> args)
+	{
+		TestResult* tr = (TestResult*)Test::Execute(args);						
+		Ext4fsTestResult* ext4fsTestResult = new Ext4fsTestResult(tr, _syscallName);			
+		delete tr;
+		return ext4fsTestResult;			
+	}
+protected:
+		string _syscallName;
 };
 
 #endif /* EXT4FS_TEST_H */

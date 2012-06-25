@@ -33,7 +33,7 @@ class SyscallTestResult : public TestResult
 {
 	public:
 		SyscallTestResult(TestResult* tr, string syscallName) :	
-		TestResult(*tr), _syscallName(syscallName)		
+		TestResult(*tr), _syscallName(syscallName)
 		{						
 		}
 		virtual string ToXML()

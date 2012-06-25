@@ -14,7 +14,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ext4fs.cpp ${CMAKE_CURRENT_BINARY_DIR}/ext4fs.cpp)
 
-add_executable( ext4fs ${CMAKE_CURRENT_BINARY_DIR}/ext4fs.cpp ioctl_test.cpp ${CMAKE_BINARY_DIR}/include/config.hpp)
+add_executable( ext4fs ${CMAKE_CURRENT_BINARY_DIR}/ext4fs.cpp ioctl_test.cpp ioctl_test.hpp ${CMAKE_BINARY_DIR}/include/config.hpp)
 target_link_libraries(ext4fs utils)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/ext4fs"

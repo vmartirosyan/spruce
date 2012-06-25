@@ -31,28 +31,32 @@
 
 using std::ifstream;
 
+extern string MountPoint;
+extern string DeviceName;
+
+
 // Operations
- enum IoctlOperations
- {
- 	Ext4IoctlSetFlagsGetFlags,
- 	Ext4IoctlClearExtentsFlags,
- 	Ext4IoctlSetFlagsNotOwner,
- 	Ext4IoctlSetVersionGetVersion,
- 	Ext4IoctlWaitForReadonly,
- 	Ext4IoctlGroupExtend,
- 	Ext4IoctlMoveExtent,
- 	Ext4IoctlGroupAdd,
- 	Ext4IoctlMigrate,
- 	Ext4IoctlAllocDABlocks,
- 	Ext4IoctlFitrim,
- 	Ext4IoctlUnsupported	
- };
+enum IoctlOperations
+{
+	Ext4IoctlSetFlagsGetFlags,
+	Ext4IoctlClearExtentsFlags,
+	Ext4IoctlSetFlagsNotOwner,
+	Ext4IoctlSetVersionGetVersion,
+	Ext4IoctlWaitForReadonly,
+	Ext4IoctlGroupExtend,
+	Ext4IoctlMoveExtent,
+	Ext4IoctlGroupAdd,
+	Ext4IoctlMigrate,
+	Ext4IoctlAllocDABlocks,
+	Ext4IoctlFitrim,
+	Ext4IoctlUnsupported	
+};
 
 class Ext4IoctlTestResult : public Ext4fsTestResult
 {
 public:
-	Ext4IoctlTestResult(ProcessResult pr, int op, string args):
-		Ext4fsTestResult(pr, op, args) {}
+	Ext4IoctlTestResult(TestResult* tr):
+		Ext4fsTestResult(tr, "ioctl") {}
 protected:
 	virtual string OperationToString();
 };
@@ -61,28 +65,19 @@ class Ext4IoctlTest : public Ext4fsTest
 {
 public:	
 	Ext4IoctlTest(Mode m, int op, string a):
-		Ext4fsTest(m, op, a)
+		Ext4fsTest(m, op, a, "ioctl")
 	{
 		Init();
+		//_MountPoint = envget("MountAt");
+		//_DeviceName = envget("Partition");		
 	}
 	
-	Ext4IoctlTest(Mode m, int op, string a, string dev, string mtpt):
-		_DeviceName(dev),
-		_MountPoint(mtpt),
-		Ext4fsTest(m,op,a)
-		{
-			Init();
-			// Get the partition size.
-			string ParentDev = _DeviceName.substr(5, 3);
-			ifstream inf( ("/sys/block/" + ParentDev + "/" + _DeviceName.substr(5, 4) + "/size").c_str());
-			int SizeInBytes = 0;
-			inf >> SizeInBytes;
-			_PartitionSizeInBlocks = SizeInBytes / 8;
-		}
+	Ext4IoctlTest(Mode m, int op, string a, string dev, string mtpt);
+
 		
 	virtual ~Ext4IoctlTest()
 	{
-		if ( _file > 0 )
+	/*	if ( _file > 0 )
 		{
 			close( _file );			
 		}
@@ -92,23 +87,23 @@ public:
 		{
 			close( _file_donor );			
 		}
-		unlink("ioctl_file_donor");
+		unlink("ioctl_file_donor");*/
 	}	
 protected:	
-	virtual ProcessResult * Execute(vector<string> args);
+	virtual Ext4fsTestResult * Execute(vector<string> args);
 	virtual int Main(vector<string> args);
 private:
-	static int _file;
-	static int _file_donor;
+	//static int _file;
+	//static int _file_donor;
 	int _PartitionSizeInBlocks; // Each 4096 byte
-	string _DeviceName;
-	string _MountPoint;
+	//string _DeviceName;
+	//string _MountPoint;
 	void Init()
 	{
-		if ( _file == -1 )
+		/*if ( _file == -1 )
 			_file = open("ioctl_file", O_CREAT | O_RDWR );
 		if ( _file_donor == -1 )
-			_file_donor = open("ioctl_donor_file", O_CREAT | O_RDWR );
+			_file_donor = open("ioctl_donor_file", O_CREAT | O_RDWR );*/
 	}
 	Status TestSetFlagsGetFlags();
 	Status TestClearExtentsFlags();

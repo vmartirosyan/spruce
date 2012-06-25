@@ -20,17 +20,35 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
+#include <UnixCommand.hpp>
 #include <ioctl_test.hpp>
 #include <sys/mount.h>
+#include <pwd.h>
+#include <File.hpp>
 
-int Ext4IoctlTest::_file = -1;	
-int Ext4IoctlTest::_file_donor = -1;	
+//int Ext4IoctlTest::_file = -1;	
+//int Ext4IoctlTest::_file_donor = -1;	
 
-ProcessResult * Ext4IoctlTest::Execute(vector<string> args)
+Ext4IoctlTest::Ext4IoctlTest(Mode m, int op, string a, string dev, string mtpt):
+	//_DeviceName(dev),
+	//_MountPoint(mtpt),
+	Ext4fsTest(m,op,a, "ioctl")
 {
-	ProcessResult * p_res = Ext4fsTest::Execute(args);
+	Init();
+	// Get the partition size.
+	/*string ParentDev = DeviceName.substr(5, 3);
+	cerr << "/sys/block/" + ParentDev + "/" + DeviceName.substr(5, 4) + "/size" << endl;
+	ifstream inf( ("/sys/block/" + ParentDev + "/" + DeviceName.substr(5, 4) + "/size").c_str());
+	int SizeInBytes = 0;
+	inf >> SizeInBytes;
+	_PartitionSizeInBlocks = SizeInBytes / 8;*/
+}
+
+Ext4fsTestResult * Ext4IoctlTest::Execute(vector<string> args)
+{
+	TestResult * p_res = Ext4fsTest::Execute(args);
 	
-	TestResult * t_res = new Ext4IoctlTestResult(*p_res, _operation, _args);
+	Ext4fsTestResult * t_res = new Ext4IoctlTestResult(p_res);
 	
 	delete p_res;
 	
@@ -41,6 +59,7 @@ int Ext4IoctlTest::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{
+		//cerr << "Executing operation" << Operation::ToString((Operations)_operation) << endl;
 		switch (_operation)
 		{
 			case Ext4IoctlSetFlagsGetFlags:
@@ -78,415 +97,597 @@ int Ext4IoctlTest::Main(vector<string>)
 
 Status Ext4IoctlTest::TestSetFlagsGetFlags()
 {
-	if ( _file == -1 )
+	try
 	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
+		File file("ioctl_file");
+		int _file = file.GetFileDescriptor();
+		if ( _file == -1 )
+		{
+			cerr << "The file descriptor is invalid: " << strerror(errno);
+			return Unres;
+		}
+		
+		int set_flags = EXT4_EXTENTS_FL | 1; // We may NOT clear the extents flag...
+		int get_flags = 0;
+		
+		// Backup the old values just in case
+		int old_flags;
+		if ( ioctl(_file, EXT4_IOC_GETFLAGS, &old_flags) == -1 )
+		{
+			cerr << "Error backing up old values. " << strerror(errno);
+			return Unres;
+		}
+		
+		// Set our testing flag values
+		if ( ioctl(_file, EXT4_IOC_SETFLAGS, &set_flags) == -1 )
+		{
+			cerr << "Error setting new flag values. " << strerror(errno);
+			return Unres;
+		}
+		
+		// Get the flags back
+		if ( ioctl(_file, EXT4_IOC_GETFLAGS, &get_flags) == -1 )
+		{
+			cerr << "Error getting flag values back. " << strerror(errno);
+			return Unres;
+		}
+		
+		// Restore the original flags
+		if ( ioctl(_file, EXT4_IOC_SETFLAGS, &old_flags) == -1 )
+		{
+			cerr << "Error restoring old flag values. " << strerror(errno);
+			return Unres;
+		}
+		
+		// Compare them
+		if ( get_flags != set_flags )
+		{
+			cerr << "Set and Get flags mismatch";
+			return Fail;
+		}
+		else
+		{
+			cerr << "Set and Get flags match";
+			return Success;
+		}
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
 		return Unres;
-	}
-	
-	int set_flags = EXT4_EXTENTS_FL | 1; // We may NOT clear the extents flag...
-	int get_flags = 0;
-	
-	// Backup the old values just in case
-	int old_flags;
-	if ( ioctl(_file, EXT4_IOC_GETFLAGS, &old_flags) == -1 )
-	{
-		cerr << "Error backing up old values. " << strerror(errno);
-		return Unres;
-	}
-	
-	// Set our testing flag values
-	if ( ioctl(_file, EXT4_IOC_SETFLAGS, &set_flags) == -1 )
-	{
-		cerr << "Error setting new flag values. " << strerror(errno);
-		return Unres;
-	}
-	
-	// Get the flags back
-	if ( ioctl(_file, EXT4_IOC_GETFLAGS, &get_flags) == -1 )
-	{
-		cerr << "Error getting flag values back. " << strerror(errno);
-		return Unres;
-	}
-	
-	// Restore the original flags
-	if ( ioctl(_file, EXT4_IOC_SETFLAGS, &old_flags) == -1 )
-	{
-		cerr << "Error restoring old flag values. " << strerror(errno);
-		return Unres;
-	}
-	
-	// Compare them
-	if ( get_flags != set_flags )
-	{
-		cerr << "Set and Get flags mismatch";
-		return Fail;
-	}
-	else
-	{
-		cerr << "Set and Get flags match";
-		return Success;
 	}
 }
 
 Status Ext4IoctlTest::TestClearExtentsFlags()
 {
-	if ( _file == -1 )
+	try
 	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
+		File file("ioctl_file");
+		int _file = file.GetFileDescriptor();
+		if ( _file == -1 )
+		{
+			cerr << "The file descriptor is invalid: " << strerror(errno);
+			return Unres;
+		}
+		
+		int result = 0;
+		
+		// Backup the old values just in case
+		int old_flags;
+		if ( ioctl(_file, EXT4_IOC_GETFLAGS, &old_flags) == -1 )
+		{
+			cerr << "Error backing up old values. " << strerror(errno);
+			return Unres;
+		}
+		
+		int non_permitted_flags = old_flags & ~EXT4_EXTENTS_FL; // We may NOT clear the extents flag... but we shall try!
+		
+		// Try to set the non-permitted flag
+		if ( ( result = ioctl(_file, EXT4_IOC_SETFLAGS, &non_permitted_flags ) ) == 0  )
+		{
+			cerr << "It was permitted to set non-permitted flag!. " << strerror(errno);
+			return Fail;
+		}
+		else 
+		{
+			cerr << "It was NOT permitted to set non-permitted flag!. " << strerror(errno);
+			return Success;
+		}
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
 		return Unres;
-	}
-	
-	int result = 0;
-	
-	// Backup the old values just in case
-	int old_flags;
-	if ( ioctl(_file, EXT4_IOC_GETFLAGS, &old_flags) == -1 )
-	{
-		cerr << "Error backing up old values. " << strerror(errno);
-		return Unres;
-	}
-	
-	int non_permitted_flags = old_flags & ~EXT4_EXTENTS_FL; // We may NOT clear the extents flag... but we shall try!
-	
-	// Try to set the non-permitted flag
-	if ( ( result = ioctl(_file, EXT4_IOC_SETFLAGS, &non_permitted_flags ) ) == 0  )
-	{
-		cerr << "It was permitted to set non-permitted flag!. " << strerror(errno);
-		return Fail;
-	}
-	else 
-	{
-		cerr << "It was NOT permitted to set non-permitted flag!. " << strerror(errno);
-		return Success;
 	}
 }
 
 Status Ext4IoctlTest::TestSetFlagsNotOwner()
 {
-	if ( _file == -1 )
+	try
 	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
+		File file("ioctl_file");
+		int _file = file.GetFileDescriptor();
+		if ( _file == -1 )
+		{
+			cerr << "The file descriptor is invalid: " << strerror(errno);
+			return Unres;
+		}
+		
+		int flags = EXT4_EXTENTS_FL;
+		int result = 0;
+		
+		struct passwd* Nobody = getpwnam("nobody");
+		if ( Nobody == NULL )
+		{
+			cerr << "Cannot obtain information about the 'nobody' user. " << strerror(errno);
+			return Unres;
+		}
+		
+		if (  seteuid( Nobody->pw_uid ) == -1 )
+		{
+			cerr << "Cannot change the user ID: " <<  strerror(errno);
+			return Unres;
+		}
+		
+		// Try to set the non-permitted flag
+		
+		result = ioctl(_file, EXT4_IOC_SETFLAGS, &flags );
+		
+		// Restore root user
+		seteuid(0);
+		
+		if ( result == 0 )
+		{
+			cerr << "It was permitted to set the flag not being file owner!. ";
+			return Fail;
+		}
+		else if ( result == -1 && errno != EACCES )
+		{
+			cerr << "Error while setting flags. " << strerror(errno);
+			return Fail;
+		}
+		else 
+		{
+			cerr << "It was NOT permitted to set flag not being file owner!. " << strerror(errno);
+			return Success;
+		}
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
 		return Unres;
-	}
-	
-	int flags = 1;
-	int result = 0;
-	
-	//cap_user_header_t header = new __user_cap_header_struct;
-	//cap_user_data_t data = new __user_cap_data_struct;
-	
-	//header->version = _LINUX_CAPABILITY_VERSION_3;
-	//header->pid = getpid();
-	
-	//data->permitted |= CAP_CHOWN;
-	//data->inheritable |= CAP_CHOWN;
-	//data->effective |= CAP_CHOWN;
-	
-	//if ( capset( header, data ) )
-	//{
-		//cerr << "Cannot set file capabilities: " <<  strerror(errno);
-		//return Unres;
-	//}
-	
-	if ( fchown(_file, 0, 0) )
-	{
-		cerr << "Cannot change the file owner: " <<  strerror(errno);
-		return Unres;
-	}
-	
-	// Try to set the non-permitted flag
-	if ( ( result = ioctl(_file, EXT4_IOC_SETFLAGS, &flags ) ) != -EACCES )
-	{
-		cerr << "It was permitted to set the flag not being file owner!. " << strerror(errno);
-		return Fail;
-	}
-	else 
-	{
-		cerr << "It was NOT permitted to set flag not being file owner!. " << strerror(errno);
-		return Success;
 	}
 }
 
 Status Ext4IoctlTest::TestSetVersionGetVersion()
 {
-	if ( _file == -1 )
+	try
 	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
+		File file("ioctl_file");
+		int _file = file.GetFileDescriptor();
+		if ( _file == -1 )
+		{
+			cerr << "The file descriptor is invalid: " << strerror(errno);
+			return Unres;
+		}
+		
+		int set_version = 10; 
+		int get_version = 0;
+		
+		// Backup the old version just in case
+		int old_version;
+		if ( ioctl(_file, EXT4_IOC_GETVERSION, &old_version) == -1 )
+		{
+			cerr << "Error backing up old version. " << strerror(errno);
+			return Unres;
+		}
+		
+		// Set our testing version value
+		if ( ioctl(_file, EXT4_IOC_SETVERSION, &set_version) == -1 )
+		{
+			cerr << "Error setting new version values. " << strerror(errno);
+			return Unres;
+		}
+		
+		// Get the version back
+		if ( ioctl(_file, EXT4_IOC_GETVERSION, &get_version) == -1 )
+		{
+			cerr << "Error getting version value back. " << strerror(errno);
+			return Unres;
+		}
+		
+		// Restore the original version
+		if ( ioctl(_file, EXT4_IOC_SETVERSION, &old_version) == -1 )
+		{
+			cerr << "Error restoring old version value. " << strerror(errno);
+			return Unres;
+		}
+		
+		// Compare them
+		if ( get_version != set_version )
+		{
+			cerr << "Set and Get version mismatch";
+			return Fail;
+		}
+		else
+		{
+			cerr << "Set and Get versions match";
+			return Success;
+		}
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
 		return Unres;
-	}
-	
-	int set_version = 10; 
-	int get_version = 0;
-	
-	// Backup the old version just in case
-	int old_version;
-	if ( ioctl(_file, EXT4_IOC_GETVERSION, &old_version) == -1 )
-	{
-		cerr << "Error backing up old version. " << strerror(errno);
-		return Unres;
-	}
-	
-	// Set our testing version value
-	if ( ioctl(_file, EXT4_IOC_SETVERSION, &set_version) == -1 )
-	{
-		cerr << "Error setting new version values. " << strerror(errno);
-		return Unres;
-	}
-	
-	// Get the version back
-	if ( ioctl(_file, EXT4_IOC_GETVERSION, &get_version) == -1 )
-	{
-		cerr << "Error getting version value back. " << strerror(errno);
-		return Unres;
-	}
-	
-	// Restore the original version
-	if ( ioctl(_file, EXT4_IOC_SETVERSION, &old_version) == -1 )
-	{
-		cerr << "Error restoring old version value. " << strerror(errno);
-		return Unres;
-	}
-	
-	// Compare them
-	if ( get_version != set_version )
-	{
-		cerr << "Set and Get version mismatch";
-		return Fail;
-	}
-	else
-	{
-		cerr << "Set and Get versions match";
-		return Success;
 	}
 }
 
 Status Ext4IoctlTest::TestWaitForReadonly()
 {
-
-	if ( _file == -1 )
+	try
 	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
+		File file("ioctl_file");
+		int _file = file.GetFileDescriptor();
+		if ( _file == -1 )
+		{
+			cerr << "The file descriptor is invalid: " << strerror(errno);
+			return Unres;
+		}
+		
+		if ( ioctl(_file, EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1 )
+		{
+			cerr << "Error waiting for readonly. " << strerror(errno);
+			return Fail;
+		}
+		else
+		{
+			cerr << "Wait for readonly was successful. " << strerror(errno);
+			return Success;
+		}
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
 		return Unres;
-	}
-	
-	if ( ioctl(_file, EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1 )
-	{
-		cerr << "Error waiting for readonly. " << strerror(errno);
-		return Fail;
-	}
-	else
-	{
-		cerr << "Wait for readonly was successful. " << strerror(errno);
-		return Success;
 	}
 }
 
-extern string MountPoint;
 
 
 Status Ext4IoctlTest::TestGroupExtend()
 {	
-	if ( _file == -1 )
+	try
 	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
+		File file(MountPoint, S_IRUSR | S_IWUSR, O_DIRECTORY);
+		int _file = file.GetFileDescriptor();	
+		if ( _file == -1 )
+		{
+			cerr << "The file descriptor is invalid: " << strerror(errno);
+			return Unres;
+		}
+		
+		struct stat st;
+		if ( fstat (_file, &st) == -1 )
+		{
+			cerr << "Cannot stat file " << MountPoint;
+			return Unres;
+		}
+		
+		cerr << "Shallow test";
+		int NewPartitionSizeInBlocks = 210000;
+		ioctl(_file, EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1;
+		
+		return Success;
+		
+		Status status;
+		
+		NewPartitionSizeInBlocks = 210000;// _PartitionSizeInBlocks + 10;
+		if ( ioctl(_file, EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1 )
+		{
+			cerr << "Error during online resize. " << strerror(errno);
+			return Fail;
+		}
+		else
+		{
+			cerr << "Online resize was successful. " << strerror(errno);
+			return Success;
+		}
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
 		return Unres;
 	}
-	close(_file);
-	unlink("ioctl_file");
-	_file = open(MountPoint.c_str(), O_RDONLY);
-	
-	if ( _file == -1 )
-	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
-		return Unres;
-	}
-	
-	Status status;
-	
-	if ( ioctl(_file, EXT4_IOC_GROUP_EXTEND, &_PartitionSizeInBlocks) == -1 )
-	{
-		cerr << "Error during online resize. " << strerror(errno);
-		status = Fail;
-	}
-	else
-	{
-		cerr << "Online resize was successful. " << strerror(errno);
-		status = Success;
-	}
-	
-out:
-	close(_file);
-	_file = open("ioctl_file", O_RDWR);
-	return status;
 }
 
 Status Ext4IoctlTest::TestMoveExtent()
 {
-
-	if ( _file == -1 || _file_donor == -1 )
+	try
 	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
+		File file("ioctl_file");
+		int _file = file.GetFileDescriptor();	
+		File file_donor("ioctl_donor_file");
+		int _file_donor = file_donor.GetFileDescriptor();	
+	
+		
+		if ( _file == -1 || _file_donor == -1 )
+		{
+			cerr << "The file descriptor is invalid: " << strerror(errno);
+			return Unres;
+		}
+		
+		unlink("ioctl_file_donor");
+		
+		if ( fallocate(_file_donor, 0, 0, 10*4096) ) // 10 blocks
+		{
+			cerr << "Cannot allocate space for donor file: " << strerror(errno);
+			return Unres;
+		}
+		
+		
+		if ( fallocate(_file, 0, 0, 10*4096) ) // 10 blocks
+		{
+			cerr << "Cannot allocate space for original file: " << strerror(errno);
+			return Unres;
+		}
+		
+		unsigned int BlockCount = 1;
+		
+		struct move_extent me;
+		memset(&me, 0, sizeof(me));
+		me.donor_fd = _file_donor;
+		me.orig_start = 0;
+		me.donor_start = 0;
+		me.len = 10;
+		me.moved_len = 10;
+		
+		
+		if ( ioctl(_file, EXT4_IOC_MOVE_EXT, &me) == -1 )
+		{
+			cerr << "Error moving extent. " << strerror(errno);
+			return Fail;
+		}
+		else
+		{
+			cerr << "Move extent was successful. " ;
+			return Success;
+		}
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
 		return Unres;
 	}
 	
-	unlink("ioctl_file_donor");
-	
-	if ( fallocate(_file_donor, 0, 0, 10*4096) ) // 10 blocks
-	{
-		cerr << "Cannot allocate space for donor file: " << strerror(errno);
-		return Unres;
-	}
-	
-	
-	if ( fallocate(_file, 0, 0, 10*4096) ) // 10 blocks
-	{
-		cerr << "Cannot allocate space for original file: " << strerror(errno);
-		return Unres;
-	}
-	
-	unsigned int BlockCount = 1;
-	
-	struct move_extent me;
-	memset(&me, 0, sizeof(me));
-	//me.orig_fd = _file;
-	me.donor_fd = _file_donor;
-	me.orig_start = 0;
-	me.donor_start = 0;
-	me.len = 10;
-	me.moved_len = 10;
-	
-	
-	if ( ioctl(_file, EXT4_IOC_MOVE_EXT, &me) == -1 )
-	{
-		cerr << "Error moving extent. " << strerror(errno);
-		return Fail;
-	}
-	else
-	{
-		cerr << "Move extent was successful. " ;
-		return Success;
-	}
 }
 
 Status Ext4IoctlTest::TestGroupAdd()
 {
-	if ( _file == -1 )
+	try
 	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
+		File file("ioctl_file");
+		int _file = file.GetFileDescriptor();
+		if ( _file == -1 )
+		{
+			cerr << "The file descriptor is invalid: " << strerror(errno);
+			return Unres;
+		}
+		
+		struct ext4_new_group_data input;
+		//memset(&input, 0, sizeof(input));		
+		
+		cerr << "Shallow test" << endl;
+		ioctl(_file, EXT4_IOC_GROUP_ADD, &input);
+		
+		return Success;
+		
+		if ( ioctl(_file, EXT4_IOC_GROUP_ADD, &input) == -1 )
+		{
+			cerr << "Error adding group. " << strerror(errno);
+			return Fail;
+		}
+		else
+		{
+			cerr << "Group was added successful. " << strerror(errno);
+			return Success;
+		}		
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
 		return Unres;
 	}
-	
-	struct ext4_new_group_data input;
-	memset(&input, 0, sizeof(input));
-	
-	if ( ioctl(_file, EXT4_IOC_GROUP_ADD, &input) == -1 )
-	{
-		cerr << "Error adding group. " << strerror(errno);
-		return Fail;
-	}
-	else
-	{
-		cerr << "Group was added successful. " << strerror(errno);
-		return Success;
-	}
-	return Unknown;
 }
 
 Status Ext4IoctlTest::TestMigrate()
 {
-	if ( _file == -1 )
+	//if ( umount2( MountPoint.c_str(), MNT_FORCE ) == -1 )
+	if ( umount( MountPoint.c_str() ) == -1 )
 	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
+		cerr << "Cannot unmount " << MountPoint << ". Error: " << strerror(errno);		
 		return Unres;
 	}
-	close(_file);
-	
-	
-	//umount( (_MountPoint).c_str());
 	//cerr << ("mkfs.ext2 " + _DeviceName).c_str() << endl;
-	//system(("mkfs.ext2 " + _DeviceName).c_str());
-	//mount(_MountPoint.c_str(), _DeviceName.c_str(), "ext2", 0, 0);
-	_file = open(_MountPoint.c_str(), O_RDONLY);
 	
-	if ( ioctl(_file, EXT4_IOC_MIGRATE, 0) == -1 )
+	UnixCommand mkfs("mkfs.ext3");
+	vector<string> args;			
+	//args.push_back("-O");
+	//args.push_back("extents");
+	args.push_back(DeviceName);
+	
+	ProcessResult * res;
+	res = mkfs.Execute(args);
+	if ( res->GetStatus() != Success )
 	{
-		cerr << "Error migrating. " << strerror(errno);
-		return Fail;
+		cerr << "Cannot create ext3 filesystem on device " << DeviceName << endl;
+		cerr << "Error: " << res->GetOutput() << endl;
+		return Unres;
 	}
-	else
+	
+	if ( mount( DeviceName.c_str(), MountPoint.c_str(), "ext3", 0, 0) == -1)
 	{
-		cerr << "Migration was successful. ";
-		return Success;
+		cerr << "Cannot mount ext3 FS " << DeviceName << " to " << MountPoint << " Error: " << strerror(errno);
+		return Unres;
 	}
-	return Unknown;
+	
+	Status result = Unknown;
+	
+	try
+	{
+		File file(MountPoint, S_IRUSR | S_IWUSR, O_DIRECTORY | O_RDONLY);
+		int _file = file.GetFileDescriptor();	
+	
+		if ( _file == -1 )
+		{
+			cerr << "Cannot open folder: " << MountPoint << ". Error : " << strerror(errno);
+			result = Unres;
+			goto finally;
+		}
+		
+		
+		if ( ioctl(_file, EXT4_IOC_MIGRATE, 0) == -1 )
+		{
+			cerr << "Error migrating. " << strerror(errno) << endl;
+			result = Fail;
+			goto finally;
+		}
+		else
+		{
+			cerr << "Migration was successful. ";
+			result = Success;
+			goto finally;
+		}
+	}
+	catch (Exception e)
+	{
+		// Restore the system state!
+		
+		cerr << "Exception was thrown: " << e.GetMessage();		
+		result = Unres;
+	}
+finally:
+	if ( umount( MountPoint.c_str() ) == -1 )
+	{
+		cerr << "Cannot unmount " << MountPoint << ". Error: " << strerror(errno);		
+		return Unres;
+	}
+	
+	UnixCommand mkfs2("mkfs.ext4");
+	vector<string> args2;		
+	args2.push_back(DeviceName);
+	
+	ProcessResult * res2;
+	res2 = mkfs2.Execute(args2);
+	if ( res2->GetStatus() != Success )
+	{
+		cerr << "Cannot create ext4 filesystem on device " << DeviceName << endl;
+		cerr << "Error: " << res2->GetOutput() << endl;
+		return Unres;
+	}
+	
+	//system(("mkfs.ext2 " + _DeviceName).c_str());
+	if ( mount( MountPoint.c_str(), DeviceName.c_str(), "ext4", 0, 0) == -1)
+	{
+		cerr << "Cannot mount " << DeviceName << " back to " << MountPoint << endl;
+		cerr << "Error: " << strerror(errno);
+		result = Unres;
+	}
+		
+	return result;
 }
 
 Status Ext4IoctlTest::TestAllocDABlocks()
 {
-	if ( _file == -1 )
+	try
 	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
+		File file("ioctl_file");
+		int _file = file.GetFileDescriptor();
+		if ( _file == -1 )
+		{
+			cerr << "The file descriptor is invalid: " << strerror(errno);
+			return Unres;
+		}
+		
+		if ( ioctl(_file, EXT4_IOC_ALLOC_DA_BLKS, 0) == -1 )
+		{
+			cerr << "Error during delayed allocation of blocks. " << strerror(errno);
+			return Fail;
+		}
+		else
+		{
+			cerr << "Blocks delayed allocation was successful. " << strerror(errno);
+			return Success;
+		}
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
 		return Unres;
 	}
-	
-	if ( ioctl(_file, EXT4_IOC_ALLOC_DA_BLKS, 0) == -1 )
-	{
-		cerr << "Error during delayed allocation of blocks. " << strerror(errno);
-		return Fail;
-	}
-	else
-	{
-		cerr << "Blocks delayed allocation was successful. " << strerror(errno);
-		return Success;
-	}
-	return Unknown;
 }
 
 Status Ext4IoctlTest::TestFitrim()
-{
-	cerr << "Fitrim???";
-#ifdef FITRIM	
-	if ( _file == -1 )
+{	
+#ifdef FITRIM
+	try
 	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
+		File file("ioctl_file");
+		int _file = file.GetFileDescriptor();
+		if ( _file == -1 )
+		{
+			cerr << "The file descriptor is invalid: " << strerror(errno);
+			return Unres;
+		}
+		
+		if ( ioctl(_file, FITRIM, 0) == -1 )
+		{
+			cerr << "Error FITRIM. " << strerror(errno);
+			return Fail;
+		}
+		else
+		{
+			cerr << "FITRIM was successful. " << strerror(errno);
+			return Success;
+		}
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
 		return Unres;
 	}
-	
-	if ( ioctl(_file, FITRIM, 0) == -1 )
-	{
-		cerr << "Error FITRIM. " << strerror(errno);
-		return Fail;
-	}
-	else
-	{
-		cerr << "FITRIM was successful. " << strerror(errno);
-		return Success;
-	}
 #else
-	return Unres;
+	cerr << "FITRIM is not supported";
+	return Unsupported;
 #endif
 }
 Status Ext4IoctlTest::TestUnsupported()
 {
-	cerr << "Unsupported...";
-	if ( _file == -1 )
+	try
 	{
-		cerr << "The file descriptor is invalid: " << strerror(errno);
+		File file("ioctl_file");
+		int _file = file.GetFileDescriptor();
+		if ( _file == -1 )
+		{
+			cerr << "The file descriptor is invalid: " << strerror(errno);
+			return Unres;
+		}
+		
+		if ( ( ioctl(_file, -100, 0) == -1 ) && ( errno == ENOTTY ) )
+		{
+			cerr << "Unsupported command was processed successfully. " << strerror(errno);
+			return Success;
+		}
+		else
+		{
+			cerr << "Error on unsupported command. " << strerror(errno);
+			return Fail;
+		}
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
 		return Unres;
 	}
-	
-	if ( ( ioctl(_file, -100, 0) == -1 ) && ( errno == ENOTTY ) )
-	{
-		cerr << "Unsupported command was processed successfully. " << strerror(errno);
-		return Success;
-	}
-	else
-	{
-		cerr << "Error on unsupported command. " << strerror(errno);
-		return Fail;
-	}
-	return Unknown;
 }
 
 string Ext4IoctlTestResult::OperationToString()
