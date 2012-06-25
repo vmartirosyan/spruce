@@ -40,31 +40,31 @@ using std::string;
 class File
 {	
 	public:
-		explicit File(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_RDWR) : 
+		explicit File(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_RDWR | O_CREAT) : 
 		_pathname(pathname),
 		_mode(mode),
 		_flags(flags)
 		{
-			_fd = open(pathname.c_str(), _flags | O_CREAT, _mode);
+			_fd = open(pathname.c_str(), _flags, _mode);
 			if (_fd == -1)
 			{								
 				throw Exception("Cannot create file " + _pathname + 
-				": error = " + (string)strerror(errno));
+				". Error : " + (string)strerror(errno));
 			}
 		}
 		~File()
 		{			
 			try
-			{
-				if (unlink(_pathname.c_str()) != 0)
+			{				
+				if ( (_flags & O_CREAT) &&  (unlink(_pathname.c_str()) != 0) )
 				{
 					throw Exception("Cannot delete file " + _pathname + 
-					": error = " + (string)strerror(errno));
+					". Error : " + (string)strerror(errno));
 				}
 				if (close(_fd) != 0)
 				{
 					throw Exception("Cannot close file descriptor for " + _pathname + 
-					": error = " + (string)strerror(errno));
+					". Error : " + (string)strerror(errno));
 				}
 			}
 			catch (...)

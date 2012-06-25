@@ -45,17 +45,23 @@ int main(int argc, char ** argv)
 	 * Usage: extfs <log_file> <device> <mountpoint>
 	 * */
 	 
-	if ( argc < 4 )
-		return Usage(argv);
-		
+	//if ( argc < 4 )
+	//	return Usage(argv);
+	
 	// Skip the log file for now
-	DeviceName = argv[2];
-	MountPoint = argv[3];
+	if ( getenv("Partition") )
+		DeviceName = getenv("Partition");
 	
-	mkdir( MountPoint.c_str(), 0x0777 );
-	mount ( DeviceName.c_str(), MountPoint.c_str(), "ext4", 0 ,0);
+	if ( getenv("MountAt") )
+		MountPoint = getenv("MountAt");
 	
-	Configuration<Ext4IoctlTest> conf("${CMAKE_INSTALL_PREFIX}/config/ext4fs.conf");
+	
+	//mkdir( MountPoint.c_str(), 0x0777 );
+	//mount ( DeviceName.c_str(), MountPoint.c_str(), "ext4", 0 ,0);
+	
+	cout << "Executing ext4 fs tests for " << MountPoint << " (" << DeviceName << ")" << endl;
+	
+	Configuration<Ext4IoctlTest> conf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/ext4fs.conf");
 	//Configuration<Ext4IoctlTest> conf("/home/vmartirosyan/workspace/spruce/config/ext4fs.conf");
 	
 	TestCollection tests = conf.Read();	

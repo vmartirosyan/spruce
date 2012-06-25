@@ -82,6 +82,8 @@ int main(int argc, char ** argv)
 	//Prepare the allowed modules list
 	ModulesAvailable.push_back("syscall");
 	ModulesAvailable.push_back("benchmark");
+	ModulesAvailable.push_back("ext4fs");
+	ModulesAvailable.push_back("jfs");
 	
 	// Prepare the allowed FS list
 	FSAvailable.push_back("ext4");
@@ -268,6 +270,10 @@ int main(int argc, char ** argv)
 		}
 		cout << "Changed dir" << endl;
 		
+		// Before executing the modules prepare the environment
+		setenv("MountAt", MountAt.c_str(), 1);
+		setenv("Partition", partition.c_str(), 1);
+		
 		for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
 		{
 			cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
@@ -291,12 +297,12 @@ int main(int argc, char ** argv)
 			continue;
 		}
 		
-		// Unmount the MountAt folder first (just in case)		
+		// Unmount the MountAt folder
 		if ( umount( MountAt.c_str() ) != 0 && errno != EINVAL)
 		{
 			cerr << "Cannot unmount folder " << MountAt << endl;
 			cerr << "Error: " << strerror(errno) << endl;
-			continue;
+			//continue;
 		}
 		
 		// Open the log file in the selected browser
