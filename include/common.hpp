@@ -43,6 +43,7 @@ enum Mode
 enum Status
 {
 	Success,
+	Shallow,
 	Fail,
 	Unres,
 	Timeout,

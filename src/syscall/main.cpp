@@ -34,6 +34,20 @@
 #include <config.hpp>
 #include <time.h>
 
+// Karen
+		
+// Gio
+		
+// Vahram
+
+// Suren
+
+// Gurgen
+
+// Ruzanna
+
+// Ani
+
 int main(int argc, char ** argv)
 {
 	srand(time(0));
@@ -73,6 +87,20 @@ int main(int argc, char ** argv)
 		Configuration<LinkatTest> linkatConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/linkat.conf");
 		Configuration<Xattr> xattrConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/xattr.conf");
 		
+		// Karen
+				
+		// Gio
+				
+		// Vahram
+		
+		// Suren
+		
+		// Gurgen
+		
+		// Ruzanna
+		
+		// Ani
+		
 		TestCollection tests1 = conf1.Read();
 		TestCollection tests2 = conf2.Read();
 		TestCollection tests3 = conf3.Read();
@@ -106,6 +134,19 @@ int main(int argc, char ** argv)
 		TestCollection linkatTests = linkatConf.Read();
 		TestCollection xattrTests = xattrConf.Read();
 		
+		// Karen
+				
+		// Gio
+				
+		// Vahram
+		
+		// Suren
+		
+		// Gurgen
+		
+		// Ruzanna
+		
+		// Ani
 	  
 	  
 		tests.Merge(tests1);
@@ -140,6 +181,20 @@ int main(int argc, char ** argv)
 		tests.Merge(openTests);
 		tests.Merge(linkatTests);
 		tests.Merge(xattrTests);
+		
+		// Karen
+				
+		// Gio
+				
+		// Vahram
+		
+		// Suren
+		
+		// Gurgen
+		
+		// Ruzanna
+		
+		// Ani
 	}
 	catch (Exception ex)
 	{
@@ -149,43 +204,7 @@ int main(int argc, char ** argv)
 
     
 	TestResultCollection res = tests.Run();
-	//cerr << "bla bla" << endl;
+	
 	cerr << "<Syscalls>\n" << res.ToXML() << "</Syscalls>" << endl;
-	//cerr << res.ToXML() << endl;
-
-	/*tests.AddTest(new DupFileDescriptorTest(Normal, Dup));
-	tests.AddTest(new DupFileDescriptorTest(Normal, Dup));
-
-	tests.AddTest(new Close(Normal, BadFileDescriptor, ""));
- 	tests.AddTest(new Close(Normal, CorrectDescriptor, ""));
-	tests.AddTest(new Close(Normal, CorrectDescriptorUnlink, ""));
-
-	tests.AddTest(new Chmod(Normal, CHMOD_S_IRWXU, ""));
-	tests.AddTest(new Chmod(Normal, CHMOD_S_IRUSR, ""));
-	tests.AddTest(new Chmod(Normal, CHMOD_S_IWUSR, ""));
-	tests.AddTest(new Chmod(Normal, CHMOD_S_IXUSR, ""));
-	tests.AddTest(new Chmod(Normal, CHMOD_S_IRWXG, ""));
-	tests.AddTest(new Chmod(Normal, CHMOD_S_IRGRP, ""));
-	tests.AddTest(new Chmod(Normal, CHMOD_S_IWGRP, ""));
-	tests.AddTest(new Chmod(Normal, CHMOD_S_IXGRP, ""));
-	tests.AddTest(new Chmod(Normal, CHMOD_S_IRWXO, ""));
-	tests.AddTest(new Chmod(Normal, CHMOD_S_IROTH, ""));
-	tests.AddTest(new Chmod(Normal, CHMOD_S_IWOTH, ""));
-	tests.AddTest(new Chmod(Normal, CHMOD_S_IXOTH, ""));
-	tests.AddTest(new Chmod(Normal, CHMOD_S_ISUID, ""));
-    tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENAMETOOLONG, ""));
-    tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENOENT, ""));
-     tests.AddTest(new Chmod(Normal,  CHMOD_ERR_ENOTDIR, ""));
-
-
-	tests.AddTest(new LinkTest(Normal, LinkTestTooLongOldPath, ""));
-	tests.AddTest(new LinkTest(Normal, LinkTestTooLongNewPath, ""));
-	tests.AddTest(new LinkTest(Normal, LinkTestNewPathAleadyExist, ""));
-	tests.AddTest(new LinkTest(Normal, LinkTestOldPathIsDirectory, ""));
-	tests.AddTest(new LinkTest(Normal, LinkTestNormalFile, ""));
-	tests.AddTest(new LinkTest(Normal, LinkTestIsNotDirectory, ""));
-
-	TestResultCollection res = tests.Run();
-
-	cout << res.ToXML() << endl;*/
+	
 }
