@@ -37,7 +37,7 @@
 // Karen
 		
 // Gio
-		
+#include "chdir.hpp"			
 // Vahram
 
 // Suren
@@ -90,7 +90,7 @@ int main(int argc, char ** argv)
 		// Karen
 				
 		// Gio
-				
+		Configuration<Chdir> chdirConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/chdir.conf");			
 		// Vahram
 		
 		// Suren
@@ -137,7 +137,7 @@ int main(int argc, char ** argv)
 		// Karen
 				
 		// Gio
-				
+		TestCollection chdirTests = chdirConf.Read();		
 		// Vahram
 		
 		// Suren
@@ -185,7 +185,7 @@ int main(int argc, char ** argv)
 		// Karen
 				
 		// Gio
-				
+		tests.Merge(chdirTests);		
 		// Vahram
 		
 		// Suren
