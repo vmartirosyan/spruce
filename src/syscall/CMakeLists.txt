@@ -108,7 +108,8 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/xattr)
 ADD_SUBDIRECTORY(chdir)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/chdir)				
 # Vahram
-
+ADD_SUBDIRECTORY(utime)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/utime)	
 # Suren
 
 # Gurgen
@@ -157,7 +158,7 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 						# Gio
 						${CMAKE_CURRENT_SOURCE_DIR}/chdir/chdir.cpp	
 						# Vahram
-
+						${CMAKE_CURRENT_SOURCE_DIR}/utime/Utime.cpp	
 						# Suren
 
 						# Gurgen

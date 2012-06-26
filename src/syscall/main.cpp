@@ -37,9 +37,9 @@
 // Karen
 		
 // Gio
-#include "chdir.hpp"			
+#include "chdir.hpp"
 // Vahram
-
+#include "Utime.hpp"
 // Suren
 
 // Gurgen
@@ -92,7 +92,7 @@ int main(int argc, char ** argv)
 		// Gio
 		Configuration<Chdir> chdirConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/chdir.conf");			
 		// Vahram
-		
+		Configuration<UtimeTest> utimeConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/utime.conf");
 		// Suren
 		
 		// Gurgen
@@ -139,7 +139,7 @@ int main(int argc, char ** argv)
 		// Gio
 		TestCollection chdirTests = chdirConf.Read();		
 		// Vahram
-		
+		TestCollection utimeTests = utimeConf.Read();
 		// Suren
 		
 		// Gurgen
@@ -187,7 +187,7 @@ int main(int argc, char ** argv)
 		// Gio
 		tests.Merge(chdirTests);		
 		// Vahram
-		
+		tests.Merge(utimeTests);
 		// Suren
 		
 		// Gurgen

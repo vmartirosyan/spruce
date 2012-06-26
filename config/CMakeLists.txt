@@ -197,7 +197,6 @@ install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/xattr.conf"
 			DESTINATION share/spruce/config
 			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
 
-
 # Karen
 		
 # Gio
@@ -205,7 +204,9 @@ install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/chdir.conf"
 			DESTINATION share/spruce/config
 			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)			
 # Vahram
-
+install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/utime.conf"
+			DESTINATION share/spruce/config
+			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)	
 # Suren
 
 # Gurgen
