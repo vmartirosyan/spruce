@@ -24,10 +24,7 @@
 #define XATTR_H
 
 #include <sys/types.h>
-
-#ifdef HAVE_XATTR_H
 #include <attr/xattr.h>
-#endif
 #include "SyscallTest.hpp"
 
 
@@ -59,5 +56,3 @@ protected:
 	
 };
 #endif
-
-
