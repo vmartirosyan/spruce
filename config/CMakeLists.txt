@@ -196,3 +196,18 @@ install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/config_complete"
 install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/xattr.conf"
 			DESTINATION share/spruce/config
 			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
+
+
+# Karen
+		
+# Gio
+		
+# Vahram
+
+# Suren
+
+# Gurgen
+
+# Ruzanna
+
+# Ani
