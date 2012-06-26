@@ -1,6 +1,6 @@
-modules=syscall;jfs
-fs=jfs
-partition=/dev/sda4
-browser=opera
+modules=syscall;
+fs=ext4
+partition=/dev/sda3
+browser=firefox
 logfolder=/tmp
 mount_opts=
