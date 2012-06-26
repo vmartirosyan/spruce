@@ -1,9 +1,9 @@
-//      chdir.hpp
+//      Chmod.hpp
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
 //      Author:
-//			Giorgi Gulabyan <gulabyang@gmail.com>
+//			Gurgen Torozyan <gurgen.torozyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -20,59 +20,47 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#ifndef CHDIR_H
-#define CHDIR_H
+#ifndef FCHMOD_H
+#define FCHMOD_H
 
 #include "SyscallTest.hpp"
 // Operations
-enum ChdirOperations
+enum FchmodSyscalls
 {
-
-	CHDIR_S_IRWXU,
-	CHDIR_S_IRUSR,
-	CHDIR_S_IWUSR,
-	CHDIR_S_IXUSR,
+	FCHMOD_S_IRWXU,
+	FCHMOD_S_IRUSR,
+	FCHMOD_S_IWUSR,
+	FCHMOD_S_IXUSR,
 	
-	CHDIR_S_IRWXG,
-	CHDIR_S_IRGRP,
-	CHDIR_S_IWGRP,
-	CHDIR_S_IXGRP,
+	FCHMOD_S_IRWXG,
+	FCHMOD_S_IRGRP,
+	FCHMOD_S_IWGRP,
+	FCHMOD_S_IXGRP,
 	
-	CHDIR_S_IRWXO,
-	CHDIR_S_IROTH,
-	CHDIR_S_IWOTH,
-	CHDIR_S_IXOTH,
-	CHDIR_S_ISUID,
+	FCHMOD_S_IRWXO,
+	FCHMOD_S_IROTH,
+	FCHMOD_S_IWOTH,
+	FCHMOD_S_IXOTH,
+	FCHMOD_S_ISUID,
+	FCHMOD_ERR_BADFD
 	
-	CHDIR_ERR_ENOTDIR,
-	CHDIR_ERR_ENAMETOOLONG,
-	CHDIR_ERR_ENOENT,
-	CHDIR_ERR_EACCES,
-	CHDIR_ERR_ELOOP,
-	CHDIR_ERR_EPERM,
-	CHDIR_ERR_EROFS,
-	CHDIR_ERR_EFAULT,
-	CHDIR_ERR_EIO,
-	CHDIR_ERR_EFTYPE
 
 
 
 };
 
-class Chdir : public SyscallTest
+class Fchmod : public SyscallTest
 {			
 public:	
-	Chdir(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "chdir")
+	Fchmod(Mode mode, int operation, string arguments = "") :
+		SyscallTest(mode, operation, arguments, "fchmod")
 	{			
 	}
-	virtual ~Chdir() {}	
-	/*Status Chmod_S_IRWXU();	
+	virtual ~Fchmod() {}	
+	
 	Status PermissionsTest(int open_mode);
-	Status ErrEfault();
-	Status ChmodTooLongPath();
-	Status ChmodFileNotExist();
-	Status ChmodIsNotDirectory();*/
+	Status FchmodBadFileDesc();
+
 
 protected:
 	virtual int Main(vector<string> args);	
