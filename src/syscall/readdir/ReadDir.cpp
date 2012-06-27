@@ -28,7 +28,7 @@
 #include <sys/param.h>
 #include <fcntl.h>
 #include <sys/syscall.h>
-#include <string.h>
+
 #include <errno.h>
 #include <unistd.h>
 

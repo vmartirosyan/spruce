@@ -120,6 +120,9 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/bdflush)
 ADD_SUBDIRECTORY(fchmod)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/fchmod)
 
+ADD_SUBDIRECTORY(fchown)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/fchown)
+
 ADD_SUBDIRECTORY(sync)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/sync)
 
@@ -172,6 +175,7 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/bdflush/Bdflush.cpp
 						# Gurgen
 						${CMAKE_CURRENT_SOURCE_DIR}/fchmod/Fchmod.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/fchown/Fchown.cpp	
 						${CMAKE_CURRENT_SOURCE_DIR}/sync/Sync.cpp	
 						# Ruzanna
 
