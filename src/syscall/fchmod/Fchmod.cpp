@@ -41,8 +41,7 @@ int Fchmod::Main(vector<string>)
 			case FCHMOD_S_IWUSR:
 				return PermissionsTest(S_IWUSR);
 			case FCHMOD_S_IXUSR:
-				return PermissionsTest(S_IXUSR);
-				
+				return PermissionsTest(S_IXUSR);	
 			case FCHMOD_S_IRWXG:
 				return PermissionsTest(S_IRWXG);
 			case FCHMOD_S_IRGRP:
@@ -50,8 +49,7 @@ int Fchmod::Main(vector<string>)
 			case FCHMOD_S_IWGRP:
 				return PermissionsTest(S_IWGRP);
 			case FCHMOD_S_IXGRP:
-				return PermissionsTest(S_IXGRP);
-				
+				return PermissionsTest(S_IXGRP);	
 			case FCHMOD_S_IRWXO:
 				return PermissionsTest(S_IRWXO);
 			case FCHMOD_S_IROTH:
@@ -99,8 +97,6 @@ Status Fchmod::FchmodBadFileDesc()
 		}
 	
 }
-
-
 
 
 Status Fchmod::PermissionsTest(int open_mode)

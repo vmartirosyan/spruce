@@ -118,6 +118,9 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/utime)
 ADD_SUBDIRECTORY(fchmod)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/fchmod)
 
+ADD_SUBDIRECTORY(sync)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/sync)
+
 # Ruzanna
 
 # Ani
@@ -167,6 +170,7 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 
 						# Gurgen
 						${CMAKE_CURRENT_SOURCE_DIR}/fchmod/Fchmod.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/sync/Sync.cpp	
 						# Ruzanna
 
 						# Ani
