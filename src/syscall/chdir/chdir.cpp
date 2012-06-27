@@ -61,13 +61,15 @@ int Chdir::Main(vector<string>)
 			case CHDIR_S_IXOTH:
 				return PermissionsTest(S_IXOTH);
 			case CHDIR_S_ISUID:
-				return PermissionsTest(S_ISUID);
+				return PermissionsTest(S_ISUID);*/
+				
 		    case CHDIR_ERR_ENAMETOOLONG:
-				return  ChmodTooLongPath();
+				return ChdirTooLongPath();
 			case CHDIR_ERR_ENOENT:
-				return  ChmodFileNotExist();
+				return ChdirFileNotExist();
 		    case CHDIR_ERR_ENOTDIR:
-				return ChmodIsNotDirectory();*/
+				return ChdirIsNotDirectory();
+				
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -78,26 +80,20 @@ int Chdir::Main(vector<string>)
 }
 
 
-/*
-Status Chmod::ChmodIsNotDirectory()
-{
 
-	
-	const char *path="chmodTest.txt";
-	const char *pathNotDirectory = "chmodTest.txt/somthingelse" ;
-	int  ret_chmod;
-	struct stat mode;
+Status Chdir::ChdirIsNotDirectory()
+{
+	const char *pathNotDirectory = "chdirTest.txt/somthingelse" ;
+	int  ret_chdir;
 		
 	try
 	{
-		File file(path, S_IWUSR);
-
-		ret_chmod = chmod(pathNotDirectory, S_IWUSR);
+		ret_chdir = chdir(pathNotDirectory);
 		
 				
-		if(ret_chmod == 0)
+		if(ret_chdir == 0)
 		{
-			cerr << "Chmod reruns 0 but it should return -1 when  component of the path prefix is not a directory  "<<strerror(errno);
+			cerr << "Chdir reruns 0 but it should return -1 when  component of the path prefix is not a directory  "<<strerror(errno);
 			return Fail;
 		}
 		
@@ -131,23 +127,21 @@ Status Chmod::ChmodIsNotDirectory()
 
 
 
-Status Chmod::ChmodTooLongPath()
+Status Chdir::ChdirTooLongPath()
 {
 	
 	
-    int ret_chmod;
-	const char* filename = "chmodTest.txt";
-	const char* tooLongfilename = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+    int ret_chdir;
+	const char* tooLongPath = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
 	
 	try
 	{
-		File file(filename, S_IWUSR);
 	
-		ret_chmod = chmod(tooLongfilename, S_IWUSR);
+		ret_chdir = chdir(tooLongPath);
 		
-		if(ret_chmod == 0)
+		if(ret_chdir == 0)
 		{
-			cerr << "Chmod reruns 0 but it should return -1 when the path is too long  "<<strerror(errno);
+			cerr << "Chdir reruns 0 but it should return -1 when the path is too long  "<<strerror(errno);
 			return Fail;
 		}
 		
@@ -173,16 +167,16 @@ Status Chmod::ChmodTooLongPath()
 }
 
 
-Status Chmod::ChmodFileNotExist()
+Status Chdir::ChdirFileNotExist()
 {
 	
-	const char *path="chmodTest.txt";
-	int ret_chmod;
-	ret_chmod = chmod(path, S_IWUSR);
+	const char *path="/notExistingPath198/2/7/1/htap";
+	int ret_chdir;
+	ret_chdir = chdir(path);
 	
-	if(ret_chmod == 0)
+	if(ret_chdir == 0)
 	{
-		cerr << "Chmod reruns 0 but it should return -1 when the file is not exist  "<<strerror(errno);
+		cerr << "Chdir reruns 0 but it should return -1 when the file is not exist  "<<strerror(errno);
 		return Fail;
 	}
 	else
@@ -199,12 +193,12 @@ Status Chmod::ChmodFileNotExist()
 }
 
 
-
-Status Chmod::PermissionsTest(int open_mode)
+/*
+Status Chdir::PermissionsTest(int open_mode)
 {
 
-	const char *path="chmodTest.txt";
-	int ret_chmod;
+	const char *path="chdirTest.txt";
+	int ret_chdir;
 	struct stat mode;
 		
 	try
@@ -212,11 +206,11 @@ Status Chmod::PermissionsTest(int open_mode)
 		File file(path, open_mode);
 
 
-		ret_chmod = chmod(path, open_mode);
+		ret_chdir = chdir(path, open_mode);
 		
-		if(ret_chmod == -1)
+		if(ret_chdir == -1)
 		{
-			cerr << "Chmod  failed: Aborting test "<<strerror(errno);
+			cerr << "Chdir  failed: Aborting test "<<strerror(errno);
 			return Unres;
 		}
 		
@@ -230,7 +224,7 @@ Status Chmod::PermissionsTest(int open_mode)
 		
 		if((mode.st_mode & 4095) !=  open_mode)
 		{
-			cerr<<"Chmode failed ";
+			cerr<<"Chdire failed ";
 			return Fail;
 		}
 	

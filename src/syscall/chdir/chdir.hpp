@@ -27,35 +27,16 @@
 // Operations
 enum ChdirOperations
 {
-
-	CHDIR_S_IRWXU,
-	CHDIR_S_IRUSR,
-	CHDIR_S_IWUSR,
-	CHDIR_S_IXUSR,
-	
-	CHDIR_S_IRWXG,
-	CHDIR_S_IRGRP,
-	CHDIR_S_IWGRP,
-	CHDIR_S_IXGRP,
-	
-	CHDIR_S_IRWXO,
-	CHDIR_S_IROTH,
-	CHDIR_S_IWOTH,
-	CHDIR_S_IXOTH,
-	CHDIR_S_ISUID,
-	
-	CHDIR_ERR_ENOTDIR,
-	CHDIR_ERR_ENAMETOOLONG,
-	CHDIR_ERR_ENOENT,
 	CHDIR_ERR_EACCES,
-	CHDIR_ERR_ELOOP,
-	CHDIR_ERR_EPERM,
-	CHDIR_ERR_EROFS,
 	CHDIR_ERR_EFAULT,
 	CHDIR_ERR_EIO,
-	CHDIR_ERR_EFTYPE
-
-
+	CHDIR_ERR_ELOOP,
+	CHDIR_ERR_ENAMETOOLONG,
+	CHDIR_ERR_ENOENT,
+	CHDIR_ERR_ENOMEM,
+	CHDIR_ERR_ENOTDIR,
+	
+	CHDIR_ERR_EBADF
 
 };
 
@@ -69,10 +50,11 @@ public:
 	virtual ~Chdir() {}	
 	/*Status Chmod_S_IRWXU();	
 	Status PermissionsTest(int open_mode);
-	Status ErrEfault();
-	Status ChmodTooLongPath();
-	Status ChmodFileNotExist();
-	Status ChmodIsNotDirectory();*/
+	Status ErrEfault();*/
+	
+	Status ChdirTooLongPath();
+	Status ChdirFileNotExist();
+	Status ChdirIsNotDirectory();
 
 protected:
 	virtual int Main(vector<string> args);	
