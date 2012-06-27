@@ -29,6 +29,7 @@
 
 char * StatusMessages[] = {
 	(char * )"Success",
+	(char * )"Shallow",
 	(char * )"Failed",
 	(char * )"Unresolved",
 	(char * )"Timeout",

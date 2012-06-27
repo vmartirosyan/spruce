@@ -3,7 +3,7 @@
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
 //      Author:
-//			Vahram MArtirosyan <vmartirosyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -24,6 +24,9 @@
 
 #include <Utime.hpp>
 #include "File.hpp"
+#include "Directory.hpp"
+#include <pwd.h>
+#include <linux/limits.h>
 
 int UtimeTest::Main(vector<string>)
 {
@@ -35,14 +38,8 @@ int UtimeTest::Main(vector<string>)
 				return NormallNotNull();
 			case UtimeNormalNull:
 				return NormallNull();
-			case UtimeErrAccess1:
-				return ErrAccess1();
-			case UtimeErrAccess2:
-				return ErrAccess2();
-			case UtimeErrAccess3:
-				return ErrAccess3();
-			case UtimeErrAccess4:
-				return ErrAccess4();
+			case UtimeErrAccess:
+				return ErrAccess();			
 			case UtimeErrLoop:
 				return ErrLoop();
 			case UtimeErrNameTooLong1:
@@ -68,67 +65,271 @@ int UtimeTest::Main(vector<string>)
 
 Status UtimeTest::NormallNotNull()
 {
-	cerr << "Not implemented yet.";
-	return Unsupported;
+	try
+	{	
+		File f("some_file");
+		struct stat stat_buf;
+		
+		time_t cur_time = time(0);
+		if ( cur_time == (time_t)-1 )
+		{
+			cerr << "Cannot get current time. Error: " << strerror(errno);
+			return Unres; 
+		}
+		
+		cur_time -= 100;
+		
+		struct utimbuf buf;
+		buf.actime = cur_time;
+		
+		if ( utime("some_file", &buf) == -1 )
+		{
+			cerr << "utime call failed. Error: " << strerror(errno);
+			return Fail;
+		}		
+		
+		if ( stat("some_file", &stat_buf) == -1 )
+		{
+			cerr << "Cannot stat the file. Error: " << strerror(errno);
+			return Unres; 
+		}
+		
+		if ( stat_buf.st_atime != cur_time )
+		{
+			cerr << "Wrong access time was set: " << cur_time << " != " << stat_buf.st_atime;
+			return Fail;
+		}
+		
+		return Success;
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
+		return Unres;
+	}	
 }
 Status UtimeTest::NormallNull()
 {
-	cerr << "Not implemented yet.";
-	return Unsupported;
+	try
+	{	
+		File f("some_file");
+		struct stat stat_buf;
+		
+		time_t cur_time = time(0);
+		
+		if ( cur_time == (time_t)-1 )
+		{
+			cerr << "Cannot get current time. Error: " << strerror(errno);
+			return Unres; 
+		}
+		
+		if ( utime("some_file", NULL) == -1 )
+		{
+			cerr << "utime call failed. Error: " << strerror(errno);
+			return Fail;
+		}		
+		
+		if ( stat("some_file", &stat_buf) == -1 )
+		{
+			cerr << "Cannot stat the file. Error: " << strerror(errno);
+			return Unres; 
+		}
+		
+		if ( stat_buf.st_atime != cur_time )
+		{
+			cerr << "Wrong access time was set: " << cur_time << " != " << stat_buf.st_atime;
+			return Fail;
+		}
+		
+		return Success;
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
+		return Unres;
+	}	
 }
-Status UtimeTest::ErrAccess1()
+
+Status UtimeTest::ErrAccess()
 {
-	cerr << "Not implemented yet.";
-	return Unsupported;
+	try
+	{	
+		File f("some_file");
+		
+		struct passwd * nobody = getpwnam("nobody");
+		
+		if (nobody == NULL)
+		{
+			cerr << "Cannot obtain nobody user information. Error: " << strerror(errno);
+			return Unres;
+		}
+		
+		if ( seteuid(nobody->pw_uid) == -1 )
+		{
+			cerr << "Cannot set the effective user ID to nobody. Error: " << strerror(errno);
+			return Unres;
+		}
+				
+		if ( utime("some_file", NULL) == 0 || errno != EACCES )
+		{
+			cerr << "utime should return EACCES error code but it did not. Error: " << strerror(errno);
+			return Fail;
+		}
+		
+		return Success;
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
+		return Unres;
+	}	
 }
-Status UtimeTest::ErrAccess2()
-{
-	cerr << "Not implemented yet.";
-	return Unsupported;
-}
-Status UtimeTest::ErrAccess3()
-{
-	cerr << "Not implemented yet.";
-	return Unsupported;
-}
-Status UtimeTest::ErrAccess4()
-{
-	cerr << "Not implemented yet.";
-	return Unsupported;
-}
+
 Status UtimeTest::ErrLoop()
 {
-	cerr << "Not implemented yet.";
-	return Unsupported;
+	try
+	{	
+		File f("old_file");
+		
+		if ( symlink("old_file", "new_file") == -1)
+		{
+			cerr << "Cannot create symlink on old_file. Error: " << strerror(errno);
+			return Unres;
+		}
+		
+		if ( unlink("old_file") == -1)
+		{
+			cerr << "Cannot remove old_file. Error: " << strerror(errno);
+			return Unres;
+		}
+		
+		if ( symlink("new_file", "old_file") == -1)
+		{
+			cerr << "Cannot create symlink on new_file. Error: " << strerror(errno);
+			return Unres;
+		}
+		int res = utime("old_file", NULL);
+		
+		unlink("new_file");
+		
+		if ( res == 0 || errno != ELOOP )
+		{
+			cerr << "utime should return ELOOP error code but it did not. Error: " << strerror(errno);
+			return Fail;
+		}
+		
+		return Success;
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
+		return Unres;
+	}	
 }
 Status UtimeTest::ErrNameTooLong1()
 {
-	cerr << "Not implemented yet.";
-	return Unsupported;
+	std::string filename = "asdf";
+	for ( int i = 0; i < PATH_MAX; ++i )
+		filename += "a";
+		
+	if ( utime(filename.c_str(), NULL) == 0 || errno != ENAMETOOLONG )
+	{
+		cerr << "utime should return ENAMETOOLONG error code but it did not. Error: " << strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
 }
 Status UtimeTest::ErrNameTooLong2()
 {
-	cerr << "Not implemented yet.";
-	return Unsupported;
+	std::string filename = "asdf";
+	for ( int i = 0; i < NAME_MAX; ++i )
+		filename += "a";
+		
+	if ( utime(filename.c_str(), NULL) == 0 || errno != ENAMETOOLONG )
+	{
+		cerr << "utime should return ENAMETOOLONG error code but it did not. Error: " << strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
 }
 Status UtimeTest::ErrNoEnt1()
 {
-	cerr << "Not implemented yet.";
-	return Unsupported;
+	if ( utime("non_existing_file", NULL) == 0 || errno != ENOENT )
+	{
+		cerr << "utime should return ENOENT error code but it did not. Error: " << strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
 }
 Status UtimeTest::ErrNoEnt2()
 {
-	cerr << "Not implemented yet.";
-	return Unsupported;
+	if ( utime("", NULL) == 0 || errno != ENOENT )
+	{
+		cerr << "utime should return ENOENT error code but it did not. Error: " << strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
 }
 Status UtimeTest::ErrNotDir()
 {
-	cerr << "Not implemented yet.";
-	return Unsupported;
+	try
+	{
+		File f("not_a_dir_name");
+		
+		if ( utime("not_a_dir_name/some_file", NULL) == 0 || errno != ENOTDIR )
+		{
+			cerr << "utime should return ENOTDIR error code but it did not. Error: " << errno << " > " << strerror(errno);
+			return Fail;
+		}
+		
+		return Success;
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
+		return Unres;
+	}	
+	
+	
 }
 Status UtimeTest::ErrPerm()
 {
-	cerr << "Not implemented yet.";
-	return Unsupported;
+	try
+	{	
+		File f("some_file");
+		
+		struct passwd * nobody = getpwnam("nobody");
+		
+		if (nobody == NULL)
+		{
+			cerr << "Cannot obtain nobody user information. Error: " << strerror(errno);
+			return Unres;
+		}
+		
+		if ( seteuid(nobody->pw_uid) == -1 )
+		{
+			cerr << "Cannot set the effective user ID to nobody. Error: " << strerror(errno);
+			return Unres;
+		}
+		struct utimbuf buf;
+		if ( utime("some_file", &buf) == 0 || errno != EPERM )
+		{
+			cerr << "utime should return EPERM error code but it did not. Error: " << strerror(errno);
+			return Fail;
+		}
+		
+		return Success;
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
+		return Unres;
+	}	
 }
+
+
 

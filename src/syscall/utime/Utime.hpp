@@ -23,6 +23,7 @@
 #ifndef UTIME_H
 #define UTIME_H
 
+#include <utime.h>
 #include <sys/types.h>
 #include "SyscallTest.hpp"
 
@@ -30,12 +31,9 @@
 // Operations
 enum UtimeOps
 {
-	UtimeNormalNotNull,
+	UtimeNormalNotNull,	
 	UtimeNormalNull,
-	UtimeErrAccess1,
-	UtimeErrAccess2,
-	UtimeErrAccess3,
-	UtimeErrAccess4,
+	UtimeErrAccess,
 	UtimeErrLoop,
 	UtimeErrNameTooLong1,
 	UtimeErrNameTooLong2,
@@ -57,18 +55,53 @@ public:
 	virtual ~UtimeTest()
 	{
 	}	
-	Status NormallNotNull();
+	/*
+		If  times  is  not  a null pointer, times shall be interpreted as a pointer to a utimbuf structure and the access and modification
+		times shall be set to the values contained in the designated structure. Only a process with the effective user ID equal to the user
+		ID of the file or a process with appropriate privileges may use  utime() this way. 
+	*/
+	Status NormallNotNull();	
+	/*
+		If times is a null pointer, the access and modification times of the file shall be set to the current time. The effective user ID of
+		the process shall match  the  owner of the file, or the process has write permission to the file or has appropriate privileges, to
+		use utime() in this manner.
+	*/
 	Status NormallNull();
-	Status ErrAccess1();
-	Status ErrAccess2();
-	Status ErrAccess3();
-	Status ErrAccess4();
+	/*
+		Search  permission  is  denied by a component of the path prefix, the times argument is a null pointer and the effective user ID of
+		the process does not match the owner of the file, the process does not have write permission for the file, the process does not have
+		appropriate privileges
+	*/
+	Status ErrAccess();
+	
+	/*
+		A loop exists in symbolic links encountered during resolution of the path argument.
+	*/
 	Status ErrLoop();
+	/*
+		The length of the path argument exceeds {PATH_MAX}
+	*/
 	Status ErrNameTooLong1();
+	/*
+		 a pathname component is longer than {NAME_MAX}
+	*/
 	Status ErrNameTooLong2();
+	/*
+		A component of path does not name an existing file
+	*/
 	Status ErrNoEnt1();
+	/*
+		path is an empty string.
+	*/
 	Status ErrNoEnt2();
+	/*
+		A component of the path prefix is not a directory.
+	*/
 	Status ErrNotDir();
+	/*
+		The times argument is not a null pointer and the calling process' effective user ID does not match the owner of the file and the
+		calling process  does  not  have the appropriate privileges.
+	*/
 	Status ErrPerm();
 	   
 protected:
