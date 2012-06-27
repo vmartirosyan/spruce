@@ -27,6 +27,8 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/chmod)
 ADD_SUBDIRECTORY(chown)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/chown)
 
+
+
 ADD_SUBDIRECTORY(ioctl)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/ioctl)
 
@@ -113,6 +115,8 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/utime)
 # Suren
 
 # Gurgen
+ADD_SUBDIRECTORY(fchmod)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/fchmod)
 
 # Ruzanna
 
@@ -162,7 +166,7 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 						# Suren
 
 						# Gurgen
-
+						${CMAKE_CURRENT_SOURCE_DIR}/fchmod/Fchmod.cpp	
 						# Ruzanna
 
 						# Ani

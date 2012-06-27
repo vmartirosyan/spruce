@@ -30,6 +30,7 @@
 #include "Openat.hpp"
 #include "Linkat.hpp"
 #include "Readlink.hpp"
+
 #include "Xattr.hpp"
 #include <config.hpp>
 #include <time.h>
@@ -43,7 +44,7 @@
 // Suren
 
 // Gurgen
-
+#include "Fchmod.hpp"
 // Ruzanna
 
 // Ani
@@ -96,7 +97,7 @@ int main(int argc, char ** argv)
 		// Suren
 		
 		// Gurgen
-		
+			Configuration<Fchmod> fchmodConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fchmod.conf");		
 		// Ruzanna
 		
 		// Ani
@@ -143,7 +144,7 @@ int main(int argc, char ** argv)
 		// Suren
 		
 		// Gurgen
-		
+		TestCollection fchmodTests = fchmodConf.Read();
 		// Ruzanna
 		
 		// Ani
@@ -191,7 +192,7 @@ int main(int argc, char ** argv)
 		// Suren
 		
 		// Gurgen
-		
+		tests.Merge(fchmodTests);
 		// Ruzanna
 		
 		// Ani
