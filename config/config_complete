@@ -1,0 +1,6 @@
+modules=syscall;
+fs=ext4
+partition=/dev/sda4
+browser=opera
+logfolder=/tmp
+mount_opts=
