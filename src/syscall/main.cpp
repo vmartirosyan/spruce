@@ -46,6 +46,7 @@
 // Gurgen
 #include "Fchmod.hpp"
 #include "Sync.hpp"
+#include "Fchown.hpp"
 // Ruzanna
 
 // Ani
@@ -101,6 +102,7 @@ int main(int argc, char ** argv)
 		// Gurgen
 			Configuration<Fchmod> fchmodConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fchmod.conf");
 			Configuration<Sync> syncConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/sync.conf");		
+			Configuration<Fchown> fchownConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fchown.conf");		
 		// Ruzanna
 		
 		// Ani
@@ -149,6 +151,7 @@ int main(int argc, char ** argv)
 		// Gurgen
 		TestCollection fchmodTests = fchmodConf.Read();
 		TestCollection syncTests = syncConf.Read();
+		TestCollection fchownTests = fchownConf.Read();
 		// Ruzanna
 		
 		// Ani
@@ -198,6 +201,7 @@ int main(int argc, char ** argv)
 		// Gurgen
 		tests.Merge(fchmodTests);
 		tests.Merge(syncTests);
+		tests.Merge(fchownTests);
 		// Ruzanna
 		
 		// Ani

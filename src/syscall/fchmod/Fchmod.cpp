@@ -117,7 +117,7 @@ Status Fchmod::PermissionsTest(int open_mode)
 		
 		if(ret_fchmod == -1)
 		{
-			cerr << "Chmod  failed: Aborting test "<<strerror(errno);
+			cerr << "Fchmod  failed: Aborting test "<<strerror(errno);
 			return Unres;
 		}
 		
