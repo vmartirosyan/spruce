@@ -213,6 +213,10 @@ install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/utime.conf"
 install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/fchmod.conf"
 			DESTINATION share/spruce/config
 			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)	
+			
+install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/sync.conf"
+			DESTINATION share/spruce/config
+			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)	
 # Ruzanna
 
 # Ani

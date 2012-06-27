@@ -45,6 +45,7 @@
 
 // Gurgen
 #include "Fchmod.hpp"
+#include "Sync.hpp"
 // Ruzanna
 
 // Ani
@@ -85,6 +86,7 @@ int main(int argc, char ** argv)
 		Configuration<ReadlinkTest> readlinkConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/readlink.conf");
 		Configuration<Openat> openatConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/openat.conf");
 		Configuration<Open> openConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/open.conf");
+		
 		Configuration<LinkatTest> linkatConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/linkat.conf");
 		Configuration<Xattr> xattrConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/xattr.conf");
 		
@@ -97,7 +99,8 @@ int main(int argc, char ** argv)
 		// Suren
 		
 		// Gurgen
-			Configuration<Fchmod> fchmodConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fchmod.conf");		
+			Configuration<Fchmod> fchmodConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fchmod.conf");
+			Configuration<Sync> syncConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/sync.conf");		
 		// Ruzanna
 		
 		// Ani
@@ -145,6 +148,7 @@ int main(int argc, char ** argv)
 		
 		// Gurgen
 		TestCollection fchmodTests = fchmodConf.Read();
+		TestCollection syncTests = syncConf.Read();
 		// Ruzanna
 		
 		// Ani
@@ -193,6 +197,7 @@ int main(int argc, char ** argv)
 		
 		// Gurgen
 		tests.Merge(fchmodTests);
+		tests.Merge(syncTests);
 		// Ruzanna
 		
 		// Ani

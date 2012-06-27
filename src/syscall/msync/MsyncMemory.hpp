@@ -38,7 +38,7 @@ class MsyncMemoryTest: public SyscallTest
 {
 public:
 	MsyncMemoryTest(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "sync")
+		SyscallTest(mode, operation, arguments, "msync")
 	{			
 	}
 	
