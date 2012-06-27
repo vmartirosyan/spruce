@@ -208,7 +208,9 @@ install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/utime.conf"
 			DESTINATION share/spruce/config
 			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)	
 # Suren
-
+install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/bdflush.conf"
+			DESTINATION share/spruce/config
+			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
 # Gurgen
 install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/fchmod.conf"
 			DESTINATION share/spruce/config

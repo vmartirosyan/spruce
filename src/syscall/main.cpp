@@ -42,7 +42,7 @@
 // Vahram
 #include "Utime.hpp"
 // Suren
-
+#include "Bdflush.hpp"
 // Gurgen
 #include "Fchmod.hpp"
 #include "Sync.hpp"
@@ -97,7 +97,7 @@ int main(int argc, char ** argv)
 		// Vahram
 		Configuration<UtimeTest> utimeConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/utime.conf");
 		// Suren
-		
+		Configuration<BdFlushTest> bdflushConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/bdflush.conf");
 		// Gurgen
 			Configuration<Fchmod> fchmodConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fchmod.conf");
 			Configuration<Sync> syncConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/sync.conf");		
@@ -145,7 +145,7 @@ int main(int argc, char ** argv)
 		// Vahram
 		TestCollection utimeTests = utimeConf.Read();
 		// Suren
-		
+		TestCollection bdflushTest = bdflushConf.Read();
 		// Gurgen
 		TestCollection fchmodTests = fchmodConf.Read();
 		TestCollection syncTests = syncConf.Read();
@@ -194,7 +194,7 @@ int main(int argc, char ** argv)
 		// Vahram
 		tests.Merge(utimeTests);
 		// Suren
-		
+		tests.Merge(bdflushTest);
 		// Gurgen
 		tests.Merge(fchmodTests);
 		tests.Merge(syncTests);

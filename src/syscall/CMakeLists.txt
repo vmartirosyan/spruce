@@ -113,6 +113,8 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/chdir)
 ADD_SUBDIRECTORY(utime)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/utime)	
 # Suren
+ADD_SUBDIRECTORY(bdflush)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/bdflush)
 
 # Gurgen
 ADD_SUBDIRECTORY(fchmod)
@@ -167,7 +169,7 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 						# Vahram
 						${CMAKE_CURRENT_SOURCE_DIR}/utime/Utime.cpp	
 						# Suren
-
+						${CMAKE_CURRENT_SOURCE_DIR}/bdflush/Bdflush.cpp
 						# Gurgen
 						${CMAKE_CURRENT_SOURCE_DIR}/fchmod/Fchmod.cpp	
 						${CMAKE_CURRENT_SOURCE_DIR}/sync/Sync.cpp	
