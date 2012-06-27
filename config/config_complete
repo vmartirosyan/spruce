@@ -1,6 +1,6 @@
 modules=syscall;
-fs=ext4
-partition=/dev/sda6
-browser=opera
+fs=xfs
+partition=/dev/sda3
+browser=firefox
 logfolder=/tmp
 mount_opts=
