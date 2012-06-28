@@ -41,6 +41,7 @@
 #include "chdir.hpp"
 // Vahram
 #include "Utime.hpp"
+#include "Access.hpp"
 // Suren
 
 // Gurgen
@@ -94,6 +95,7 @@ int main(int argc, char ** argv)
 		Configuration<Chdir> chdirConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/chdir.conf");			
 		// Vahram
 		Configuration<UtimeTest> utimeConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/utime.conf");
+		Configuration<AccessTest> accessConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/access.conf");
 		// Suren
 		
 		// Gurgen
@@ -141,6 +143,7 @@ int main(int argc, char ** argv)
 		TestCollection chdirTests = chdirConf.Read();		
 		// Vahram
 		TestCollection utimeTests = utimeConf.Read();
+		TestCollection accessTests = accessConf.Read();
 		// Suren
 		
 		// Gurgen
@@ -189,6 +192,7 @@ int main(int argc, char ** argv)
 		tests.Merge(chdirTests);		
 		// Vahram
 		tests.Merge(utimeTests);
+		tests.Merge(accessTests);
 		// Suren
 		
 		// Gurgen
@@ -209,3 +213,4 @@ int main(int argc, char ** argv)
 	cerr << "<Syscalls>\n" << res.ToXML() << "</Syscalls>" << endl;
 	
 }
+
