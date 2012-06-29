@@ -52,7 +52,7 @@ int MsyncMemoryTest:: MsyncTest(vector<string> args)
 	int status = Success;
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		char * buff = (char *)"abc";
 		if(write(fd, buff, strlen(buff)) == -1)
@@ -101,7 +101,7 @@ int MsyncMemoryTest:: MsyncErrEINVALTest(vector<string> args)
 	int status = Success;
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		char * buff = (char *)"abc";
 		if(write(fd, buff, strlen(buff)) == -1)
@@ -148,7 +148,7 @@ int MsyncMemoryTest:: MsyncErrENOMEMTest(vector<string> args)
 	int status = Success;
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		int length = 3;	
 		void * addr = mmap(0, length, PROT_READ, MAP_PRIVATE, fd, 0);
@@ -168,7 +168,7 @@ int MsyncMemoryTest:: MsyncErrENOMEMTest(vector<string> args)
 			cerr << "ENOMEM error expected: the indicated memory was not mapped";
 			status = Fail;			
 		}			
-				
+
 	}
 	catch(Exception ex)
 	{

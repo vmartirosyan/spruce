@@ -66,7 +66,7 @@ int MlockMemoryTest:: MlockTest(vector<string> args)
 {
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		int prot = PROT_READ;
 		int flags = MAP_PRIVATE;
@@ -104,7 +104,7 @@ int MlockMemoryTest:: MlockErrEINVALTest(vector<string> args)
 {
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		size_t length = 3;
 		int prot = PROT_READ;
@@ -160,7 +160,7 @@ int MlockMemoryTest:: MlockErrENOMEMTest(vector<string> args)
 			status = Unres;		
 		}
 		
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		size_t length = 3;
 		int prot = PROT_READ;
@@ -198,7 +198,7 @@ int MlockMemoryTest:: MunlockTest(vector<string> args)
 {
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		size_t length = 3;
 		int prot = PROT_READ;
@@ -231,7 +231,7 @@ int MlockMemoryTest:: MunlockErrEINVALTest(vector<string> args)
 {
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		size_t length = 3;
 		int prot = PROT_READ;
@@ -274,7 +274,7 @@ int MlockMemoryTest:: MlockallTest(vector<string> args)
 {
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		int prot = PROT_READ;
 		int flags = MAP_PRIVATE ;
@@ -314,7 +314,7 @@ int MlockMemoryTest:: MlockallErrEINVALTest(vector<string> args)
 {
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		size_t length = 3;
 		int prot = PROT_READ;
@@ -346,7 +346,7 @@ int MlockMemoryTest:: MunlockallTest(vector<string> args)
 {
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		size_t length = 3;
 		int prot = PROT_READ;

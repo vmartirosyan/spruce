@@ -145,7 +145,7 @@ Status fcntlFD::dupFileDescriptor()
 
 	try
 	{
-		File file( "test_", 0777, O_RDWR );
+		File file( "test_", 0777, O_RDWR | O_CREAT );
 		fd = file.GetFileDescriptor();
 		if( (new_fd = fcntl(fd, F_DUPFD, _arg)) == -1 )
 		{
@@ -492,7 +492,7 @@ Status fcntlFD::fcntlFDSetLockWithWaitFunction()
 
 	try
 	{
-		File file( filename, 0777, O_RDWR );
+		File file( filename, 0777, O_RDWR  | O_CREAT );
 		fd = file.GetFileDescriptor();
 	
 		//setting flock structure
@@ -729,7 +729,7 @@ Status fcntlFD::fcntlFDBadFileDescriptor1Func()
 	
 	try
 	{
-		File file( filename, 0777, O_RDONLY );
+		File file( filename, 0777, O_RDONLY | O_CREAT );
 		fd = file.GetFileDescriptor();
 	
 		//setting flock structure
