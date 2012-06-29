@@ -40,8 +40,8 @@ public:
 		stringstream str;
 		str << rand();
 		
-		return "<Ext4FS Name=\"" + _syscallName + "\" Id=\"" + str.str() + " \">" + TestResult::ToXML() + 
-			"\n\t" +  "</Ext4FS>";
+		return "<Item Name=\"" + _syscallName + "\" Id=\"" + str.str() + " \">" + TestResult::ToXML() + 
+			"\n\t" +  "</Item>";
 	}
 protected:
 	string _syscallName;

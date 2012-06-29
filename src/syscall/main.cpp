@@ -231,7 +231,7 @@ int main(int argc, char ** argv)
     
 	TestResultCollection res = tests.Run();
 	
-	cerr << "<Syscalls>\n" << res.ToXML() << "</Syscalls>" << endl;
+	cerr << "<Module Name=\"Syscall\">\n" << res.ToXML() << "</Module>" << endl;
 	
 }
 

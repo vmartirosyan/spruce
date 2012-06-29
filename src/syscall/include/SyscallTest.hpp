@@ -43,8 +43,8 @@ class SyscallTestResult : public TestResult
 			stringstream str;
 			str << rand();
 			
-			return "<SysCall Name=\"" + _syscallName + "\" Id=\"" + str.str() + " \">" + TestResult::ToXML() + 
-				"\n\t" +  "</SysCall>";
+			return "<Item Name=\"" + _syscallName + "\" Id=\"" + str.str() + " \">" + TestResult::ToXML() + 
+				"\n\t" +  "</Item>";
 		}
 	protected:
 		string _syscallName;

@@ -80,7 +80,7 @@ int main(int argc, char ** argv)
 	
 	TestResultCollection res = tests.Run();
 	
-	cout << res.ToXML() << endl;
+	cout << "<Module Name=\"Ext4\">\n\t" << res.ToXML() << "\n</Module>" << endl;
 	
 	/*TestResultCollection res2 = tests2.Run();
 	
