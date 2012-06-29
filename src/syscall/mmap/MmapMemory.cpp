@@ -71,7 +71,7 @@ int MmapMemoryTest:: MmapTest(vector<string> args)
 {
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file", S_IRUSR | S_IWUSR, O_RDWR | O_CREAT);
 		int fd = file.GetFileDescriptor();
 		char * buff = (char *)"abc";
 		if(write(fd, buff, strlen(buff)) == -1)
@@ -112,7 +112,7 @@ int MmapMemoryTest:: MmapErrEINVALTest(vector<string> args)
 	int status = Success;	
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file", S_IRUSR | S_IWUSR, O_RDWR | O_CREAT);
 		int fd = file.GetFileDescriptor();
 
 		void * addr = 0;
@@ -185,7 +185,7 @@ int MmapMemoryTest:: MmapErrEACCESTest(vector<string> args)
 	
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_WRONLY);
+		File file("file", S_IRUSR | S_IWUSR, O_WRONLY | O_CREAT);
 		int fd = file.GetFileDescriptor();
 		void * addr = 0;
 		size_t length = 10;
@@ -220,7 +220,7 @@ int MmapMemoryTest:: MunmapTest(vector<string> args)
 {
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file", S_IRUSR | S_IWUSR, O_RDWR | O_CREAT);
 		int fd = file.GetFileDescriptor();
 		
 		size_t length = 3;
@@ -255,7 +255,7 @@ int MmapMemoryTest:: MunmapErrTest(vector<string> args)
 	int status = Success;
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file", S_IRUSR | S_IWUSR, O_RDWR | O_CREAT);
 		int fd = file.GetFileDescriptor();
 		size_t length = 3;
 		int prot = PROT_READ;
@@ -295,7 +295,7 @@ int MmapMemoryTest:: MremapTest(vector<string> args)
 {
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file", S_IRUSR | S_IWUSR, O_RDWR | O_CREAT);
 		int fd = file.GetFileDescriptor();
 		char * buff = (char *)"abc";
 		if(write(fd, buff, strlen(buff)) == -1)
@@ -344,7 +344,7 @@ int MmapMemoryTest:: MremapErrEINVALTest(vector<string> args)
 	
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file", S_IRUSR | S_IWUSR, O_RDWR | O_CREAT);
 		int fd = file.GetFileDescriptor();
 		size_t length = 3;
 		int prot = PROT_READ;
@@ -399,7 +399,7 @@ int MmapMemoryTest:: Mmap2Test(vector<string> args)
 {	
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file", S_IRUSR | S_IWUSR, O_RDWR | O_CREAT);
 		int fd = file.GetFileDescriptor();
 		char * buff = (char *)"abc";
 		if(write(fd, buff, strlen(buff)) == -1)
@@ -441,7 +441,7 @@ int MmapMemoryTest:: Mmap2ErrEINVALTest(vector<string> args)
 	
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file", S_IRUSR | S_IWUSR, O_RDWR | O_CREAT);
 		int fd = file.GetFileDescriptor();
 		void * addr = 0;
 		size_t length = 10;
@@ -510,7 +510,7 @@ int MmapMemoryTest:: Mmap2ErrEACCESTest(vector<string> args)
 	int status = Success;
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_WRONLY);
+		File file("file", S_IRUSR | S_IWUSR, O_WRONLY | O_CREAT);
 		int fd = file.GetFileDescriptor();
 		void * addr = 0;
 		size_t length = 10;
