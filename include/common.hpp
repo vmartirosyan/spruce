@@ -46,6 +46,7 @@ enum Status
 	Shallow,
 	Fail,
 	Unres,
+	Fatal,
 	Timeout,
 	Signaled,
 	Unsupported,
