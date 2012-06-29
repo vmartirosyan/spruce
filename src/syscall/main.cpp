@@ -44,6 +44,7 @@
 #include "Access.hpp"
 #include "Fstat.hpp"
 #include "Statfs.hpp"
+#include "Fstatfs.hpp"
 // Suren
 #include "Bdflush.hpp"
 // Gurgen
@@ -103,6 +104,7 @@ int main(int argc, char ** argv)
 		Configuration<AccessTest> accessConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/access.conf");
 		Configuration<FstatTest> fstatConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fstat.conf");
 		Configuration<StatfsTest> statfsConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/statfs.conf");
+		Configuration<FstatfsTest> fstatfsConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fstatfs.conf");
 		// Suren
 		Configuration<BdFlushTest> bdflushConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/bdflush.conf");
 		// Gurgen
@@ -155,6 +157,7 @@ int main(int argc, char ** argv)
 		TestCollection accessTests = accessConf.Read();
 		TestCollection fstatTests = fstatConf.Read();
 		TestCollection statfsTests = statfsConf.Read();
+		TestCollection fstatfsTests = fstatfsConf.Read();
 		// Suren
 		TestCollection bdflushTest = bdflushConf.Read();
 		// Gurgen
@@ -208,6 +211,7 @@ int main(int argc, char ** argv)
 		tests.Merge(accessTests);
 		tests.Merge(fstatTests);
 		tests.Merge(statfsTests);
+		tests.Merge(fstatfsTests);
 		// Suren
 		tests.Merge(bdflushTest);
 		// Gurgen

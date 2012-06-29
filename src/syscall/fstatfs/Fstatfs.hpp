@@ -1,4 +1,4 @@
-//      Statfs.hpp
+//      Fstatfs.hpp
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -20,63 +20,46 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#ifndef STATFS_H
-#define STATFS_H
+#ifndef FSTATFS_H
+#define FSTATFS_H
 
 #include <sys/types.h>
 #include "SyscallTest.hpp"
 #include <sys/vfs.h>
-#include <linux/limits.h>
-
-// Operations
-enum StatfsOps
-{
-	StatfsNormalFunc,
-	StatfsErrAccess,
-	StatfsErrFault,
-	StatfsErrLoop,
-	StatfsErrNameTooLong,
-	StatfsErrNoEnt,
-	StatfsErrNotDir	
-};
 
 using std::map;
 using std::pair;
 
-class StatfsTest : public SyscallTest
+// Operations
+enum FstatfsOps
+{
+	FstatfsNormalFunc,
+	FstatfsErrBadf
+};
+
+class FstatfsTest : public SyscallTest
 {			
 public:	
-	StatfsTest(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "statfs")
+	FstatfsTest(Mode mode, int operation, string arguments = "") :
+		SyscallTest(mode, operation, arguments, "fstatfs")
 	{
 		FileSystemTypesMap["ext4"] = 0xEF53; //EXT4_SUPER_MAGIC;
 		FileSystemTypesMap["btrfs"] = -1; // does not support?
 		FileSystemTypesMap["xfs"] = 0x58465342; //XFS_SUPER_MAGIC;
 		FileSystemTypesMap["jfs"] = 0x3153464a; //JFS_SUPER_MAGIC
-		MountAt = "";
-		if ( getenv("MountAt") )
-			MountAt = getenv("MountAt");
 		FileSystem = "";
 		if ( getenv("FileSystem") )
 			FileSystem = getenv("FileSystem");
 	}
 	
 	Status NormalFunc();
-	Status ErrAccess();
-	Status ErrFault();
-	Status ErrLoop();
-	Status ErrNameTooLong();
-	Status ErrNoEnt();
-	Status ErrNotDir();
+	Status ErrBadf();
 	   
 protected:
 	virtual int Main(vector<string> args);	
-	map<string, int> FileSystemTypesMap;
-	string MountAt;
+	map<string, int> FileSystemTypesMap;	
 	string FileSystem;
-	
 };
 #endif
-
 
 
