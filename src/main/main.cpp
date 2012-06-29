@@ -177,12 +177,15 @@ int main(int argc, char ** argv)
 		cerr << "Notice. No browser specified. Using " << browser << " as default." << endl;
 	}
 	
+	//mkdir((logfolder + "/xslt").c_str(), 0700);
+	
 	// A small hack for firefox to overcome a security problem
 	// Copy the transformation file to the log folder	
 	vector<string> args;
 	
 	args.push_back("cp");
-	args.push_back("${CMAKE_INSTALL_PREFIX}/share/spruce/config/processor.xslt");
+	args.push_back("-r");
+	args.push_back("${CMAKE_INSTALL_PREFIX}/share/spruce/config/xslt/");
 	args.push_back(logfolder);
 	
 	UnixCommand copy("cp");
@@ -207,7 +210,7 @@ int main(int argc, char ** argv)
 	{
 		stringstream str;
 		str << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n\
-			<?xml-stylesheet type=\"application/xml\" href=\"" << logfolder << "/processor.xslt\"?>\n\
+			<?xml-stylesheet type=\"application/xml\" href=\"" << logfolder << "/xslt/processor.xslt\"?>\n\
 			<SpruceLog>";
 			
 		
@@ -277,14 +280,17 @@ int main(int argc, char ** argv)
 		setenv("Partition", partition.c_str(), 1);
 		setenv("FileSystem", (*fs).c_str(), 1);
 		
+		str << "<FS Name=\"" << *fs << "\" >";
+		
 		for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
 		{
 			cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
 			UnixCommand command(( (string)("${CMAKE_INSTALL_PREFIX}/bin/" + (*module)).c_str()));
 			//auto_ptr<ProcessResult> result(command.Execute());
 			ProcessResult * result(command.Execute());
-			str << "<FS Name=\"" << *fs << "\" />" << result->GetOutput() << endl;
+			str << result->GetOutput() << endl;
 		}
+		str << "</FS>";
 		
 		str << "</SpruceLog>";
 		// Forward the output to the log file	

@@ -40,8 +40,8 @@ public:
 		stringstream str;
 		str << rand();
 		
-		return "<JFS Name=\"" + _syscallName + "\" Id=\"" + str.str() + " \">" + TestResult::ToXML() + 
-			"\n\t" +  "</JFS>";
+		return "<Item Name=\"" + _syscallName + "\" Id=\"" + str.str() + " \">" + TestResult::ToXML() + 
+			"\n\t" +  "</Item>";
 	}
 protected:
 	string _syscallName;

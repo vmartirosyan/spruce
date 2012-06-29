@@ -48,8 +48,6 @@ int main(int argc, char ** argv)
 		MountPoint = getenv("MountAt");
 	
 	
-	cout << "Executing JFS tests for " << MountPoint << " (" << DeviceName << ")" << endl;
-	
 	Configuration<JFSIoctlTest> conf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/jfs.conf");
 	//Configuration<Ext4IoctlTest> conf("/home/vmartirosyan/workspace/spruce/config/ext4fs.conf");
 	
@@ -57,5 +55,5 @@ int main(int argc, char ** argv)
 	
 	TestResultCollection res = tests.Run();
 	
-	cout << res.ToXML() << endl;
+	cout << "<Module Name=\"jfs\">" << res.ToXML() << "</Module>" << endl;
 }
