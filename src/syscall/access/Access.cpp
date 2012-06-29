@@ -82,7 +82,13 @@ Status AccessTest::NormalFunc()
 {
 	try
 	{
-		File f("some_file", S_IROTH | S_IWOTH | S_IXOTH );
+		File f("some_file");
+		
+		if ( chmod("some_file", 0777) == -1 )
+		{
+			cerr << "Cannot set permission flags on file. Error: " << strerror(errno);
+			return Unres;
+		}
 		
 		struct stat buf;
 		stat("some_file", &buf);
