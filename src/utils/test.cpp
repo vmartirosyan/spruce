@@ -32,6 +32,7 @@ char * StatusMessages[] = {
 	(char * )"Shallow",
 	(char * )"Failed",
 	(char * )"Unresolved",
+	(char * )"Fatal",
 	(char * )"Timeout",
 	(char * )"Signaled",
 	(char * )"Unsupported",
@@ -66,7 +67,13 @@ TestResultCollection TestCollection::Run()
 		
 	for ( unsigned int index = 0 ; index < _tests.size(); ++index)
 	{
-		Results.AddResult( (TestResult *)_tests[index]->Execute() );
+		TestResult * res = (TestResult *)_tests[index]->Execute();
+		Results.AddResult( res );
+		
+		// If Fatal error has rised quit!
+		if ( res->GetStatus() == Fatal )
+			break;
+		
 		//delete _tests[index];
 	}	
 	
