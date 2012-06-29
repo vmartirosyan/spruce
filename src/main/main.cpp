@@ -226,6 +226,8 @@ int main(int argc, char ** argv)
 		args.push_back(partition);		
 		if ( *fs == "xfs" || *fs == "jfs" ) //Force if necessary
 			args.push_back("-f");
+		if ( *fs == "ext4" )
+			args.push_back("-F");
 		ProcessResult * res;
 		res = mkfs.Execute(args);
 		if ( res->GetStatus() != Success )
