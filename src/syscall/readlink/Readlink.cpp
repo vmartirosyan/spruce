@@ -75,7 +75,7 @@ int ReadlinkTest:: ReadlinkSyscallTest(vector<string> args)
 	const char * slink = "slinkfile";
 	try
 	{		
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		if(symlink(file.GetPathname().c_str(), slink) != 0)
 		{
 			cerr << "System call symlink failed: " << strerror(errno);
@@ -109,7 +109,7 @@ int ReadlinkTest:: ReadlinkErrEINVALTest(vector<string> args)
 	const char * slink = "slinkfile";
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		if(symlink(file.GetPathname().c_str(), slink) != 0)
 		{
 			cerr << "System call symlink failed: " << strerror(errno);
@@ -147,7 +147,7 @@ int ReadlinkTest:: ReadlinkErrENOTDIRTest(vector<string> args)
 	const char * slink = "slinkfile";
 	try
 	{		
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		if(symlink(file.GetPathname().c_str(), slink) != 0)
 		{
 			cerr << "System call symlink failed: " << strerror(errno);
@@ -208,7 +208,7 @@ int ReadlinkTest:: ReadlinkatSyscallTest(vector<string> args)
 	
 	try
 	{		
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		if(symlink(file.GetPathname().c_str(), (dirPathname + "/" + slink).c_str()) != 0)
 		{
 			cerr << "System call symlink failed: " << strerror(errno);
@@ -263,7 +263,7 @@ int ReadlinkTest:: ReadlinkatErrEINVALTest(vector<string> args)
 	
 	try
 	{
-		File file((dirPathname + "/" + fileName).c_str(), S_IRUSR | S_IWUSR, O_RDWR);
+		File file((dirPathname + "/" + fileName).c_str());
 		if(symlink(file.GetPathname().c_str(), (dirPathname + "/" + slink).c_str()) != 0)
 		{
 			cerr << "System call symlink failed: " << strerror(errno);
@@ -309,7 +309,7 @@ int ReadlinkTest:: ReadlinkatErrEBADFTest(vector<string> args)
 	try
 	{
 		int dirfd = -1;		
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		if(symlink(file.GetPathname().c_str(), slink) != 0  && errno != EEXIST)
 		{
 			cerr << "System call symlink failed: " << strerror(errno);
@@ -342,7 +342,7 @@ int ReadlinkTest:: ReadlinkatErrENOTDIRTest(vector<string> args)
 	const char * slink = "slinkfile";
 	try
 	{		
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int dirfd = file.GetFileDescriptor();
 		if(symlink(file.GetPathname().c_str(), slink) != 0)
 		{
@@ -410,7 +410,7 @@ int ReadlinkTest:: SymlinkTest(vector<string> args)
 	const char * slink = "slinkfile";
 	try
 	{		
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		if(symlink(file.GetPathname().c_str(), slink) != 0)
 		{
 			cerr << "System call symlink failed: " << strerror(errno);
@@ -444,7 +444,7 @@ int ReadlinkTest:: SymlinkErrEACCESTest(vector<string> args)
 	try
 	{
 		const char * slink = "symlinkFolder/slinkfile2";
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		
 		if(uid == 0)
 		{
@@ -499,7 +499,7 @@ int ReadlinkTest:: SymlinkErrEEXISTTest(vector<string> args)
 	const char * slink = "slinkfile";
 	try
 	{		
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		if(symlink(file.GetPathname().c_str(), slink) != 0)
 		{
 			cerr << "System call symlink failed: " << strerror(errno);
@@ -531,7 +531,7 @@ int ReadlinkTest:: SymlinkErrENOENTTest(vector<string> args)
 	{
 		const char * slink = "dir/slinkfile";
 		const char * slink1 = "slinkfile";
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		if(symlink(file.GetPathname().c_str(), slink) != -1  || errno != ENOENT)
 		{
 			cerr << "ENOENT error expected: a directory component in newpath does not exist";
@@ -562,7 +562,7 @@ int ReadlinkTest:: SymlinkErrENOTDIRTest(vector<string> args)
 {
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		const char * slink = "file/slinkfile";
 		if(symlink(file.GetPathname().c_str(), slink) != -1  || errno != ENOTDIR)
 		{

@@ -41,6 +41,7 @@
 #include "chdir.hpp"
 // Vahram
 #include "Utime.hpp"
+#include "Access.hpp"
 // Suren
 #include "Bdflush.hpp"
 // Gurgen
@@ -97,6 +98,7 @@ int main(int argc, char ** argv)
 		Configuration<Chdir> chdirConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/chdir.conf");			
 		// Vahram
 		Configuration<UtimeTest> utimeConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/utime.conf");
+		Configuration<AccessTest> accessConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/access.conf");
 		// Suren
 		Configuration<BdFlushTest> bdflushConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/bdflush.conf");
 		// Gurgen
@@ -146,6 +148,7 @@ int main(int argc, char ** argv)
 		TestCollection chdirTests = chdirConf.Read();		
 		// Vahram
 		TestCollection utimeTests = utimeConf.Read();
+		TestCollection accessTests = accessConf.Read();
 		// Suren
 		TestCollection bdflushTest = bdflushConf.Read();
 		// Gurgen
@@ -196,6 +199,7 @@ int main(int argc, char ** argv)
 		tests.Merge(chdirTests);		
 		// Vahram
 		tests.Merge(utimeTests);
+		tests.Merge(accessTests);
 		// Suren
 		tests.Merge(bdflushTest);
 		// Gurgen
@@ -218,3 +222,4 @@ int main(int argc, char ** argv)
 	cerr << "<Syscalls>\n" << res.ToXML() << "</Syscalls>" << endl;
 	
 }
+

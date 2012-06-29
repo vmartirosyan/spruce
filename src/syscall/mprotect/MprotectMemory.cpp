@@ -51,7 +51,7 @@ int MprotectMemoryTest:: MprotectTest(vector<string> args)
 	int status = Success;
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		char * buff = (char *)"abc";
 		if(write(fd, buff, strlen(buff)) == -1)
@@ -92,7 +92,7 @@ int MprotectMemoryTest:: MprotectErrEACCESTest(vector<string> args)
 	int status = Success;
 	try
 	{
-		File file1("file1", S_IRUSR | S_IWUSR, O_RDONLY);
+		File file1("file1", S_IRUSR | S_IWUSR, O_RDONLY | O_CREAT);
 		int fd = file1.GetFileDescriptor();
 		size_t length = 3;
 		int prot = PROT_READ;
@@ -125,7 +125,7 @@ int MprotectMemoryTest:: MprotectErrENOMEMTest(vector<string> args)
 {
 	try
 	{
-		File file("file", S_IRUSR | S_IWUSR, O_RDWR);
+		File file("file");
 		int fd = file.GetFileDescriptor();
 		int length = 3;	
 		void * addr = mmap(0, length, PROT_READ, MAP_PRIVATE, fd, 0);
