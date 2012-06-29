@@ -42,6 +42,8 @@
 // Vahram
 #include "Utime.hpp"
 #include "Access.hpp"
+#include "Fstat.hpp"
+#include "Statfs.hpp"
 // Suren
 #include "Bdflush.hpp"
 // Gurgen
@@ -99,6 +101,8 @@ int main(int argc, char ** argv)
 		// Vahram
 		Configuration<UtimeTest> utimeConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/utime.conf");
 		Configuration<AccessTest> accessConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/access.conf");
+		Configuration<FstatTest> fstatConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fstat.conf");
+		Configuration<StatfsTest> statfsConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/statfs.conf");
 		// Suren
 		Configuration<BdFlushTest> bdflushConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/bdflush.conf");
 		// Gurgen
@@ -149,6 +153,8 @@ int main(int argc, char ** argv)
 		// Vahram
 		TestCollection utimeTests = utimeConf.Read();
 		TestCollection accessTests = accessConf.Read();
+		TestCollection fstatTests = fstatConf.Read();
+		TestCollection statfsTests = statfsConf.Read();
 		// Suren
 		TestCollection bdflushTest = bdflushConf.Read();
 		// Gurgen
@@ -200,6 +206,8 @@ int main(int argc, char ** argv)
 		// Vahram
 		tests.Merge(utimeTests);
 		tests.Merge(accessTests);
+		tests.Merge(fstatTests);
+		tests.Merge(statfsTests);
 		// Suren
 		tests.Merge(bdflushTest);
 		// Gurgen

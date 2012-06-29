@@ -273,6 +273,7 @@ int main(int argc, char ** argv)
 		// Before executing the modules prepare the environment
 		setenv("MountAt", MountAt.c_str(), 1);
 		setenv("Partition", partition.c_str(), 1);
+		setenv("FileSystem", (*fs).c_str(), 1);
 		
 		for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
 		{
