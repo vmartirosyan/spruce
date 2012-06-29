@@ -114,6 +114,10 @@ ADD_SUBDIRECTORY(utime)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/utime)	
 ADD_SUBDIRECTORY(access)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/access)	
+ADD_SUBDIRECTORY(fstat)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/fstat)	
+ADD_SUBDIRECTORY(statfs)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/statfs)
 # Suren
 ADD_SUBDIRECTORY(bdflush)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/bdflush)
@@ -174,6 +178,8 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 						# Vahram
 						${CMAKE_CURRENT_SOURCE_DIR}/utime/Utime.cpp	
 						${CMAKE_CURRENT_SOURCE_DIR}/access/Access.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/fstat/Fstat.cpp
+						${CMAKE_CURRENT_SOURCE_DIR}/statfs/Statfs.cpp
 						# Suren
 						${CMAKE_CURRENT_SOURCE_DIR}/bdflush/Bdflush.cpp
 						# Gurgen
