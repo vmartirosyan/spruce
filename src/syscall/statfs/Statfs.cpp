@@ -79,7 +79,7 @@ Status StatfsTest::NormalFunc()
 	
 	if ( buf.f_type != FileSystemTypesMap[FileSystem] )
 	{
-		cerr << "statfs returned wrong FS type:";
+		cerr << "statfs returned wrong FS type: " << buf.f_type;
 		return Fail;
 	}
 	return Success;

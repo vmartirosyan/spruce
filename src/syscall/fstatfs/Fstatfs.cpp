@@ -1,4 +1,4 @@
-//      Fstat.cpp
+//      Fstatfs.cpp
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -20,19 +20,19 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include <Fstat.hpp>
+#include <Fstatfs.hpp>
 #include "File.hpp"
 #include "Directory.hpp"
 
-int FstatTest::Main(vector<string>)
+int FstatfsTest::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{	
 		switch (_operation)
 		{
-			case FstatNormalFunc:
+			case FstatfsNormalFunc:
 				return NormalFunc();
-			case FstatErrBadf:
+			case FstatfsErrBadf:
 				return ErrBadf();
 			default:
 				cerr << "Unsupported operation.";
@@ -43,33 +43,44 @@ int FstatTest::Main(vector<string>)
 	return Success;
 }
 
-Status FstatTest::NormalFunc()
+Status FstatfsTest::NormalFunc()
 {
 	try
 	{	
-		File f("some_file", S_IRUSR, O_CREAT | O_RDONLY);
+		if ( FileSystem == "" )
+		{
+			cerr << "FileSyste env variables is not defined";
+			return Unres;
+		}
 		
+		if ( FileSystemTypesMap[FileSystem] == -1 )
+		{
+			cerr << "fstatfs is not supported by " << FileSystem;
+			return Unsupported;
+		}
+		
+		File f("some_file");
 		int fd = f.GetFileDescriptor();
+		
 		if ( fd == -1 )
 		{
 			cerr << "Cannot obtain file descriptor. Error: " << strerror(errno);
 			return Unres;
 		}
 		
-		struct stat buf;
+		struct statfs buf;
 		
-		if ( fstat(fd, &buf) != 0 )
+		if ( fstatfs(fd, &buf) != 0 )
 		{
-			cerr << "fstat failed. Error : " << strerror(errno);
+			cerr << "fstatfs failed. Error: " << strerror(errno);
 			return Fail;
 		}
 		
-		if ( buf.st_mode & 0777 != S_IRUSR )
+		if ( buf.f_type != FileSystemTypesMap[FileSystem] )
 		{
-			cerr << "fstat returned another file mode.";
+			cerr << "fstatfs returned wrong FS type: " << buf.f_type;
 			return Fail;
 		}
-		
 		return Success;
 	}
 	catch (Exception e)
@@ -79,11 +90,11 @@ Status FstatTest::NormalFunc()
 	}	
 	return Unsupported;
 }
-Status FstatTest::ErrBadf()
+Status FstatfsTest::ErrBadf()
 {
-	if ( fstat(-1, NULL) != -1 && errno != EBADF )
+	if ( fstatfs(-1, NULL) != -1 && errno != EBADF )
 	{
-		cerr << "fstat should return EBADF but did not. Error : " << strerror(errno);
+		cerr << "fstatfs should return EBADF but did not. Error : " << strerror(errno);
 		return Fail;
 	}
 	return Success;
