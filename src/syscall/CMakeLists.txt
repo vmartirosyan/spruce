@@ -120,6 +120,8 @@ ADD_SUBDIRECTORY(statfs)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/statfs)
 ADD_SUBDIRECTORY(fstatfs)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/fstatfs)
+ADD_SUBDIRECTORY(truncate)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/truncate)
 # Suren
 ADD_SUBDIRECTORY(bdflush)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/bdflush)
@@ -178,11 +180,12 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 						# Gio
 						${CMAKE_CURRENT_SOURCE_DIR}/chdir/chdir.cpp	
 						# Vahram
-						${CMAKE_CURRENT_SOURCE_DIR}/utime/Utime.cpp	
-						${CMAKE_CURRENT_SOURCE_DIR}/access/Access.cpp	
-						${CMAKE_CURRENT_SOURCE_DIR}/fstat/Fstat.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/statfs/Statfs.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/fstatfs/Fstatfs.cpp
+						${CMAKE_CURRENT_BINARY_DIR}/utime/Utime.cpp	
+						${CMAKE_CURRENT_BINARY_DIR}/access/Access.cpp	
+						${CMAKE_CURRENT_BINARY_DIR}/fstat/Fstat.cpp
+						${CMAKE_CURRENT_BINARY_DIR}/statfs/Statfs.cpp
+						${CMAKE_CURRENT_BINARY_DIR}/fstatfs/Fstatfs.cpp
+						${CMAKE_CURRENT_BINARY_DIR}/truncate/Truncate.cpp
 						# Suren
 						${CMAKE_CURRENT_SOURCE_DIR}/bdflush/Bdflush.cpp
 						# Gurgen
