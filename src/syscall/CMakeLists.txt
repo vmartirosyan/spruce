@@ -122,6 +122,8 @@ ADD_SUBDIRECTORY(fstatfs)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/fstatfs)
 ADD_SUBDIRECTORY(truncate)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/truncate)
+ADD_SUBDIRECTORY(ftruncate)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/ftruncate)
 # Suren
 ADD_SUBDIRECTORY(bdflush)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/bdflush)
@@ -186,6 +188,7 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 						${CMAKE_CURRENT_BINARY_DIR}/statfs/Statfs.cpp
 						${CMAKE_CURRENT_BINARY_DIR}/fstatfs/Fstatfs.cpp
 						${CMAKE_CURRENT_BINARY_DIR}/truncate/Truncate.cpp
+						${CMAKE_CURRENT_BINARY_DIR}/ftruncate/Ftruncate.cpp
 						# Suren
 						${CMAKE_CURRENT_SOURCE_DIR}/bdflush/Bdflush.cpp
 						# Gurgen

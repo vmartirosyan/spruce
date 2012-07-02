@@ -226,6 +226,9 @@ install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/fstatfs.conf"
 install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/truncate.conf"
 			DESTINATION share/spruce/config
 			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)	
+install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/ftruncate.conf"
+			DESTINATION share/spruce/config
+			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)	
 # Suren
 install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/bdflush.conf"
 			DESTINATION share/spruce/config
