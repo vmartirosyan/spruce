@@ -23,8 +23,7 @@
 #ifndef SYSCALL_TEST_H
 #define SYSCALL_TEST_H
 
-//#include <test.hpp>
-#include "/home/vmartirosyan/workspace/spruce/include/test.hpp"
+#include <test.hpp>
 #include <stdlib.h>
 #include <sstream>
 using std::stringstream;
