@@ -32,8 +32,11 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include <iostream>
 
 using std::string;	
+using std::cerr;
+using std::endl;
 
 // Class representing a linux file system file
 // Example usage:
@@ -62,20 +65,19 @@ class File
 		~File()
 		{
 			try
-			{				
+			{
+				close(_fd);
+				
 				if ( (_flags & O_CREAT) &&  (unlink(_pathname.c_str()) != 0) )
 				{
 					throw Exception("Cannot delete file " + _pathname + 
 					". Error : " + (string)strerror(errno));
 				}
-				if (close(_fd) != 0)
-				{
-					throw Exception("Cannot close file descriptor for " + _pathname + 
-					". Error : " + (string)strerror(errno));
-				}
+				
 			}
-			catch (...)
+			catch (Exception e)
 			{
+				cerr << "Cannot remove file " << _pathname << ". Error : " << e.GetMessage() << endl;				
 			}
 		}
 		string GetPathname() const 

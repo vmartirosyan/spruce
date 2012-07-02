@@ -108,15 +108,15 @@ Status TruncateTest::NormalIncreaseSize()
 		}
 		
 		
-		// Ensuze the trailing NULLs are there.
-		char * buf_read = new char[length_after_truncate];
-		if ( read(fd, buf_read, length_after_truncate) != length_after_truncate )
+		// Ensure the trailing NULLs are there.
+		char buf_read;
+		if ( read(fd, &buf_read, 1) != 1 )
 		{
-			cerr << "Cannot read " << length_after_truncate << " bytes from truncated file";
+			cerr << "Cannot read 1 byte from truncated file";
 			return Fail;
 		}
 		
-		if ( buf_read[length_after_truncate - 1] != '\0' )
+		if ( buf_read != '\0' )
 		{
 			cerr << "After truncation file was not filled with NULLs.";
 			return Fail;
@@ -206,6 +206,12 @@ Status TruncateTest::ErrAccess()
 		{
 			cerr << "truncate should return EACCES error code but it did not. Error: " << strerror(errno);
 			return Fail;
+		}
+		
+		// Restore the user id to root
+		if ( seteuid(0) == -1 )
+		{
+			cerr << "Cannot set the effective user ID to nobody. Error: " << strerror(errno);			
 		}
 		
 		return Success;

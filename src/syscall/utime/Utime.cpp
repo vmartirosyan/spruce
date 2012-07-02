@@ -176,6 +176,12 @@ Status UtimeTest::ErrAccess()
 			return Fail;
 		}
 		
+		// Restore the user id to root
+		if ( seteuid(0) == -1 )
+		{
+			cerr << "Cannot set the effective user ID to nobody. Error: " << strerror(errno);			
+		}
+		
 		return Success;
 	}
 	catch (Exception e)
@@ -320,6 +326,12 @@ Status UtimeTest::ErrPerm()
 		{
 			cerr << "utime should return EPERM error code but it did not. Error: " << strerror(errno);
 			return Fail;
+		}
+		
+		// Restore the user id to root
+		if ( seteuid(0) == -1 )
+		{
+			cerr << "Cannot set the effective user ID to nobody. Error: " << strerror(errno);			
 		}
 		
 		return Success;
