@@ -45,6 +45,7 @@
 #include "Fstat.hpp"
 #include "Statfs.hpp"
 #include "Fstatfs.hpp"
+#include "Truncate.hpp"
 // Suren
 #include "Bdflush.hpp"
 // Gurgen
@@ -105,6 +106,7 @@ int main(int argc, char ** argv)
 		Configuration<FstatTest> fstatConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fstat.conf");
 		Configuration<StatfsTest> statfsConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/statfs.conf");
 		Configuration<FstatfsTest> fstatfsConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fstatfs.conf");
+		Configuration<TruncateTest> truncateConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/truncate.conf");
 		// Suren
 		Configuration<BdFlushTest> bdflushConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/bdflush.conf");
 		// Gurgen
@@ -158,6 +160,7 @@ int main(int argc, char ** argv)
 		TestCollection fstatTests = fstatConf.Read();
 		TestCollection statfsTests = statfsConf.Read();
 		TestCollection fstatfsTests = fstatfsConf.Read();
+		TestCollection truncateTests = truncateConf.Read();
 		// Suren
 		TestCollection bdflushTest = bdflushConf.Read();
 		// Gurgen
@@ -212,6 +215,7 @@ int main(int argc, char ** argv)
 		tests.Merge(fstatTests);
 		tests.Merge(statfsTests);
 		tests.Merge(fstatfsTests);
+		tests.Merge(truncateTests);
 		// Suren
 		tests.Merge(bdflushTest);
 		// Gurgen
