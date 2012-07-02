@@ -43,6 +43,7 @@
 #include <errno.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
+#include <stdlib.h>
 
 using std::ifstream;
 using std::ofstream;
