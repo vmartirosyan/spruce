@@ -92,11 +92,7 @@ Status AccessTest::NormalFunc()
 		
 		struct stat buf;
 		stat("some_file", &buf);
-		
-		cerr << "Others may read: " << (buf.st_mode & S_IROTH) << endl;
-		cerr << "Others may write: " << (buf.st_mode & S_IWOTH) << endl;
-		cerr << "Others may execute: " << (buf.st_mode & S_IXOTH) << endl;
-		
+			
 		struct passwd * nobody = getpwnam("nobody");
 		
 		if ( nobody == NULL )
@@ -107,7 +103,7 @@ Status AccessTest::NormalFunc()
 		
 		if ( setuid(nobody->pw_uid) == -1 )
 		{
-			cerr << "Cannot set the effective user ID to nobody. Error: " << strerror(errno);
+			cerr << "Cannot set the user ID to nobody. Error: " << strerror(errno);
 			return Unres;
 		}
 		
@@ -127,6 +123,12 @@ Status AccessTest::NormalFunc()
 		{
 			cerr << "Execution permission is granted but access returns error: " << strerror(errno);
 			return Fail;
+		}
+		
+		// Restore the user id to root
+		if ( setuid(0) == -1 )
+		{
+			cerr << "Cannot set the user ID to nobody. Error: " << strerror(errno);			
 		}
 		
 		return Success;
