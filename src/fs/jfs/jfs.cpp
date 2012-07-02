@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <config.hpp>
+#include <stdlib.h>
 
 string DeviceName = "";
 string MountPoint = "";

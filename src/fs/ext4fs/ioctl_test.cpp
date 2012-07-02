@@ -501,7 +501,13 @@ Status Ext4IoctlTest::TestGroupAdd()
 
 Status Ext4IoctlTest::TestMigrate()
 {
-	//if ( umount2( MountPoint.c_str(), MNT_FORCE ) == -1 )
+	if ( chdir ("/") == -1 )
+	{
+		cerr << "Cannot change directory. Error : " << strerror(errno);
+		return Unres;
+	}
+	
+	//if ( umount2( MountPoint.c_str(), MNT_FORCE ) == -1 )	
 	if ( umount( MountPoint.c_str() ) == -1 )
 	{
 		cerr << "Cannot unmount " << MountPoint << ". Error: " << strerror(errno);		
