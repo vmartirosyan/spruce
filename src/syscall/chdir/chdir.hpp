@@ -36,7 +36,8 @@ enum ChdirOperations
 	CHDIR_ERR_ENOMEM,
 	CHDIR_ERR_ENOTDIR,
 	
-	CHDIR_ERR_EBADF
+	CHDIR_ERR_EBADF,
+	CHDIR_NORMAL_FUNC
 
 };
 
@@ -46,17 +47,22 @@ public:
 	Chdir(Mode mode, int operation, string arguments = "") :
 		SyscallTest(mode, operation, arguments, "chdir")
 	{			
+		long size;
+		_cwd = NULL;
+		size = pathconf(".", _PC_PATH_MAX);
+
+		if ((_cwd = (char *)malloc((size_t)size)) != NULL)
+			_cwd = getcwd(_cwd, (size_t)size);
 	}
 	virtual ~Chdir() {}	
-	/*Status Chmod_S_IRWXU();	
-	Status PermissionsTest(int open_mode);
-	Status ErrEfault();*/
-	
 	Status ChdirTooLongPath();
 	Status ChdirFileNotExist();
 	Status ChdirIsNotDirectory();
+	Status ChdirNormalFunc();
+	Status ChdirLoopInSymLink();
 
 protected:
 	virtual int Main(vector<string> args);	
+	char *_cwd;
 };
 #endif
