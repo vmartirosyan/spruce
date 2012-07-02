@@ -24,6 +24,7 @@
 #define DIRECTORY_H
 
 #include "exception.hpp"
+#include "UnixCommand.hpp"
 #include <string>
 #include <stdlib.h>
 #include <unistd.h>
@@ -31,6 +32,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <iostream>
+using std::cerr;
 
 using std::string;	
 
@@ -47,6 +50,7 @@ class Directory
 		_mode(mode),
 		_flags(flags)
 		{
+			//cerr<<"Creating directory "<<_pathname;
 			if (mkdir(_pathname.c_str(), _mode) == -1)
 			{								
 				throw Exception("Cannot create directory " + _pathname + 
@@ -63,19 +67,26 @@ class Directory
 		{			
 			try
 			{
-				if (rmdir(_pathname.c_str()) != 0)
+				close(_fd);
+				
+				//cerr<<"Removing directory "<<_pathname;
+				//if (rmdir(_pathname.c_str()) != 0) Does not work in case of non-empty directories...
+				UnixCommand rm("rm");
+				vector<string> args;
+				args.push_back("-r");
+				args.push_back(_pathname);				
+				
+				ProcessResult * res = rm.Execute(args);
+				
+				if ( res->GetStatus() != Success )
 				{
-					throw Exception("Cannot delete directory " + _pathname + 
-					": error = " + static_cast<string>(strerror(errno)));
+					throw Exception("Cannot delete directory " + _pathname + ". " + res->GetOutput());
 				}
-				if (close(_fd) != 0)
-				{
-					throw Exception("Cannot close file descriptor for " + _pathname + 
-					": error = " + static_cast<string>(strerror(errno)));
-				}
+								
 			}
-			catch (...)
+			catch (Exception ex)
 			{
+				//cerr<<ex.GetMessage();
 			}
 		}
 		
