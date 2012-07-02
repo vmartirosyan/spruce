@@ -48,9 +48,10 @@ class File
 		_flags(flags)
 		{	
 			// Remove the file first
-			if ( access(pathname.c_str(), F_OK ) == 0 )
-				if ( unlink(pathname.c_str())  == -1 )
-					throw Exception("File " + _pathname + " exists but cannot be removed. Error : " + strerror(errno) );
+			if ( _flags & O_CREAT )
+				if ( access(pathname.c_str(), F_OK ) == 0 )
+					if ( unlink(pathname.c_str())  == -1 )
+						throw Exception("File " + _pathname + " exists but cannot be removed. Error : " + strerror(errno) );
 			_fd = open(pathname.c_str(), _flags, _mode);
 			if (_fd == -1)
 			{								
@@ -59,7 +60,7 @@ class File
 			}
 		}
 		~File()
-		{			
+		{
 			try
 			{				
 				if ( (_flags & O_CREAT) &&  (unlink(_pathname.c_str()) != 0) )
