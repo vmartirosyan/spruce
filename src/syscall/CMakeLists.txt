@@ -105,7 +105,8 @@ ADD_SUBDIRECTORY(xattr)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/xattr)
 
 # Karen
-		
+ADD_SUBDIRECTORY(mount_umount)
+INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/mount_umount)
 # Gio
 ADD_SUBDIRECTORY(chdir)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src/syscall/chdir)				
@@ -178,7 +179,7 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_BINARY_DIR}/main.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/readlink/Readlink.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/xattr/Xattr.cpp
 						# Karen
-		
+						${CMAKE_CURRENT_SOURCE_DIR}/mount_umount/Mount_Umount.cpp		
 						# Gio
 						${CMAKE_CURRENT_SOURCE_DIR}/chdir/chdir.cpp	
 						# Vahram

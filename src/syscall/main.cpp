@@ -36,7 +36,7 @@
 #include <time.h>
 
 // Karen
-		
+#include "Mount_Umount.hpp"
 // Gio
 #include "chdir.hpp"
 // Vahram
@@ -98,7 +98,7 @@ int main(int argc, char ** argv)
 		Configuration<Xattr> xattrConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/xattr.conf");
 		
 		// Karen
-				
+		Configuration<Mount_Umount> mount_umountConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/mount_umount.conf");
 		// Gio
 		Configuration<Chdir> chdirConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/chdir.conf");			
 		// Vahram
@@ -153,7 +153,7 @@ int main(int argc, char ** argv)
 		TestCollection xattrTests = xattrConf.Read();
 		
 		// Karen
-				
+		TestCollection mount_umountTests = mount_umountConf.Read();
 		// Gio
 		TestCollection chdirTests = chdirConf.Read();		
 		// Vahram
@@ -209,7 +209,7 @@ int main(int argc, char ** argv)
 		tests.Merge(xattrTests);
 		
 		// Karen
-				
+		tests.Merge(mount_umountTests);		
 		// Gio
 		tests.Merge(chdirTests);		
 		// Vahram
