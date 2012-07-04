@@ -202,13 +202,13 @@ Status Chdir::ChdirNormalFunc()
 			cwd = getcwd(cwd, (size_t)size);
 		if(cwd == NULL)
 		{
-			cerr << "Can not read changed working directory. "<<strerror(errno);
+			cerr << "Cannot read changed working directory. "<<strerror(errno);
 			return Unres;
 		}
 		
 		if(strcmp(cwd, dirPath.c_str()) != 0)
 		{
-			cerr << "Directory changes error ";
+			cerr << "Directory change error ";
 			return Fail;
 		}
 		
