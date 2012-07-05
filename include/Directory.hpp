@@ -95,7 +95,7 @@ class Directory
 			return _pathname;
 		}
 		
-		int GetdirectoryDescriptor() const
+		int GetDirectoryDescriptor() const
 		{
 			return _fd;
 		}
