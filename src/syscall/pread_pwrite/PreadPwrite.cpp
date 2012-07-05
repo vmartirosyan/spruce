@@ -92,7 +92,7 @@ Status PreadPwrite::PreadPwriteBasicFunc1()
 	try {
 		File file("testfile.txt");
 			
-		size_t fd = open("testfile.txt", O_RDWR);
+		int fd = file.GetFileDescriptor();
 		
 		string writeBuf = "Something to write!!!";
 		ssize_t write_status = pwrite(fd, writeBuf.c_str(), BYTES_COUNT, OFFSET);
@@ -134,7 +134,7 @@ Status PreadPwrite::PreadPwriteBasicFunc2()
 	try {
 		File file("testfile.txt");
 			
-		size_t fd = open("testfile.txt", O_RDWR);
+		int fd = file.GetFileDescriptor();
 		
 		string writeBuf = "write with offset";
 		write(fd, writeBuf.c_str(), 2*BYTES_COUNT);
@@ -203,7 +203,7 @@ Status PreadPwrite::PreadBadfdErrorFunc1()
 	{
 		File file("testfile.txt", S_IWUSR);
 		
-		size_t fd = open("testfile.txt", O_WRONLY);
+		int fd = file.GetFileDescriptor();
 		close(fd);
 
 		ssize_t status = pread(fd, buf, BYTES_COUNT, OFFSET);
@@ -246,7 +246,7 @@ Status PreadPwrite::PreadBadfdErrorFunc3()
 	{
 		File file("testfile.txt", S_IWUSR);
 		
-		size_t fd = open("testfile.txt", O_WRONLY);
+		int fd = file.GetFileDescriptor();
 		close(fd);
 
 		ssize_t status = pread(fd, buf, BYTES_COUNT, OFFSET);
@@ -270,9 +270,9 @@ Status PreadPwrite::PreadEfaultErrorFunc()
 {
 	try
 	{
-		File file("testfile.txt");
+		File file("testfile.txt", S_IRUSR, O_CREAT | O_RDONLY);
 		
-		size_t fd = open("testfile.txt", O_RDONLY);
+		int fd = file.GetFileDescriptor();
 
 		ssize_t status = pread(fd, reinterpret_cast<void *>(-1), BYTES_COUNT, OFFSET);
 		if (errno != EFAULT || status != -1)
@@ -298,7 +298,7 @@ Status PreadPwrite::PreadEinvalErrorFunc1()
 	try
 	{
 		File file("testfile.txt");
-		size_t fd = open("testfile.txt", O_RDWR);
+		int fd = file.GetFileDescriptor();
 		
 		ssize_t status = pread(fd, buf, BYTES_COUNT, -1);
 		if (errno != EINVAL || status != -1)
@@ -323,7 +323,7 @@ Status PreadPwrite::PreadEinvalErrorFunc2()
 	try
 	{
 		File file("testfile.txt");
-		size_t fd = open("testfile.txt", O_RDWR);
+		int fd = file.GetFileDescriptor();
 		
 		ssize_t status = pread(fd, buf, BYTES_COUNT, std::numeric_limits<off_t>::max() + 1);
 		if (errno != EINVAL || status != -1)
@@ -350,7 +350,7 @@ Status PreadPwrite::PreadIsdirErrorFunc()
 		return Unres;
 	}
 	
-	size_t fd = open("directory", O_DIRECTORY);
+	int fd = open("directory", O_DIRECTORY);
 	if (fd == -1)
 	{
 		cerr << strerror(errno);
@@ -384,9 +384,9 @@ Status PreadPwrite::PwriteBadfdErrorFunc1()
 	
 	try
 	{
-		File file("testfile.txt");
+		File file("testfile.txt", S_IWUSR, O_CREAT | O_RDONLY);
 		
-		size_t fd = open("testfile.txt", O_RDONLY);
+		int fd = file.GetFileDescriptor();
 
 		ssize_t status = pwrite(fd, buf, BYTES_COUNT, OFFSET);
 		if (errno != EBADF || status != -1)
@@ -426,9 +426,9 @@ Status PreadPwrite::PwriteBadfdErrorFunc3()
 	
 	try
 	{
-		File file("testfile.txt", S_IWUSR);
+		File file("testfile.txt", S_IWUSR, O_CREAT | O_WRONLY);
 		
-		size_t fd = open("testfile.txt", O_WRONLY);
+		int fd = file.GetFileDescriptor();
 		close(fd);
 
 		ssize_t status = pwrite(fd, buf, BYTES_COUNT, OFFSET);
@@ -452,9 +452,9 @@ Status PreadPwrite::PwriteEfaultErrorFunc()
 {
 	try
 	{
-		File file("testfile.txt");
+		File file("testfile.txt", S_IWUSR, O_CREAT | O_WRONLY);
 		
-		size_t fd = open("testfile.txt", O_WRONLY);
+		int fd = file.GetFileDescriptor();
 
 		ssize_t status = pwrite(fd, reinterpret_cast<void *>(-1), BYTES_COUNT, OFFSET);
 		
@@ -505,7 +505,7 @@ Status PreadPwrite::PwriteEinvalErrorFunc1()
 	try
 	{
 		File file("testfile.txt");
-		size_t fd = open("testfile.txt", O_RDWR);
+		int fd = file.GetFileDescriptor();
 		
 		ssize_t status = pwrite(fd, buf, BYTES_COUNT, -1);
 		if (errno != EINVAL || status != -1)
@@ -530,7 +530,7 @@ Status PreadPwrite::PwriteEinvalErrorFunc2()
 	try
 	{
 		File file("testfile.txt");
-		size_t fd = open("testfile.txt", O_RDWR);
+		int fd = file.GetFileDescriptor();
 		
 		ssize_t status = pwrite(fd, buf, BYTES_COUNT, std::numeric_limits<off_t>::max() + 1);
 		if (errno != EINVAL || status != -1)

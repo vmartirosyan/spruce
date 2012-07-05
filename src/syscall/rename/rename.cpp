@@ -273,17 +273,17 @@ Status RenameTest::RenameGeneralTest2()
 	try
 	{
 		File file1("old");
-		File file2("new");
-		int status = open("new", O_RDWR);
-		if (status == -1)
+		int fd2;
+		if ( ( fd2 = open("new", O_CREAT, S_IRUSR | S_IWUSR) ) == -1 )
 		{
-			cerr << strerror(errno);
+			cerr << "Cannot create file 'new'. Error: " << strerror(errno);
 			return Unres;
 		}
+		close(fd2);
+		int fd1 = file1.GetFileDescriptor();
 		
-		int fd1 = status;
 		string message = "message";
-		status = write(fd1, message.c_str(), 7);
+		ssize_t status = write(fd1, message.c_str(), message.size());
 		if (status == -1)
 		{
 			cerr << strerror(errno);
@@ -291,11 +291,6 @@ Status RenameTest::RenameGeneralTest2()
 		}
 		close(fd1);
 				
-		int fd2 = open("new", O_RDWR);
-		char getText[100];
-		status = read(fd2, getText, 7);
-		close(fd2);
-		
 		status = rename("old", "new");
 		if (status == -1)
 		{
@@ -303,9 +298,20 @@ Status RenameTest::RenameGeneralTest2()
 			return Fail;
 		}
 		
+		unlink("old");
+		
+		if ( ( fd2 = open("new", O_RDONLY) ) == -1 )
+		{
+			cerr << "Cannot open file 'new'. Error: " << strerror(errno);
+			return Unres;
+		}
+		char getText[7];
+		status = read(fd2, getText, 7);
+		close(fd2);
+		unlink("new");
 		if (strncmp(getText, message.c_str(), message.size()) != 0)
 		{
-			cerr << "Error occured while renaming the existing file to its name, no error expected";
+			cerr << "Different data was read from the renamed file. " << getText;
 			return Fail;
 		}
 	}

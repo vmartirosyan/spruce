@@ -766,7 +766,7 @@ Status fcntlFD::fcntlFDBadFileDescriptor2Func()
 	int fd;
 	
 	//open and close file to make file descriptor invalid
-	if ( (fd =open( file,O_CREAT | O_RDWR )) == -1 )
+	if ( (fd =open( file,O_CREAT | O_RDWR, S_IRUSR | S_IWUSR )) == -1 )
 	{
 		cerr << "Error in opening file: "<<strerror(errno);
 		return Unres;

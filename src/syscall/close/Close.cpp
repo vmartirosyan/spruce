@@ -112,7 +112,7 @@ Status Close::CloseCorrectDescriptorUnlinkTest()
 	char buf[1024];
 	const char *pathname="testfile.txt";
 	int ret_val ;
-	int fd = open("testfile.txt", O_CREAT);
+	int fd = open("testfile.txt", O_CREAT, S_IRUSR);
 	
 	if( fd == -1)
 	{
@@ -134,7 +134,7 @@ Status Close::CloseCorrectDescriptorUnlinkTest()
 		return Unres;
 	}
 
-	int fd_new = open("testfile2.txt", O_CREAT);
+	int fd_new = open("testfile2.txt", O_CREAT, S_IRUSR);
 	if( fd_new== -1)
 	{
 		cerr << "Cannot create file: Aborting test "<<strerror(errno);
