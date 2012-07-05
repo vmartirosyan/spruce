@@ -144,7 +144,7 @@ Status ReadDirTest:: ReadDirTestBadAddress1Func()
 	try
 	{
 		Directory direct( dirname );
-		int fd = direct.GetdirectoryDescriptor();
+		int fd = direct.GetDirectoryDescriptor();
 		
 		//setting invalid(negative) value to the pointer 
 		if ( syscall( SYS_readdir, fd, -1, 0 ) != -1 )
@@ -176,7 +176,7 @@ Status  ReadDirTest:: ReadDirTestBadAddress2Func()
 	try
 	{
 		Directory direct( dirname );
-		int fd = direct.GetdirectoryDescriptor();
+		int fd = direct.GetDirectoryDescriptor();
 		
 		if ( syscall( SYS_readdir, fd, NULL, 0 ) != -1 )
 		{
@@ -278,7 +278,7 @@ Status ReadDirTest:: ReadDirTestNormalCaseFunc()
 	try
 	{
 		Directory direct( dirname );
-		fd = direct.GetdirectoryDescriptor();
+		fd = direct.GetDirectoryDescriptor();
 		
 		if ( syscall( SYS_readdir, fd, &dir, 0 ) == -1 )
 		{

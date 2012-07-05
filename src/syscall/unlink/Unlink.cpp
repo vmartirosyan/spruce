@@ -88,9 +88,10 @@ Status UnlinkTest::UnlinkTestNormalFileFunc ()
 		return Unres;
 	}
 	
-	if ( open( pathname, O_RDWR )!= -1 )
+	 // Check if file exists
+	if ( access( pathname, F_OK ) == 0 )
 	{
-		cerr<< " Error: opened unlinked file ";
+		cerr<< " Error: unlinked file still exists ";
 		return Fail;
 	}
     
@@ -162,17 +163,12 @@ Status UnlinkTest::UnlinkTestNoSuchFileFunc ()
 	int fd;
 	const char *pathname ="unlink.txt";
 	//checking: if file exists unlink it 
-	if ( fd = open( pathname, 0777 ) >= 0 )
+	if ( access ( pathname, F_OK ) == 0 )
 	{
-		if ( close( fd ) == -1 )
-		{
-			cerr << "Error in closing file :" <<strerror(errno);
-			return Unres;
-		}
 		if( unlink(pathname) == -1 )
 		{
 			cerr<<"Error in unlinking:"<< strerror(errno);
-			return Fail;
+			return Unres;
 		}	
 	}
 	//trying to unlink non existance file
@@ -342,8 +338,8 @@ Status UnlinkTest:: UnlinkTestNormalCaseFunc()
 			cerr << "Unlink failed: "<<strerror(errno);
 			return Fail;
 		}
-		
-		if( open( file.GetPathname().c_str(), O_RDWR ) == -1 )
+		// Check if file exists
+		if( access ( file.GetPathname().c_str(), F_OK ) == 0 )
 		{
 			cerr << "Unlink failed.";
 			return Fail;

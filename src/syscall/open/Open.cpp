@@ -82,7 +82,7 @@ Status Open::openTooLongPath()
 	
   const char* tooLongfilename="abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
 	
-	int ret_val = open(tooLongfilename, O_CREAT );
+	int ret_val = open(tooLongfilename, O_CREAT, S_IRUSR );
 				
 	if(ret_val != -1)
 	{
@@ -107,7 +107,7 @@ Status Open::openOutside()
 	int ret_val =0;		
 	
     //(char*)-1 is outside of our accessible address space
-	ret_val = open((char*)-1, O_CREAT );
+	ret_val = open((char*)-1, O_CREAT , S_IRUSR);
 	if(ret_val != -1)
 	{
 			cerr << "Open returned normal file decriptor when the pathname is outside of your acessible address space";
@@ -135,7 +135,7 @@ Status Open::openPathIsNotDir()
 	File file(filename, S_IRWXU);
 		
     //Тhe path component is not a directory	
-	ret_val = open("notadir/test.txt", O_CREAT );
+	ret_val = open("notadir/test.txt", O_CREAT, S_IRUSR );
 	
 	if(ret_val != -1)
 	{
@@ -188,7 +188,7 @@ Status Open::openLoopInSymLink()
    
 
 	//passing pathname with looping symbolic links .. expected to get ELOOP
-	ret_val = open(filePath.c_str(), O_CREAT );
+	ret_val = open(filePath.c_str(), O_CREAT, S_IRUSR );
    
     if (ret_val != -1) {
         cerr<<"Open should return -1 when we are passing pathname with looping symbolic links.";
@@ -241,7 +241,7 @@ Status Open::openNoAcces ()
     }
     
     
-	ret_val = open(filePath.c_str(), O_CREAT );
+	ret_val = open(filePath.c_str(), O_CREAT, S_IRUSR );
     
  
     if (ret_val != -1) {
@@ -262,7 +262,7 @@ Status Open::openPathCompIsNotDir()
 {
 	  const char* notrealDirInPath="/home/rrttvvzc43433/test.txt";
 	
-	int ret_val = open(notrealDirInPath, O_CREAT );
+	int ret_val = open(notrealDirInPath, O_CREAT, S_IRUSR );
 				
 	if(ret_val != -1)
 	{
@@ -288,7 +288,7 @@ Status Open::openPathAlreadyExist()
 	File file(filename, S_IRWXU);
 		
     //Тhe path already exist situation expected to get EEXSIST error
-	ret_val = open(filename, O_CREAT|O_EXCL);
+	ret_val = open(filename, O_CREAT|O_EXCL, S_IRUSR);
 	
 	if(ret_val != -1)
 	{
@@ -349,7 +349,7 @@ Status Open:: openMaxFileNumOpened()
     int max_files = getdtablesize();
     
     
-	open( filename ,O_CREAT );
+	open( filename ,O_CREAT, S_IRUSR );
     
 	for ( ind = 0; ind < max_files+1; ++ind )
 	{
@@ -477,7 +477,7 @@ Status Open::openPathisExecutable()
 Status Open::openNormal()
 {	
 	const char * filename = "openNormal.txt"	;	
-	int ret_val = open(filename,O_CREAT);
+	int ret_val = open(filename,O_CREAT, S_IRUSR);
 	if(ret_val==-1)
 	{
 			cerr << "open returned error in case of noraml filename."<<strerror(errno);

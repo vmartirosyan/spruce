@@ -204,9 +204,9 @@ Status ReadvWritev::ReadvBadfdErrorFunc1()
 	
 	try
 	{
-		File file("testfile.txt", S_IWUSR);
+		File file("testfile.txt", S_IWUSR, O_CREAT | O_WRONLY);
 		
-		size_t fd = open("testfile.txt", O_WRONLY);
+		int fd = file.GetFileDescriptor();
 
 		ssize_t status = readv(fd, iovAr, BUF_COUNT);
 		if (errno != EBADF || status != -1)
@@ -261,9 +261,9 @@ Status ReadvWritev::ReadvEfaultErrorFunc()
 	
 	try
 	{
-		File file("testfile.txt");
+		File file("testfile.txt", S_IRUSR, O_CREAT | O_RDONLY);
 		
-		size_t fd = open("testfile.txt", O_RDONLY);
+		int fd = file.GetFileDescriptor();
 
 		ssize_t status = readv(fd, iovAr, BUF_COUNT);
 		if (errno != EFAULT || status != -1)
@@ -327,7 +327,7 @@ Status ReadvWritev::ReadvEinvalErrorFunc2()
 	try
 	{
 		File file("testfile.txt");
-		size_t fd = open("testfile.txt", O_RDWR);
+		int fd = file.GetFileDescriptor();
 		
 		ssize_t status = readv(fd, iovAr, -1);
 		if (errno != EINVAL || status != -1)
@@ -402,7 +402,7 @@ Status ReadvWritev::ReadvEinvalErrorFunc4()
 	try
 	{
 		File file("testfile.txt");
-		size_t fd = open("testfile.txt", O_RDWR);
+		int fd = file.GetFileDescriptor();
 		
 		if(fd == -1)
 		{
@@ -493,11 +493,9 @@ Status ReadvWritev::WritevBadfdErrorFunc1()
 	
 	try
 	{
-		File file("testfile.txt");
+		File file("testfile.txt", S_IRUSR, O_CREAT | O_RDONLY);
 		
-		//string buf = "message";
-
-		size_t fd = open("testfile.txt", O_RDONLY);
+		int fd = file.GetFileDescriptor();
 
 		ssize_t status = writev(fd, iovAr, BUF_COUNT);
 		if (errno != EBADF || status != -1)
@@ -553,9 +551,9 @@ Status ReadvWritev::WritevEfaultErrorFunc()
 	
 	try
 	{
-		File file("testfile.txt");
+		File file("testfile.txt", S_IWUSR, O_CREAT | O_WRONLY);
 		
-		size_t fd = open("testfile.txt", O_WRONLY);
+		int fd = file.GetFileDescriptor();
 
 		ssize_t status = writev(fd, iovAr, BUF_COUNT);
 		
@@ -590,7 +588,7 @@ Status ReadvWritev::WritevEinvalErrorFunc1()
 	try
 	{
 		File file("testfile.txt");
-		size_t fd = open("testfile.txt", O_RDWR);
+		int fd = file.GetFileDescriptor();
 		
 		ssize_t status = writev(fd, iovAr, -1);
 		if (errno != EINVAL || status != -1)
@@ -623,7 +621,7 @@ Status ReadvWritev::WritevEinvalErrorFunc2()
 	try
 	{
 		File file("testfile.txt");
-		size_t fd = open("testfile.txt", O_RDWR);
+		int fd = file.GetFileDescriptor();
 		
 		ssize_t status = writev(fd, iovAr, IOV_MAX + 1);
 		if (errno != EINVAL || status != -1)
@@ -663,7 +661,7 @@ Status ReadvWritev::WritevEinvalErrorFunc3()
 	try
 	{
 		File file("testfile.txt");
-		size_t fd = open("testfile.txt", O_RDWR);
+		int fd = file.GetFileDescriptor();
 		
 		ssize_t status = writev(fd, iovAr, BUF_COUNT);
 		if (errno != EINVAL || status != -1)
