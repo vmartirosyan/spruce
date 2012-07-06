@@ -50,11 +50,8 @@ int BdFlushTest::Main(vector<string>)
 
 Status BdFlushTest::BdFlushPermuissionDenied()
 {	
-	
-
-	long addr=0;
 	int func=2;
-	int ret_val;
+	int ret_val = -1;
     struct passwd * noBody;
     
     // Change root to nobody
@@ -67,10 +64,8 @@ Status BdFlushTest::BdFlushPermuissionDenied()
         return Unres;
     }
     
-    ret_val=bdflush(func,ret_val);
-    
-    
- 
+    ret_val = bdflush(func,ret_val);
+     
     if (ret_val != -1) {
            cerr<<"bdflush should return -1 when caller does not have the CAP_SYS_ADMIN capability, but it returned 0";
        return Fail;

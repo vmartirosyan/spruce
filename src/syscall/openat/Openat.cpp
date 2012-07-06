@@ -120,7 +120,7 @@ Status Openat::openatOutside()
 {
 	
 	int ret_val =0;	
-	int dir_fd, fd;	
+	int dir_fd;	
 	
 	//(char*)-1 is outside of our accessible address space
     
@@ -194,7 +194,7 @@ Status Openat::openatPathIsNotDir()
 
 Status Openat::openatLoopInSymLink()
 {
-	int dir_fd, fd;
+	int dir_fd;
 	int ret_val =0;	
     string dirPath = this->_statDir + "/openat_loop_dir";
     string link1 = dirPath + "/link1";
@@ -259,7 +259,7 @@ Status Openat::openatNoAcces ()
     struct passwd * noBody;
     int ret_val;
     int dir_fd;
-    struct stat stat_buf;
+    //struct stat stat_buf;
     const int FILE_MODE = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
    
    
@@ -428,10 +428,10 @@ Status Openat::openatPathIsDir()
 
 Status Openat:: openatMaxFileNumOpened()
 {
-	int ind, fd,fd2;
-	int stat =0;
+	int ind, fd;
+	
 	int dir_fd;
-	pid_t pid;
+	
 	
 	const char* filename = "openatProcHasMax.txt";
     int max_files = getdtablesize();
@@ -486,7 +486,7 @@ Status Openat::openatNoSuchDev()
 {
 	
    
-    int  stat, ret_val, fd2 , dir_fd;
+    int  stat, ret_val, dir_fd;
     
 	const char * filename = "openatnodevtest";
 	
@@ -528,7 +528,7 @@ Status Openat::openatNoSuchDev()
 
 Status Openat ::openatNoDevWRBL()
 {
-	int stat, ret_val,fd2,dir_fd;
+	int stat, ret_val,dir_fd;
 	const char * filename = "openatnodevFIFOtest";
 	
     stat = mknod(filename, S_IFIFO | 0666, 0);
@@ -574,7 +574,7 @@ Status Openat ::openatNoDevWRBL()
 
 Status Openat::openatPathisExecutable()
 {
-	int ret_val = 0 , fd2 ,dir_fd;
+	int ret_val = 0 , dir_fd;
 	const char* filename = "${CMAKE_INSTALL_PREFIX}/bin/spruce";
 		
 	

@@ -96,7 +96,7 @@ Status PreadPwrite::PreadPwriteBasicFunc1()
 		
 		string writeBuf = "Something to write!!!";
 		ssize_t write_status = pwrite(fd, writeBuf.c_str(), BYTES_COUNT, OFFSET);
-		if (write_status == -1 || write_status != BYTES_COUNT)
+		if (write_status == -1 || write_status != (ssize_t)BYTES_COUNT)
 		{
 			cerr << "writev: " << strerror(errno);
 			return Fail;
@@ -104,7 +104,7 @@ Status PreadPwrite::PreadPwriteBasicFunc1()
 		
 		char readBuf[BUF_SIZE] = {'a'};
 		ssize_t read_status = pread(fd, readBuf, BYTES_COUNT, OFFSET);
-		if (read_status == -1 || read_status != BYTES_COUNT)
+		if (read_status == -1 || read_status != (ssize_t)BYTES_COUNT)
 		{
 			cerr << "pread: " << strerror(errno);
 			return Fail;
@@ -140,7 +140,7 @@ Status PreadPwrite::PreadPwriteBasicFunc2()
 		write(fd, writeBuf.c_str(), 2*BYTES_COUNT);
 		
 		ssize_t write_status = pwrite(fd, writeBuf.c_str(), BYTES_COUNT, 0);
-		if (write_status == -1 || write_status != BYTES_COUNT)
+		if (write_status == -1 || write_status != (ssize_t)BYTES_COUNT)
 		{
 			cerr << "writev: " << strerror(errno);
 			return Fail;
@@ -148,7 +148,7 @@ Status PreadPwrite::PreadPwriteBasicFunc2()
 		
 		char readBuf[BUF_SIZE] = {'a'};
 		ssize_t read_status = pread(fd, readBuf, BYTES_COUNT, OFFSET);
-		if (read_status == -1 || read_status != BYTES_COUNT)
+		if (read_status == -1 || read_status != (ssize_t)BYTES_COUNT)
 		{
 			cerr << "pread: " << strerror(errno);
 			return Fail;

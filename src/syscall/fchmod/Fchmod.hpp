@@ -58,7 +58,7 @@ public:
 	}
 	virtual ~Fchmod() {}	
 	
-	Status PermissionsTest(int open_mode);
+	Status PermissionsTest(mode_t open_mode);
 	Status FchmodBadFileDesc();
 
 

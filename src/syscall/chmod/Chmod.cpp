@@ -86,7 +86,7 @@ Status Chmod::ChmodIsNotDirectory()
 	const char *path="chmodTest.txt";
 	const char *pathNotDirectory = "chmodTest.txt/somthingelse" ;
 	int  ret_chmod;
-	struct stat mode;
+	//struct stat mode;
 		
 	try
 	{
@@ -200,7 +200,7 @@ Status Chmod::ChmodFileNotExist()
 
 
 
-Status Chmod::PermissionsTest(int open_mode)
+Status Chmod::PermissionsTest(mode_t open_mode)
 {
 
 	const char *path="chmodTest.txt";

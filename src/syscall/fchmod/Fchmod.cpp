@@ -95,11 +95,11 @@ Status Fchmod::FchmodBadFileDesc()
 			}
 			
 		}
-	
+	return Success;
 }
 
 
-Status Fchmod::PermissionsTest(int open_mode)
+Status Fchmod::PermissionsTest(mode_t open_mode)
 {
 
 	const char *path="FchmodTest.txt";

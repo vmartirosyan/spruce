@@ -97,7 +97,8 @@ Status StatfsTest::ErrAccess()
 			return Unres; 
 		}
 		
-		if ( statfs("some_dir/some_file", NULL) == 0 || errno != EACCES )
+		struct statfs buf;
+		if ( statfs("some_dir/some_file", &buf) == 0 || errno != EACCES )
 		{
 			cerr << "statfs should return EACCES error code but it did not. Error: " << strerror(errno);
 			return Fail;
@@ -117,7 +118,8 @@ Status StatfsTest::ErrFault()
 	{
 		File f("some_file");
 		
-		if ( statfs("some_file", NULL) == 0 || errno != EFAULT )
+		struct statfs buf;
+		if ( statfs("some_file", &buf) == 0 || errno != EFAULT )
 		{
 			cerr << "statfs should return EFAULT error code but it did not. Error: " << errno << " > " << strerror(errno);
 			return Fail;
@@ -154,7 +156,8 @@ Status StatfsTest::ErrLoop()
 			cerr << "Cannot create symlink on new_file. Error: " << strerror(errno);
 			return Unres;
 		}
-		int res = statfs("old_file", NULL);
+		struct statfs buf;
+		int res = statfs("old_file", &buf);
 		
 		unlink("new_file");
 		
@@ -178,7 +181,8 @@ Status StatfsTest::ErrNameTooLong()
 	for ( int i = 0; i < PATH_MAX; ++i )
 		filename += "a";
 		
-	if ( statfs(filename.c_str(), NULL) == 0 || errno != ENAMETOOLONG )
+	struct statfs buf;
+	if ( statfs(filename.c_str(), &buf) == 0 || errno != ENAMETOOLONG )
 	{
 		cerr << "statfs should return ENAMETOOLONG error code but it did not. Error: " << strerror(errno);
 		return Fail;
@@ -188,7 +192,8 @@ Status StatfsTest::ErrNameTooLong()
 }
 Status StatfsTest::ErrNoEnt()
 {
-	if ( statfs("non_existing_file", NULL) == 0 || errno != ENOENT )
+	struct statfs buf;
+	if ( statfs("non_existing_file", &buf) == 0 || errno != ENOENT )
 	{
 		cerr << "statfs should return ENOENT error code but it did not. Error: " << strerror(errno);
 		return Fail;
@@ -202,7 +207,8 @@ Status StatfsTest::ErrNotDir()
 	{
 		File f("not_a_dir_name");
 		
-		if ( statfs("not_a_dir_name/some_file", NULL) == 0 || errno != ENOTDIR )
+		struct statfs buf;
+		if ( statfs("not_a_dir_name/some_file", &buf) == 0 || errno != ENOTDIR )
 		{
 			cerr << "statfs should return ENOTDIR error code but it did not. Error: " << errno << " > " << strerror(errno);
 			return Fail;

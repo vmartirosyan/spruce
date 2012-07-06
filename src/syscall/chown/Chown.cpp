@@ -63,8 +63,8 @@ Status Chown::ChownTest()
 	struct stat mode;
 	struct passwd *nobody;
 	int ret ;
-	int user_uid;
-	int user_gid;
+	uid_t user_uid;
+	gid_t user_gid;
 		
 	try
 	{

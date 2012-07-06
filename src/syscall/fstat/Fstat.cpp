@@ -64,7 +64,7 @@ Status FstatTest::NormalFunc()
 			return Fail;
 		}
 		
-		if ( buf.st_mode & 0777 != S_IRUSR )
+		if ( ( buf.st_mode & 0777 ) != S_IRUSR )
 		{
 			cerr << "fstat returned another file mode.";
 			return Fail;
@@ -81,7 +81,8 @@ Status FstatTest::NormalFunc()
 }
 Status FstatTest::ErrBadf()
 {
-	if ( fstat(-1, NULL) != -1 && errno != EBADF )
+	struct stat buf;
+	if ( fstat(-1, &buf) != -1 && errno != EBADF )
 	{
 		cerr << "fstat should return EBADF but did not. Error : " << strerror(errno);
 		return Fail;

@@ -92,7 +92,8 @@ Status FstatfsTest::NormalFunc()
 }
 Status FstatfsTest::ErrBadf()
 {
-	if ( fstatfs(-1, NULL) != -1 && errno != EBADF )
+	struct statfs buf;
+	if ( fstatfs(-1, &buf) != -1 && errno != EBADF )
 	{
 		cerr << "fstatfs should return EBADF but did not. Error : " << strerror(errno);
 		return Fail;

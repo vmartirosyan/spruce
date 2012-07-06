@@ -139,7 +139,7 @@ Status ReadWriteFileTest::ReadEinvalErrorTest()
 	}
     
     char buf[1024];
-	size_t count = 0;
+
     ssize_t status = read(fd, buf, 0);
     
     if (errno != EINVAL || status != -1)
@@ -161,7 +161,7 @@ Status ReadWriteFileTest::ReadIsdirErrorTest()
 		return Unres;
 	}
 	
-	size_t fd = open("directory", O_DIRECTORY);
+	int fd = open("directory", O_DIRECTORY);
 	if (fd == -1)
 	{
 		cerr << strerror(errno);

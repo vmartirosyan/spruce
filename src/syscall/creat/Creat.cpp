@@ -257,7 +257,7 @@ Status CreatTest::CreatNoAcces ()
     string filePath = dirPath + "/creat_file";
     struct passwd * noBody;
     int ret_val;
-    struct stat stat_buf;
+    //struct stat stat_buf;
     const int FILE_MODE = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
    
    

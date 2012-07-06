@@ -111,7 +111,7 @@ Status ReadvWritev::ReadvWritevBasicFunc1()
 	
 		
 	ssize_t write_status = writev(pipefd[1], iovAr, BUF_COUNT);
-	if (write_status == -1 || write_status != writeBuf1.size() + writeBuf2.size())
+	if (write_status == -1 || write_status != (ssize_t)(writeBuf1.length() + writeBuf2.length()))
 	{
 		cerr << "writev: " << strerror(errno);
 		close(pipefd[0]);
@@ -126,7 +126,7 @@ Status ReadvWritev::ReadvWritevBasicFunc1()
 	iovAr[1].iov_len = writeBuf2.size();
 	
 	ssize_t read_status = readv(pipefd[0], iovAr, BUF_COUNT);
-	if (read_status == -1 || read_status != writeBuf1.size() + writeBuf2.size())
+	if (read_status == -1 || read_status != (ssize_t)(writeBuf1.length() + writeBuf2.length()))
 	{
 		cerr << "readv: " << strerror(errno);
 		close(pipefd[0]);
@@ -443,7 +443,7 @@ Status ReadvWritev::ReadvIsdirErrorFunc()
 		return Unres;
 	}
 	
-	size_t fd = open("directory", O_DIRECTORY);
+	int fd = open("directory", O_DIRECTORY);
 	if (fd == -1)
 	{
 		cerr << strerror(errno);

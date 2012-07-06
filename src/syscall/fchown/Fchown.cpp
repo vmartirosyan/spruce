@@ -63,8 +63,8 @@ Status Fchown::FchownTest()
 	struct stat mode;
 	struct passwd *nobody;
 	int ret ;
-	int user_uid;
-	int user_gid;
+	uid_t user_uid;
+	gid_t user_gid;
 	int fd;	
 	try
 	{
@@ -136,9 +136,9 @@ Status Fchown::FchownBadFd()
 	
 	const char *path="fchownTest.txt";
 	int ret_fchown;
-	struct stat mode;
+	//struct stat mode;
 	struct passwd *nobody;
-	int ret ;
+	//int ret ;
 	int user_uid;
 	int user_gid;
 	int fd;	
@@ -177,8 +177,7 @@ Status Fchown::FchownBadFd()
 			}
 			
 		}
-	
-	
+	return Success;
 	
 }
 

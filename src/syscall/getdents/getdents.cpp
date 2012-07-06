@@ -136,12 +136,11 @@ Status GetDentsTest::GetDentsEbadfErrorTest()
 	unsigned int count = 1024;
 	char buf[1024];
 	int status;
-	char d_type;
-		
+			
 	status = syscall(SYS_getdents, -1, buf, count);
 	if (status != -1 || errno != EBADF)
 	{
-		cerr << "aaaa " << strerror(errno) << endl;
+		cerr << "Problem with getdents. Error : " << strerror(errno) << endl;
 		return Fail;
 	}
 
@@ -154,19 +153,18 @@ Status GetDentsTest::GetDentsEfaultErrorTest()
 	int fd = open(directory.c_str(), O_RDONLY | O_DIRECTORY);
 	if (fd == -1)
 	{
-		cerr << "bbbb " << strerror(errno) << endl;
+		cerr << "Cannot open file. Error : " << strerror(errno) << endl;
 		return Unres;
 	}
 	
 	unsigned int count = 1024;
 	int status;
-	char d_type;
-		
+			
 	status = syscall(SYS_getdents, fd, -1, count);
 	
 	if (status != -1 || errno != EFAULT)
 	{
-		cerr << "cccc " << strerror(errno) << endl;
+		cerr << "Problem with getdents. Error : " << strerror(errno) << endl;
 		return Fail;
 	}
 
@@ -179,20 +177,18 @@ Status GetDentsTest::GetDentsEinvalErrorTest()
 	int fd = open(directory.c_str(), O_RDONLY | O_DIRECTORY);
 	if (fd == -1)
 	{
-		cerr << "dddd " << strerror(errno) << endl;
+		cerr << "Cannot open file. Error : " << strerror(errno) << endl;
 		return Unres;
 	}
 	
-	unsigned int count = 1024;
 	int status;
-	char d_type;
 	char buf[1024];
 		
 	status = syscall(SYS_getdents, fd, buf, 1);
 	
 	if (status != -1 || errno != EINVAL)
 	{
-		cerr << "eeee " << strerror(errno) << endl;
+		cerr << "Problem with getdents. Error : " << strerror(errno) << endl;
 		return Fail;
 	}
 
@@ -205,16 +201,14 @@ Status GetDentsTest::GetDentsEnotdirErrorTest()
 	File file(randomName(5));
 	int fd = file.GetFileDescriptor();
 			
-	unsigned int count = 1024;
 	int status;
-	char d_type;
 	char buf[1024];
 		
 	status = syscall(SYS_getdents, fd, buf, 1);
 	
 	if (status != -1 || errno != ENOTDIR)
 	{
-		cerr << "ffff " << strerror(errno) << endl;
+		cerr << "Problem with getdents. Error : " << strerror(errno) << endl;
 		return Fail;
 	}
 
@@ -227,7 +221,7 @@ Status GetDentsTest::GetDentsGeneralTest()
 	int fd = open(directory.c_str(), O_RDONLY | O_DIRECTORY);
 	if (fd == -1)
 	{
-		cerr << "gggg " << strerror(errno) << endl;
+		cerr << "Cannot open file. Error : " << strerror(errno) << endl;
 		return Unres;
 	}
 	
@@ -239,7 +233,7 @@ Status GetDentsTest::GetDentsGeneralTest()
 	nread = syscall(SYS_getdents, fd, buf, count);
 	if (nread == -1)
 	{
-		cerr << "hhhh " << strerror(errno) << endl;
+		cerr << "Problem with getdents. Error : " << strerror(errno) << endl;
 		return Unres;
 	}
 	
