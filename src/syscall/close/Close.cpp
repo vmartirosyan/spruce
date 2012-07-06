@@ -75,9 +75,6 @@ Status Close::CloseBadFileDescriptorTest()
 Status Close::CloseCorrectDescriptorTest()
 {
 	
-	
-	char buf[1024];
-	size_t count = 10;
 	int fd ;
 	int ret_val;
 	
@@ -109,10 +106,10 @@ Status Close::CloseCorrectDescriptorTest()
 
 Status Close::CloseCorrectDescriptorUnlinkTest()
 {
-	char buf[1024];
+	
 	const char *pathname="testfile.txt";
 	int ret_val ;
-	int fd = open("testfile.txt", O_CREAT, S_IRUSR);
+	int fd = open(pathname, O_CREAT, S_IRUSR);
 	
 	if( fd == -1)
 	{
@@ -120,7 +117,7 @@ Status Close::CloseCorrectDescriptorUnlinkTest()
 		return Unres;
 	}
 	
-	ret_val=unlink("testfile.txt");
+	ret_val=unlink(pathname);
 	if(ret_val!=0)
 	{
 		cerr << "Cannot unlink file: Aborting test "<<strerror(errno);

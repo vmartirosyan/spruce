@@ -99,7 +99,6 @@ Status IoctlTest::InvalidArgp()
 {
 	try 
 	{		
-        int old_flags = 0;
         int fd;
         File file("newfile");
         fd = file.GetFileDescriptor();

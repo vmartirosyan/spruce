@@ -43,7 +43,7 @@ int Umask::Main(vector<string>)
 Status Umask::UmaskBasicFunc()
 {
 	struct stat statbuf;
-	int setMask = 0077;
+	mode_t setMask = 0077;
 	unsigned mode;
 	mode_t retMask;
 	bool firstCallSkiped = false;

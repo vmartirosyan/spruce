@@ -96,8 +96,6 @@ Status LinkTest::LinkTooLongNewPath()
 
 Status LinkTest::LinkNewPathAlreadyExist()
 {
-
-	int fd ;
 	int ret_val;
 	const char* filename1="link_testfile.txt";
 	const char* filename2="link_testfile.txt";
@@ -180,7 +178,6 @@ Status LinkTest::LinkNormalLink()
 	int fd_orig ;
 	int fd_link;
 	
-	int ret_val;
 	const char* buf="ABCDEFGH";
 	char read_buf[1024];
 	size_t  COUNT=6;

@@ -68,7 +68,7 @@ public:
 	}
 	virtual ~Chmod() {}	
 	Status Chmod_S_IRWXU();	
-	Status PermissionsTest(int open_mode);
+	Status PermissionsTest(mode_t open_mode);
 	Status ErrEfault();
 	Status ChmodTooLongPath();
 	Status ChmodFileNotExist();

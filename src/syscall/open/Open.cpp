@@ -210,7 +210,7 @@ Status Open::openNoAcces ()
     string filePath = dirPath + "/open_file";
     struct passwd * noBody;
     int ret_val;
-    struct stat stat_buf;
+    //struct stat stat_buf;
     const int FILE_MODE = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
    
    
@@ -343,8 +343,6 @@ Status Open::openPathIsDir()
 Status Open:: openMaxFileNumOpened()
 {
 	int ind, fd;
-	int stat =0;
-	pid_t pid;
 	const char* filename = "procHasMax.txt";
     int max_files = getdtablesize();
     
@@ -451,7 +449,7 @@ Status Open ::openNoDevWRBL()
 
 Status Open::openPathisExecutable()
 {
-	int fd = 0,fd_exec=0;
+	int fd = 0;
 
 	const char* filename = "${CMAKE_INSTALL_PREFIX}/bin/spruce";
 	cout << "filename: " << filename << endl;

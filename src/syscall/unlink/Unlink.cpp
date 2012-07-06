@@ -160,7 +160,7 @@ Status UnlinkTest::UnlinkTestIsNotDirectoryFunc ()
 Status UnlinkTest::UnlinkTestNoSuchFileFunc ()
 {
 	int ret_unlink;
-	int fd;
+	
 	const char *pathname ="unlink.txt";
 	//checking: if file exists unlink it 
 	if ( access ( pathname, F_OK ) == 0 )

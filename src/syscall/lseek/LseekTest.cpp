@@ -367,7 +367,7 @@ Status LseekTest :: LseekTestNormalCase2Func()
 	const char *filename = "somefilename1";
     char write_buffer1[BUFSIZ];
 	char write_buffer2[BUFSIZ];
-	char read_buffer[BUFSIZ];
+	
 	struct stat stat_buf;
 	size_t file_size;
 	off_t offset , ret_offset;
@@ -379,7 +379,7 @@ Status LseekTest :: LseekTestNormalCase2Func()
 	{
 		File file( filename, 0777, O_RDWR | O_CREAT);
 		fd = file.GetFileDescriptor();
-		if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
+		if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != (ssize_t)strlen(write_buffer1) )
 		{
 			cerr << "Error in write system call: "<<strerror(errno);
 			return Unres;
@@ -407,7 +407,7 @@ Status LseekTest :: LseekTestNormalCase2Func()
 			return Fail;
 		}
   	
-		if ( write( fd, &write_buffer2, strlen(write_buffer2) ) != strlen(write_buffer2) )
+		if ( write( fd, &write_buffer2, strlen(write_buffer2) ) != (ssize_t)strlen(write_buffer2) )
 		{
 			cerr << "Error in write system call: "<<strerror(errno);
 			return Fail;
@@ -443,7 +443,7 @@ Status LseekTest :: LseekTestNormalCase3Func()
 		File file( filename, 0777 ,O_RDWR | O_CREAT );
 		fd = file.GetFileDescriptor();
 	
-		if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
+		if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != (ssize_t)strlen(write_buffer1) )
 		{
 			cerr << "Error in write system call: "<<strerror(errno);
 			return Unres;
@@ -472,7 +472,7 @@ Status LseekTest :: LseekTestNormalCase3Func()
 			return Fail;
 		}
   	
-		if ( write( fd, &write_buffer2, strlen( write_buffer2 ) ) != strlen(write_buffer2) )
+		if ( write( fd, &write_buffer2, strlen( write_buffer2 ) ) != (ssize_t)strlen(write_buffer2) )
 		{
 			cerr << "Error in write system call: "<<strerror(errno);
 			return Fail;
@@ -699,7 +699,7 @@ Status LseekTest :: Lseek64TestNormalCase2Func()
 	{
 		File file( filename ,0777, O_CREAT | O_RDWR );
 		fd = file.GetFileDescriptor();
-		if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != strlen(write_buffer1) )
+		if ( write( fd, &write_buffer1, strlen(write_buffer1) ) != (ssize_t)strlen(write_buffer1) )
 		{
 			cerr << "Error in write system call: "<<strerror(errno);
 			return Unres;
@@ -728,7 +728,7 @@ Status LseekTest :: Lseek64TestNormalCase2Func()
 			return Fail;
 		}
   	
-		if ( write( fd, &write_buffer2, strlen( write_buffer2 ) ) != strlen(write_buffer2) )
+		if ( write( fd, &write_buffer2, strlen( write_buffer2 ) ) != (ssize_t)strlen(write_buffer2) )
 		{
 			cerr << "Error in write system call: "<<strerror(errno);
 			return Unres;

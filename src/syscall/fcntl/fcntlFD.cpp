@@ -277,7 +277,7 @@ Status fcntlFD::get_setFileStatusFlagsIgnoreRDONLY()
 			return Fail;
 		}
 
-		if(set_flags & get_flags != 0)
+		if( ( set_flags & get_flags ) != 0)
 		{
 			cerr << "Must Ignore setted flags, but does not! " ;
 			return Fail;
@@ -798,7 +798,7 @@ Status fcntlFD::fcntlFDBadFileDescriptor2Func()
 Status fcntlFD:: fcntlFDTooManyOpenedFilesFunc()
 {
 	int ind, fd;
-	pid_t pid;
+	
 	const char* filename = "smthfile";
 	
 	int max_files = getdtablesize() ;

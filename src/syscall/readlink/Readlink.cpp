@@ -85,7 +85,7 @@ int ReadlinkTest:: ReadlinkSyscallTest(vector<string> args)
 		char * buff = new char[10];
 		int len = 4;		
 				
-		if(readlink(slink, buff, len) != file.GetPathname().length())
+		if(readlink(slink, buff, len) != (ssize_t)file.GetPathname().length())
 		{
 			cerr << "System call readlink failed: " << strerror(errno);			
 			status = Fail; 

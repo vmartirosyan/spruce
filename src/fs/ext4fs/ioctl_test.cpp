@@ -375,11 +375,11 @@ Status Ext4IoctlTest::TestGroupExtend()
 		
 		cerr << "Shallow test";
 		int NewPartitionSizeInBlocks = 210000;
-		ioctl(_file, EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1;
+		ioctl(_file, EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks);
 		
 		return Success;
 		
-		Status status;
+		//Status status;
 		
 		NewPartitionSizeInBlocks = 210000;// _PartitionSizeInBlocks + 10;
 		if ( ioctl(_file, EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1 )
@@ -431,7 +431,7 @@ Status Ext4IoctlTest::TestMoveExtent()
 			return Unres;
 		}
 		
-		unsigned int BlockCount = 1;
+		//unsigned int BlockCount = 1;
 		
 		struct move_extent me;
 		memset(&me, 0, sizeof(me));

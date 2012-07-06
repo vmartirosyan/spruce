@@ -231,7 +231,9 @@ Status StatTest::ErrNotDir ()
 
 // EIO An error occurred while reading from the file system.
 Status StatTest::ErrFailToRead ()
-{}
+{
+	return Unsupported;
+}
 
 // ENOENT A component of path does not name an existing file 
 Status StatTest::ErrNonExistantFile ()
