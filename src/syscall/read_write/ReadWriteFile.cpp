@@ -327,7 +327,7 @@ Status ReadWriteFileTest::WriteEagainErrorTest()
 	
 	int bytes = M_PIPE_SIZE ;//64 * 1024;
 	
-	char buf[bytes];
+	char buf[M_PIPE_SIZE];
 	memset(buf, '0', bytes);
 		
 	ssize_t st = write(pipe[1], buf, bytes);		

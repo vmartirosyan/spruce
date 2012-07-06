@@ -270,6 +270,8 @@ public: \n\
 		EnumContents += *i;
 		EnumContents += ",\n";
 	}
+	// Remove the trailing comma and new-line
+	EnumContents = EnumContents.substr( 0, EnumContents.length() - 2 );
 	
 	// Generate the enum contents
 	size_t EnumStart = HeaderFileContents.find("%ENUM%");

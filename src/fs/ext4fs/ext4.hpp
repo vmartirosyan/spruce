@@ -43,7 +43,7 @@
 /*
  * Debug code
  */
-#ifdef EXT4FS_DEBUG
+/*#ifdef EXT4FS_DEBUG
 #define ext4_debug(f, a...)						\
 	do {								\
 		printk(KERN_DEBUG "EXT4-fs DEBUG (%s, %d): %s:",	\
@@ -53,8 +53,8 @@
 #else
 #define ext4_debug(f, a...)	do {} while (0)
 #endif
-
-#define EXT4_ERROR_INODE(inode, fmt, a...) \
+*/
+/*#define EXT4_ERROR_INODE(inode, fmt, a...) \
 	ext4_error_inode((inode), __func__, __LINE__, 0, (fmt), ## a)
 
 #define EXT4_ERROR_INODE_BLOCK(inode, block, fmt, a...)			\
@@ -62,12 +62,12 @@
 
 #define EXT4_ERROR_FILE(file, block, fmt, a...)				\
 	ext4_error_file((file), __func__, __LINE__, (block), (fmt), ## a)
-
+*/
 /* data type for block offset of block group */
 typedef int ext4_grpblk_t;
 
 /* data type for filesystem-wide blocks number */
-typedef unsigned long long ext4_fsblk_t;
+//typedef unsigned long long ext4_fsblk_t;
 
 /* data type for file logical block number */
 typedef __u32 ext4_lblk_t;
@@ -108,26 +108,6 @@ typedef unsigned int ext4_group_t;
 #define EXT4_MB_STREAM_ALLOC		0x0800
 
 
-struct ext4_allocation_request {
-	/* target inode for block we're allocating */
-	struct inode *inode;
-	/* how many blocks we want to allocate */
-	unsigned int len;
-	/* logical block in target inode */
-	ext4_lblk_t logical;
-	/* the closest logical allocated block to the left */
-	ext4_lblk_t lleft;
-	/* the closest logical allocated block to the right */
-	ext4_lblk_t lright;
-	/* phys. target (a hint) */
-	ext4_fsblk_t goal;
-	/* phys. block for the closest logical allocated block to the left */
-	ext4_fsblk_t pleft;
-	/* phys. block for the closest logical allocated block to the right */
-	ext4_fsblk_t pright;
-	/* flags. see above EXT4_MB_HINT_* */
-	unsigned int flags;
-};
 
 /*
  * Logical to physical block mapping, used by ext4_map_blocks()
@@ -145,12 +125,6 @@ struct ext4_allocation_request {
 				 EXT4_MAP_UNWRITTEN | EXT4_MAP_BOUNDARY |\
 				 EXT4_MAP_UNINIT)
 
-struct ext4_map_blocks {
-	ext4_fsblk_t m_pblk;
-	ext4_lblk_t m_lblk;
-	unsigned int m_len;
-	unsigned int m_flags;
-};
 
 /*
  * For delayed allocation tracking
@@ -364,7 +338,7 @@ enum {
 	EXT4_INODE_EXTENTS	= 19,	/* Inode uses extents */
 	EXT4_INODE_EA_INODE	= 21,	/* Inode used for large EA */
 	EXT4_INODE_EOFBLOCKS	= 22,	/* Blocks allocated beyond EOF */
-	EXT4_INODE_RESERVED	= 31,	/* reserved for ext4 lib */
+	EXT4_INODE_RESERVED	= 31	/* reserved for ext4 lib */
 };
 
 #define TEST_FLAG_VALUE(FLAG) (EXT4_##FLAG##_FL == (1 << EXT4_INODE_##FLAG))
@@ -690,11 +664,7 @@ do {									       \
  * If ec_len == 0, then the cache is invalid.
  * If ec_start == 0, then the cache represents a gap (null mapping)
  */
-struct ext4_ext_cache {
-	ext4_fsblk_t	ec_start;
-	ext4_lblk_t	ec_block;
-	__u32		ec_len; /* must be 32bit to return holes */
-};
+
 
 /*
  * fourth extended file system inode data in memory
