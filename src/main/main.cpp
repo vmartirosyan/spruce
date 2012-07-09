@@ -83,8 +83,8 @@ int main(int argc, char ** argv)
 	//Prepare the allowed modules list
 	ModulesAvailable.push_back("syscall");
 	ModulesAvailable.push_back("benchmark");
-	ModulesAvailable.push_back("ext4fs");
-	ModulesAvailable.push_back("jfs");
+	ModulesAvailable.push_back("fs-spec");
+	//ModulesAvailable.push_back("jfs");
 	
 	// Prepare the allowed FS list
 	FSAvailable.push_back("ext4");
@@ -122,6 +122,21 @@ int main(int argc, char ** argv)
 	}
 	// Split the module list into module names
 	vector<string> Modules = SplitString(configValues["modules"], ';', ModulesAvailable);
+	
+	/*for ( int i = 0; i < Modules.size(); ++i )
+		cerr << Modules[i] << " ";
+	cerr << endl;*/
+	
+	// Search for the "fs-spec" module
+	bool PerformFS_SpecificTests = false;
+	vector<string>::iterator it = Modules.end();
+	cerr << "Searching for FS-specific module" << endl;
+	if ( (it = find(Modules.begin(), Modules.end(), "fs-spec")) != Modules.end() )
+	{
+		cerr << "FS-specific module is enabled" << endl;
+		PerformFS_SpecificTests = true;
+		Modules.erase(it);
+	}
 	
 	// Get the filesystem names to be tested
 	vector<string> FileSystems;
@@ -291,6 +306,17 @@ int main(int argc, char ** argv)
 			ProcessResult * result(command.Execute());
 			str << result->GetOutput() << endl;
 		}
+		
+		// Should we perform the FS-specific tests?
+		if ( PerformFS_SpecificTests )
+		{
+			cerr << "Executing FS-specific tests for " << *fs << endl;
+			UnixCommand command( (string)("${CMAKE_INSTALL_PREFIX}/bin/" + *fs));
+			//auto_ptr<ProcessResult> result(command.Execute());
+			ProcessResult * result(command.Execute());
+			str << result->GetOutput() << endl;
+		}
+		
 		str << "</FS>";
 		
 		str << "</SpruceLog>";
