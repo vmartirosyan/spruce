@@ -27,7 +27,7 @@
 #include <sys/stat.h>
 
 // Operations 
-enum MmapMemorySyscalls
+/*enum MmapMemorySyscalls
 {
 	Mmap,
 	MmapErrEINVAL,
@@ -41,7 +41,7 @@ enum MmapMemorySyscalls
 	Mmap2ErrEINVAL,
 	Mmap2ErrEBADF,
 	Mmap2ErrEACCES	
-};
+};*/
 
 class MmapMemoryTest: public SyscallTest
 {

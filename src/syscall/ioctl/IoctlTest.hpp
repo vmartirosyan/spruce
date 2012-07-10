@@ -26,12 +26,12 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum IoctlSyscalls
+/*enum IoctlSyscalls
 {
     IOCTL_INVALID_FD,
     IOCTL_INVALID_ARGP,
 	IOCTL_SETGET_VERSION,
-};
+};*/
 
 class IoctlTest : public SyscallTest
 {

@@ -32,12 +32,12 @@
 
 
 // Operations
-enum XattrOps
+/*enum XattrOps
 {
 	XATTR_GET_SET,
 	XATTR_LIST_SET,
 	XATTR_LIST_REMOVE
-};
+};*/
 
 class Xattr : public SyscallTest
 {			

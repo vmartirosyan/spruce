@@ -31,7 +31,7 @@
 #include <sys/stat.h>
 #include <Directory.hpp>
 // Operations
-enum OpenSyscalls
+/*enum OpenSyscalls
 {
 OPEN_EACCES,		//done
 OPEN_EEXIST,		//done
@@ -47,7 +47,7 @@ OPEN_ENXIO,			//done
 OPEN_ETXTBSY,		//done
 OPEN_NORMAL			//done
 
-};
+};*/
 
 class Open : public SyscallTest
 {			

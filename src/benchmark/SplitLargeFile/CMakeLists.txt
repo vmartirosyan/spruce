@@ -5,14 +5,3 @@ PROJECT (Spruce)
 
 SET(TEST_NAME SplitLargeFile)
 
-CONFIGURE_FILE(
-	"${PROJECT_SOURCE_DIR}/SplitLargeFile.cpp"
-	"${PROJECT_BINARY_DIR}/SplitLargeFile.cpp"
-)
-
-FILE(
-	COPY ${PROJECT_SOURCE_DIR}/SplitLargeFile.hpp
-	DESTINATION ${PROJECT_BINARY_DIR}/
-)
-
-#ADD_LIBRARY(${TEST_NAME} STATIC ${PROJECT_BINARY_DIR}/SplitLargeFile.cpp)

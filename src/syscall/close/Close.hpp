@@ -25,15 +25,16 @@
 
 #include "SyscallTest.hpp"
 
-enum CloseSyscalls
+// Operations
+/*enum CloseSyscalls
 {
-	CorrectDescriptor,
-	CorrectDescriptorUnlink,
-	BadFileDescriptor,
-	WasInterrupted,
-	IoError
+	CloseCorrectDescriptor,
+	CloseCorrectDescriptorUnlink,
+	CloseBadFileDescriptor,
+	CloseWasInterrupted,
+	CloseIoError
 
-};
+};*/
 
 class Close : public SyscallTest
 {			

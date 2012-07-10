@@ -26,7 +26,7 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum MknodSyscalls
+/*enum MknodSyscalls
 {
 	MknodPathExists,
 	MknodIsSymLink,
@@ -41,7 +41,7 @@ enum MknodSyscalls
 	MknodNormalCase1
 	MknodNormalCase2
 	
-};
+};*/
 
 class MknodTest : public SyscallTest
 {			

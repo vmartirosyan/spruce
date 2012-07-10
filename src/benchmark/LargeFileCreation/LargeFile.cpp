@@ -22,8 +22,8 @@
 
 #include <stdlib.h>
 #include <memory>
-#include <LargeFile.hpp>
-#include "UnixCommand.hpp"
+#include "LargeFile.hpp"
+#include <UnixCommand.hpp>
 
 using std::auto_ptr;
 
@@ -46,7 +46,7 @@ int LargeFileTest::Main(vector<string>)
 
 Status LargeFileTest::LargeFileCreationFunc()
 {
-	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/LargeFileCreation.sh");
+	UnixCommand command(INSTALL_PREFIX"/bin/LargeFileCreation.sh");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

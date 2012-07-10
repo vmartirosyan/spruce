@@ -26,7 +26,7 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum UnlinkAtSyscalls
+/*enum UnlinkAtSyscalls
 {
 	UnlinkAtTestBadFileDescriptor1,
 	UnlinkAtTestBadFileDescriptor2,
@@ -36,7 +36,7 @@ enum UnlinkAtSyscalls
 	UnlinkAtTestNormalUnlink,
 	UnlinkAtTestRemove1,
 	UnlinkAtTestRemove2
-};
+};*/
 
 class UnlinkAtTest : public SyscallTest
 {			

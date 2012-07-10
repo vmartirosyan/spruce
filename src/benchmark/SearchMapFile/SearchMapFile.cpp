@@ -25,9 +25,9 @@
 #include <memory>
 #include <algorithm>
 #include <fcntl.h>
-#include <SearchMapFile.hpp>
-#include "UnixCommand.hpp"
-#include "File.hpp"
+#include "SearchMapFile.hpp"
+#include <UnixCommand.hpp>
+#include <File.hpp>
 
 using std::auto_ptr;
 
@@ -56,7 +56,7 @@ int SearchMapFileTest::Main(vector<string>)
 
 Status SearchMapFileTest::SearchMapFileFunc()
 {
-	UnixCommand command("${CMAKE_INSTALL_PREFIX}bin/createfile");
+	UnixCommand command(INSTALL_PREFIX"/bin/createfile");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

@@ -28,7 +28,7 @@
 #include "File.hpp"
 
 // Operations
-enum PreadPwriteOps
+/*enum PreadPwriteOps
 {
 	PreadPwriteBasicOp1,
 	PreadPwriteBasicOp2,
@@ -51,7 +51,7 @@ enum PreadPwriteOps
 	PwriteEinvalErrorOp2,
 	PwriteEinvalErrorOp3,
 	
-};
+};*/
 
 class PreadPwrite : public SyscallTest
 {			

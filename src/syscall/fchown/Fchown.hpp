@@ -26,7 +26,7 @@
 
 #include "SyscallTest.hpp"
 // Operations
-enum ChmodSyscalls
+/*enum ChmodSyscalls
 {
 
 FCHOWN_CHANGE_OWNER,
@@ -35,7 +35,7 @@ FCHOWN_ERR_ENOENT
 	
 
 
-};
+};*/
 
 class Fchown : public SyscallTest
 {			

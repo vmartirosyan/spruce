@@ -27,7 +27,7 @@
 #include <sys/stat.h>
 
 // Operations 
-enum ReadlinkSyscalls
+/*enum ReadlinkSyscalls
 {	
 	Readlink,
 	ReadlinkErrEINVAL,
@@ -43,7 +43,7 @@ enum ReadlinkSyscalls
 	SymlinkErrEEXIST,
 	SymlinkErrENOENT,
 	SymlinkErrENOTDIR
-};
+};*/
 
 class ReadlinkTest: public SyscallTest
 {

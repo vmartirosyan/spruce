@@ -24,8 +24,8 @@
 
 #include <stdlib.h>
 #include <memory>
-#include "UnixCommand.hpp"
-#include <MultipleFilesCatting.hpp>
+#include <UnixCommand.hpp>
+#include "MultipleFilesCatting.hpp"
 
 int MultipleFilesCatting::Main(vector<string>)
 {
@@ -47,7 +47,7 @@ int MultipleFilesCatting::Main(vector<string>)
 
 Status MultipleFilesCatting::MultipleFilesCattingFunc()
 {
-	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/MultipleFilesCatting.sh");
+	UnixCommand command(INSTALL_PREFIX"/bin/MultipleFilesCatting.sh");
     std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

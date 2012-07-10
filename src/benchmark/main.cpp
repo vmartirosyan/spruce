@@ -1,31 +1,31 @@
-#include "Creator.hpp"
-#include "Deleter.hpp"
-#include "Compressor.hpp"
-#include "LargeFile.hpp"
-#include "FindFile.hpp"
-#include "LargeFileCopyTest.hpp"
-#include "Decompressor.hpp"
-#include "MultipleFilesCopy.hpp"
-#include "CattingLargeFile.hpp"
-#include "MultipleFilesCatting.hpp"
-#include "SplitLargeFile.hpp"
-#include "SearchMapFile.hpp"
+#include "MultipleFilesCreation/Creator.hpp"
+#include "MultipleFilesDeletion/Deleter.hpp"
+#include "MultipleFilesCompression/Compressor.hpp"
+#include "LargeFileCreation/LargeFile.hpp"
+#include "FindFile/FindFile.hpp"
+#include "LargeFileCopyTest/LargeFileCopyTest.hpp"
+#include "MultipleFilesDecompression/Decompressor.hpp"
+#include "MultipleFilesCopy/MultipleFilesCopy.hpp"
+#include "CattingLargeFile/CattingLargeFile.hpp"
+#include "MultipleFilesCatting/MultipleFilesCatting.hpp"
+#include "SplitLargeFile/SplitLargeFile.hpp"
+#include "SearchMapFile/SearchMapFile.hpp"
 #include <config.hpp>
 
 int main(int argc, char ** argv)
 {
-	Configuration<CreatorTest> conf1("${CMAKE_INSTALL_PREFIX}config/creator.conf");
-	Configuration<FindFileTest> conf2("${CMAKE_INSTALL_PREFIX}config/findfile.conf");
-	Configuration<CompressTest> conf3("${CMAKE_INSTALL_PREFIX}config/compression.conf");
-	Configuration<DecompressTest> conf4("${CMAKE_INSTALL_PREFIX}config/decompression.conf");
-	Configuration<LargeFileTest> conf5("${CMAKE_INSTALL_PREFIX}config/largefile.conf");
-	Configuration<SearchMapFileTest> conf6("${CMAKE_INSTALL_PREFIX}config/searchmapfile.conf");
-	Configuration<CattingLargeFile> conf7("${CMAKE_INSTALL_PREFIX}config/cattinglargefile.conf");
-	Configuration<LargeFileCopyTest> conf8("${CMAKE_INSTALL_PREFIX}config/largefilecopy.conf");
-	Configuration<MultipleFilesCatting> conf9("${CMAKE_INSTALL_PREFIX}config/multiplefilescatting.conf");
-	Configuration<MultipleFilesCopy> conf10("${CMAKE_INSTALL_PREFIX}config/multiplefilescopy.conf");
-	Configuration<SplitLargeFile> conf11("${CMAKE_INSTALL_PREFIX}config/splitlargefile.conf");
-	Configuration<DeleterTest> conf12("${CMAKE_INSTALL_PREFIX}config/deleter.conf");
+	Configuration<CreatorTest> conf1(INSTALL_PREFIX"/share/spruce/config/creator.conf");
+	Configuration<FindFileTest> conf2(INSTALL_PREFIX"/share/spruce/config/findfile.conf");
+	Configuration<CompressTest> conf3(INSTALL_PREFIX"/share/spruce/config/compression.conf");
+	Configuration<DecompressTest> conf4(INSTALL_PREFIX"/share/spruce/config/decompression.conf");
+	Configuration<LargeFileTest> conf5(INSTALL_PREFIX"/share/spruce/config/largefile.conf");
+	Configuration<SearchMapFileTest> conf6(INSTALL_PREFIX"/share/spruce/config/searchmapfile.conf");
+	Configuration<CattingLargeFile> conf7(INSTALL_PREFIX"/share/spruce/config/cattinglargefile.conf");
+	Configuration<LargeFileCopyTest> conf8(INSTALL_PREFIX"/share/spruce/config/largefilecopy.conf");
+	Configuration<MultipleFilesCatting> conf9(INSTALL_PREFIX"/share/spruce/config/multiplefilescatting.conf");
+	Configuration<MultipleFilesCopy> conf10(INSTALL_PREFIX"/share/spruce/config/multiplefilescopy.conf");
+	Configuration<SplitLargeFile> conf11(INSTALL_PREFIX"/share/spruce/config/splitlargefile.conf");
+	Configuration<DeleterTest> conf12(INSTALL_PREFIX"/share/spruce/config/deleter.conf");
 		
 	TestCollection tests = conf1.Read();
 	TestCollection tests2 = conf2.Read();

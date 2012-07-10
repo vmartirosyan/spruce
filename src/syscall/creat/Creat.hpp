@@ -32,7 +32,7 @@
 #include <Directory.hpp>
 
 // Operations
-enum CreatSyscalls
+/*enum CreatSyscalls
 {
 	CREAT_ENAMETOOLONG, //done
 	CREAT_EMFILE,		//done
@@ -44,7 +44,7 @@ enum CreatSyscalls
 	CREAT_ENOTDIR, 		//done
 	CREAT_NORMAL  		//done 
 
-};
+};*/
 
 class CreatTest : public SyscallTest
 {			

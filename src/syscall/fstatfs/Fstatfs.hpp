@@ -31,11 +31,11 @@ using std::map;
 using std::pair;
 
 // Operations
-enum FstatfsOps
+/*enum FstatfsOps
 {
 	FstatfsNormalFunc,
 	FstatfsErrBadf
-};
+};*/
 
 class FstatfsTest : public SyscallTest
 {			

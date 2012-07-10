@@ -46,5 +46,5 @@ done
 size=$2
 for ((i = 0; i < $number; i++))
 do
-	${CMAKE_INSTALL_PREFIX}bin/createfile $i $size
+	$INSTALL_PREFIX/bin/createfile $i $size
 done

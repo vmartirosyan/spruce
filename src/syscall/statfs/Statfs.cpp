@@ -1,4 +1,4 @@
-	//      Statfs.cpp
+//      Statfs.cpp
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include <Statfs.hpp>
+#include "Statfs.hpp"
 #include "File.hpp"
 #include "Directory.hpp"
 #include <map>

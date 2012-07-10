@@ -26,7 +26,7 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum LinkSyscalls
+/*enum LinkSyscalls
 {
 
 	LinkTestTooLongNewPath,
@@ -34,7 +34,7 @@ enum LinkSyscalls
 	LinkTestOldPathIsDirectory,
 	LinkTestNormalFile,
 	LinkTestIsNotDirectory
-};
+};*/
 
 class LinkTest : public SyscallTest
 {			

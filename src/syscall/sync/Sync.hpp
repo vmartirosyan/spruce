@@ -34,10 +34,10 @@
 #include <pwd.h>
 
 // Operations
-enum SyncSyscalls
+/*enum SyncSyscalls
 {
     SyncNormExec
-};
+};*/
 
 class Sync : public SyscallTest
 {

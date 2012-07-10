@@ -32,14 +32,14 @@
 using namespace std;
 
 // Operations
-enum GetDentsSyscalls
+/*enum GetDentsSyscalls
 {
 	GetDentsEbadfError,
 	GetDentsEfaultError,
 	GetDentsEinvalError,
 	GetDentsEnotdirError,
 	GetDentsGeneral
-};
+};*/
 
 class GetDentsTest : public SyscallTest
 {			

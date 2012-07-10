@@ -28,7 +28,7 @@
 using namespace std;
 
 // Operations
-enum RenameSyscalls
+/*enum RenameSyscalls
 {
 	RenameEfaultError1,
 	RenameEfaultError2,
@@ -45,7 +45,7 @@ enum RenameSyscalls
 	RenameEnotempty,
 	RenameEinval,
 	proba
-};
+};*/
 
 class RenameTest : public SyscallTest
 {

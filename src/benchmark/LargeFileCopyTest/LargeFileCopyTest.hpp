@@ -25,13 +25,13 @@
 #ifndef COPY_H
 #define COPY_H
 
-#include "BenchmarkTest.hpp"
+#include <BenchmarkTest.hpp>
 
 // Operations
-enum CopyOperations
+/*enum CopyOperations
 {
 	LargeFileCopying
-};
+};*/
 
 class LargeFileCopyTest : public BenchmarkTest
 {

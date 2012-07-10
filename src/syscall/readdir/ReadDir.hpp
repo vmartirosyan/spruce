@@ -26,7 +26,7 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum ReadDirSyscalls
+/*enum ReadDirSyscalls
 {
 	ReadDirBadFileDesc1,
 	ReadDirBadFileDesc2,
@@ -35,7 +35,7 @@ enum ReadDirSyscalls
 	ReadDirBadAddress2,
 	ReadDirNoSuchDir,
 	ReadDirNormalCase
-};
+};*/
 
 class ReadDirTest : public SyscallTest
 {			

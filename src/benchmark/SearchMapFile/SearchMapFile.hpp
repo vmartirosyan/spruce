@@ -23,13 +23,13 @@
 #ifndef MMAP_FILE_H
 #define MMAP_FILE_H
 
-#include "BenchmarkTest.hpp"
+#include <BenchmarkTest.hpp>
 
 // Operations
-enum MmapFileOperations
+/*enum MmapFileOperations
 {
 	SearchMapFile
-};
+};*/
 
 class SearchMapFileTest : public BenchmarkTest
 {

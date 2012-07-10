@@ -22,8 +22,8 @@
 
 #include <stdlib.h>
 #include <memory>
-#include <Compressor.hpp>
-#include "UnixCommand.hpp"
+#include "Compressor.hpp"
+#include <UnixCommand.hpp>
 
 using std::auto_ptr;
 
@@ -46,7 +46,7 @@ int CompressTest::Main(vector<string>)
 
 Status CompressTest::MultipleFilesCompressionFunc()
 {
-	UnixCommand command("${CMAKE_INSTALL_PREFIX}bin/MultipleFilesCompression.sh");
+	UnixCommand command(INSTALL_PREFIX"/bin/MultipleFilesCompression.sh");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

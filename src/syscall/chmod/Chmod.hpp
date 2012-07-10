@@ -25,7 +25,7 @@
 
 #include "SyscallTest.hpp"
 // Operations
-enum ChmodSyscalls
+/*enum ChmodSyscalls
 {
 
 	CHMOD_S_IRWXU,
@@ -57,7 +57,7 @@ enum ChmodSyscalls
 
 
 
-};
+};*/
 
 class Chmod : public SyscallTest
 {			

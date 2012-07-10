@@ -23,13 +23,13 @@
 #ifndef LARGE_FILE_CREATOR_H
 #define LARGE_FILE_CREATOR_H
 
-#include "BenchmarkTest.hpp"
+#include <BenchmarkTest.hpp>
 
 // Operations
-enum LargeFileOperations
+/*enum LargeFileOperations
 {
 	LargeFileCreation
-};
+};*/
 
 class LargeFileTest : public BenchmarkTest
 {

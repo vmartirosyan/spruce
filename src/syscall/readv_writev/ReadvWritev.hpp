@@ -28,7 +28,7 @@
 #include "File.hpp"
 
 // Operations
-enum ReadvWritevOps
+/*enum ReadvWritevOps
 {
 	ReadvWritevBasicOp1,
 	ReadvEagainErrorOp,
@@ -47,7 +47,7 @@ enum ReadvWritevOps
 	WritevEinvalErrorOp1,
 	WritevEinvalErrorOp2,
 	WritevEinvalErrorOp3,
-};
+};*/
 
 class ReadvWritev : public SyscallTest
 {			

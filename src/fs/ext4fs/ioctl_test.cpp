@@ -21,7 +21,7 @@
 //      MA 02110-1301, USA.
 
 #include <UnixCommand.hpp>
-#include <ioctl_test.hpp>
+#include "ioctl_test.hpp"
 #include <sys/mount.h>
 #include <pwd.h>
 #include <File.hpp>

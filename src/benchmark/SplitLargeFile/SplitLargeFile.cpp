@@ -27,7 +27,7 @@
 #include <fcntl.h>
 #include <fstream>
 #include <sstream>
-#include <SplitLargeFile.hpp>
+#include "SplitLargeFile.hpp"
 
 int SplitLargeFile::Main(vector<string>)
 {

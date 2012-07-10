@@ -23,6 +23,7 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
+#include <platform_config.hpp>
 #include <string>
 #include <iostream>
 #include <vector>

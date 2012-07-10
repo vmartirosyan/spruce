@@ -28,10 +28,10 @@
 #include "BenchmarkTest.hpp"
 
 // Operations
-enum CattingOperations
+/*enum CattingOperations
 {
 	CattingLargeFileOp
-};
+};*/
 
 class CattingLargeFile : public BenchmarkTest
 {

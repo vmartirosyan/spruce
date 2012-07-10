@@ -27,7 +27,7 @@
 #include "File.hpp"
 
 // Operations
-enum ReadFileDescriptorSyscalls
+/*enum ReadFileDescriptorSyscalls
 {
 	ReadBadFileDescriptor1,
 	ReadBadFileDescriptor2,
@@ -41,7 +41,7 @@ enum ReadFileDescriptorSyscalls
 	WriteEagainError,
 	ReadWrite1,
 	ReadWrite2
-};
+};*/
 
 class ReadWriteFileTest : public SyscallTest
 {			

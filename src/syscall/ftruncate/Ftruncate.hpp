@@ -35,14 +35,14 @@
 
 
 // Operations
-enum FtruncateOps
+/*enum FtruncateOps
 {	
 	FtruncateNormalIncreaseSize,
 	FtruncateNormalDecreaseSize,
 	FtruncateErrBadF,
 	FtruncateErrInval1,
 	FtruncateErrInval2	
-};
+};*/
 
 class FtruncateTest : public SyscallTest
 {			

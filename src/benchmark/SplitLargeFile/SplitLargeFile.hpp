@@ -23,14 +23,14 @@
 #ifndef SPLIT_LARGE_FILE_H
 #define SPLIT_LARGE_FILE_H
 
-#include "BenchmarkTest.hpp"
+#include <BenchmarkTest.hpp>
 #include <sstream>
 
 // Operations
-enum SplitLargeFileOperations
+/*enum SplitLargeFileOperations
 {
 	SplitLargeFileOp
-};
+};*/
 
 class SplitLargeFile : public BenchmarkTest
 {

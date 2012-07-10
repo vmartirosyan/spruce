@@ -24,8 +24,8 @@
 
 #include <stdlib.h>
 #include <memory>
-#include "UnixCommand.hpp"
-#include <Deleter.hpp>
+#include <UnixCommand.hpp>
+#include "Deleter.hpp"
 
 int DeleterTest::Main(vector<string>)
 {
@@ -47,7 +47,7 @@ int DeleterTest::Main(vector<string>)
 
 Status DeleterTest::MultipleFilesDeletionFunc()
 {
-	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/MultipleFilesDeletion.sh");
+	UnixCommand command(INSTALL_PREFIX"/bin/MultipleFilesDeletion.sh");
     std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

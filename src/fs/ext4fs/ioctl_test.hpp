@@ -36,7 +36,7 @@ extern string DeviceName;
 
 
 // Operations
-enum IoctlOperations
+/*enum IoctlOperations
 {
 	Ext4IoctlSetFlagsGetFlags,
 	Ext4IoctlClearExtentsFlags,
@@ -50,7 +50,7 @@ enum IoctlOperations
 	Ext4IoctlAllocDABlocks,
 	Ext4IoctlFitrim,
 	Ext4IoctlUnsupported	
-};
+};*/
 
 class Ext4IoctlTestResult : public Ext4fsTestResult
 {

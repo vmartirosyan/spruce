@@ -27,7 +27,7 @@
 #include <sys/stat.h>
 
 // Operations
-enum MlockMemorySyscalls
+/*enum MlockMemorySyscalls
 {
 	Mlock,
 	MlockErrEINVAL,
@@ -38,7 +38,7 @@ enum MlockMemorySyscalls
 	Mlockall,
 	MlockallErrEINVAL,	
 	Munlockall	
-};
+};*/
 
 class MlockMemoryTest: public SyscallTest
 {

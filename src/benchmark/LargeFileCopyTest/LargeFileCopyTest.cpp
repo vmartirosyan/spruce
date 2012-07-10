@@ -24,8 +24,8 @@
 
 #include <stdlib.h>
 #include <memory>
-#include "UnixCommand.hpp"
-#include <LargeFileCopyTest.hpp>
+#include <UnixCommand.hpp>
+#include "LargeFileCopyTest.hpp"
 
 int LargeFileCopyTest::Main(vector<string>)
 {
@@ -47,7 +47,7 @@ int LargeFileCopyTest::Main(vector<string>)
 
 Status LargeFileCopyTest::LargeFileCopyFunc()
 {
-	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/LargeFileCopyTest.sh");
+	UnixCommand command(INSTALL_PREFIX"/bin/LargeFileCopyTest.sh");
     std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

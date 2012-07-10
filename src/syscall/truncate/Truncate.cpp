@@ -22,7 +22,7 @@
 
 
 
-#include <Truncate.hpp>
+#include "Truncate.hpp"
 
 
 int TruncateTest::Main(vector<string>)
@@ -395,7 +395,7 @@ Status TruncateTest::ErrNotDir()
 Status TruncateTest::ErrTxtBsy()
 {
 	cerr << "truncating ${CMAKE_INSTALL_PREFIX}/bin/spruce" << endl;
-	if ( truncate("${CMAKE_INSTALL_PREFIX}/bin/spruce", 1) == 0 || errno != ETXTBSY )
+	if ( truncate(INSTALL_PREFIX"/bin/spruce", 1) == 0 || errno != ETXTBSY )
 	{
 		cerr << "truncate should return ETXTBSY error code but it did not. Error: " << errno << " > " << strerror(errno);
 		return Fail;
