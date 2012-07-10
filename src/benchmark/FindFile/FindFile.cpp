@@ -23,8 +23,8 @@
 
 #include <stdlib.h>
 #include <memory>
-#include <FindFile.hpp>
-#include "UnixCommand.hpp"
+#include "FindFile.hpp"
+#include <UnixCommand.hpp>
 
 using std::auto_ptr;
 
@@ -47,7 +47,7 @@ int FindFileTest::Main(vector<string>)
 
 Status FindFileTest::FindFileFunc()
 {
-	UnixCommand command("${CMAKE_INSTALL_PREFIX}bin/FindFile.sh");
+	UnixCommand command(INSTALL_PREFIX"/bin/FindFile.sh");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

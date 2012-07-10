@@ -37,13 +37,13 @@ extern string DeviceName;
 
 
 // Operations
-enum IoctlOperations
+/*enum IoctlOperations
 {
 	JFSIoctlSetFlagsGetFlags,
 	JFSIoctlClearExtentsFlags,
 	JFSIoctlSetFlagsNotOwner,	
 	JFSIoctlUnsupported	
-};
+};*/
 
 class JFSIoctlTestResult : public JFSTestResult
 {

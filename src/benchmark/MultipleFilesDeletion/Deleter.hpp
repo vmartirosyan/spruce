@@ -25,13 +25,13 @@
 #ifndef DELETER_H
 #define DELETER_H
 
-#include "BenchmarkTest.hpp"
+#include <BenchmarkTest.hpp>
 
 // Operations
-enum Deleter_Operations
+/*enum Deleter_Operations
 {
 	MultipleFilesDeletion
-};
+};*/
 
 class DeleterTest : public BenchmarkTest
 {

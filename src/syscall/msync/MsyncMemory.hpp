@@ -27,12 +27,12 @@
 #include <sys/stat.h>
 
 // Operations
-enum MlockMemorySyscalls
+/*enum MlockMemorySyscalls
 {
 	Msync,
 	MsyncErrEINVAL,
 	MsyncErrENOMEM
-};
+};*/
 
 class MsyncMemoryTest: public SyscallTest
 {

@@ -29,7 +29,7 @@
 #include <linux/limits.h>
 
 // Operations
-enum StatfsOps
+/*enum StatfsOps
 {
 	StatfsNormalFunc,
 	StatfsErrAccess,
@@ -38,7 +38,7 @@ enum StatfsOps
 	StatfsErrNameTooLong,
 	StatfsErrNoEnt,
 	StatfsErrNotDir	
-};
+};*/
 
 using std::map;
 using std::pair;

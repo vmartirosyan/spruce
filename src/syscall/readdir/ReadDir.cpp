@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include <ReadDir.hpp>
+#include "ReadDir.hpp"
 
 #include <File.hpp>
 #include <Directory.hpp>

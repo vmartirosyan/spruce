@@ -36,5 +36,5 @@ cd $parent_folder
 touch $1
 
 # creating and filling the existing file with zeros
-${CMAKE_INSTALL_PREFIX}bin/createfile $1 $2
+$INSTALL_PREFIX/bin/createfile $1 $2
 

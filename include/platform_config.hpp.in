@@ -1,9 +1,9 @@
-//      FindFile.hpp
+//      config.hpp.in
 //      
-// 		Copyright (C) 2011, Institute for System Programming
+//      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
-//
-//      Author: Eduard Bagrov <ebagrov@gmail.com>
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -20,39 +20,9 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#ifndef FIND_FILE_H
-#define FIND_FILE_H
+#ifndef PLAFTORM_CONFIG_H
+#define PLATFORM_CONFIG_H
 
-#include <BenchmarkTest.hpp>
-
-// Operations
-/*enum FindFileOperations
-{
-	FindFile
-};*/
-
-class FindFileTest : public BenchmarkTest
-{
-public:
-		
-	FindFileTest(Mode m, int op, string a) : BenchmarkTest (m, op, a)
-	{
-		vector<string> arguments = ParseArguments(a);
-		
-		directoryName = arguments[0];
-		fileName = arguments[1];
-	}
-	
-	~FindFileTest()
-	{
-	}
-	
-	int Main(vector<string>);
-private:
-	string fileName;
-	string directoryName;
-	Status FindFileFunc();
-	vector<string> CreateArguments();
-};
+#define INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 
 #endif

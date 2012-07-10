@@ -27,12 +27,12 @@
 #include <sys/stat.h>
 
 // Operations
-enum MprotectMemorySyscalls
+/*enum MprotectMemorySyscalls
 {
 	Mprotect,
 	MprotectErrEACCES,
 	MprotectErrENOMEM
-};
+};*/
 
 class MprotectMemoryTest: public SyscallTest
 {

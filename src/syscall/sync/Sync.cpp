@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include <Sync.hpp>
+#include "Sync.hpp"
 
 int Sync::Main(vector<string> args)
 {

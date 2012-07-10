@@ -21,7 +21,7 @@
 //      MA 02110-1301, USA.
 
 
-#include <MknodTest.hpp>
+#include "MknodTest.hpp"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/param.h>

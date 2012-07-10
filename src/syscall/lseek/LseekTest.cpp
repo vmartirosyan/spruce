@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include <LseekTest.hpp>
+#include "LseekTest.hpp"
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>

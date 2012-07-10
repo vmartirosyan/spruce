@@ -26,7 +26,7 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum LseekSyscalls
+/*enum LseekSyscalls
 {
 	LseekInvalidArg1,
 	LseekInvalidArg2,
@@ -46,7 +46,7 @@ enum LseekSyscalls
 	Lseek64NormalCase2
 	
 	
-};
+};*/
 
 class LseekTest : public SyscallTest
 {			

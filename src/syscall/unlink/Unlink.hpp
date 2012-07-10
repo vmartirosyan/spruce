@@ -26,7 +26,7 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum UnlinkSyscalls
+/*enum UnlinkSyscalls
 {
 	UnlinkTestTooLongPath,
 	UnlinkTestNormalFile,
@@ -37,7 +37,7 @@ enum UnlinkSyscalls
 	UnlinkTestNegativeAdress,
 	UnlinkTestPermissionDenied,
 	UnlinkTestNormalCase
-};
+};*/
 
 class UnlinkTest : public SyscallTest
 {			

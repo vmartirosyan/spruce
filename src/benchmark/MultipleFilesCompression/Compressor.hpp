@@ -23,13 +23,13 @@
 #ifndef COMPRESSOR_H
 #define COMPRESSOR_H
 
-#include "BenchmarkTest.hpp"
+#include <BenchmarkTest.hpp>
 
 // Operations
-enum CompressOperations
+/*enum CompressOperations
 {
 	MultipleFilesCompression
-};
+};*/
 
 class CompressTest : public BenchmarkTest
 {

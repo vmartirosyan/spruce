@@ -22,8 +22,8 @@
 
 #include <stdlib.h>
 #include <memory>
-#include <Creator.hpp>
-#include "UnixCommand.hpp"
+#include "Creator.hpp"
+#include <UnixCommand.hpp>
 
 using std::auto_ptr;
 
@@ -46,7 +46,7 @@ int CreatorTest::Main(vector<string>)
 
 Status CreatorTest::MultipleFilesCreationFunc()
 {
-    UnixCommand command("${CMAKE_INSTALL_PREFIX}bin/MultipleFilesCreation.sh");
+    UnixCommand command(INSTALL_PREFIX"/bin/MultipleFilesCreation.sh");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

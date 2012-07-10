@@ -24,8 +24,8 @@
 
 #include <stdlib.h>
 #include <memory>
-#include "UnixCommand.hpp"
-#include <MultipleFilesCopy.hpp>
+#include <UnixCommand.hpp>
+#include "MultipleFilesCopy.hpp"
 
 int MultipleFilesCopy::Main(vector<string>)
 {
@@ -47,7 +47,7 @@ int MultipleFilesCopy::Main(vector<string>)
 
 Status MultipleFilesCopy::MultipleFilesCopyFunc()
 {
-	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/MultipleFilesCopy.sh");
+	UnixCommand command(INSTALL_PREFIX"/bin/MultipleFilesCopy.sh");
     std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

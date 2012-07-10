@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <memory>
 #include "UnixCommand.hpp"
-#include <CattingLargeFile.hpp>
+#include "CattingLargeFile.hpp"
 
 int CattingLargeFile::Main(vector<string>)
 {
@@ -47,7 +47,7 @@ int CattingLargeFile::Main(vector<string>)
 
 Status CattingLargeFile::CattingLargeFileFunc()
 {
-	UnixCommand command("${CMAKE_INSTALL_PREFIX}/bin/CattingLargeFile.sh");
+	UnixCommand command(INSTALL_PREFIX"/bin/CattingLargeFile.sh");
     std::auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

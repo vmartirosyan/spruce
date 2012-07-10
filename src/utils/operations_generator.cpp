@@ -143,7 +143,7 @@ void ProcessFile(string file, string source, string dest)
 	}
 	mkdir ((dest + file).substr(0, BaseNameEnd ).c_str(), 0777);
 	ifstream inf((source + file).c_str());
-	ofstream of((dest + file).c_str());
+	//ofstream of((dest + file).c_str());
 	/* States
 	 * 0 - Initial
 	 * 1 - Operations enum found
@@ -203,10 +203,10 @@ void ProcessFile(string file, string source, string dest)
 				
 				break;
 		}
-		of << line << endl;
+		//of << line << endl;
 	}
 	inf.close();
-	of.close();
+	//of.close();
 		
 }
 

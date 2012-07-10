@@ -23,13 +23,13 @@
 #ifndef CREATOR_H
 #define CREATOR_H
 
-#include "BenchmarkTest.hpp"
+#include <BenchmarkTest.hpp>
 
 // Operations
-enum CreatorOperations
+/*enum CreatorOperations
 {
 	MultipleFilesCreation
-};
+};*/
 
 class CreatorTest : public BenchmarkTest
 {

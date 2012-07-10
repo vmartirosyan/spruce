@@ -35,7 +35,7 @@
 
 
 // Operations
-enum TruncateOps
+/*enum TruncateOps
 {	
 	TruncateNormalIncreaseSize,
 	TruncateNormalDecreaseSize,
@@ -49,7 +49,7 @@ enum TruncateOps
 	TruncateErrNoEnt,	
 	TruncateErrNotDir,	
 	TruncateErrTxtBsy
-};
+};*/
 
 class TruncateTest : public SyscallTest
 {			

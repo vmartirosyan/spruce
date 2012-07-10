@@ -25,13 +25,13 @@
 #ifndef MULTIPLE_FILES_COPY_H
 #define MULTIPLE_FILES_COPY_H
 
-#include "BenchmarkTest.hpp"
+#include <BenchmarkTest.hpp>
 
 // Operations
-enum MultipleFilesCopyOperations
+/*enum MultipleFilesCopyOperations
 {
 	MultipleFilesCopyOp
-};
+};*/
 
 class MultipleFilesCopy : public BenchmarkTest
 {

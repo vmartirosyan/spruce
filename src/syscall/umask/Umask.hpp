@@ -28,10 +28,10 @@
 using namespace std;
 
 // Operations
-enum UmaskOps
+/*enum UmaskOps
 {
 	UmaskBasicOp
-};
+};*/
 
 class Umask : public SyscallTest
 {

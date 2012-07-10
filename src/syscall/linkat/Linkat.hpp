@@ -25,12 +25,12 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum LinkatSyscalls
+/*enum LinkatSyscalls
 {
 
 	LinkatTestIsNotDirectory,
 	LinkatTestInvalidFileDescriptor
-};
+};*/
 
 class LinkatTest : public SyscallTest
 {			

@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include <MlockMemory.hpp>
+#include "MlockMemory.hpp"
 #include "File.hpp"
 #include <sys/mman.h>
 #include <sys/time.h>

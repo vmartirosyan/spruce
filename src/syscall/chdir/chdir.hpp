@@ -25,7 +25,7 @@
 
 #include "SyscallTest.hpp"
 // Operations
-enum ChdirOperations
+/*enum ChdirOperations
 {
 	CHDIR_ERR_EACCES,
 	CHDIR_ERR_EFAULT,
@@ -39,7 +39,7 @@ enum ChdirOperations
 	CHDIR_ERR_EBADF,
 	CHDIR_NORMAL_FUNC
 
-};
+};*/
 
 class Chdir : public SyscallTest
 {			

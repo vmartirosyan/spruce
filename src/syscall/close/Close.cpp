@@ -31,11 +31,11 @@ int Close::Main(vector<string>)
 	{	
 		switch (_operation)
 		{
-			case BadFileDescriptor:
+			case CloseBadFileDescriptor:
 				return CloseBadFileDescriptorTest();
-			case CorrectDescriptor:
+			case CloseCorrectDescriptor:
 			   return CloseCorrectDescriptorTest();
-			case CorrectDescriptorUnlink:
+			case CloseCorrectDescriptorUnlink:
 			   return CloseCorrectDescriptorUnlinkTest();
 			default:
 				cerr << "Unsupported operation.";

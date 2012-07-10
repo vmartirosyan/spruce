@@ -29,7 +29,7 @@
 
 
 // Operations
-enum UtimeOps
+/*enum UtimeOps
 {
 	UtimeNormalNotNull,	
 	UtimeNormalNull,
@@ -41,7 +41,7 @@ enum UtimeOps
 	UtimeErrNoEnt2,
 	UtimeErrNotDir,
 	UtimeErrPerm,
-};
+};*/
 
 class UtimeTest : public SyscallTest
 {			

@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include <Open.hpp>
+#include "Open.hpp"
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -451,7 +451,7 @@ Status Open::openPathisExecutable()
 {
 	int fd = 0;
 
-	const char* filename = "${CMAKE_INSTALL_PREFIX}/bin/spruce";
+	const char* filename = INSTALL_PREFIX"/bin/spruce";
 	cout << "filename: " << filename << endl;
 	//const char* filename = "/home/gurgen/buildscript/bin/spruce";
 	

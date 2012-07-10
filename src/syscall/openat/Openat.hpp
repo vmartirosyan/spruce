@@ -32,7 +32,7 @@
 #include <Directory.hpp>
 
 // Operations
-enum OpenatSyscalls
+/*enum OpenatSyscalls
 {
 OPENAT_EACCES,
 OPENAT_EEXIST,
@@ -48,7 +48,7 @@ OPENAT_ENXIO,
 OPENAT_ETXTBSY,
 OPENAT_NORMAL
 
-};
+};*/
 
 class Openat : public SyscallTest
 {			

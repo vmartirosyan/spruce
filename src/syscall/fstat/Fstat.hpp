@@ -27,11 +27,11 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum FstatOps
+/*enum FstatOps
 {
 	FstatNormalFunc,
 	FstatErrBadf
-};
+};*/
 
 class FstatTest : public SyscallTest
 {			

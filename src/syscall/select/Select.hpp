@@ -26,7 +26,7 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum SelectSyscalls
+/*enum SelectSyscalls
 {
 	SelectInvalidArg1,
 	SelectInvalidArg2,
@@ -37,7 +37,7 @@ enum SelectSyscalls
 	SelectNormalCase3,
 	SelectNormalPipeCase
 	
-};
+};*/
 
 class SelectTest : public SyscallTest
 {			

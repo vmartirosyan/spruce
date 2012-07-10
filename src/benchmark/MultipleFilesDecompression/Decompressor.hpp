@@ -23,13 +23,13 @@
 #ifndef DECOMPRESSOR_H
 #define DECOMPRESSOR_H
 
-#include "BenchmarkTest.hpp"
+#include <BenchmarkTest.hpp>
 
 // Operations
-enum DecompressOperations
+/*enum DecompressOperations
 {
 	MultipleFilesDecompression
-};
+};*/
 
 class DecompressTest : public BenchmarkTest
 {

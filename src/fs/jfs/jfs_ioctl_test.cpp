@@ -21,7 +21,7 @@
 //      MA 02110-1301, USA.
 
 #include <UnixCommand.hpp>
-#include <jfs_ioctl_test.hpp>
+#include "jfs_ioctl_test.hpp"
 #include <pwd.h>
 #include <File.hpp>
 

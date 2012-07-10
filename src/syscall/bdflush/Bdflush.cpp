@@ -20,14 +20,14 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include <Bdflush.hpp>
+#include "Bdflush.hpp"
 #include <sys/kdaemon.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <limits.h>
 #include <fcntl.h>
 #include "File.hpp"
-#include "StatFile.hpp"
+#include "../stat/StatFile.hpp"
 
 int BdFlushTest::Main(vector<string>)
 {

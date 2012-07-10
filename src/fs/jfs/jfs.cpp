@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include <jfs_ioctl_test.hpp>
+#include "jfs_ioctl_test.hpp"
 
 #include <sys/types.h>
 #include <sys/stat.h>

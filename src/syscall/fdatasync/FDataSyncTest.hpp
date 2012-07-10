@@ -36,13 +36,13 @@
 #include <pwd.h>
 
 // Operations
-enum FDataSyncSyscalls
+/*enum FDataSyncSyscalls
 {
     FDataSyncNormExec,
     FDataSyncErrInvalidFD,
     FDataSyncErrNonFsyncFD,
  
-};
+};*/
 
 class FDataSyncTest : public SyscallTest
 {

@@ -28,7 +28,7 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum fnctlFDSyscalls
+/*enum fnctlFDSyscalls
 {
 	fcntlFDGetSetFileDescriptorFlags,
 	fcntlFDGetSetFileStatusFlags,
@@ -58,7 +58,7 @@ enum fnctlFDSyscalls
     fcntlFDDupWithClExFlag,
     fcntlFDIntrSysCall
     
-};
+};*/
 
 class fcntlFD : public SyscallTest
 {

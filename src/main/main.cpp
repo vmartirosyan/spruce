@@ -44,6 +44,7 @@
 #include <sys/mount.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <platform_config.hpp>
 
 using std::ifstream;
 using std::ofstream;
@@ -201,7 +202,7 @@ int main(int argc, char ** argv)
 	
 	args.push_back("cp");
 	args.push_back("-r");
-	args.push_back("${CMAKE_INSTALL_PREFIX}/share/spruce/config/xslt/");
+	args.push_back(INSTALL_PREFIX"/share/spruce/config/xslt/");
 	args.push_back(logfolder);
 	
 	UnixCommand copy("cp");
@@ -295,13 +296,14 @@ int main(int argc, char ** argv)
 		setenv("MountAt", MountAt.c_str(), 1);
 		setenv("Partition", partition.c_str(), 1);
 		setenv("FileSystem", (*fs).c_str(), 1);
+		setenv("INSTALL_PREFIX", INSTALL_PREFIX, 1);
 		
 		str << "<FS Name=\"" << *fs << "\" >";
 		
 		for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
 		{
 			cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
-			UnixCommand command(( (string)("${CMAKE_INSTALL_PREFIX}/bin/" + (*module)).c_str()));
+			UnixCommand command(( (string)(INSTALL_PREFIX"/bin/" + (*module)).c_str()));
 			//auto_ptr<ProcessResult> result(command.Execute());
 			ProcessResult * result(command.Execute());
 			str << result->GetOutput() << endl;
@@ -311,7 +313,7 @@ int main(int argc, char ** argv)
 		if ( PerformFS_SpecificTests )
 		{
 			cerr << "Executing FS-specific tests for " << *fs << endl;
-			UnixCommand command( (string)("${CMAKE_INSTALL_PREFIX}/bin/" + *fs));
+			UnixCommand command( (string)(INSTALL_PREFIX"/bin/" + *fs));
 			//auto_ptr<ProcessResult> result(command.Execute());
 			ProcessResult * result(command.Execute());
 			str << result->GetOutput() << endl;

@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include <Openat.hpp>
+#include "Openat.hpp"
 #include <stdio.h>
 #include <unistd.h>
 #include <limits.h>
@@ -575,7 +575,7 @@ Status Openat ::openatNoDevWRBL()
 Status Openat::openatPathisExecutable()
 {
 	int ret_val = 0 , dir_fd;
-	const char* filename = "${CMAKE_INSTALL_PREFIX}/bin/spruce";
+	const char* filename = INSTALL_PREFIX"/bin/spruce";
 		
 	
 	

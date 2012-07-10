@@ -27,7 +27,7 @@
 #include <sys/stat.h>
 
 // Operations
-enum DupFileDescriptorSyscalls
+/*enum DupFileDescriptorSyscalls
 {
 	Dup,
 	Dup2,
@@ -36,7 +36,7 @@ enum DupFileDescriptorSyscalls
 	Dup2ErrEBADF,
 	Dup3ErrEBADF,
 	Dup3ErrEINVAL	
-};
+};*/
 
 class DupFileDescriptorTest : public SyscallTest
 {			

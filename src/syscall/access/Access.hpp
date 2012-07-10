@@ -27,7 +27,7 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum AccessOps
+/*enum AccessOps
 {
 	AccessNormal,
 	AccessFileExists,
@@ -36,7 +36,7 @@ enum AccessOps
 	AccessErrNameTooLong,	
 	AccessErrNoEnt,	
 	AccessErrNotDir	
-};
+};*/
 
 class AccessTest : public SyscallTest
 {			

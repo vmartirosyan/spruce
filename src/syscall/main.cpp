@@ -1,58 +1,59 @@
-#include "SyscallTest.hpp"
-#include "DupFileDescriptor.hpp"
-#include "ReadWriteFile.hpp"
-#include "Close.hpp"
-#include "Link.hpp"
-#include "Chmod.hpp"
-#include "Chown.hpp"
-#include "fcntlFD.hpp"
-#include "getdents.hpp"
-#include "IoctlTest.hpp"
-#include "rename.hpp"
-#include "ReadvWritev.hpp"
-#include "Unlink.hpp"
-#include "UnlinkAt.hpp"
-#include "StatTest.hpp"
-#include "FSyncTest.hpp"
-#include "FDataSyncTest.hpp"
-#include "PreadPwrite.hpp"
-#include "Creat.hpp"
-#include "Umask.hpp"
-#include "Select.hpp"
-#include "LseekTest.hpp"
-#include "MknodTest.hpp"
-#include "MmapMemory.hpp"
-#include "MlockMemory.hpp"
-#include "MsyncMemory.hpp"
-#include "MprotectMemory.hpp"
-#include "ReadDir.hpp"
-#include "Open.hpp"
-#include "Openat.hpp"
-#include "Linkat.hpp"
-#include "Readlink.hpp"
+#include <SyscallTest.hpp>
+#include "dup/DupFileDescriptor.hpp"
+#include "read_write/ReadWriteFile.hpp"
+#include "close/Close.hpp"
+#include "link/Link.hpp"
+#include "chmod/Chmod.hpp"
+#include "chown/Chown.hpp"
+#include "fcntl/fcntlFD.hpp"
+#include "getdents/getdents.hpp"
+#include "ioctl/IoctlTest.hpp"
+#include "rename/rename.hpp"
+#include "readv_writev/ReadvWritev.hpp"
+#include "unlink/Unlink.hpp"
+#include "unlinkat/UnlinkAt.hpp"
+#include "stat/StatTest.hpp"
+#include "fsync/FSyncTest.hpp"
+#include "fdatasync/FDataSyncTest.hpp"
+#include "pread_pwrite/PreadPwrite.hpp"
+#include "creat/Creat.hpp"
+#include "umask/Umask.hpp"
+#include "select/Select.hpp"
+#include "lseek/LseekTest.hpp"
+#include "mknod/MknodTest.hpp"
+#include "mmap/MmapMemory.hpp"
+#include "mlock/MlockMemory.hpp"
+#include "msync/MsyncMemory.hpp"
+#include "mprotect/MprotectMemory.hpp"
+#include "readdir/ReadDir.hpp"
+#include "open/Open.hpp"
+#include "openat/Openat.hpp"
+#include "linkat/Linkat.hpp"
+#include "readlink/Readlink.hpp"
 
-#include "Xattr.hpp"
+#include "xattr/Xattr.hpp"
 #include <config.hpp>
 #include <time.h>
+#include <platform_config.hpp>
 
 // Karen
 //#include "Mount_Umount.hpp"
 // Gio
-#include "chdir.hpp"
+#include "chdir/chdir.hpp"
 // Vahram
-#include "Utime.hpp"
-#include "Access.hpp"
-#include "Fstat.hpp"
-#include "Statfs.hpp"
-#include "Fstatfs.hpp"
-#include "Truncate.hpp"
-#include "Ftruncate.hpp"
+#include "utime/Utime.hpp"
+#include "access/Access.hpp"
+#include "fstat/Fstat.hpp"
+#include "statfs/Statfs.hpp"
+#include "fstatfs/Fstatfs.hpp"
+#include "truncate/Truncate.hpp"
+#include "ftruncate/Ftruncate.hpp"
 // Suren
-#include "Bdflush.hpp"
+#include "bdflush/Bdflush.hpp"
 // Gurgen
-#include "Fchmod.hpp"
-#include "Sync.hpp"
-#include "Fchown.hpp"
+#include "fchmod/Fchmod.hpp"
+#include "sync/Sync.hpp"
+#include "fchown/Fchown.hpp"
 // Ruzanna
 
 // Ani
@@ -63,58 +64,58 @@ int main(int argc, char ** argv)
 	TestCollection tests;
 	try
 	{
-		Configuration<DupFileDescriptorTest> conf1("${CMAKE_INSTALL_PREFIX}/share/spruce/config/dup.conf");
-		Configuration<ReadWriteFileTest> conf2("${CMAKE_INSTALL_PREFIX}/share/spruce/config/read_write.conf");
-		Configuration<Close> conf3("${CMAKE_INSTALL_PREFIX}/share/spruce/config/close.conf");
-		Configuration<Chmod> conf4("${CMAKE_INSTALL_PREFIX}/share/spruce/config/chmod.conf");
-		Configuration<LinkTest> conf5("${CMAKE_INSTALL_PREFIX}/share/spruce/config/link.conf");
-		Configuration<fcntlFD> conf6("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fcntl.conf");
-		Configuration<IoctlTest> conf7("${CMAKE_INSTALL_PREFIX}/share/spruce/config/ioctl.conf");
-		Configuration<GetDentsTest> conf8("${CMAKE_INSTALL_PREFIX}/share/spruce/config/getdents.conf");
-		Configuration<RenameTest> conf9("${CMAKE_INSTALL_PREFIX}/share/spruce/config/rename.conf");
-		Configuration<ReadvWritev> conf10("${CMAKE_INSTALL_PREFIX}/share/spruce/config/readv_writev.conf");
-		Configuration<UnlinkTest> conf11("${CMAKE_INSTALL_PREFIX}/share/spruce/config/unlink.conf");
-		Configuration<UnlinkAtTest> conf12("${CMAKE_INSTALL_PREFIX}/share/spruce/config/unlinkat.conf");
-		Configuration<CreatTest> conf13("${CMAKE_INSTALL_PREFIX}/share/spruce/config/creat.conf");
-		Configuration<Chown> chownConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/chown.conf");
-		Configuration<StatTest> statConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/stat.conf");
-		Configuration<FSyncTest> fsyncConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fsync.conf");
-		Configuration<FDataSyncTest> fdatasyncConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fdatasync.conf");
-		Configuration<PreadPwrite> preadPwriteConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/pread_pwrite.conf");
-		Configuration<Umask> umaskConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/umask.conf");
-		Configuration<SelectTest> selectConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/select.conf");
-		Configuration<LseekTest> lseekConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/lseek.conf");
-		Configuration<MknodTest> mknodConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/mknod.conf");
-		Configuration<MmapMemoryTest> mmapConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/mmap.conf");
-		Configuration<MsyncMemoryTest> msyncConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/msync.conf");
-		Configuration<MlockMemoryTest> mlockConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/mlock.conf");
-		Configuration<MprotectMemoryTest> mprotectConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/mprotect.conf");
-		Configuration<ReadDirTest> readdirConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/readdir.conf");
-		Configuration<ReadlinkTest> readlinkConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/readlink.conf");
-		Configuration<Openat> openatConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/openat.conf");
-		Configuration<Open> openConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/open.conf");
+		Configuration<DupFileDescriptorTest> conf1(INSTALL_PREFIX"/share/spruce/config/dup.conf");
+		Configuration<ReadWriteFileTest> conf2(INSTALL_PREFIX"/share/spruce/config/read_write.conf");
+		Configuration<Close> conf3(INSTALL_PREFIX"/share/spruce/config/close.conf");
+		Configuration<Chmod> conf4(INSTALL_PREFIX"/share/spruce/config/chmod.conf");
+		Configuration<LinkTest> conf5(INSTALL_PREFIX"/share/spruce/config/link.conf");
+		Configuration<fcntlFD> conf6(INSTALL_PREFIX"/share/spruce/config/fcntl.conf");
+		Configuration<IoctlTest> conf7(INSTALL_PREFIX"/share/spruce/config/ioctl.conf");
+		Configuration<GetDentsTest> conf8(INSTALL_PREFIX"/share/spruce/config/getdents.conf");
+		Configuration<RenameTest> conf9(INSTALL_PREFIX"/share/spruce/config/rename.conf");
+		Configuration<ReadvWritev> conf10(INSTALL_PREFIX"/share/spruce/config/readv_writev.conf");
+		Configuration<UnlinkTest> conf11(INSTALL_PREFIX"/share/spruce/config/unlink.conf");
+		Configuration<UnlinkAtTest> conf12(INSTALL_PREFIX"/share/spruce/config/unlinkat.conf");
+		Configuration<CreatTest> conf13(INSTALL_PREFIX"/share/spruce/config/creat.conf");
+		Configuration<Chown> chownConf(INSTALL_PREFIX"/share/spruce/config/chown.conf");
+		Configuration<StatTest> statConf(INSTALL_PREFIX"/share/spruce/config/stat.conf");
+		Configuration<FSyncTest> fsyncConf(INSTALL_PREFIX"/share/spruce/config/fsync.conf");
+		Configuration<FDataSyncTest> fdatasyncConf(INSTALL_PREFIX"/share/spruce/config/fdatasync.conf");
+		Configuration<PreadPwrite> preadPwriteConf(INSTALL_PREFIX"/share/spruce/config/pread_pwrite.conf");
+		Configuration<Umask> umaskConf(INSTALL_PREFIX"/share/spruce/config/umask.conf");
+		Configuration<SelectTest> selectConf(INSTALL_PREFIX"/share/spruce/config/select.conf");
+		Configuration<LseekTest> lseekConf(INSTALL_PREFIX"/share/spruce/config/lseek.conf");
+		Configuration<MknodTest> mknodConf(INSTALL_PREFIX"/share/spruce/config/mknod.conf");
+		Configuration<MmapMemoryTest> mmapConf(INSTALL_PREFIX"/share/spruce/config/mmap.conf");
+		Configuration<MsyncMemoryTest> msyncConf(INSTALL_PREFIX"/share/spruce/config/msync.conf");
+		Configuration<MlockMemoryTest> mlockConf(INSTALL_PREFIX"/share/spruce/config/mlock.conf");
+		Configuration<MprotectMemoryTest> mprotectConf(INSTALL_PREFIX"/share/spruce/config/mprotect.conf");
+		Configuration<ReadDirTest> readdirConf(INSTALL_PREFIX"/share/spruce/config/readdir.conf");
+		Configuration<ReadlinkTest> readlinkConf(INSTALL_PREFIX"/share/spruce/config/readlink.conf");
+		Configuration<Openat> openatConf(INSTALL_PREFIX"/share/spruce/config/openat.conf");
+		Configuration<Open> openConf(INSTALL_PREFIX"/share/spruce/config/open.conf");
 		
-		Configuration<LinkatTest> linkatConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/linkat.conf");
-		Configuration<Xattr> xattrConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/xattr.conf");
+		Configuration<LinkatTest> linkatConf(INSTALL_PREFIX"/share/spruce/config/linkat.conf");
+		Configuration<Xattr> xattrConf(INSTALL_PREFIX"/share/spruce/config/xattr.conf");
 		
 		// Karen
-		//Configuration<Mount_Umount> mount_umountConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/mount_umount.conf");
+		//Configuration<Mount_Umount> mount_umountConf(INSTALL_PREFIX"/share/spruce/config/mount_umount.conf");
 		// Gio
-		Configuration<Chdir> chdirConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/chdir.conf");			
+		Configuration<Chdir> chdirConf(INSTALL_PREFIX"/share/spruce/config/chdir.conf");			
 		// Vahram
-		Configuration<UtimeTest> utimeConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/utime.conf");
-		Configuration<AccessTest> accessConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/access.conf");
-		Configuration<FstatTest> fstatConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fstat.conf");
-		Configuration<StatfsTest> statfsConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/statfs.conf");
-		Configuration<FstatfsTest> fstatfsConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fstatfs.conf");
-		Configuration<TruncateTest> truncateConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/truncate.conf");
-		Configuration<FtruncateTest> ftruncateConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/ftruncate.conf");
+		Configuration<UtimeTest> utimeConf(INSTALL_PREFIX"/share/spruce/config/utime.conf");
+		Configuration<AccessTest> accessConf(INSTALL_PREFIX"/share/spruce/config/access.conf");
+		Configuration<FstatTest> fstatConf(INSTALL_PREFIX"/share/spruce/config/fstat.conf");
+		Configuration<StatfsTest> statfsConf(INSTALL_PREFIX"/share/spruce/config/statfs.conf");
+		Configuration<FstatfsTest> fstatfsConf(INSTALL_PREFIX"/share/spruce/config/fstatfs.conf");
+		Configuration<TruncateTest> truncateConf(INSTALL_PREFIX"/share/spruce/config/truncate.conf");
+		Configuration<FtruncateTest> ftruncateConf(INSTALL_PREFIX"/share/spruce/config/ftruncate.conf");
 		// Suren
-		Configuration<BdFlushTest> bdflushConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/bdflush.conf");
+		Configuration<BdFlushTest> bdflushConf(INSTALL_PREFIX"/share/spruce/config/bdflush.conf");
 		// Gurgen
-			Configuration<Fchmod> fchmodConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fchmod.conf");
-			Configuration<Sync> syncConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/sync.conf");		
-			Configuration<Fchown> fchownConf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/fchown.conf");		
+			Configuration<Fchmod> fchmodConf(INSTALL_PREFIX"/share/spruce/config/fchmod.conf");
+			Configuration<Sync> syncConf(INSTALL_PREFIX"/share/spruce/config/sync.conf");		
+			Configuration<Fchown> fchownConf(INSTALL_PREFIX"/share/spruce/config/fchown.conf");		
 		// Ruzanna
 		
 		// Ani

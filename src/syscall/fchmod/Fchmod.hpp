@@ -25,7 +25,7 @@
 
 #include "SyscallTest.hpp"
 // Operations
-enum FchmodSyscalls
+/*enum FchmodSyscalls
 {
 	FCHMOD_S_IRWXU,
 	FCHMOD_S_IRUSR,
@@ -47,7 +47,7 @@ enum FchmodSyscalls
 
 
 
-};
+};*/
 
 class Fchmod : public SyscallTest
 {			

@@ -31,11 +31,11 @@
 #include <sys/stat.h>
 
 // Operations
-enum BdFlushSyscalls
+/*enum BdFlushSyscalls
 {
 	BDFLUSH_EPERM,      //todo
 
-};
+};*/
 
 class BdFlushTest : public SyscallTest
 {			

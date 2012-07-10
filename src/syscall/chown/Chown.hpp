@@ -26,7 +26,7 @@
 
 #include "SyscallTest.hpp"
 // Operations
-enum ChmodSyscalls
+/*enum ChmodSyscalls
 {
 
 CHOWN_CHANGE_OWNER
@@ -37,7 +37,7 @@ CHOWN_ERR_ENOTDIR
 	
 
 
-};
+};*/
 
 class Chown : public SyscallTest
 {			

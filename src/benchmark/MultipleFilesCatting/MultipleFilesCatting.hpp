@@ -25,13 +25,13 @@
 #ifndef MULTIPLE_FILES_CATTING_H
 #define MULTIPLE_FILES_CATTING_H
 
-#include "BenchmarkTest.hpp"
+#include <BenchmarkTest.hpp>
 
 // Operations
-enum MultipleFilesCatOperations
+/*enum MultipleFilesCatOperations
 {
 	MultipleFilesCattingOp
-};
+};*/
 
 class MultipleFilesCatting : public BenchmarkTest
 {

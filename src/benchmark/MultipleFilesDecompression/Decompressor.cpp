@@ -22,8 +22,8 @@
 
 #include <stdlib.h>
 #include <memory>
-#include <Decompressor.hpp>
-#include "UnixCommand.hpp"
+#include "Decompressor.hpp"
+#include <UnixCommand.hpp>
 
 using std::auto_ptr;
 
@@ -46,7 +46,7 @@ int DecompressTest::Main(vector<string>)
 
 Status DecompressTest::MultipleFilesDecompressionFunc()
 {
-	UnixCommand command("${CMAKE_INSTALL_PREFIX}bin/MultipleFilesDecompression.sh");
+	UnixCommand command(INSTALL_PREFIX"/bin/MultipleFilesDecompression.sh");
     auto_ptr<ProcessResult> result(command.Execute(CreateArguments()));
     cerr << result->GetOutput() << " ";
     

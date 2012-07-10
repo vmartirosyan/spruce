@@ -35,7 +35,7 @@
 #include <pwd.h>
 
 // Operations
-enum StatSyscalls
+/*enum StatSyscalls
 {
     STAT_NORM_EXEC,
     StatErrNoAccess,
@@ -45,7 +45,7 @@ enum StatSyscalls
     StatErrNonExistantFile,
     StatErrEmptyPath,
  
-};
+};*/
 
 class StatTest : public SyscallTest
 {
