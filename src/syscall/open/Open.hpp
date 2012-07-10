@@ -29,6 +29,7 @@
 #include <linux/fs.h>
 #include <pwd.h>
 #include <sys/stat.h>
+#include <Directory.hpp>
 // Operations
 enum OpenSyscalls
 {
@@ -52,23 +53,15 @@ class Open : public SyscallTest
 {			
 public:	
 	Open(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "open")
+		SyscallTest(mode, operation, arguments, "open"),
+		_statDir("open_test_dir"),
+		dir(_statDir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
 	{			
 		
-		  long size;
-            _cwd = NULL;
-            size = pathconf(".", _PC_PATH_MAX);
-
-            if ((_cwd = (char *)malloc((size_t)size)) != NULL)
-                _cwd = getcwd(_cwd, (size_t)size);
-            
-            _statDir = (string) _cwd + "/open_test_dir";
-            mkdir (_statDir.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-		
 	}
-	virtual ~Open() {
-		  system (("rm -rf " + _statDir).c_str());
-            free(_cwd);}	
+	virtual ~Open()
+	{
+    }	
 	Status openTooLongPath();		//done
 	Status openNoAcces();    		//done
 	Status openOutside();    		//done
@@ -93,7 +86,7 @@ protected:
 	virtual int Main(vector<string> args);	
  private:
         string _statDir;
-        char *_cwd;
+        Directory dir;
 	
 };
 #endif

@@ -26,7 +26,7 @@
 #include "SyscallTest.hpp"
 #include "File.hpp"
 #include <../stat/StatFile.hpp>
-
+#include <Directory.hpp>
 
 
 #include <linux/fs.h>
@@ -49,22 +49,13 @@ class FDataSyncTest : public SyscallTest
 	public:
 		FDataSyncTest (Mode mode, int operation, string arguments = "") :
             
-            SyscallTest(mode, operation, arguments, "fdatasync") 
+            SyscallTest(mode, operation, arguments, "fdatasync"),
+            _tmpDir("fdatasync_test_dir"),
+            dir(_tmpDir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
         {
-            long size;
-            _cwd = NULL;
-            size = pathconf(".", _PC_PATH_MAX);
-
-            if ((_cwd = (char *)malloc((size_t)size)) != NULL)
-                _cwd = getcwd(_cwd, (size_t)size);
             
-            _tmpDir = (string) _cwd + "/fdatasync_test_dir";
-            mkdir (_tmpDir.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-
         }
 		virtual ~FDataSyncTest () {
-            system (("rm -rf " + _tmpDir).c_str());
-            free(_cwd);
         }
         // Tests for basic functionality
         Status NormExec ();
@@ -76,7 +67,7 @@ class FDataSyncTest : public SyscallTest
 		virtual int Main (vector<string> args);
     private:
         string _tmpDir;
-        char *_cwd;
+        Directory dir;
 };
 
 #endif /* TEST_FDATASYNCTEST_H */

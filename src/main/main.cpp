@@ -342,14 +342,29 @@ int main(int argc, char ** argv)
 		}
 		
 		// Open the log file in the selected browser
-		string browser_args = logfolder + "/spruce_log_" + *fs + ".xml";
-		if ( browser == "chrome" )
+		
+		UnixCommand browser_cmd(browser);
+		vector<string> browser_args;
+		browser_args.push_back(logfolder + "/spruce_log_" + *fs + ".xml");
+		if ( browser.find("chrome") != string::npos )
 		{
-			browser = "chromium";
-			browser_args += " --allow-file-access-from-files --user-data-dir /tmp";
+			//browser = "chromium";
+			browser_args.push_back("--allow-file-access-from-files");
+			browser_args.push_back("--user-data-dir");
+			browser_args.push_back("/tmp");
 		}
-		string command = "bash -c '" + browser + " " + browser_args + " &'";
-		system(command.c_str());
+		res = browser_cmd.Execute(browser_args);
+		if ( res == NULL )
+		{
+			cerr << "Cannot execute the browser: " << browser << endl;
+			return FAULT;
+		}
+		if ( res->GetStatus() != Success )
+		{
+			cerr << "Error executing " << browser << ". " << res->GetOutput() << endl;
+			return FAULT;
+		}
+		return SUCCESS;				
 	}
 	
 	return 0;

@@ -29,6 +29,7 @@
 #include <linux/fs.h>
 #include <pwd.h>
 #include <sys/stat.h>
+#include <Directory.hpp>
 
 // Operations
 enum OpenatSyscalls
@@ -53,25 +54,14 @@ class Openat : public SyscallTest
 {			
 public:	
 	Openat(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "Openat")
+		SyscallTest(mode, operation, arguments, "openat"),
+		_statDir("openat_test_dir"),
+		_buildDir("."),
+		dir(_statDir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
 	{			
-			  long size;
-            _cwd = NULL;
-            size = pathconf(".", _PC_PATH_MAX);
-
-            if ((_cwd = (char *)malloc((size_t)size)) != NULL)
-                _cwd = getcwd(_cwd, (size_t)size);
-            
-            _statDir = (string) _cwd + "/openat_test_dir";
-            _buildDir = (string) _cwd;
-            mkdir (_statDir.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-		
 	}
 	virtual ~Openat() 
 	{ 
-			system (("rm -rf " + _statDir).c_str());
-		
-			free(_cwd);
     }
   
 	Status openatTooLongPath();		//done
@@ -95,7 +85,7 @@ protected:
 private:
     string _statDir;
     string _buildDir;
-    char *_cwd;
+    Directory dir;
 	
 };
 #endif
