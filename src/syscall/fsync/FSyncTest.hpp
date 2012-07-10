@@ -30,7 +30,7 @@
 #include <linux/fs.h>
 #include <sys/stat.h>
 #include <stdlib.h>
-
+#include <Directory.hpp>
 #include <pwd.h>
 
 // Operations
@@ -47,22 +47,14 @@ class FSyncTest : public SyscallTest
 	public:
 		FSyncTest (Mode mode, int operation, string arguments = "") :
             
-            SyscallTest(mode, operation, arguments, "fsync") 
+            SyscallTest(mode, operation, arguments, "fsync"),
+            _tmpDir("fsync_test_dir"),
+            dir(_tmpDir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
         {
-            long size;
-            _cwd = NULL;
-            size = pathconf(".", _PC_PATH_MAX);
-
-            if ((_cwd = (char *)malloc((size_t)size)) != NULL)
-                _cwd = getcwd(_cwd, (size_t)size);
-            
-            _tmpDir = (string) _cwd + "/fsync_test_dir";
-            mkdir (_tmpDir.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-
+			
         }
 		virtual ~FSyncTest () {
-            system (("rm -rf " + _tmpDir).c_str());
-            free(_cwd);
+            
         }
         // Tests for basic functionality
         Status NormExec ();
@@ -74,7 +66,7 @@ class FSyncTest : public SyscallTest
 		virtual int Main (vector<string> args);
     private:
         string _tmpDir;
-        char *_cwd;
+        Directory dir;
 };
 
 #endif /* TEST_FSYNCTEST_H */

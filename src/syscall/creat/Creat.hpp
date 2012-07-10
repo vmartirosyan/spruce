@@ -29,6 +29,7 @@
 #include <linux/fs.h>
 #include <pwd.h>
 #include <sys/stat.h>
+#include <Directory.hpp>
 
 // Operations
 enum CreatSyscalls
@@ -49,23 +50,14 @@ class CreatTest : public SyscallTest
 {			
 public:	
 	CreatTest(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "Creat")
+		SyscallTest(mode, operation, arguments, "Creat"),
+		_statDir("creat_test_dir"),
+		dir(_statDir,  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
 	{	
 		
-		
-		  long size;
-            _cwd = NULL;
-            size = pathconf(".", _PC_PATH_MAX);
-
-            if ((_cwd = (char *)malloc((size_t)size)) != NULL)
-                _cwd = getcwd(_cwd, (size_t)size);
-            
-            _statDir = (string) _cwd + "/creat_test_dir";
-            mkdir (_statDir.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-				
 	}
-	virtual ~CreatTest() {  system (("rm -rf " + _statDir).c_str());
-            free(_cwd);}	
+	virtual ~CreatTest() {  
+        }	
             
 	Status CreatTooLongPath();			//done CREAT_ENAMETOOLONG
 	Status CreatFileExist();			//done CREAT_EEXIST
@@ -87,7 +79,7 @@ private:
 	int file_index;
 	char fname[50];
 	string _statDir;
-    char *_cwd;
+    Directory dir;
 	
 };
 #endif

@@ -25,7 +25,7 @@
 
 #include "SyscallTest.hpp"
 #include "exception.hpp"
-
+#include <Directory.hpp>
 #include <unistd.h>
 #include <linux/fs.h>
 #include <sys/ioctl.h>
@@ -52,22 +52,14 @@ class StatTest : public SyscallTest
 	public:
 		StatTest(Mode mode, int operation, string arguments = "") :
             
-            SyscallTest(mode, operation, arguments, "stat") 
+        SyscallTest(mode, operation, arguments, "stat"),
+        _statDir("stat_test_dir"),
+        dir(_statDir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)
         {
-            long size;
-            _cwd = NULL;
-            size = pathconf(".", _PC_PATH_MAX);
-
-            if ((_cwd = (char *)malloc((size_t)size)) != NULL)
-                _cwd = getcwd(_cwd, (size_t)size);
             
-            _statDir = (string) _cwd + "/stat_test_dir";
-            mkdir (_statDir.c_str(),  S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-
         }
 		virtual ~StatTest() {
-            system (("rm -rf " + _statDir).c_str());
-            free(_cwd);
+            
         }
         // Tests for basic functionality
         Status NormExec();
@@ -88,7 +80,8 @@ class StatTest : public SyscallTest
 		virtual int Main(vector<string> args);
     private:
         string _statDir;
-        char *_cwd;
+        Directory dir;
+
 };
 
 #endif /* TEST_STATTEST_H */

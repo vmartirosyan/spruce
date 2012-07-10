@@ -1,7 +1,0 @@
-fs=jfs
-modules=syscall;fs-spec;
-partition=/home/vmartirosyan/test_part
-browser=opera
-logfolder=/tmp
-mount_opts=-o;loop;-F
-

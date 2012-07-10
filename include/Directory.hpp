@@ -51,7 +51,7 @@ class Directory
 		_flags(flags)
 		{
 			//cerr<<"Creating directory "<<_pathname;
-			if (mkdir(_pathname.c_str(), _mode) == -1)
+			if (mkdir(_pathname.c_str(), _mode) == -1 && errno != EEXIST)
 			{								
 				throw Exception("Cannot create directory " + _pathname + 
 				": error = " + static_cast<string>(strerror(errno)));

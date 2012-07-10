@@ -134,7 +134,7 @@ Status Openat::openatOutside()
 	}
 	
     dir_fd = dirfd(d);
-    ret_val = openat( dir_fd,(char*)-1, O_CREAT);
+    ret_val = openat( dir_fd,(char*)-1, O_CREAT, O_RDONLY);
    
 	if(ret_val != -1)
 	{
@@ -171,7 +171,7 @@ Status Openat::openatPathIsNotDir()
 		return Unres;
 	}
     dir_fd = dirfd(d);
-    ret_val = openat( dir_fd,"notadir/test.txt", O_CREAT);
+    ret_val = openat( dir_fd,"notadir/test.txt", O_CREAT, O_RDONLY);
 	
 	
 	
@@ -235,7 +235,7 @@ Status Openat::openatLoopInSymLink()
 		return Unres;
 	}
     dir_fd = dirfd(d);
-    ret_val = openat( dir_fd,filePath.c_str(), O_CREAT);
+    ret_val = openat( dir_fd,filePath.c_str(), O_CREAT, O_RDONLY	);
 	
    
     if (ret_val != -1) {
@@ -297,7 +297,7 @@ Status Openat::openatNoAcces ()
 		return Unres;
 	}
     dir_fd = dirfd(d);
-    ret_val = openat( dir_fd,filePath.c_str(), O_CREAT);
+    ret_val = openat( dir_fd,filePath.c_str(), O_CREAT, O_RDONLY);
     
     	
 	   if (ret_val != -1) {
@@ -327,7 +327,7 @@ Status Openat::openatPathCompIsNotDir()
 		return Unres;
 	}
     dir_fd = dirfd(d);
-    ret_val = openat( dir_fd,notrealDirInPath, O_CREAT);
+    ret_val = openat( dir_fd,notrealDirInPath, O_CREAT, O_RDONLY);
     
 	
 				
@@ -361,7 +361,7 @@ Status Openat::openatPathAlreadyExist()
    
     DIR *d = opendir(_buildDir.c_str());
     dir_fd = dirfd(d);
-    ret_val = openat(dir_fd, filename, O_CREAT|O_EXCL);
+    ret_val = openat(dir_fd, filename, O_CREAT|O_EXCL, O_RDONLY);
 	
 	if(ret_val != -1)
 	{
@@ -443,7 +443,7 @@ Status Openat:: openatMaxFileNumOpened()
 		return Unres;
 	}
     dir_fd = dirfd(d);
-    ret_val = openat( dir_fd,filename, O_CREAT);
+    ret_val = openat( dir_fd,filename, O_CREAT, O_RDONLY);
     
     if(ret_val == -1)
 	{
@@ -614,7 +614,7 @@ Status Openat::openatNormal()
 		return Unres;
 	}
     dir_fd = dirfd(d);
-    ret_val = openat( dir_fd,filename,  O_CREAT);
+    ret_val = openat( dir_fd,filename,  O_CREAT, O_RDONLY);
 	
 	
 	if(ret_val==-1)
