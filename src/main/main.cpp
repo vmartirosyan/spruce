@@ -345,7 +345,7 @@ int main(int argc, char ** argv)
 		
 		// Open the log file in the selected browser
 		
-		UnixCommand browser_cmd(browser);
+		UnixCommand browser_cmd(browser, ProcessBackground);
 		vector<string> browser_args;
 		browser_args.push_back(logfolder + "/spruce_log_" + *fs + ".xml");
 		if ( browser.find("chrome") != string::npos )

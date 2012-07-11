@@ -23,12 +23,20 @@
 #ifndef PROCESS_HPP
 #define PROCESS_HPP
 
+enum ProcessMode
+{
+	ProcessForeground,
+	ProcessBackground
+};
+
 #include "common.hpp"
 #include <errno.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 class ProcessResult
 {
@@ -60,6 +68,16 @@ public:
 	virtual ProcessResult * Execute(vector<string> args = vector<string>());
 	
 	virtual ~Process() {}
+protected:
+	virtual int Main(vector<string> args) = 0;
+};
+
+class BackgroundProcess : public Process
+{
+public:	
+	virtual ProcessResult * Execute(vector<string> args = vector<string>());
+	
+	virtual ~BackgroundProcess() {}
 protected:
 	virtual int Main(vector<string> args) = 0;
 };

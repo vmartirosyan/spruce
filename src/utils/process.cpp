@@ -102,3 +102,33 @@ ProcessResult * Process::Execute(vector<string> args)
 	
 	return new ProcessResult(WEXITSTATUS(status), Output);
 }
+
+ProcessResult * BackgroundProcess::Execute(vector<string> args)
+{
+	// Create the child process
+	pid_t ChildId = fork();
+	
+	if ( ChildId == -1 )
+	{
+		return new ProcessResult(Unres, "Cannot create child process. " + (string)strerror(errno));		
+	}
+	
+	if ( ChildId == 0 ) // Child process. Run the Main method
+	{
+		// Close the original descriptors
+		close(0);
+		close(1);
+		close(2);
+		
+		int in_stream = open("/dev/zero", O_RDONLY);		
+		int out_stream = open("/dev/null", O_WRONLY);		
+		int err_stream = open("/dev/null", O_WRONLY);
+		
+		_exit(Main(args));
+	}
+	
+	int status = 0;
+	
+	// This is a background process. No need to wait for the child :)
+	return new ProcessResult(WEXITSTATUS(status), "Child process is executed.");
+}
