@@ -33,24 +33,34 @@
 // 		UnixCommand uc("ls");
 // 		ProcessResult* pr = uc.Execute();
 // 		cout << pr->GetOutput()<< endl;
-class UnixCommand : public Process
+class UnixCommand : public BackgroundProcess
 {
 public:	
-	UnixCommand(string name) : _name(name) {}
+	UnixCommand(string name, ProcessMode mode = ProcessForeground) : _name(name), _mode(mode) {}
+	virtual ProcessResult * Execute(vector<string> args = vector<string>())
+	{
+		return ( ( _mode == ProcessBackground ) ? BackgroundProcess::Execute(args) : Process::Execute(args) );
+	}
 	~UnixCommand() {}
 protected:
 	int Main(vector<string> args) 
 	{
 		char** argv = new char*[args.size() + 2];
 		argv[0] = (char*)_name.c_str();
+		
 		for (unsigned int i = 0; i < args.size(); i++)
+		{
 			argv[i + 1] = (char*)args[i].c_str();
+		}
+		
 		argv[args.size() + 1] = (char*)0;
+		
 		execvp(argv[0], argv);
 		cerr << "Cannot execute unix command: " << argv[0] << " Error: " << strerror(errno);
 		return static_cast<int>(Unres);
 	}
 protected:
 	string _name;
+	ProcessMode _mode;
 };
 #endif /* UNIX_COMMAND_H */

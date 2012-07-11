@@ -60,6 +60,8 @@ int main(int argc, char ** argv)
 		return Usage(argv);
 	cout << "++ Generating operations header file..." << endl;
 	
+	cout << "Args: " << argv[1] << "\t" << argv[2] << endl;
+	
 	Operations.push_back("UnknownOperation");
 	
 	//rename("/home/vmartirosyan/workspace/build/include/operations.hpp.old", "/home/vmartirosyan/workspace/build/include/operations.hpp");
@@ -114,7 +116,12 @@ vector<string> GetHeaderFiles(const string & root)
 		while (s.good())
 		{
 			s >> file;
-			//cout << file << endl;
+			// Strange, but there is a need to convert relative file paths to absolute ones...
+			if ( file[0] == '.' && file[1] == '/' )
+			{
+				file = root + file.substr(1);
+			}
+			//cout << "root: " << root << "\tfile: " << file << endl;
 			if ( root.size() > file.size())
 			{
 				cerr << "Error with file and root folder lengths" << endl;
