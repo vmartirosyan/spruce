@@ -230,6 +230,13 @@ int main(int argc, char ** argv)
 		// Ruzanna
 		
 		// Ani
+		
+		
+		TestResultCollection res = tests.Run();
+	
+		cerr << "<Module Name=\"Syscall\">\n" << res.ToXML() << "</Module>" << endl;
+		
+		return res.GetStatus();
 	}
 	catch (Exception ex)
 	{
@@ -238,9 +245,7 @@ int main(int argc, char ** argv)
 	}
 
     
-	TestResultCollection res = tests.Run();
 	
-	cerr << "<Module Name=\"Syscall\">\n" << res.ToXML() << "</Module>" << endl;
 	
 }
 

@@ -81,6 +81,10 @@ enum ErrorCodes
 
 int main(int argc, char ** argv)
 {
+	// The status of the whole process.
+	// If any of the tests does not succeed then FAULT is returned!
+	int Status = 0;
+	
 	//Prepare the allowed modules list
 	ModulesAvailable.push_back("syscall");
 	ModulesAvailable.push_back("benchmark");
@@ -184,14 +188,15 @@ int main(int argc, char ** argv)
 	}
 
 	// Find out which browser must be used to view the log file
-	string browser = "firefox";
+	// If no browser name is specified, then the system will be executed in batch mode.
+	string browser = "";
 	if ( configValues.find("browser") != configValues.end() )
 	{
 		browser = configValues["browser"];
 	}
 	else
 	{
-		cerr << "Notice. No browser specified. Using " << browser << " as default." << endl;
+		cerr << "Notice. No browser specified. Switching to batch mode." << endl;
 	}
 	
 	//mkdir((logfolder + "/xslt").c_str(), 0700);
@@ -304,9 +309,11 @@ int main(int argc, char ** argv)
 		{
 			cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
 			UnixCommand command(( (string)(INSTALL_PREFIX"/bin/" + (*module)).c_str()));
-			//auto_ptr<ProcessResult> result(command.Execute());
-			ProcessResult * result(command.Execute());
+			auto_ptr<ProcessResult> result(command.Execute());
+			//ProcessResult * result(command.Execute());
 			str << result->GetOutput() << endl;
+			Status |= result->GetStatus();
+			cerr << "Module " << *module << " exits with status " << result->GetStatus() << endl;
 		}
 		
 		// Should we perform the FS-specific tests?
@@ -314,9 +321,10 @@ int main(int argc, char ** argv)
 		{
 			cerr << "Executing FS-specific tests for " << *fs << endl;
 			UnixCommand command( (string)(INSTALL_PREFIX"/bin/" + *fs));
-			//auto_ptr<ProcessResult> result(command.Execute());
-			ProcessResult * result(command.Execute());
+			auto_ptr<ProcessResult> result(command.Execute());
+			//ProcessResult * result(command.Execute());
 			str << result->GetOutput() << endl;
+			Status |= result->GetStatus();
 		}
 		
 		str << "</FS>";
@@ -344,29 +352,31 @@ int main(int argc, char ** argv)
 		}
 		
 		// Open the log file in the selected browser
-		
-		UnixCommand browser_cmd(browser, ProcessBackground);
-		vector<string> browser_args;
-		browser_args.push_back(logfolder + "/spruce_log_" + *fs + ".xml");
-		if ( browser.find("chrome") != string::npos )
+		if ( browser != "" )
 		{
-			//browser = "chromium";
-			browser_args.push_back("--allow-file-access-from-files");
-			browser_args.push_back("--user-data-dir");
-			browser_args.push_back("/tmp");
+			UnixCommand browser_cmd(browser, ProcessBackground);
+			vector<string> browser_args;
+			browser_args.push_back(logfolder + "/spruce_log_" + *fs + ".xml");
+			if ( browser.find("chrome") != string::npos )
+			{
+				//browser = "chromium";
+				browser_args.push_back("--allow-file-access-from-files");
+				browser_args.push_back("--user-data-dir");
+				browser_args.push_back("/tmp");
+			}
+			res = browser_cmd.Execute(browser_args);
+			if ( res == NULL )
+			{
+				cerr << "Cannot execute the browser: " << browser << endl;
+				return FAULT;
+			}
+			if ( res->GetStatus() != Success )
+			{
+				cerr << "Error executing " << browser << ". " << res->GetOutput() << endl;
+				return FAULT;
+			}
 		}
-		res = browser_cmd.Execute(browser_args);
-		if ( res == NULL )
-		{
-			cerr << "Cannot execute the browser: " << browser << endl;
-			return FAULT;
-		}
-		if ( res->GetStatus() != Success )
-		{
-			cerr << "Error executing " << browser << ". " << res->GetOutput() << endl;
-			return FAULT;
-		}
-		return SUCCESS;				
+		return ( Status == 0 ) ? SUCCESS : FAULT;				
 	}
 	
 	return 0;
