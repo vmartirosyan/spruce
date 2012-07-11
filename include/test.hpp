@@ -78,6 +78,13 @@ public:
 			
 		return result;
 	}
+	Status GetStatus()
+	{
+		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
+			if ( (*i)->GetStatus() != Success )
+				return Fail;
+		return Success;
+	}
 	~TestResultCollection()
 	{
 		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
