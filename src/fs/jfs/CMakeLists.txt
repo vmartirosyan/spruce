@@ -1,13 +1,21 @@
-cmake_minimum_required(VERSION 2.6)
-project (Spruce)
-message("Configuring JFS specific sources.")
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-#include_directories(${CMAKE_CURRENT_BINARY_DIR})
+MESSAGE("Configuring JFS module")
+PROJECT (Spruce)
 
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/jfs.cpp ${CMAKE_CURRENT_BINARY_DIR}/jfs.cpp)
+ADD_CUSTOM_COMMAND(
+   OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp
+   COMMAND ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/engine
+   DEPENDS ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_SOURCE_DIR}/engine/module.xslt ${CMAKE_SOURCE_DIR}/engine/testset.xslt ${CMAKE_CURRENT_SOURCE_DIR}/module.xml ${CMAKE_CURRENT_SOURCE_DIR}/Ioctl.xml 
+   )
 
-add_executable( jfs ${CMAKE_CURRENT_SOURCE_DIR}/jfs.cpp jfs_ioctl_test.cpp jfs_ioctl_test.hpp ${CMAKE_SOURCE_DIR}/include/config.hpp)
-target_link_libraries(jfs utils)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+ADD_EXECUTABLE(jfs ${CMAKE_CURRENT_BINARY_DIR}/module.cpp )
+						
+TARGET_LINK_LIBRARIES(jfs utils)
+TARGET_LINK_LIBRARIES(jfs rt)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/jfs"
 			DESTINATION bin

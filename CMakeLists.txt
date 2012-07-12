@@ -34,6 +34,8 @@ include_directories("${CMAKE_BINARY_DIR}/include")
 # Changing the source directory to point to the binary directory
 #SET(CMAKE_SOURCE_DIR, ${CMAKE_BINARY_DIR})
 
+add_subdirectory (src/utils)
+add_subdirectory (engine)
 add_subdirectory (bin)
 add_subdirectory (include)
 add_subdirectory (lib)
