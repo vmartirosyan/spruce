@@ -37,19 +37,31 @@ public:
 	TestResult(ProcessResult pr, int op, string args):
 		ProcessResult(pr),
 		_operation(op),
+		_stroperation(OperationToString()),
 		_arguments(args) {}
 	TestResult(Status s, string output, int op, string args):
 		ProcessResult((int)s, output),
 		_operation(op),
+		_stroperation(OperationToString()),
+		_arguments(args) {}
+	TestResult(ProcessResult pr, string op, string args):
+		ProcessResult(pr),
+		_stroperation(op),
+		_arguments(args) {}
+	TestResult(Status s, string output, string op, string args):
+		ProcessResult((int)s, output),
+		_stroperation(op),
 		_arguments(args) {}
 	TestResult(TestResult const & tr) : 
 		ProcessResult(tr),
 		_operation(tr._operation),
+		_stroperation(tr._stroperation),
 		_arguments(tr._arguments) {}
 	 	 	 
 	virtual string ToXML();
 protected:
 	int _operation;
+	string _stroperation;
 	string _arguments;
 	string StatusToString();
 	virtual string OperationToString()
@@ -101,12 +113,23 @@ public:
 		_mode(m),
 		_operation(op),
 		_args(a) {}
+	Test(Mode m, string op, string a):
+		_mode(m),
+		_stroperation(op),
+		_args(a) {}
+	Test(const Test & t):
+		_mode(t._mode),
+		_operation(t._operation),
+		_stroperation(t._stroperation),
+		_args(t._args) {}
+	
 	ProcessResult * Execute(vector<string> args = vector<string>());
 	virtual ~Test() {}
 protected:
 	virtual int Main(vector<string> args) = 0;
 	Mode _mode;
 	int _operation;
+	string _stroperation;
 	string _args;
 };
 
