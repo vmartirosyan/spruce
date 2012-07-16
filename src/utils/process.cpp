@@ -21,9 +21,19 @@
 //      MA 02110-1301, USA.
 
 #include <process.hpp>
+#include <signal.h>
 
 ProcessResult::~ProcessResult()
 {
+}
+
+int SignalHandler(int signum)
+{
+	switch (signum)
+	{
+		case SIGALRM:
+			_exit(Timeout);
+	}
 }
 
 #include <fstream>
@@ -64,6 +74,7 @@ ProcessResult * Process::Execute(vector<string> args)
 	
 	if ( ChildId == 0 ) // Child process. Run the Main method
 	{
+		alarm(TEST_TIMEOUT);
 		cerr << " ";
 		_exit(Main(args));
 	}
