@@ -1,4 +1,4 @@
-//      chdir.cpp
+//      Mkdir_rmdir.cpp
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -20,62 +20,34 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include "chdir.hpp"
+#include "Mkdir_rmdir.hpp"
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <string.h>
-#include "File.hpp"
-#include "Directory.hpp"
+#include <pwd.h>
 
 
 
-int Chdir::Main(vector<string>)
+int Mkdir_rmdir::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{	
 		switch (_operation)
-		{
-			/*case CHDIR_S_IRWXU:
-				return PermissionsTest(S_IRWXU);
-	        case CHDIR_S_IRUSR:
-				return PermissionsTest(S_IRUSR);
-			case CHDIR_S_IWUSR:
-				return PermissionsTest(S_IWUSR);
-			case CHDIR_S_IXUSR:
-				return PermissionsTest(S_IXUSR);
-				
-			case CHDIR_S_IRWXG:
-				return PermissionsTest(S_IRWXG);
-			case CHDIR_S_IRGRP:
-				return PermissionsTest(S_IRGRP);
-			case CHDIR_S_IWGRP:
-				return PermissionsTest(S_IWGRP);
-			case CHDIR_S_IXGRP:
-				return PermissionsTest(S_IXGRP);
-				
-			case CHDIR_S_IRWXO:
-				return PermissionsTest(S_IRWXO);
-			case CHDIR_S_IROTH:
-				return PermissionsTest(S_IROTH);
-			case CHDIR_S_IWOTH:
-				return PermissionsTest(S_IWOTH);
-			case CHDIR_S_IXOTH:
-				return PermissionsTest(S_IXOTH);
-			case CHDIR_S_ISUID:
-				return PermissionsTest(S_ISUID);*/
-				
-		    case CHDIR_ERR_ENAMETOOLONG:
-				return ChdirTooLongPath();
+		{			
+		    /*case CHDIR_ERR_ENAMETOOLONG:
+				return Mkdir_rmdirTooLongPath();
 			case CHDIR_ERR_ENOENT:
-				return ChdirFileNotExist();
+				return Mkdir_rmdirFileNotExist();
 		    case CHDIR_ERR_ENOTDIR:
-				return ChdirIsNotDirectory();
+				return Mkdir_rmdirIsNotDirectory();
 		    case CHDIR_NORMAL_FUNC:
-				return ChdirNormalFunc();	
+				return Mkdir_rmdirNormalFunc();	
 			case CHDIR_ERR_ELOOP:
-				return ChdirLoopInSymLink();			
+				return Mkdir_rmdirLoopInSymLink();	
+			case CHDIR_ERR_EACCES:
+				return Mkdir_rmdirNoAcces();*/
 			default:
 				cerr << "Unsupported operation.";
 				return Unres;		
@@ -85,9 +57,9 @@ int Chdir::Main(vector<string>)
 	return Success;
 }
 
+/*
 
-
-Status Chdir::ChdirIsNotDirectory()
+Status Mkdir_rmdir::Mkdir_rmdirIsNotDirectory()
 {
 	const char *path="chdirTest.txt";
 	const char *pathNotDirectory = "chdirTest.txt/somthingelse" ;
@@ -100,7 +72,7 @@ Status Chdir::ChdirIsNotDirectory()
 				
 		if(ret_chdir == 0)
 		{
-			cerr << "Chdir reruns 0 but it should return -1 when  component of the path prefix is not a directory  "<<strerror(errno);
+			cerr << "Mkdir_rmdir reruns 0 but it should return -1 when  component of the path prefix is not a directory  "<<strerror(errno);
 			return Fail;
 		}
 		else 
@@ -127,7 +99,7 @@ Status Chdir::ChdirIsNotDirectory()
 }
 
 
-Status Chdir::ChdirTooLongPath()
+Status Mkdir_rmdir::Mkdir_rmdirTooLongPath()
 {
     int ret_chdir;
 	const char* tooLongPath = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
@@ -136,7 +108,7 @@ Status Chdir::ChdirTooLongPath()
 	
 	if(ret_chdir == 0)
 	{
-		cerr << "Chdir reruns 0 but it should return -1 when the path is too long  "<<strerror(errno);
+		cerr << "Mkdir_rmdir reruns 0 but it should return -1 when the path is too long  "<<strerror(errno);
 		return Fail;
 	}
 	else
@@ -152,7 +124,7 @@ Status Chdir::ChdirTooLongPath()
 }
 
 
-Status Chdir::ChdirFileNotExist()
+Status Mkdir_rmdir::Mkdir_rmdirFileNotExist()
 {
 	
 	const char *path="/notExistPath198/2/7/1/htap";
@@ -161,7 +133,7 @@ Status Chdir::ChdirFileNotExist()
 	ret_chdir = chdir(path);
 	if(ret_chdir == 0)
 	{
-		cerr << "Chdir reruns 0 but it should return -1 when the file is not exist  "<<strerror(errno);
+		cerr << "Mkdir_rmdir return 0 but it should return -1 when the file is not exist  "<<strerror(errno);
 		return Fail;
 	}
 	else
@@ -177,7 +149,7 @@ Status Chdir::ChdirFileNotExist()
 	return Success;
 }
 
-Status Chdir::ChdirNormalFunc()
+Status Mkdir_rmdir::Mkdir_rmdirNormalFunc()
 {
 	string dirPath = (string)_cwd + "/chdirTestDirectory";
 	char * cwd;
@@ -191,31 +163,38 @@ Status Chdir::ChdirNormalFunc()
 		ret_chdir = chdir(dirPath.c_str());
 		if(ret_chdir != 0)
 		{
-			cerr << "Chdir does not change the working directory. "<<strerror(errno);
+			cerr << "Mkdir_rmdir does not change the working directory. "<<strerror(errno);
 			return Fail;
 		} 
 		
 		
 		cwd = NULL;
 		size = pathconf(".", _PC_PATH_MAX);
-		if ((cwd = (char *)malloc((size_t)size)) != NULL)
-			cwd = getcwd(cwd, (size_t)size);
+		if ((cwd = (char *)malloc((size_t)size)) == NULL)
+		{
+			cerr << "Can not allocate memmory. "<<strerror(errno);
+			return Unres;			
+		}
+		cwd = getcwd(cwd, (size_t)size);
 		if(cwd == NULL)
 		{
-			cerr << "Cannot read changed working directory. "<<strerror(errno);
+			cerr << "Can not read changed working directory. "<<strerror(errno);
+			free(cwd);
 			return Unres;
 		}
 		
 		if(strcmp(cwd, dirPath.c_str()) != 0)
 		{
 			cerr << "Directory change error ";
+			free(cwd);
 			return Fail;
 		}
+		free(cwd);
 		
 		ret_chdir = chdir(_cwd);
 		if(ret_chdir != 0)
 		{
-			cerr << "Chdir does not change the working directory. "<<strerror(errno);
+			cerr << "Mkdir_rmdir does not change the working directory. "<<strerror(errno);
 			return Fail;
 		} 
 		return Success;
@@ -230,7 +209,7 @@ Status Chdir::ChdirNormalFunc()
 }
 
 
-Status Chdir::ChdirLoopInSymLink()
+Status Mkdir_rmdir::Mkdir_rmdirLoopInSymLink()
 {
 	
 	int ret_chdir = 0;	
@@ -285,59 +264,51 @@ Status Chdir::ChdirLoopInSymLink()
 	}
 	
 }
-/*
-Status Chdir::ChdirNoAcces ()
+
+Status Mkdir_rmdir::Mkdir_rmdirNoAcces ()
 {
 	
-    string dirPath = this->_statDir + "/creat_noaccess_dir";
-    string filePath = dirPath + "/creat_file";
+    string dirPath = (string)_cwd + "/chdir_noaccess_dir";
     struct passwd * noBody;
-    int ret_val;
+    int ret_chdir;
     struct stat stat_buf;
     const int FILE_MODE = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-   
-   
-    if (mkdir (dirPath.c_str(), FILE_MODE) == -1) {
-        cerr<<"mkdir() can't create directory.";
-        return Unres;
-    }
-   
-    StatFile file (filePath);
-   
-    if (0 != chmod (filePath.c_str(), FILE_MODE)) {
-        cerr<<"Can not chmod file";
-        return Unres;
-    }
-    if (0 != chmod (dirPath.c_str(), FILE_MODE)) {
-        cerr<<"can not chmod directory";
-        return Unres;
-    }
-    
-    // Change root to nobody
-    if((noBody = getpwnam("nobody")) == NULL) {
-        cerr<< "Can not set user to nobody";
-        return Unres;
-    }
-    if (0 != setuid(noBody->pw_uid)) {
-        cerr<<"Can not set uid";
-        return Unres;
-    }
-    
-    
-	ret_val = creat(filePath.c_str(), S_IRWXU );
-    
  
-    if (ret_val != -1) {
-           cerr<<"Creat should return -1 when search permission was denied .";
-       return Fail;
-    }
-    
-    if (errno != EACCES) {
-           cerr << "Incorrect error set in errno in case of search permission assces denied "<<strerror(errno);
-
-        return Fail;
-    }
-    return Success;
-}
-	
-*/
+ 
+	try
+	{
+		Directory dir(dirPath, 0777);	
+		  
+		if (chmod (dirPath.c_str(), FILE_MODE) != 0) {
+			cerr<<"can not chmod directory";
+			return Unres;
+		}
+		
+		// Change root to nobody
+		if((noBody = getpwnam("nobody")) == NULL) {
+			cerr<< "Can not set user to nobody";
+			return Unres;
+		}
+		if (setuid(noBody->pw_uid) != 0) {
+			cerr<<"Can not set uid";
+			return Unres;
+		}
+		
+		ret_chdir = chdir(dirPath.c_str());	 
+		if (ret_chdir != -1) {
+			cerr<<"Mkdir_rmdir should return -1 when search permission was denied .";
+			return Fail;
+		}
+		
+		if (errno != EACCES) {
+			cerr << "Incorrect error set in errno in case of search permission assces denied "<<strerror(errno);
+			return Fail;
+		}
+		return Success;
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}	
+}*/

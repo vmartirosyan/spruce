@@ -35,7 +35,6 @@
 	CHDIR_ERR_ENOENT,
 	CHDIR_ERR_ENOMEM,
 	CHDIR_ERR_ENOTDIR,
-	
 	CHDIR_ERR_EBADF,
 	CHDIR_NORMAL_FUNC
 
@@ -54,12 +53,16 @@ public:
 		if ((_cwd = (char *)malloc((size_t)size)) != NULL)
 			_cwd = getcwd(_cwd, (size_t)size);
 	}
-	virtual ~Chdir() {}	
+	virtual ~Chdir() 
+	{
+		free(_cwd);
+	}	
 	Status ChdirTooLongPath();
 	Status ChdirFileNotExist();
 	Status ChdirIsNotDirectory();
 	Status ChdirNormalFunc();
 	Status ChdirLoopInSymLink();
+	Status ChdirNoAcces();
 
 protected:
 	virtual int Main(vector<string> args);	

@@ -10,8 +10,8 @@ link_directories("${CMAKE_BINARY_DIR}/src/utils")
 
 #add_subdirectory (benchmark)
 #add_subdirectory (common)
-add_subdirectory (fs)
+#add_subdirectory (fs)
 add_subdirectory (main)
-#add_subdirectory (syscall)
+add_subdirectory (syscall)
 #add_subdirectory (utils)
 

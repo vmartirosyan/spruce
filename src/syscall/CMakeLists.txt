@@ -44,7 +44,9 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 						# Karen
 						#${CMAKE_CURRENT_SOURCE_DIR}/mount_umount/Mount_Umount.cpp		
 						# Gio
-						${CMAKE_CURRENT_SOURCE_DIR}/chdir/chdir.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/chdir/Chdir.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/getcwd/Getcwd.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/mkdir_rmdir/Mkdir_rmdir.cpp	
 						# Vahram
 						${CMAKE_CURRENT_SOURCE_DIR}/utime/Utime.cpp	
 						${CMAKE_CURRENT_SOURCE_DIR}/access/Access.cpp	
