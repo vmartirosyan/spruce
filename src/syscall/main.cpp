@@ -39,7 +39,9 @@
 // Karen
 //#include "Mount_Umount.hpp"
 // Gio
-#include "chdir/chdir.hpp"
+#include "chdir/Chdir.hpp"
+#include "mkdir_rmdir/Mkdir_rmdir.hpp"
+#include "getcwd/Getcwd.hpp"
 // Vahram
 #include "utime/Utime.hpp"
 #include "access/Access.hpp"
@@ -101,7 +103,9 @@ int main(int argc, char ** argv)
 		// Karen
 		//Configuration<Mount_Umount> mount_umountConf(INSTALL_PREFIX"/share/spruce/config/mount_umount.conf");
 		// Gio
-		Configuration<Chdir> chdirConf(INSTALL_PREFIX"/share/spruce/config/chdir.conf");			
+		Configuration<Chdir> chdirConf(INSTALL_PREFIX"/share/spruce/config/chdir.conf");		
+		Configuration<Getcwd> getcwdConf(INSTALL_PREFIX"/share/spruce/config/getcwd.conf");	
+		Configuration<Mkdir_rmdir> mkdir_rmdirConf(INSTALL_PREFIX"/share/spruce/config/mkdir_rmdir.conf");		
 		// Vahram
 		Configuration<UtimeTest> utimeConf(INSTALL_PREFIX"/share/spruce/config/utime.conf");
 		Configuration<AccessTest> accessConf(INSTALL_PREFIX"/share/spruce/config/access.conf");
@@ -156,7 +160,9 @@ int main(int argc, char ** argv)
 		// Karen
 		//TestCollection mount_umountTests = mount_umountConf.Read();
 		// Gio
-		TestCollection chdirTests = chdirConf.Read();		
+		TestCollection chdirTests = chdirConf.Read();
+		TestCollection getcwdTests = getcwdConf.Read();
+		TestCollection mkdir_rmdirTests = mkdir_rmdirConf.Read();		
 		// Vahram
 		TestCollection utimeTests = utimeConf.Read();
 		TestCollection accessTests = accessConf.Read();
@@ -212,7 +218,9 @@ int main(int argc, char ** argv)
 		// Karen
 		//tests.Merge(mount_umountTests);		
 		// Gio
-		tests.Merge(chdirTests);		
+		tests.Merge(chdirTests);	
+		tests.Merge(getcwdTests);	
+		tests.Merge(mkdir_rmdirTests);		
 		// Vahram
 		tests.Merge(utimeTests);
 		tests.Merge(accessTests);
