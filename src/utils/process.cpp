@@ -22,21 +22,12 @@
 
 #include <process.hpp>
 #include <signal.h>
+#include <fstream>
+using namespace std;
 
 ProcessResult::~ProcessResult()
 {
 }
-
-int SignalHandler(int signum)
-{
-	switch (signum)
-	{
-		case SIGALRM:
-			_exit(Timeout);
-	}
-}
-
-#include <fstream>
 ProcessResult * Process::Execute(vector<string> args)
 {
 	// Duplicate the stdin/stdout/stderr descriptors
@@ -74,30 +65,43 @@ ProcessResult * Process::Execute(vector<string> args)
 	
 	if ( ChildId == 0 ) // Child process. Run the Main method
 	{
-		alarm(TEST_TIMEOUT);
 		cerr << " ";
 		_exit(Main(args));
 	}
 	
 	// Parent process...
+	
 	int status;
-	if ( waitpid(ChildId, &status, 0) == -1)
-	{
-		return new ProcessResult(Unres, "Cannot wait for child process. " + (string)strerror(errno));
-	}
-
-	// Probably normal end of test. Let's collect the result;
+	int wait_res = waitpid(ChildId, &status, 0);
+	//cerr << "wait_res=" << wait_res << endl;
+	//cerr << "Error: " << strerror(errno) << endl;
+			
+	// In case of normal end of process. Let's collect the result;
 	string Output = "";
-	char buf[10000];
-	int bytes;
-	while ( true )
+	if ( wait_res != -1 )
+	{		
+		char buf[100000];
+		int bytes;
+		while ( true )
+		{
+			bytes = read( fds[0], buf, 99999 );		
+			buf[bytes] = 0;		
+			Output += (string)buf;
+			ofstream of("/tmp/tests", ios_base::app);
+	
+			of << "Bytes read: " << bytes << endl;
+			
+			of.close();
+			
+			
+			if (bytes < 99999)
+				break;
+		}
+	}
+	else
 	{
-		bytes = read( fds[0], buf, 9999 );		
-		buf[bytes] = 0;		
-		Output += (string)buf;
-				
-		if (bytes != 9999)
-			break;
+		// Kill the child. Just in case.
+		kill(ChildId, SIGKILL);
 	}
 	
 	// Restore the stdin, stdout and stderr descriptors
@@ -110,6 +114,8 @@ ProcessResult * Process::Execute(vector<string> args)
 	close(_stdin);
 	close(_stdout);
 	close(_stderr);
+	
+	//cerr << "Output:  " << Output.substr(0,10) << endl;
 	
 	return new ProcessResult(WEXITSTATUS(status), Output);
 }
@@ -134,6 +140,10 @@ ProcessResult * BackgroundProcess::Execute(vector<string> args)
 		int in_stream = open("/dev/zero", O_RDONLY);		
 		int out_stream = open("/dev/null", O_WRONLY);		
 		int err_stream = open("/dev/null", O_WRONLY);
+		if ( in_stream == -1 || out_stream == -1 || err_stream == -1 )
+		{
+			cerr << "Error opening dummy streams. Error : " << strerror(errno);			
+		}
 		
 		_exit(Main(args));
 	}

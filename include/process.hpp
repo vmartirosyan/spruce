@@ -53,11 +53,15 @@ public:
 	{
 		return _status;
 	}
-	string GetOutput() const
+	virtual string GetOutput() const
 	{
 		return _output;
 	}		
-protected:
+	string GetOutput1() const
+	{
+		return "asdf";
+	}		
+public:
 	int _status;
 	string _output;
 };

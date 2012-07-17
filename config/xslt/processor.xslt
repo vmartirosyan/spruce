@@ -29,6 +29,10 @@
 			{
 				color:Gray;
 			}
+			.Timeout
+			{
+				color:Blue;
+			}
 		</style>
 		<title>Spruce log for filesystem <xsl:value-of select="//FS/@Name" /></title>
 	</head>

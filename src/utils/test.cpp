@@ -27,6 +27,7 @@
 #include <sys/wait.h>
 #include <algorithm>
 
+
 char * StatusMessages[] = {
 	(char * )"Success",
 	(char * )"Shallow",
@@ -39,11 +40,46 @@ char * StatusMessages[] = {
 	(char * )"Unknown"
 	};
 	
+bool Alarmed = false;
+
+void  SignalHandler(int signum)
+{
+	switch (signum)
+	{
+		case SIGALRM:			
+			Alarmed = true;
+			break;
+	}
+}
+	
 ProcessResult * Test::Execute(vector<string> args)
 {
+	struct sigaction sa;
+	bzero(&sa, sizeof(sa));
+	
+	sa.sa_handler = SignalHandler;
+	if ( sigaction(SIGALRM, &sa, NULL) == -1 )
+	{	
+		return new ProcessResult(Unres, "Cannot set signal handler. " + (string)strerror(errno));
+	}
+	
+	alarm(TEST_TIMEOUT);
+	
 	ProcessResult * p_res = Process::Execute(args);
 	
-	TestResult * t_res = new TestResult(*p_res, _operation, _args);
+	alarm(0);
+	
+	TestResult * t_res = NULL;
+	
+	if ( Alarmed )
+	{
+		Alarmed = false;
+		t_res = new TestResult(ProcessResult(Timeout, "Timeout"), _operation, _args);
+	}
+	else
+	{
+		t_res = new TestResult(*p_res, _operation, _args);
+	}
 	
 	delete p_res;
 	
@@ -64,6 +100,7 @@ void TestCollection::Merge(TestCollection & tc)
 TestResultCollection TestCollection::Run()
 {
 	TestResultCollection Results;
+	
 		
 	for ( unsigned int index = 0 ; index < _tests.size(); ++index)
 	{
@@ -93,6 +130,7 @@ string TestResult::ToXML()
 	// Just for debugging
 	// return OperationToString() + " : " + StatusToString() + " : " + _output + " : Arguments: " + _arguments;
 	// The real XML...
+	
 	return "\n\t<Operation>" + OperationToString() + "</Operation>\n\t<Status>" + StatusToString() + "</Status>\n\t<Output>" +
 		_output +  "</Output>\n\t<Arguments>" + _arguments + "</Arguments>";
 	

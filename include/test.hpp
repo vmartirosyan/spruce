@@ -26,6 +26,9 @@
 #include "common.hpp"
 #include "process.hpp"
 #include "operations.hpp"
+#include <sstream>
+#include <fstream>
+using namespace std;
 
 class TestResult : public ProcessResult
 {
@@ -59,15 +62,16 @@ public:
 		_arguments(tr._arguments) {}
 	 	 	 
 	virtual string ToXML();
+	virtual string OperationToString()
+	{
+		return Operation::ToString((Operations)_operation);
+	}
 protected:
 	int _operation;
 	string _stroperation;
 	string _arguments;
 	string StatusToString();
-	virtual string OperationToString()
-	{
-		return Operation::ToString((Operations)_operation);
-	}
+	
 };
 
 class TestResultCollection 
@@ -86,7 +90,9 @@ public:
 	{
 		string result = "";
 		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
-			result += (*i)->ToXML();		
+		{			
+			result += (*i)->ToXML();			
+		}
 			
 		return result;
 	}
@@ -96,6 +102,10 @@ public:
 			if ( (*i)->GetStatus() != Success )
 				return Fail;
 		return Success;
+	}
+	string GetOutput() const
+	{
+		return "asdf";
 	}
 	~TestResultCollection()
 	{

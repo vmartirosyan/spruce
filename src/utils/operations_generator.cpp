@@ -121,7 +121,7 @@ vector<string> GetHeaderFiles(const string & root)
 			{
 				file = root + file.substr(1);
 			}
-			//cout << "root: " << root << "\tfile: " << file << endl;
+			cout << "root: " << root << "\tfile: " << file << endl;
 			if ( root.size() > file.size())
 			{
 				cerr << "Error with file and root folder lengths" << endl;
@@ -131,7 +131,7 @@ vector<string> GetHeaderFiles(const string & root)
 			files.push_back(file);
 			
 		}
-		//cout << "Files found\n" << FindOutput << endl;
+		cout << "Files found\n" << FindOutput << endl;
 		
 		delete res;
 	}
