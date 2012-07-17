@@ -240,9 +240,18 @@ int main(int argc, char ** argv)
 		// Ani
 		
 		
-		TestResultCollection res = tests.Run();
-	
-		cerr << "<Module Name=\"Syscall\">\n" << res.ToXML() << "</Module>" << endl;
+		TestResultCollection res = tests.Run();		
+		
+		string XML = res.ToXML();
+		unsigned int XMLLength = XML.size();
+		
+		XML = "\n<Module Name=\"Syscall\">\n\t" + XML + "\n</Module>\n";
+		
+		for ( unsigned int i = 0; i < XMLLength / 1000 + 1; ++i )
+			cerr << XML.substr(i*1000, 1000);
+		
+		//cerr << "<Module Name=\"Syscall\">\n" << res.ToXML() << "</Module>" << endl;
+			
 		
 		return res.GetStatus();
 	}

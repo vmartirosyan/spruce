@@ -79,6 +79,16 @@
 			<xsl:value-of select="@Name" /> : <xsl:value-of select="Operation" /> : <xsl:value-of select="Output" /><br />
 		</xsl:for-each>
 	</div>
+	<br />
+	<span class="Timeout">Total tests timed out: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Timeout'])" /></span>
+	<a href="#" style="text-decoration:none">
+		<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Module" />TestsTimedOut')</xsl:attribute> +</a>
+	<div style="border: solid 1px black; padding: 5px; display:none;" class="Timeout">
+		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsTimedOut</xsl:attribute>
+		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Timeout']" >
+			<xsl:value-of select="@Name" /> : <xsl:value-of select="Operation" /> : <xsl:value-of select="Output" /><br />
+		</xsl:for-each>
+	</div>
 </div>
 </xsl:template>
 
