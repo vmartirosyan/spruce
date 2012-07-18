@@ -107,6 +107,8 @@ TestResultCollection TestCollection::Run()
 		TestResult * res = (TestResult *)_tests[index]->Execute();
 		Results.AddResult( res );
 		
+
+		
 		// If Fatal error has rised quit!
 		if ( res->GetStatus() == Fatal )
 			break;

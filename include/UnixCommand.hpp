@@ -36,13 +36,33 @@
 class UnixCommand : public BackgroundProcess
 {
 public:	
-	UnixCommand(string name, ProcessMode mode = ProcessForeground) : _name(name), _mode(mode) {}
+	UnixCommand(string name, ProcessMode mode = ProcessForeground) : _name(name), _mode(mode) 
+	{
+		
+	}
+	
 	virtual ProcessResult * Execute(vector<string> args = vector<string>())
 	{
-		return ( ( _mode == ProcessBackground ) ? BackgroundProcess::Execute(args) : Process::Execute(args) );
+		ofstream of("/tmp/test", ios_base::app);
+		
+		ProcessResult * res = ( ( _mode == ProcessBackground ) ? BackgroundProcess::Execute(args) : Process::Execute(args) );
+		//ProcessResult * res = Process::Execute(args);
+		
+		
+		
+		of << res << "\tOutput \"" << res->GetOutput().substr(0,30) << "\"" << endl;
+		
+		of.close();		
+		
+		return res;
 	}
-	~UnixCommand() {}
+	~UnixCommand() 
+	{
+		
+	}
+	
 protected:
+	
 	int Main(vector<string> args) 
 	{
 		char** argv = new char*[args.size() + 2];
@@ -63,4 +83,5 @@ protected:
 	string _name;
 	ProcessMode _mode;
 };
+
 #endif /* UNIX_COMMAND_H */

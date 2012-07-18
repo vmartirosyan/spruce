@@ -79,11 +79,17 @@ enum ErrorCodes
 	NOMODULES
 };
 
+
+
 int main(int argc, char ** argv)
 {
 	// The status of the whole process.
 	// If any of the tests does not succeed then FAULT is returned!
 	int Status = 0;
+	
+	
+	// Log files of the modules
+	vector<string> XMLFilesToProcess;
 	
 	//Prepare the allowed modules list
 	ModulesAvailable.push_back("syscall");
@@ -210,12 +216,13 @@ int main(int argc, char ** argv)
 	args.push_back(INSTALL_PREFIX"/share/spruce/config/xslt/");
 	args.push_back(logfolder);
 	
-	UnixCommand copy("cp");
-	if ( copy.Execute(args) == NULL )
+	UnixCommand * copy = new UnixCommand("cp");
+	if ( copy->Execute(args) == NULL )
 	{
 		cerr << "Cannot copy the transformation file. Error " << strerror(errno) << endl;
 		return FAULT;
 	}
+	delete copy;
 		
 	// Create the mount point	
 	if ( mkdir(MountAt.c_str(), S_IRUSR | S_IWUSR ) == -1 && errno != EEXIST )
@@ -230,11 +237,11 @@ int main(int argc, char ** argv)
 	cerr << "Executing modules." << endl;
 	for ( vector<string>::iterator fs = FileSystems.begin(); fs != FileSystems.end(); ++fs )
 	{
-		stringstream str;
-		str << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n\
+		//stringstream str;
+		/*str << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n\
 			<?xml-stylesheet type=\"application/xml\" href=\"" << logfolder << "/xslt/processor.xslt\"?>\n\
 			<SpruceLog>";
-			
+		*/
 		
 		
 		// Unmount the MountAt folder first (just in case)		
@@ -246,7 +253,7 @@ int main(int argc, char ** argv)
 		}
 		cout << "Unmounted" << endl;
 		// If there are any filesystems mentioned, then let's create the filesystem
-		UnixCommand mkfs("mkfs." + *fs);
+		UnixCommand * mkfs = new UnixCommand("mkfs." + *fs);
 		vector<string> args;		
 		args.push_back(partition);		
 		if ( *fs == "xfs" || *fs == "jfs" ) //Force if necessary
@@ -254,7 +261,8 @@ int main(int argc, char ** argv)
 		if ( *fs == "ext4" )
 			args.push_back("-F");
 		ProcessResult * res;
-		res = mkfs.Execute(args);
+		res = mkfs->Execute(args);
+		delete mkfs;
 		if ( res->GetStatus() != Success )
 		{
 			cerr << "Cannot create " << *fs << " filesystem on device " << partition << endl;
@@ -265,7 +273,7 @@ int main(int argc, char ** argv)
 		
 		
 		// Then mount the filesystem
-		UnixCommand mnt("mount");
+		UnixCommand * mnt = new UnixCommand("mount");
 		vector<string> mnt_args;		
 		mnt_args.push_back(partition);
 		mnt_args.push_back(MountAt);
@@ -273,7 +281,8 @@ int main(int argc, char ** argv)
 		if ( !MountOpts.empty() )
 			mnt_args.insert(mnt_args.end(), MountOpts.begin(), MountOpts.end());
 		
-		res = mnt.Execute(mnt_args);
+		res = mnt->Execute(mnt_args);
+		delete mnt;
 		if ( res->GetStatus() != Success )
 		{
 			cerr << "Cannot mount " << partition << " at folder " << MountAt << endl;
@@ -303,15 +312,37 @@ int main(int argc, char ** argv)
 		setenv("FileSystem", (*fs).c_str(), 1);
 		setenv("INSTALL_PREFIX", INSTALL_PREFIX, 1);
 		
-		str << "<FS Name=\"" << *fs << "\" >";
+		//str << "<FS Name=\"" << *fs << "\" >";
 		
 		for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
 		{
 			cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
-			UnixCommand command(( (string)(INSTALL_PREFIX"/bin/" + (*module)).c_str()));
-			auto_ptr<ProcessResult> result(command.Execute());
-			//ProcessResult * result(command.Execute());
-			str << result->GetOutput() << endl;
+			UnixCommand * command = new UnixCommand(( (string)(INSTALL_PREFIX"/bin/" + (*module)).c_str()));
+			
+			string FileName = logfolder + "/" + *fs + "_" + *module + "_log.xml";
+			
+			ofstream of(FileName.c_str());
+			
+			of << "<SpruceLog><FS Name=\"" << *fs << "\">\n";
+			
+			of.close();
+			
+			XMLFilesToProcess.push_back(FileName);
+			
+			vector<string> module_args;
+			module_args.push_back(FileName);
+			
+			ProcessResult * result = command->Execute(module_args);
+			delete command;
+			
+			of.open(FileName.c_str(), ios_base::app);
+			
+			of << "</FS></SpruceLog>";
+			
+			of.close();
+			
+			//cerr << "res = " << result << endl;
+			//str << result->GetOutput() << endl;
 			Status |= result->GetStatus();
 			cerr << "Module " << *module << " exits with status " << result->GetStatus() << endl;
 		}
@@ -320,20 +351,43 @@ int main(int argc, char ** argv)
 		if ( PerformFS_SpecificTests )
 		{
 			cerr << "Executing FS-specific tests for " << *fs << endl;
-			UnixCommand command( (string)(INSTALL_PREFIX"/bin/" + *fs));
-			auto_ptr<ProcessResult> result(command.Execute());
-			//ProcessResult * result(command.Execute());
-			str << result->GetOutput() << endl;
+			UnixCommand * command = new UnixCommand( (string)(INSTALL_PREFIX"/bin/" + *fs));
+			//auto_ptr<ProcessResult> result(command.Execute());
+			
+			string FileName = logfolder + "/" + *fs + "_" + *fs + "_log.xml";
+			
+			ofstream of(FileName.c_str());
+			
+			of << "<SpruceLog><FS Name=\"" << *fs << "\">\n";
+			
+			of.close();
+			
+			XMLFilesToProcess.push_back(FileName);
+			
+			vector<string> module_args;
+			module_args.push_back(FileName);
+			
+			ProcessResult * result = command->Execute(module_args);			
+			delete command;
+			
+			of.open(FileName.c_str(), ios_base::app);
+			
+			of << "</FS></SpruceLog>";
+			
+			of.close();
+			
+			//cerr << "res = " << result << endl;
+			//str << result->GetOutput() << endl;
 			Status |= result->GetStatus();
 		}
 		
-		str << "</FS>";
+		//str << "</FS>";
 		
-		str << "</SpruceLog>";
+		//str << "</SpruceLog>";
 		// Forward the output to the log file	
-		ofstream of((configValues["logfolder"] + "/spruce_log_" + *fs + ".xml").c_str());
+		/*ofstream of((configValues["logfolder"] + "/spruce_log_" + *fs + ".xml").c_str());
 		of << str.str();
-		of.close();
+		of.close();*/
 		
 		// Now change current dir to log folder to free the MountAt folder (to unmount later)
 		if ( chdir(logfolder.c_str()) != 0 )
@@ -354,26 +408,55 @@ int main(int argc, char ** argv)
 		// Open the log file in the selected browser
 		if ( browser != "" )
 		{
-			UnixCommand browser_cmd(browser, ProcessBackground);
-			vector<string> browser_args;
-			browser_args.push_back(logfolder + "/spruce_log_" + *fs + ".xml");
-			if ( browser.find("chrome") != string::npos )
+			// Process the module log files
+			for ( unsigned int i = 0; i < XMLFilesToProcess.size(); ++i )
 			{
-				//browser = "chromium";
-				browser_args.push_back("--allow-file-access-from-files");
-				browser_args.push_back("--user-data-dir");
-				browser_args.push_back("/tmp");
-			}
-			res = browser_cmd.Execute(browser_args);
-			if ( res == NULL )
-			{
-				cerr << "Cannot execute the browser: " << browser << endl;
-				return FAULT;
-			}
-			if ( res->GetStatus() != Success )
-			{
-				cerr << "Error executing " << browser << ". " << res->GetOutput() << endl;
-				return FAULT;
+				//cout << "Processing file " << XMLFilesToProcess[i] << endl;
+				UnixCommand xslt("xsltproc");
+				vector<string> xslt_args;
+				
+				xslt_args.push_back("-o");
+				xslt_args.push_back(XMLFilesToProcess[i].substr(0, XMLFilesToProcess[i].size() - 3) + "html");
+				xslt_args.push_back("-novalid");			
+				xslt_args.push_back(logfolder + "/xslt/processor.xslt");
+				xslt_args.push_back(XMLFilesToProcess[i]);
+				
+				res = xslt.Execute(xslt_args);
+	
+				if ( res == NULL )
+				{
+					cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;
+					continue;
+				}
+				
+				if ( res->GetStatus() != Success )
+				{
+					cerr << res->GetOutput() << endl;
+					continue;
+				}			
+			
+				UnixCommand * browser_cmd = new UnixCommand(browser, ProcessBackground);
+				vector<string> browser_args;
+				browser_args.push_back(XMLFilesToProcess[i].substr(0, XMLFilesToProcess[i].size() - 3) + "html");
+				if ( browser.find("chrome") != string::npos )
+				{
+					//browser = "chromium";
+					browser_args.push_back("--allow-file-access-from-files");
+					browser_args.push_back("--user-data-dir");
+					browser_args.push_back("/tmp");
+				}
+				res = browser_cmd->Execute(browser_args);
+				delete browser_cmd;
+				if ( res == NULL )
+				{
+					cerr << "Cannot execute the browser: " << browser << endl;
+					continue;
+				}
+				if ( res->GetStatus() != Success )
+				{
+					cerr << "Error executing " << browser << ". " << res->GetOutput() << endl;
+					continue;
+				}
 			}
 		}
 		return ( Status == 0 ) ? SUCCESS : FAULT;				

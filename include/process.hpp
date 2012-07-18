@@ -37,15 +37,34 @@ enum ProcessMode
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <fstream>
+using namespace std;
 
 class ProcessResult
 {
 public:
 	ProcessResult(int s, string output):
-		_status(s),	_output(output) {}
+		_status(s),	_output(output) 
+	{
+		/*if ( _output.size() > 1000 )
+		{
+			ofstream of("/tmp/tests", ios_base::app);
+	
+			of << "Process result: output : " << _output << endl; 
+		
+			of.close();
+		}*/
+	}
 								
-	ProcessResult(ProcessResult const & pr) :
-		_status(pr._status), _output(pr._output) {}
+	ProcessResult(const ProcessResult & pr) :
+		_status(pr._status), _output(pr._output) 
+	{
+		/*ofstream of("/tmp/tests", ios_base::app);
+	
+		of << "copy: output : " << _output << endl; 
+		
+		of.close();*/
+	}
 	
 	virtual ~ProcessResult();
 	
@@ -53,15 +72,12 @@ public:
 	{
 		return _status;
 	}
-	virtual string GetOutput() const
+	string GetOutput() const
 	{
 		return _output;
 	}		
-	string GetOutput1() const
-	{
-		return "asdf";
-	}		
-public:
+	
+protected:
 	int _status;
 	string _output;
 };
@@ -71,8 +87,27 @@ class Process
 public:	
 	virtual ProcessResult * Execute(vector<string> args = vector<string>());
 	
-	virtual ~Process() {}
+	Process()
+	{
+		ofstream of("/tmp/test", ios_base::app);
+				
+		//cerr << "Constructing. Level : " << Level++ << endl;
+		of << "Constructing. Level : " << Level++ << endl;
+		
+		of.close();
+	}
+	
+	virtual ~Process() 
+	{
+		ofstream of("/tmp/test", ios_base::app);
+				
+		//cerr << "Destructing. Level : " << Level << endl;
+		of << "Destructing. Level : " << Level-- << endl;
+		
+		of.close();
+	}
 protected:
+	static int Level;
 	virtual int Main(vector<string> args) = 0;
 };
 

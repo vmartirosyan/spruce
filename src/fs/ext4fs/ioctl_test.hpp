@@ -28,7 +28,7 @@
 #include <sys/ioctl.h>
 #include "ext4.hpp"
 #include <fstream>
-
+#include <UnixCommand.hpp>
 using std::ifstream;
 
 extern string MountPoint;
@@ -77,6 +77,12 @@ public:
 		
 	virtual ~Ext4IoctlTest()
 	{
+		/*UnixCommand cmd("echo");
+		
+		vector<string> args;
+		args.push_back("ioctl destructor");
+		
+		cmd.Execute(args);*/
 	/*	if ( _file > 0 )
 		{
 			close( _file );			

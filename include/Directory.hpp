@@ -70,8 +70,14 @@ class Directory
 				close(_fd);
 				
 				//cerr<<"Removing directory "<<_pathname;
+				
+				if ( system(("rm -rf " + _pathname).c_str()) == -1)
+				{
+					cerr << "Cannot remove directory " << _pathname << ". Error: " << strerror(errno);					
+				}
+				
 				//if (rmdir(_pathname.c_str()) != 0) Does not work in case of non-empty directories...
-				UnixCommand rm("rm");
+				/*UnixCommand rm("rm");
 				vector<string> args;
 				args.push_back("-r");
 				args.push_back(_pathname);				
@@ -81,7 +87,7 @@ class Directory
 				if ( res->GetStatus() != Success )
 				{
 					throw Exception("Cannot delete directory " + _pathname + ". " + res->GetOutput());
-				}
+				}*/
 								
 			}
 			catch (Exception ex)
