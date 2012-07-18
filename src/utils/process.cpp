@@ -25,36 +25,14 @@
 #include <fstream>
 using namespace std;
 
+int Process::Level = 0;
+
 ProcessResult::~ProcessResult()
 {
 }
 ProcessResult * Process::Execute(vector<string> args)
 {
-	// Duplicate the stdin/stdout/stderr descriptors
-	int _stdin = dup(0);
-	int _stdout = dup(1);
-	int _stderr = dup(2);
-	
-	// Close the original descriptors
-	close(0);
-	close(1);
-	close(2);
-	
-	// Create the pipe to be used between the parent and child processes
-	int fds[2];
-	// if the pipe could not be created then it's a fatal!
-	if ( pipe(fds) == -1 )
-	{
-		return new ProcessResult(Unres, "Cannot create pipe. " + (string)strerror(errno));
-	}
-	
-	// Create the error stream
-	int error_stream = dup(fds[1]);
-	if ( error_stream == -1 )
-	{
-		return new ProcessResult(Unres, "Cannot create error stream. " + (string)strerror(errno));		
-	}
-	
+		
 	// Create the child process
 	pid_t ChildId = fork();
 	
@@ -65,11 +43,36 @@ ProcessResult * Process::Execute(vector<string> args)
 	
 	if ( ChildId == 0 ) // Child process. Run the Main method
 	{
+		close(1);
+		close(2);
+		int _stdout = -1, _stderr = -1;
+		if ( (_stdout = open(FIFO_PATH, O_WRONLY)) != 1 )
+		{
+			cerr << "Child: cannot open pipe for writing. Error: " << strerror(errno);
+			_exit(Unres);
+		}
+		if ( (_stderr = dup(1)) != 2 )
+		{
+			cerr << "Child: cannot create error stream. Error: " << strerror(errno);
+			close(1);
+			_exit(Unres);
+		}
 		cerr << " ";
-		_exit(Main(args));
+		int status = Main(args);
+		close(1);
+		close(2);
+		_exit(status);
 	}
 	
 	// Parent process...
+	int fd = -1;
+		
+	if ( (fd = open(FIFO_PATH, O_RDONLY)) == -1 )
+	{
+		return new ProcessResult(Unres, "Parent: cannot open pipe for reading. Error : " + (string)strerror(errno));	
+	}
+	
+	
 	
 	int status;
 	int wait_res = waitpid(ChildId, &status, 0);
@@ -79,22 +82,29 @@ ProcessResult * Process::Execute(vector<string> args)
 	// In case of normal end of process. Let's collect the result;
 	string Output = "";
 	if ( wait_res != -1 )
-	{		
-		char buf[100000];
+	{
+				
+		char buf[1000];
 		int bytes;
 		while ( true )
 		{
-			bytes = read( fds[0], buf, 99999 );		
-			buf[bytes] = 0;		
+			bytes = read( fd, buf, 999 );
+			//cerr << "bytes = " << bytes << endl;
+			if ( bytes == -1 )
+				break;
+			buf[bytes] = 0;
+			//cerr << Output.size() << "+" << bytes << ">=" << Output.max_size() << endl;
+			if ( Output.size() + bytes >= Output.max_size() )
+			{
+				//cerr << "Waiting for child" << endl;
+				return new ProcessResult(WEXITSTATUS(status), "Overflow! ");
+			}
+			
 			Output += (string)buf;
-			ofstream of("/tmp/tests", ios_base::app);
-	
-			of << "Bytes read: " << bytes << endl;
-			
-			of.close();
 			
 			
-			if (bytes < 99999)
+			
+			if (bytes < 999)
 				break;
 		}
 	}
@@ -104,17 +114,15 @@ ProcessResult * Process::Execute(vector<string> args)
 		kill(ChildId, SIGKILL);
 	}
 	
-	// Restore the stdin, stdout and stderr descriptors
-	close(fds[0]);
-	close(fds[1]);
-	close(error_stream);
-	dup(_stdin);
-	dup(_stdout);
-	dup(_stderr);
-	close(_stdin);
-	close(_stdout);
-	close(_stderr);
 	
+	close(fd);
+	
+	/*ofstream of("/tmp/tests", ios_base::app);
+	
+			//of << "Bytes read: " << bytes << endl;
+	of << Output << endl; 
+	of.close();
+	*/
 	//cerr << "Output:  " << Output.substr(0,10) << endl;
 	
 	return new ProcessResult(WEXITSTATUS(status), Output);

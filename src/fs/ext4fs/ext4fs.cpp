@@ -35,6 +35,12 @@ int Usage(char ** argv);
 
 int main(int argc, char ** argv)
 {
+	if ( argc < 2 )
+	{
+		cerr << "Usage " << argv[0] << " <output_file>" << endl;
+		return -1;
+	}
+
 	if ( geteuid() != 0 )
 	{
 		// The tests should be executed by the root user;
@@ -62,7 +68,7 @@ int main(int argc, char ** argv)
 	
 	cout << "Executing ext4 fs tests for " << MountPoint << " (" << DeviceName << ")" << endl;
 	
-	Configuration<Ext4IoctlTest> conf("${CMAKE_INSTALL_PREFIX}/share/spruce/config/ext4fs.conf");
+	Configuration<Ext4IoctlTest> conf(INSTALL_PREFIX"/share/spruce/config/ext4fs.conf");
 	//Configuration<Ext4IoctlTest> conf("/home/vmartirosyan/workspace/spruce/config/ext4fs.conf");
 	
 	TestCollection tests = conf.Read();	
@@ -81,7 +87,17 @@ int main(int argc, char ** argv)
 	
 	TestResultCollection res = tests.Run();
 	
-	cout << "<Module Name=\"Ext4\">\n\t" << res.ToXML() << "\n</Module>" << endl;
+	string XML = res.ToXML();
+	
+	XML = "\n<Module Name=\"Ext4\">\n\t" + XML + "\n</Module>\n";
+	
+	ofstream of(argv[1], ios_base::app);				
+		
+	of << XML;
+
+	of.close();
+	
+	//cout << "<Module Name=\"Ext4\">\n\t" << res.ToXML() << "\n</Module>" << endl;
 	
 	/*TestResultCollection res2 = tests2.Run();
 	

@@ -16,6 +16,10 @@ IF (NOT TEST_TIMEOUT)
 	SET ( TEST_TIMEOUT 2 )
 ENDIF (NOT TEST_TIMEOUT)
 
+IF (NOT FIFO_PATH)
+	SET ( FIFO_PATH "/tmp/spruce_fifo" )
+ENDIF (NOT FIFO_PATH)
+
 SET (LIBRARY_OUTPUT_PATH
  ${PROJECT_BINARY_DIR}/lib
  CACHE PATH
@@ -34,6 +38,8 @@ execute_process(COMMAND mkdir ${CMAKE_BINARY_DIR}/include/ -p )
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/include")
+
+execute_process(COMMAND mkfifo ${FIFO_PATH} 0666 )
 
 # Changing the source directory to point to the binary directory
 #SET(CMAKE_SOURCE_DIR, ${CMAKE_BINARY_DIR})

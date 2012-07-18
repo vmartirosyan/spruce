@@ -93,7 +93,7 @@ public:
 		{			
 			result += (*i)->ToXML();			
 		}
-			
+		
 		return result;
 	}
 	Status GetStatus()

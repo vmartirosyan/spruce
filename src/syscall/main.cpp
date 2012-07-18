@@ -62,6 +62,11 @@
 
 int main(int argc, char ** argv)
 {
+	if ( argc < 2 )
+	{
+		cerr << "Usage " << argv[0] << " <output_file>" << endl;
+		return -1;
+	}
 	srand(time(0));
 	TestCollection tests;
 	try
@@ -245,10 +250,23 @@ int main(int argc, char ** argv)
 		string XML = res.ToXML();
 		unsigned int XMLLength = XML.size();
 		
+		
+		
 		XML = "\n<Module Name=\"Syscall\">\n\t" + XML + "\n</Module>\n";
 		
-		for ( unsigned int i = 0; i < XMLLength / 1000 + 1; ++i )
+		ofstream of(argv[1], ios_base::app);				
+		
+		of << XML;
+		
+		of.close();			
+		
+		/*for ( unsigned int i = 0; i < XMLLength / 1000 + 1; ++i )
+		{
+			
 			cerr << XML.substr(i*1000, 1000);
+		}*/
+		
+		//cout << XML << endl;
 		
 		//cerr << "<Module Name=\"Syscall\">\n" << res.ToXML() << "</Module>" << endl;
 			
