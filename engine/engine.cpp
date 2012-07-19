@@ -91,40 +91,47 @@ int main(int argc, char ** argv)
 		
 		string contents(read_buf);
 			
-		int pos1 = 0, pos2;	
-		do
+		const int CODE_TAGS_NUM = 2;
+		string code_tags[CODE_TAGS_NUM];
+		code_tags[0] = "Main";
+		code_tags[1] = "Finally";
+		for(int i = 0; i < CODE_TAGS_NUM; i++)
 		{
-			pos1 = contents.find("<Code>", pos1);
-			if ( pos1 == string::npos )
-				break;
-			pos1 += 6;
-			pos2 = contents.find("</Code>", pos1);
-			
-			//cout << "pos1 " << pos1 << "\tpos2 " << pos2 << endl;
-			
-			string part = contents.substr(pos1, pos2-pos1);
-			
-			int pos = 0;
-			while ( true )
+			int pos1 = 0, pos2;	
+			do
 			{
-				pos = part.find("&", pos + 1);
-				if ( pos == string::npos )
+				pos1 = contents.find("<" + code_tags[i]+ ">", pos1);
+				if ( pos1 == string::npos )
 					break;
-				part.replace(pos, 1, "&amp;");
+				pos1 += 6;
+				pos2 = contents.find("</" + code_tags[i] + ">", pos1);
+				
+				//cout << "pos1 " << pos1 << "\tpos2 " << pos2 << endl;
+				
+				string part = contents.substr(pos1, pos2-pos1);
+				
+				int pos = 0;
+				while ( true )
+				{
+					pos = part.find("&", pos + 1);
+					if ( pos == string::npos )
+						break;
+					part.replace(pos, 1, "&amp;");
+				}
+				
+				pos = 0;
+				while ( true )
+				{
+					pos = part.find("<", pos + 1);
+					if ( pos == string::npos )
+						break;
+					part.replace(pos, 1, "&lt;");
+				}
+				
+				contents.replace(pos1, pos2-pos1, part);
 			}
-			
-			pos = 0;
-			while ( true )
-			{
-				pos = part.find("<", pos + 1);
-				if ( pos == string::npos )
-					break;
-				part.replace(pos, 1, "&lt;");
-			}
-			
-			contents.replace(pos1, pos2-pos1, part);
+			while (true);
 		}
-		while (true);
 		
 		file = file.replace(0, strlen(argv[1]), argv[2]);
 		
