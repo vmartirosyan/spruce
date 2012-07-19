@@ -63,6 +63,9 @@
 				string _spec;
 		};
 		
+		string DeviceName = "";
+		string MountPoint = "";
+		
 		<xsl:for-each select="TestSet">
 			<xsl:variable name="TestSetFile"><xsl:value-of select="$XmlFolder"/>/<xsl:value-of select="@Name"/>.xml</xsl:variable>
 			<xsl:apply-templates select="document($TestSetFile)" >
@@ -76,6 +79,12 @@
 		
 		int main()
 		{
+			if ( getenv("Partition") )	
+				DeviceName = getenv("Partition");
+	
+			if ( getenv("MountAt") )				
+				MountPoint = getenv("MountAt");
+				
 			TestCollection tests;
 			try
 			{
