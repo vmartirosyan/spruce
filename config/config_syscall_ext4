@@ -1,0 +1,5 @@
+modules=syscall
+fs=ext4
+logfile=/tmp/spruce_log.html
+partition=/dev/sda5
+mount_at=/mnt/spruce_test
