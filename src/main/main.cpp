@@ -45,6 +45,7 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <platform_config.hpp>
+#include <pwd.h>
 
 using std::ifstream;
 using std::ofstream;
@@ -411,7 +412,7 @@ int main(int argc, char ** argv)
 			// Process the module log files
 			for ( unsigned int i = 0; i < XMLFilesToProcess.size(); ++i )
 			{
-				//cout << "Processing file " << XMLFilesToProcess[i] << endl;
+				cout << "Processing file " << XMLFilesToProcess[i] << "... ";
 				UnixCommand xslt("xsltproc");
 				vector<string> xslt_args;
 				
@@ -434,19 +435,62 @@ int main(int argc, char ** argv)
 					cerr << res->GetOutput() << endl;
 					continue;
 				}			
+				cout << "Done" << endl;
+			}
 			
+			// Hold on a while...
+			sleep(1);
+			
+			// Change the effective user id to real user id... browsers don't like ronning as root.
+			
+			char * UserName = getenv("SUDO_USER");
+			//char * UserName = "nobody";
+			
+			if ( UserName == NULL )
+			{
+				cerr << "Cannot obtain user name. " << strerror(errno) << endl;
+				break;
+			}
+			
+			cout << "Switching to user `" << UserName << "`" << endl;
+			
+			setenv("HOME", ((string)"/home/" + UserName).c_str(), 1);
+			
+			struct passwd * nobody = getpwnam(UserName);
+			if ( nobody == NULL )
+			{
+				cerr << "Cannot switch to user `" << UserName << "`. Browser won't start. " << strerror(errno) << endl;
+				break;
+			}
+				
+			if ( setuid(nobody->pw_uid) == -1 )
+			{
+				cerr << "Cannot switch to user `" << UserName << "`. Browser won't start. " << strerror(errno) << endl;
+				break;
+			}
+			
+			cerr << "UserId: " << getuid() << endl;
+			
+			
+			
+			cerr << "$HOME: " << getenv("HOME") << endl;
+			
+			for ( unsigned int i = 0; i < XMLFilesToProcess.size(); ++i )
+			{
+				
 				UnixCommand * browser_cmd = new UnixCommand(browser, ProcessBackground);
 				vector<string> browser_args;
 				browser_args.push_back(XMLFilesToProcess[i].substr(0, XMLFilesToProcess[i].size() - 3) + "html");
-				if ( browser.find("chrome") != string::npos )
+				/*if ( browser.find("chrom") != string::npos )
 				{
 					//browser = "chromium";
 					browser_args.push_back("--allow-file-access-from-files");
 					browser_args.push_back("--user-data-dir");
 					browser_args.push_back("/tmp");
-				}
+				}*/
 				res = browser_cmd->Execute(browser_args);
 				delete browser_cmd;
+				
 				if ( res == NULL )
 				{
 					cerr << "Cannot execute the browser: " << browser << endl;
@@ -454,12 +498,12 @@ int main(int argc, char ** argv)
 				}
 				if ( res->GetStatus() != Success )
 				{
-					cerr << "Error executing " << browser << ". " << res->GetOutput() << endl;
+					cerr << "Error executing " << browser << ". " << strerror(errno) << "\n Output: " << res->GetOutput() << endl;
 					continue;
 				}
 			}
 		}
-		return ( Status == 0 ) ? SUCCESS : FAULT;				
+		return ( Status == 0 ) ? SUCCESS : FAULT;
 	}
 	
 	return 0;
