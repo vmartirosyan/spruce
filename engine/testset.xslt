@@ -42,7 +42,7 @@
 						return Unres;
 					}
 					
-					<xsl:value-of select="Code" />
+					<xsl:value-of select="Code/Main"/>
 					
 				}
 				catch (Exception e)
@@ -50,7 +50,7 @@
 					cerr &lt;&lt; "Exception was thrown: " &lt;&lt; e.GetMessage();
 					return Unres;
 				}
-				
+				<xsl:value-of select="Code/Finally"/>
 			}
 		};
 		</xsl:for-each>
