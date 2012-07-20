@@ -27,14 +27,14 @@
 // Operations
 /*enum ChrootOperations
 {
-	CHROOT_NORMAL_FUNC
 	CHROOT_ERR_EACCES,
 	CHROOT_ERR_EFAULT,
 	CHROOT_ERR_ELOOP,
 	CHROOT_ERR_ENAMETOOLONG,
 	CHROOT_ERR_ENOENT,
 	CHROOT_ERR_ENOTDIR,
-	CHROOT_ERR_EPERM
+	CHROOT_ERR_EPERM,
+	CHROOT_NORMAL_FUNC
 };*/
 
 class Chroot : public SyscallTest
@@ -47,9 +47,10 @@ public:
 	Status chrootFault();
 	Status chrootFileNotExist();
 	Status chrootIsNotDirectory();
-	/*Status chrootNormalFunc();*/
 	Status chrootLoopInSymLink();
 	Status chrootNoAcces();
+	Status chrootNoPerm();
+	Status chrootNormalFunc();
 
 protected:
 	virtual int Main(vector<string> args);	
