@@ -256,7 +256,7 @@ int main(int argc, char ** argv)
 		TestResultCollection res = tests.Run();		
 		
 		string XML = res.ToXML();
-		unsigned int XMLLength = XML.size();
+		// unsigned int XMLLength = XML.size();
 		
 		
 		

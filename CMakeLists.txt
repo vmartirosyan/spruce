@@ -39,8 +39,6 @@ execute_process(COMMAND mkdir ${CMAKE_BINARY_DIR}/include/ -p )
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/include")
 
-execute_process(COMMAND mkfifo ${FIFO_PATH} 0666 )
-
 # Changing the source directory to point to the binary directory
 #SET(CMAKE_SOURCE_DIR, ${CMAKE_BINARY_DIR})
 
@@ -63,3 +61,5 @@ configure_file(
 
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+    
+
