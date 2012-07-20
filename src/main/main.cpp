@@ -438,9 +438,6 @@ int main(int argc, char ** argv)
 				cout << "Done" << endl;
 			}
 			
-			// Hold on a while...
-			sleep(1);
-			
 			// Change the effective user id to real user id... browsers don't like ronning as root.
 			
 			char * UserName = getenv("SUDO_USER");
@@ -477,6 +474,8 @@ int main(int argc, char ** argv)
 			
 			for ( unsigned int i = 0; i < XMLFilesToProcess.size(); ++i )
 			{
+				// Hold on a while...
+				sleep(1);
 				
 				UnixCommand * browser_cmd = new UnixCommand(browser, ProcessBackground);
 				vector<string> browser_args;

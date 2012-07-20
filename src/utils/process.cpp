@@ -32,7 +32,12 @@ ProcessResult::~ProcessResult()
 }
 ProcessResult * Process::Execute(vector<string> args)
 {
-		
+	int fds[2];
+	if ( pipe(fds) == -1 )
+	{
+		return new ProcessResult(Unres, "Cannot create pipe. " + (string)strerror(errno));		
+	}
+	
 	// Create the child process
 	pid_t ChildId = fork();
 	
@@ -45,8 +50,9 @@ ProcessResult * Process::Execute(vector<string> args)
 	{
 		close(1);
 		close(2);
+		close(fds[0]);
 		int _stdout = -1, _stderr = -1;
-		if ( (_stdout = open(FIFO_PATH, O_WRONLY)) != 1 )
+		if ( (_stdout = dup(fds[1])) != 1 )
 		{
 			cerr << "Child: cannot open pipe for writing. Error: " << strerror(errno);
 			_exit(Unres);
@@ -61,18 +67,12 @@ ProcessResult * Process::Execute(vector<string> args)
 		int status = Main(args);
 		close(1);
 		close(2);
+		close(fds[1]);
 		_exit(status);
 	}
 	
 	// Parent process...
-	int fd = -1;
-		
-	if ( (fd = open(FIFO_PATH, O_RDONLY)) == -1 )
-	{
-		return new ProcessResult(Unres, "Parent: cannot open pipe for reading. Error : " + (string)strerror(errno));	
-	}
-	
-	
+	close(fds[1]);
 	
 	int status;
 	int wait_res = waitpid(ChildId, &status, 0);
@@ -88,17 +88,17 @@ ProcessResult * Process::Execute(vector<string> args)
 		int bytes;
 		while ( true )
 		{
-			bytes = read( fd, buf, 999 );
+			bytes = read( fds[0], buf, 999 );
 			//cerr << "bytes = " << bytes << endl;
 			if ( bytes == -1 )
 				break;
 			buf[bytes] = 0;
 			//cerr << Output.size() << "+" << bytes << ">=" << Output.max_size() << endl;
-			if ( Output.size() + bytes >= Output.max_size() )
+			/*if ( Output.size() + bytes >= Output.max_size() )
 			{
 				//cerr << "Waiting for child" << endl;
 				return new ProcessResult(WEXITSTATUS(status), "Overflow! ");
-			}
+			}*/
 			
 			Output += (string)buf;
 			
@@ -115,7 +115,7 @@ ProcessResult * Process::Execute(vector<string> args)
 	}
 	
 	
-	close(fd);
+	close(fds[1]);
 	
 	/*ofstream of("/tmp/tests", ios_base::app);
 	
