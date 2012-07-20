@@ -45,12 +45,14 @@ int Chroot::Main(vector<string>)
 				return chrootFileNotExist();
 		    case CHROOT_ERR_ENOTDIR:
 				return chrootIsNotDirectory();
-		    /*case CHROOT_NORMAL_FUNC:
-				return chrootNormalFunc();	*/
 			case CHROOT_ERR_ELOOP:
 				return chrootLoopInSymLink();	
 			case CHROOT_ERR_EACCES:
 				return chrootNoAcces();
+			case CHROOT_ERR_EPERM:
+				return chrootNoPerm();
+		    case CHROOT_NORMAL_FUNC:
+				return chrootNormalFunc();	
 			default:
 				cerr << "Unsupported operation.";
 				return Unsupported;		
@@ -148,54 +150,24 @@ Status Chroot::chrootFileNotExist()
 	return Success;
 }
 
-/*Status Chroot::chrootNormalFunc()
+Status Chroot::chrootNormalFunc()
 {
-	string dirPath = (string)_cwd + "/chrootTestDirectory";
-	char * cwd;
-	long size;
-	int  ret_chroot;
-		
 	try
-	{
-		Directory dir(dirPath, 0777);		
+	{		
+		Directory dir("chrootTestDirectory", 0777);		
+		File file("chrootTestDirectory/chrootTestFile.txt");
 		
-		ret_chroot = chroot(dirPath.c_str());
-		if(ret_chroot != 0)
+		if(chroot("chrootTestDirectory") != 0)
 		{
-			cerr << "chroot does not change the working directory. "<<strerror(errno);
+			cerr << "Chroot can not change the root directory. "<<strerror(errno);
 			return Fail;
 		} 
-		
-		
-		cwd = NULL;
-		size = pathconf(".", _PC_PATH_MAX);
-		if ((cwd = (char *)malloc((size_t)size)) == NULL)
+		if(access("/chrootTestFile.txt", F_OK) != 0)
 		{
-			cerr << "Can not allocate memmory. "<<strerror(errno);
-			return Unres;			
-		}
-		cwd = getcwd(cwd, (size_t)size);
-		if(cwd == NULL)
-		{
-			cerr << "Can not read changed working directory. "<<strerror(errno);
-			free(cwd);
-			return Unres;
-		}
-		
-		if(strcmp(cwd, dirPath.c_str()) != 0)
-		{
-			cerr << "Directory change error ";
-			free(cwd);
-			return Fail;
-		}
-		free(cwd);
-		
-		ret_chroot = chroot(_cwd);
-		if(ret_chroot != 0)
-		{
-			cerr << "chroot does not change the working directory. "<<strerror(errno);
-			return Fail;
-		} 
+			cerr << "Chroot does not change the working directory. ";
+			return Fail;			
+		}	
+	
 		return Success;
 
 	}
@@ -205,34 +177,7 @@ Status Chroot::chrootFileNotExist()
 		return Unres;
 	}
 	
-}*/
-/*		}
-		
-		if(strcmp(cwd, dirPath.c_str()) != 0)
-		{
-			cerr << "Directory change error ";
-			free(cwd);
-			return Fail;
-		}
-		free(cwd);
-		
-		ret_chdir = chdir(_cwd);
-		if(ret_chdir != 0)
-		{
-			cerr << "chroot does not change the working directory. "<<strerror(errno);
-			return Fail;
-		} 
-		return Success;
-
-	}
-	catch (Exception ex)
-	{
-		cerr << ex.GetMessage();
-		return Unres;
-	}
-	
-}*/
-
+}
 
 Status Chroot::chrootLoopInSymLink()
 {
@@ -319,20 +264,79 @@ Status Chroot::chrootNoAcces ()
 			cerr<< "Can not set user to nobody";
 			return Unres;
 		}
-		if (setuid(noBody->pw_uid) != 0) {
+		if (seteuid(noBody->pw_uid) != 0) {
 			cerr<<"Can not set uid";
 			return Unres;
 		}
 		 
 		if (chroot(dirPath) != -1) {
 			cerr<<"Chroot should return -1 when search permission was denied .";
+			// Change nobody to root
+			if (seteuid(0) != 0)
+				cerr<<"Can not set uid";
 			return Fail;
 		}
+		int Error = errno;
 		
-		if (errno != EACCES) {
+		// Change nobody to root
+		if (seteuid(0) != 0)
+			cerr<<"Can not set uid";
+			
+		if (Error != EACCES) {
 			cerr << "Incorrect error set in errno in case of search permission assces denied "<<strerror(errno);
 			return Fail;
 		}
+		
+		return Success;
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}	
+}
+
+Status Chroot::chrootNoPerm ()
+{
+    struct passwd * noBody;
+    const int FILE_MODE = 0;
+    const char * dirPath = "chdir_noperm_dir";
+ 
+	try
+	{
+		Directory dir((string)dirPath, FILE_MODE);	
+		
+		// Change root to nobody
+		if((noBody = getpwnam("nobody")) == NULL) {
+			cerr<< "Can not set user to nobody";
+			return Unres;
+		}
+		if (seteuid(noBody->pw_uid) != 0) {
+			cerr<<"Can not set uid";
+			return Unres;
+		}
+		 
+		if (chroot(dirPath) != -1) {
+			cerr<<"Chroot should return -1 when search permission was denied .";
+			// Change nobody to root
+			if (seteuid(0) != 0)
+				cerr<<"Can not set uid";
+			return Fail;
+		}
+		
+		int Error = errno;
+		
+		// Change nobody to root
+		if (seteuid(0) != 0)
+			cerr<<"Can not set uid";
+			
+		if (Error != EPERM) {
+			cerr << "Incorrect error set in errno. "<<strerror(errno);
+			return Fail;
+		}
+		
+		
+		
 		return Success;
 	}
 	catch (Exception ex)
