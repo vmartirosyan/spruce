@@ -449,8 +449,7 @@ Status MknodTest :: MknodTestNormalCase1Func()
 		return Fail;
 	}
 	
-#warning What is this????
-	if ( (st_buf.st_mode & S_IFREG | 0777) == 0 )
+	if ( (st_buf.st_mode & (S_IFREG | 0777)) == 0 )
 	{
 		cerr << "Mknod failed. ";
 		return Fail;
