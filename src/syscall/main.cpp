@@ -57,6 +57,7 @@
 #include "fchmod/Fchmod.hpp"
 #include "sync/Sync.hpp"
 #include "fchown/Fchown.hpp"
+#include "lchown/Lchown.hpp"
 // Ruzanna
 
 // Ani
@@ -127,6 +128,7 @@ int main(int argc, char ** argv)
 			Configuration<Fchmod> fchmodConf(INSTALL_PREFIX"/share/spruce/config/fchmod.conf");
 			Configuration<Sync> syncConf(INSTALL_PREFIX"/share/spruce/config/sync.conf");		
 			Configuration<Fchown> fchownConf(INSTALL_PREFIX"/share/spruce/config/fchown.conf");		
+			Configuration<Lchown> lchownConf(INSTALL_PREFIX"/share/spruce/config/lchown.conf");		
 		// Ruzanna
 		
 		// Ani
@@ -185,6 +187,7 @@ int main(int argc, char ** argv)
 		TestCollection fchmodTests = fchmodConf.Read();
 		TestCollection syncTests = syncConf.Read();
 		TestCollection fchownTests = fchownConf.Read();
+		TestCollection lchownTests = lchownConf.Read();
 		// Ruzanna
 		
 		// Ani
@@ -244,6 +247,7 @@ int main(int argc, char ** argv)
 		tests.Merge(fchmodTests);
 		tests.Merge(syncTests);
 		tests.Merge(fchownTests);
+		tests.Merge(lchownTests);
 		// Ruzanna
 		
 		// Ani

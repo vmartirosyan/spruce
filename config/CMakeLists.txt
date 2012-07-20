@@ -257,6 +257,10 @@ install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/sync.conf"
 install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/fchown.conf"
 			DESTINATION share/spruce/config
 			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)	
+									
+install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/lchown.conf"
+			DESTINATION share/spruce/config
+			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
 # Ruzanna
 
 # Ani
