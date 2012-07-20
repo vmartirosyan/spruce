@@ -47,6 +47,7 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/chdir/Chdir.cpp	
 						${CMAKE_CURRENT_SOURCE_DIR}/getcwd/Getcwd.cpp	
 						${CMAKE_CURRENT_SOURCE_DIR}/mkdir_rmdir/Mkdir_rmdir.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/chroot/Chroot.cpp	
 						# Vahram
 						${CMAKE_CURRENT_SOURCE_DIR}/utime/Utime.cpp	
 						${CMAKE_CURRENT_SOURCE_DIR}/access/Access.cpp	

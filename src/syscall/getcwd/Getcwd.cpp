@@ -27,7 +27,6 @@
 #include <sys/types.h>
 #include <string.h>
 #include <pwd.h>
-#include "File.hpp"
 #include "Directory.hpp"
 
 
@@ -52,7 +51,7 @@ int Getcwd::Main(vector<string>)
 				return GetcwdRange();
 			default:
 				cerr << "Unsupported operation.";
-				return Unres;		
+				return Unsupported;		
 		}
 	}
 	cerr << "Test was successful";
@@ -122,23 +121,14 @@ Status Getcwd::GetcwdNormalFunc()
 
 Status Getcwd::GetcwdNoAcces()
 {
-	/*string dirPath = "getced_noaccess_dir";
+	char * dirPath = "getced_noaccess_dir";
     struct passwd * noBody;
-    struct stat stat_buf;
-    const int FILE_MODE = 0;//S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
- 
- 
+     
 	try
 	{
-		Directory dir(dirPath, 0777);	
-		  
-		if (chmod (dirPath.c_str(), FILE_MODE) != 0) 
-		{
-			cerr<<"Can not chmod directory. ";
-			return Unres;
-		}
+		Directory dir((string)dirPath, 0666);	
 			 
-		if (chdir(dirPath.c_str()) != 0) 
+		if (chdir(dirPath) != 0) 
 		{
 			cerr<<"Chdir can not change the working directory. ";
 			return Unres;
@@ -161,7 +151,7 @@ Status Getcwd::GetcwdNoAcces()
 			cerr << "Can not allocate memory  "<<strerror(errno);
 			return Unres;
 		}		
-		if(getwd(cwd) != NULL)
+		if(getcwd(cwd, size) != NULL)
 		{
 			cerr << "Getwd return not NULL pointer but it should return NULL when premission to read or search was denied. "<<strerror(errno);
 			return Fail;
@@ -177,8 +167,7 @@ Status Getcwd::GetcwdNoAcces()
 	{
 		cerr << ex.GetMessage();
 		return Unres;
-	}	*/
-	return Unres;
+	}	
 }
 Status Getcwd::GetcwdFault()
 {
@@ -186,7 +175,7 @@ Status Getcwd::GetcwdFault()
 	long size = pathconf(".", _PC_PATH_MAX); 
 	if(getcwd((char*)-1, (size_t)size) != NULL)
 	{
-		cerr << "Getwd return not NULL pointer but it should return NULL when the buf points to a bad address. "<<strerror(errno);
+		cerr << "Getcwd return not NULL pointer but it should return NULL when the buf points to a bad address. "<<strerror(errno);
 		return Fail;
 	}
 	if(errno != EFAULT)
@@ -221,9 +210,9 @@ Status Getcwd::GetcwdDirUnlinked()
 		cerr << "Can not allocate memory  "<<strerror(errno);
 		return Unres;
 	}		
-	if(getwd(cwd) != NULL)
+	if(getcwd(cwd, size) != NULL)
 	{
-		cerr << "Getwd return not NULL pointer but it should return NULL when the working directory has been unlinked. "<<strerror(errno);
+		cerr << "Getcwd return not NULL pointer but it should return NULL when the working directory has been unlinked. "<<strerror(errno);
 		free(cwd);
 		return Fail;
 	}

@@ -1,4 +1,4 @@
-//      Chdir.hpp
+//      Chroot.hpp
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -20,46 +20,36 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#ifndef CHDIR_H
-#define CHDIR_H
+#ifndef CHROOT_H
+#define CHROOT_H
 
 #include "SyscallTest.hpp"
 // Operations
-/*enum ChdirOperations
+/*enum ChrootOperations
 {
-	CHDIR_NORMAL_FUNC,
-	CHDIR_ERR_EACCES,
-	CHDIR_ERR_EFAULT,
-	CHDIR_ERR_ELOOP,
-	CHDIR_ERR_ENAMETOOLONG,
-	CHDIR_ERR_ENOENT,
-	CHDIR_ERR_ENOTDIR
+	CHROOT_NORMAL_FUNC
+	CHROOT_ERR_EACCES,
+	CHROOT_ERR_EFAULT,
+	CHROOT_ERR_ELOOP,
+	CHROOT_ERR_ENAMETOOLONG,
+	CHROOT_ERR_ENOENT,
+	CHROOT_ERR_ENOTDIR,
+	CHROOT_ERR_EPERM
 };*/
 
-class Chdir : public SyscallTest
+class Chroot : public SyscallTest
 {			
 public:	
-	Chdir(Mode mode, int operation, string arguments = "") :
-		SyscallTest(mode, operation, arguments, "chdir")
-	{			
-		long size;
-		_cwd = NULL;
-		size = pathconf(".", _PC_PATH_MAX);
-
-		if ((_cwd = (char *)malloc((size_t)size)) != NULL)
-			_cwd = getcwd(_cwd, (size_t)size);
-	}
-	virtual ~Chdir() 
-	{
-		free(_cwd);
-	}	
-	Status chdirTooLongPath();
-	Status chdirFileNotExist();
-	Status chdirIsNotDirectory();
-	Status chdirNormalFunc();
-	Status chdirLoopInSymLink();
-	Status chdirNoAcces();
-	Status chdirFault();
+	Chroot(Mode mode, int operation, string arguments = "") :
+		SyscallTest(mode, operation, arguments, "chroot"){}
+	virtual ~Chroot() {}	
+	Status chrootTooLongPath();
+	Status chrootFault();
+	Status chrootFileNotExist();
+	Status chrootIsNotDirectory();
+	/*Status chrootNormalFunc();*/
+	Status chrootLoopInSymLink();
+	Status chrootNoAcces();
 
 protected:
 	virtual int Main(vector<string> args);	
