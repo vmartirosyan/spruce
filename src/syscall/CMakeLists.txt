@@ -62,6 +62,7 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/fchmod/Fchmod.cpp	
 						${CMAKE_CURRENT_SOURCE_DIR}/fchown/Fchown.cpp	
 						${CMAKE_CURRENT_SOURCE_DIR}/sync/Sync.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/lchown/Lchown.cpp
 						# Ruzanna
 
 						# Ani
