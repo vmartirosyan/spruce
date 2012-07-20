@@ -1,4 +1,4 @@
-//      chdir.cpp
+//      Chroot.cpp
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include "Chdir.hpp"
+#include "Chroot.hpp"
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -31,27 +31,26 @@
 #include "Directory.hpp"
 
 
-
-int Chdir::Main(vector<string>)
+int Chroot::Main(vector<string>)
 {
 	if ( _mode == Normal )
 	{	
 		switch (_operation)
 		{			
-		    case CHDIR_ERR_ENAMETOOLONG:
-				return chdirTooLongPath();
-			case CHDIR_ERR_EFAULT:
-				return chdirFault();
-			case CHDIR_ERR_ENOENT:
-				return chdirFileNotExist();
-		    case CHDIR_ERR_ENOTDIR:
-				return chdirIsNotDirectory();
-		    case CHDIR_NORMAL_FUNC:
-				return chdirNormalFunc();	
-			case CHDIR_ERR_ELOOP:
-				return chdirLoopInSymLink();	
-			case CHDIR_ERR_EACCES:
-				return chdirNoAcces();
+		    case CHROOT_ERR_ENAMETOOLONG:
+				return chrootTooLongPath();
+			case CHROOT_ERR_EFAULT:
+				return chrootFault();
+			case CHROOT_ERR_ENOENT:
+				return chrootFileNotExist();
+		    case CHROOT_ERR_ENOTDIR:
+				return chrootIsNotDirectory();
+		    /*case CHROOT_NORMAL_FUNC:
+				return chrootNormalFunc();	*/
+			case CHROOT_ERR_ELOOP:
+				return chrootLoopInSymLink();	
+			case CHROOT_ERR_EACCES:
+				return chrootNoAcces();
 			default:
 				cerr << "Unsupported operation.";
 				return Unsupported;		
@@ -62,11 +61,11 @@ int Chdir::Main(vector<string>)
 }
 
 
-Status Chdir::chdirFault()
+Status Chroot::chrootFault()
 {
-	if(chdir((char *)-1) == 0)
+	if(chroot((char *)-1) == 0)
 	{
-		cerr<<"Chdir return 0, but pathname points outside your accessible address space. "<<strerror(errno);
+		cerr<<"Chroot return 0, but pathname points outside your accessible address space. "<<strerror(errno);
 		return Fail;
 	}
 	if(errno != EFAULT)
@@ -78,20 +77,18 @@ Status Chdir::chdirFault()
 	return Success;	
 }
 
-Status Chdir::chdirIsNotDirectory()
+Status Chroot::chrootIsNotDirectory()
 {
-	const char *path="chdirTest.txt";
-	const char *pathNotDirectory = "chdirTest.txt/somthingelse" ;
-	int  ret_chdir;
-		
+	const char *path="chrootTest.txt";
+	const char *pathNotDirectory = "chrootTest.txt/somthingelse" ;
+	
 	try
 	{
 		File file(path, S_IWUSR);
-		ret_chdir = chdir(pathNotDirectory);
 				
-		if(ret_chdir == 0)
+		if(chroot(pathNotDirectory) == 0)
 		{
-			cerr << "chdir reruns 0 but it should return -1 when  component of the path prefix is not a directory  "<<strerror(errno);
+			cerr << "Chroot reruns 0 but it should return -1 when  component of the path prefix is not a directory  "<<strerror(errno);
 			return Fail;
 		}
 		if(errno != ENOTDIR)
@@ -113,16 +110,13 @@ Status Chdir::chdirIsNotDirectory()
 }
 
 
-Status Chdir::chdirTooLongPath()
+Status Chroot::chrootTooLongPath()
 {
-    int ret_chdir;
 	const char* tooLongPath = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
-	
-	ret_chdir = chdir(tooLongPath);
-	
-	if(ret_chdir == 0)
+
+	if(chroot(tooLongPath) == 0)
 	{
-		cerr << "chdir reruns 0 but it should return -1 when the path is too long  "<<strerror(errno);
+		cerr << "Chroot reruns 0 but it should return -1 when the path is too long  "<<strerror(errno);
 		return Fail;
 	}
 	if(errno != ENAMETOOLONG)
@@ -135,16 +129,13 @@ Status Chdir::chdirTooLongPath()
 }
 
 
-Status Chdir::chdirFileNotExist()
+Status Chroot::chrootFileNotExist()
 {
-	
 	const char *path="/notExistPath198/2/7/1/htap";
-	int ret_chdir;
 	
-	ret_chdir = chdir(path);
-	if(ret_chdir == 0)
+	if(chroot(path) == 0)
 	{
-		cerr << "chdir return 0 but it should return -1 when the file is not exist  "<<strerror(errno);
+		cerr << "Chroot return 0 but it should return -1 when the file is not exist  "<<strerror(errno);
 		return Fail;
 	}
 	if(errno != ENOENT)
@@ -157,21 +148,21 @@ Status Chdir::chdirFileNotExist()
 	return Success;
 }
 
-Status Chdir::chdirNormalFunc()
+/*Status Chroot::chrootNormalFunc()
 {
-	string dirPath = (string)_cwd + "/chdirTestDirectory";
+	string dirPath = (string)_cwd + "/chrootTestDirectory";
 	char * cwd;
 	long size;
-	int  ret_chdir;
+	int  ret_chroot;
 		
 	try
 	{
 		Directory dir(dirPath, 0777);		
 		
-		ret_chdir = chdir(dirPath.c_str());
-		if(ret_chdir != 0)
+		ret_chroot = chroot(dirPath.c_str());
+		if(ret_chroot != 0)
 		{
-			cerr << "chdir does not change the working directory. "<<strerror(errno);
+			cerr << "chroot does not change the working directory. "<<strerror(errno);
 			return Fail;
 		} 
 		
@@ -199,10 +190,10 @@ Status Chdir::chdirNormalFunc()
 		}
 		free(cwd);
 		
-		ret_chdir = chdir(_cwd);
-		if(ret_chdir != 0)
+		ret_chroot = chroot(_cwd);
+		if(ret_chroot != 0)
 		{
-			cerr << "chdir does not change the working directory. "<<strerror(errno);
+			cerr << "chroot does not change the working directory. "<<strerror(errno);
 			return Fail;
 		} 
 		return Success;
@@ -214,14 +205,54 @@ Status Chdir::chdirNormalFunc()
 		return Unres;
 	}
 	
-}
+}*/
+/*		}
+		
+		if(strcmp(cwd, dirPath.c_str()) != 0)
+		{
+			cerr << "Directory change error ";
+			free(cwd);
+			return Fail;
+		}
+		free(cwd);
+		
+		ret_chdir = chdir(_cwd);
+		if(ret_chdir != 0)
+		{
+			cerr << "chroot does not change the working directory. "<<strerror(errno);
+			return Fail;
+		} 
+		return Success;
 
-
-Status Chdir::chdirLoopInSymLink()
-{
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
 	
-	int ret_chdir = 0;	
-    string dirPath = (string)_cwd + "/chdirTestDirectory";
+}*/
+
+
+Status Chroot::chrootLoopInSymLink()
+{
+	long size;
+	char * cwd = NULL;
+	size = pathconf(".", _PC_PATH_MAX);
+
+	if ((cwd = (char *)malloc((size_t)size)) == NULL)
+	{
+		cerr<<"Can not allocate memmory. "<<strerror(errno);
+		return Unres;
+	}
+	cwd = getcwd(cwd, (size_t)size);	
+	if (cwd == NULL)
+	{
+		cerr<<"Can not get current working directory "<<strerror(errno);
+		return Unres;
+	}	
+	
+    string dirPath = (string)cwd + "/chdirTestDirectory";
     string link1 = dirPath + "/link1";
     string link2 = dirPath + "/link2";
     
@@ -250,9 +281,8 @@ Status Chdir::chdirLoopInSymLink()
 		string path = link1 + "/chdir_file";
 
 		//passing pathname with looping symbolic links .. expected to get ELOOP
-		ret_chdir = chdir(path.c_str());
 	   
-		if (ret_chdir != -1) 
+		if (chroot(path.c_str()) != -1) 
 		{
 			cerr<<"Creat should return -1 when we are passing pathname with looping symbolic links.";
 			return Fail;
@@ -273,18 +303,16 @@ Status Chdir::chdirLoopInSymLink()
 	
 }
 
-Status Chdir::chdirNoAcces ()
+Status Chroot::chrootNoAcces ()
 {
-	
-    string dirPath = (string)_cwd + "/chdir_noaccess_dir";
     struct passwd * noBody;
-    int ret_chdir;
     const int FILE_MODE = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+    const char * dirPath = "chdir_noaccess_dir";
  
  
 	try
 	{
-		Directory dir(dirPath, FILE_MODE);	
+		Directory dir((string)dirPath, FILE_MODE);	
 		
 		// Change root to nobody
 		if((noBody = getpwnam("nobody")) == NULL) {
@@ -295,10 +323,9 @@ Status Chdir::chdirNoAcces ()
 			cerr<<"Can not set uid";
 			return Unres;
 		}
-		
-		ret_chdir = chdir(dirPath.c_str());	 
-		if (ret_chdir != -1) {
-			cerr<<"chdir should return -1 when search permission was denied .";
+		 
+		if (chroot(dirPath) != -1) {
+			cerr<<"Chroot should return -1 when search permission was denied .";
 			return Fail;
 		}
 		
@@ -314,3 +341,4 @@ Status Chdir::chdirNoAcces ()
 		return Unres;
 	}	
 }
+

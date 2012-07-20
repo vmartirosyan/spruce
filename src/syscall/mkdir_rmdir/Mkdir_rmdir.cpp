@@ -27,7 +27,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <pwd.h>
-
+#include "File.hpp"
 
 
 int Mkdir_rmdir::Main(vector<string>)
@@ -35,27 +35,362 @@ int Mkdir_rmdir::Main(vector<string>)
 	if ( _mode == Normal )
 	{	
 		switch (_operation)
-		{			
-		    /*case CHDIR_ERR_ENAMETOOLONG:
-				return Mkdir_rmdirTooLongPath();
-			case CHDIR_ERR_ENOENT:
-				return Mkdir_rmdirFileNotExist();
-		    case CHDIR_ERR_ENOTDIR:
-				return Mkdir_rmdirIsNotDirectory();
-		    case CHDIR_NORMAL_FUNC:
-				return Mkdir_rmdirNormalFunc();	
-			case CHDIR_ERR_ELOOP:
-				return Mkdir_rmdirLoopInSymLink();	
-			case CHDIR_ERR_EACCES:
-				return Mkdir_rmdirNoAcces();*/
+		{		
+			case MKDIR_RMDIR_NORMAL:
+				return mkdirRmdirNormal();
+				
+				
+			case MKDIR_ENAMETOOLONG:
+				return mkdirNameTooLong();
+			case MKDIR_ENOENT:	
+				return mkdirPathNotEnt();
+			case MKDIR_ENOTDIR:
+				return mkdirNotDir();
+			case MKDIR_EEXIST:
+				return mkdirExists();
+			case MKDIR_EFAULT:
+				return mkdirFault();
+			case MKDIR_EACCES:
+				return mkdirNoAccess();
+				
+			case RMDIR_ENAMETOOLONG:	
+				return rmdirNameTooLong();
+			case RMDIR_ENOENT:
+				return rmdirPathNotEnt();
+			case RMDIR_ENOTDIR:
+				return rmdirNotDir();
+			case RMDIR_EINVAL:
+				return rmdirInval();
+			case RMDIR_ENOTEMPTY:
+				return rmdirNotEmpty();
+			case RMDIR_EFAULT:
+				return rmdirFault();
+			case RMDIR_EACCES:
+				return rmdirNoAccess();
+
 			default:
 				cerr << "Unsupported operation.";
-				return Unres;		
+				return Unsupported;		
 		}
 	}
 	cerr << "Test was successful";
 	return Success;
 }
+
+Status Mkdir_rmdir::mkdirRmdirNormal()
+{
+	const char * dir = "mkdirrmdirtestdir";
+	if(mkdir(dir, 0777) != 0)
+	{
+		cerr<<"Mkdir can not create directory. "<<strerror(errno);
+		return Fail;
+	}
+	if(rmdir(dir) != 0)
+	{
+		cerr<<"Rmdir can not delete directory. "<<strerror(errno);
+		return Fail;
+	}	
+	return Success;	
+}
+
+
+
+Status Mkdir_rmdir::mkdirNoAccess()
+{
+	const char * dir = "mkdirnoaccessdir";
+	struct passwd * noBody;
+	const int FILE_MODE = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+		 	
+	// Change root to nobody
+	if((noBody = getpwnam("nobody")) == NULL) {
+		cerr<< "Can not set user to nobody";
+		return Unres;
+	}
+	if (setuid(noBody->pw_uid) != 0) {
+		cerr<<"Can not set uid";
+		return Unres;
+	}
+	
+	if(mkdir(dir, FILE_MODE) == 0)
+	{
+		cerr<<"Mkdir create directory. ";
+		return Fail;		
+	}
+	
+	if(errno != EACCES)
+	{
+		cerr << "Incorrect error set in errno. "<<strerror(errno);
+		return Fail;
+	}	
+	return Success;
+}
+Status Mkdir_rmdir::mkdirFault()
+{
+	if(mkdir((char *)-1, 0777) == 0)
+	{
+		cerr<<"Mkdir return 0, but pathname points outside your accessible address space. "<<strerror(errno);
+		return Fail;
+	}
+	if(errno != EFAULT)
+	{
+		
+		cerr << "Incorrect error set in errno. "<<strerror(errno);
+		return Fail;
+	}
+	return Success;
+}
+Status Mkdir_rmdir::mkdirExists()
+{
+	const char * dir = "mkdirtestdirex";
+	if(mkdir(dir, 0777) != 0)
+	{
+		cerr << "Mkdir can not create directory. "<<strerror(errno);
+		return Unres;
+	} 
+	if(mkdir(dir, 0777) == 0)
+	{
+		cerr << "Mkdir reruns 0 but it should return -1 when pathname already exists. "<<strerror(errno);
+		rmdir(dir);
+		return Fail;
+	}
+	if(errno != EEXIST)
+	{
+		cerr << "Incorrect error set in errno in case of pathname already exists. "<<strerror(errno);
+		return Fail;
+	}
+		
+	rmdir(dir);
+	return Success;
+	
+}
+Status Mkdir_rmdir::mkdirNotDir()
+{
+	const char *filePath="mkdirTest.txt";
+	const char *pathNotDirectory = "mkdirTest.txt/somthingelse" ;
+		
+	try
+	{
+		File file(filePath, S_IWUSR);
+				
+		if(mkdir(pathNotDirectory, 0777) == 0)
+		{
+			cerr << "Mkdir reruns 0 but it should return -1 when  component of the path prefix is not a directory. "<<strerror(errno);
+			return Fail;
+		} 
+		if(errno != ENOTDIR)
+		{
+			cerr << "Incorrect error set in errno in case of component of the path prefix is not a directory. "<<strerror(errno);
+			return Fail;
+		}
+		
+		return Success;
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+}
+Status Mkdir_rmdir::mkdirPathNotEnt()
+{
+	const char* noentpath = "no_ent_path_1840_3478453/rve/ev";
+	if(mkdir(noentpath, 0777) == 0)
+	{
+		cerr << "Mkdir reruns 0 but it should return -1 when a directory component in pathname does not exist. "<<strerror(errno);
+		return Fail;
+	}
+	if(errno != ENOENT)
+	{
+		
+		cerr << "Incorrect error set in errno. "<<strerror(errno);
+		return Fail;
+	}
+	return Success;
+}
+Status Mkdir_rmdir::mkdirNameTooLong()
+{
+	const char* tooLongPath = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+	if(mkdir(tooLongPath, 0777) == 0)
+	{
+		cerr << "Mkdir reruns 0 but it should return -1 when the path is too long  "<<strerror(errno);
+		return Fail;
+	}
+	if(errno != ENAMETOOLONG)
+	{
+		
+		cerr << "Incorrect error set in errno in case of too long file name "<<strerror(errno);
+		return Fail;
+	}
+	return Success;
+}
+
+
+
+
+
+
+
+
+
+
+
+Status Mkdir_rmdir::rmdirNoAccess()
+{
+	const char * dir = "rmdirnoaccessdir";
+	struct passwd * noBody;
+	const int FILE_MODE = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+	if(mkdir(dir, FILE_MODE) != 0)
+	{
+		cerr<<"Can not make directory. ";
+		return Unres;		
+	}
+		 	
+	// Change root to nobody
+	if((noBody = getpwnam("nobody")) == NULL) {
+		cerr<< "Can not set user to nobody";
+		return Unres;
+	}
+	if (setuid(noBody->pw_uid) != 0) {
+		cerr<<"Can not set uid";
+		return Unres;
+	}
+	
+	if(rmdir(dir) == 0)
+	{
+		cerr << "Rmdir remove directory. "<<strerror(errno);
+		return Fail;
+	}
+	
+	if(errno != EACCES)
+	{
+		cerr << "Incorrect error set in errno. "<<strerror(errno);
+		return Fail;
+	}	
+	return Success;
+}
+Status Mkdir_rmdir::rmdirFault()
+{
+	if(rmdir((char *)-1) == 0)
+	{
+		cerr<<"Rmdir return 0, but pathname points outside your accessible address space. "<<strerror(errno);
+		return Fail;
+	}
+	if(errno != EFAULT)
+	{
+		
+		cerr << "Incorrect error set in errno. "<<strerror(errno);
+		return Fail;
+	}
+	return Success;
+}
+Status Mkdir_rmdir::rmdirNotEmpty()
+{
+	if(mkdir("rmdirtestdir", 0777) != 0)
+	{
+		cerr<<"Can not make directory. "<<strerror(errno);
+		return Unres;
+	}
+	if(mkdir("rmdirtestdir/rmdirtestdir2", 0777) != 0)
+	{
+		cerr<<"Can not make directory. "<<strerror(errno);
+		return Unres;
+	}	
+	
+	if(rmdir("rmdirtestdir") == 0)
+	{
+		cerr<<"Rmdir deleted directory, but directory is not empty. "<<strerror(errno);
+		return Fail;
+	}		
+	if(errno != ENOTEMPTY)
+	{
+		
+		cerr << "Incorrect error set in errno. "<<strerror(errno);
+		return Fail;
+	}
+	
+	rmdir("rmdirtestdir/rmdirtestdir2");
+	rmdir("rmdirtestdir");
+	return Success;		
+}
+Status Mkdir_rmdir::rmdirInval()
+{
+	const char* invalpath = "/.";
+	if(rmdir(invalpath) == 0)
+	{
+		cerr << "Rmdir reruns 0 but pathname has .  as last component. "<<strerror(errno);
+		return Fail;
+	}
+	if(errno != EINVAL)
+	{
+		
+		cerr << "Incorrect error set in errno. "<<strerror(errno);
+		return Fail;
+	}
+	return Success;	
+}
+Status Mkdir_rmdir::rmdirNotDir()
+{
+	const char *filePath="rmdirTest.txt";
+	const char *pathNotDirectory = "rmdirTest.txt/somthingelse" ;
+		
+	try
+	{
+		File file(filePath, S_IWUSR);
+				
+		if(rmdir(pathNotDirectory) == 0)
+		{
+			cerr << "Rmdir reruns 0 but it should return -1 when  component of the path prefix is not a directory  "<<strerror(errno);
+			return Fail;
+		} 
+		if(errno != ENOTDIR)
+		{
+			cerr << "Incorrect error set in errno in case of component of the path prefix is not a directory "<<strerror(errno);
+			return Fail;
+		}
+		
+		return Success;
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}
+}
+Status Mkdir_rmdir::rmdirPathNotEnt()
+{
+	const char* noentpath = "no_ent_path_1840_3478453/rve/ev";
+	if(rmdir(noentpath) == 0)
+	{
+		cerr << "Rmdir reruns 0 but it should return -1 when a directory component in pathname does not exist. "<<strerror(errno);
+		return Fail;
+	}
+	if(errno != ENOENT)
+	{
+		
+		cerr << "Incorrect error set in errno. "<<strerror(errno);
+		return Fail;
+	}
+	return Success;	
+}
+Status Mkdir_rmdir::rmdirNameTooLong()
+{
+	const char* tooLongPath = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+	if(rmdir(tooLongPath) == 0)
+	{
+		cerr << "Rmdir reruns 0 but it should return -1 when the path is too long  "<<strerror(errno);
+		return Fail;
+	}
+	if(errno != ENAMETOOLONG)
+	{
+		
+		cerr << "Incorrect error set in errno in case of too long file name "<<strerror(errno);
+		return Fail;
+	}
+	return Success;
+}
+
+
+
 
 /*
 

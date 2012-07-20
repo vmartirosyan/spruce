@@ -42,6 +42,7 @@
 #include "chdir/Chdir.hpp"
 #include "mkdir_rmdir/Mkdir_rmdir.hpp"
 #include "getcwd/Getcwd.hpp"
+#include "chroot/Chroot.hpp"
 // Vahram
 #include "utime/Utime.hpp"
 #include "access/Access.hpp"
@@ -110,7 +111,8 @@ int main(int argc, char ** argv)
 		// Gio
 		Configuration<Chdir> chdirConf(INSTALL_PREFIX"/share/spruce/config/chdir.conf");		
 		Configuration<Getcwd> getcwdConf(INSTALL_PREFIX"/share/spruce/config/getcwd.conf");	
-		Configuration<Mkdir_rmdir> mkdir_rmdirConf(INSTALL_PREFIX"/share/spruce/config/mkdir_rmdir.conf");		
+		Configuration<Mkdir_rmdir> mkdir_rmdirConf(INSTALL_PREFIX"/share/spruce/config/mkdir_rmdir.conf");	
+		Configuration<Chroot> chrootConf(INSTALL_PREFIX"/share/spruce/config/chroot.conf");		
 		// Vahram
 		Configuration<UtimeTest> utimeConf(INSTALL_PREFIX"/share/spruce/config/utime.conf");
 		Configuration<AccessTest> accessConf(INSTALL_PREFIX"/share/spruce/config/access.conf");
@@ -168,6 +170,7 @@ int main(int argc, char ** argv)
 		TestCollection chdirTests = chdirConf.Read();
 		TestCollection getcwdTests = getcwdConf.Read();
 		TestCollection mkdir_rmdirTests = mkdir_rmdirConf.Read();		
+		TestCollection chrootTests = chrootConf.Read();		
 		// Vahram
 		TestCollection utimeTests = utimeConf.Read();
 		TestCollection accessTests = accessConf.Read();
@@ -226,6 +229,7 @@ int main(int argc, char ** argv)
 		tests.Merge(chdirTests);	
 		tests.Merge(getcwdTests);	
 		tests.Merge(mkdir_rmdirTests);		
+		tests.Merge(chrootTests);		
 		// Vahram
 		tests.Merge(utimeTests);
 		tests.Merge(accessTests);
