@@ -75,17 +75,21 @@ public:
 	string GetOutput() const
 	{
 		return _output;
-	}		
+	}
+		
 	
 protected:
 	int _status;
 	string _output;
+	string StatusToString();
+	
 };
 
 class Process
 {
 public:	
 	virtual ProcessResult * Execute(vector<string> args = vector<string>());
+	virtual ProcessResult * Execute( int (Process::* func) (vector<string>), vector<string> args = vector<string>() );
 	
 	Process()
 	{
@@ -108,7 +112,7 @@ public:
 	}
 protected:
 	static int Level;
-	virtual int Main(vector<string> args) = 0;
+	virtual int Main(vector<string> args) { cerr << "Main not imeplemented."; return Unsupported; }
 };
 
 class BackgroundProcess : public Process

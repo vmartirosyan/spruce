@@ -28,17 +28,7 @@
 #include <algorithm>
 
 
-char * StatusMessages[] = {
-	(char * )"Success",
-	(char * )"Shallow",
-	(char * )"Failed",
-	(char * )"Unresolved",
-	(char * )"Fatal",
-	(char * )"Timeout",
-	(char * )"Signaled",
-	(char * )"Unsupported",
-	(char * )"Unknown"
-	};
+
 	
 bool Alarmed = false;
 
@@ -119,13 +109,7 @@ TestResultCollection TestCollection::Run()
 	return Results;
 }
 
-string TestResult::StatusToString()
-{ 
-	if ( _status >= Success && _status <= Unknown )
-		return (string)StatusMessages[_status];
-	else
-		return (string)StatusMessages[Unknown];
-}
+
 
 string TestResult::ToXML()
 {
