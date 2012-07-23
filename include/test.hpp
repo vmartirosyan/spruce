@@ -70,8 +70,7 @@ protected:
 	int _operation;
 	string _stroperation;
 	string _arguments;
-	string StatusToString();
-	
+
 };
 
 class TestResultCollection 
@@ -86,11 +85,21 @@ public:
 	{
 		_results.push_back(result);
 	}
+	void Merge(TestResultCollection results)
+	{
+		for ( unsigned int i = 0; i < results._results.size(); )
+		{
+			_results.push_back(results._results[i]);
+			// Erase the original pointer so that the destructors do not overlap
+			results._results.erase(results._results.begin() + i);
+		}
+	}
 	string ToXML()
 	{
 		string result = "";
 		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
-		{			
+		{
+			//cerr << (*i)->ToXML() << endl;
 			result += (*i)->ToXML();			
 		}
 		

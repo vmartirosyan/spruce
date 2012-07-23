@@ -25,12 +25,38 @@
 #include <fstream>
 using namespace std;
 
+char * StatusMessages[] = {
+	(char * )"Success",
+	(char * )"Shallow",
+	(char * )"Failed",
+	(char * )"Unresolved",
+	(char * )"Fatal",
+	(char * )"Timeout",
+	(char * )"Signaled",
+	(char * )"Unsupported",
+	(char * )"Unknown"
+	};
+	
+string ProcessResult::StatusToString()
+{ 
+	if ( _status >= Success && _status <= Unknown )
+		return (string)StatusMessages[_status];
+	else
+		return (string)StatusMessages[Unknown];
+}
+
 int Process::Level = 0;
 
 ProcessResult::~ProcessResult()
 {
 }
+
 ProcessResult * Process::Execute(vector<string> args)
+{
+	return Execute(&Process::Main, args);
+}
+
+ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<string> args)
 {
 	int fds[2];
 	if ( pipe(fds) == -1 )
@@ -64,7 +90,7 @@ ProcessResult * Process::Execute(vector<string> args)
 			_exit(Unres);
 		}
 		cerr << " ";
-		int status = Main(args);
+		int status = (*this.*func)(args);
 		close(1);
 		close(2);
 		close(fds[1]);
