@@ -1,0 +1,59 @@
+<TestSet Name="access">
+	<Requires>sys/ioctl.h</Requires>
+	<Requires>fcntl.h</Requires>
+	<Requires>linux/fs.h</Requires>
+	<Requires>pwd.h</Requires>				
+	<Internal></Internal>
+	<Test Name="AccessNormal">
+		<Description>access()  checks  whether the calling process can access the file pathname</Description>			
+		<Code>
+			if ( chmod(file_path.c_str(), 0777) == -1 )
+			{
+				cerr << "Cannot set permission flags on file. Error: " << strerror(errno);
+				return Unres;
+			}
+			
+			struct passwd * nobody = getpwnam("nobody");
+			
+			if ( nobody == NULL )
+			{
+				cerr << "Cannot obtain nobody user information. Error: " << strerror(errno);
+				return Unres;
+			}
+			
+			if ( setuid(nobody->pw_uid) == -1 )
+			{
+				cerr << "Cannot set the user ID to nobody. Error: " << strerror(errno);
+				return Unres;
+			}
+			
+			if ( access(file_path.c_str(), R_OK) == -1 )
+			{
+				cerr << "Read permission is granted but access returns error: " << strerror(errno);
+				return Fail;
+			}
+			
+			if ( access(file_path.c_str(), W_OK) == -1 )
+			{
+				cerr << "Write permission is granted but access returns error: " << strerror(errno);
+				return Fail;
+			}
+			
+			if ( access(file_path.c_str(), X_OK) != 0 )
+			{
+				cerr << "Execution permission is granted but access returns error: " << strerror(errno);
+				return Fail;
+			}
+			
+			// Restore the user id to root
+			if ( setuid(0) == -1 )
+			{
+				cerr << "Cannot set the user ID to root. Error: " << strerror(errno);			
+			}
+			
+			return Success;
+		</Code>
+	</Test>
+	
+</TestSet>
+

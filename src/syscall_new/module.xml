@@ -1,0 +1,3 @@
+<Module Name="syscall">
+	<TestSet Name="access" />	
+</Module>
