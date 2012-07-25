@@ -49,34 +49,47 @@ int Mount_Umount::Main(vector<string>)
 		   
 		switch (_operation)
 		{
-			//case MountUmountGeneral:			
-			//	return MountUmountGeneralFunc();	
+			case MountUmountGeneral:			
+				return MountUmountGeneralFunc();	
 			case UmountErrNameTooLong :
 				return UmountErrNameTooLongFunc();	
 			case MountErrNameTooLong :
 				return MountErrNameTooLongFunc();	
 			case MountErrEbusy :
 				return MountErrEbusyFunc();
+			case UmountErrEbusy :
+				return UmountErrEbusyFunc();
 			//case MountErrEAcces :
 				//return MountErrEAccesFunc();
 			case MountErrEFault :
 				return MountErrEFaultFunc ();
+			case UmountErrEFault :
+				return UmountErrEFaultFunc ();
 			case MountErrELoop :
 				return MountErrELoopFunc ();
 			case MountErrEInval1 :
 				return MountErrEInval1Func ();
 			case MountErrEInval2 :
 				return MountErrEInval2Func ();
+			case UmountErrEInval1 :
+				return UmountErrEInval1Func ();
+			case UmountErrEInval2 :
+				return UmountErrEInval2Func ();
 			case MountErrENotblk:
 				return 	MountErrENotblkFunc ();
 			case MountErrEPerm:
 				return 	MountErrEPermFunc ();
+			case UmountErrEPerm:
+				return 	UmountErrEPermFunc ();
 			case MountErrENoent:
 				return 	MountErrENoentFunc ();
+			case UmountErrENoent:
+				return 	UmountErrENoentFunc ();
 			case MountErrENodev:
 				return MountErrENodevFunc ();
 			case MountErrENotdir:
 				return MountErrENotdirFunc ();
+				
 			
 			
 			default:
@@ -89,12 +102,12 @@ int Mount_Umount::Main(vector<string>)
 }
 
 
- /*              
+             
 Status Mount_Umount::MountUmountGeneralFunc ()
 {
 	int ret_value;
 	// changing directory for later unmounting the mount point
-	if( chdir("/") != 0)
+	if( chdir("/home") != 0)
 	{
 		cerr<< "Cannot change directory" << strerror(errno);
 		return Unres;		
@@ -124,7 +137,7 @@ Status Mount_Umount::MountUmountGeneralFunc ()
 
 }
                
-*/
+
 
 Status Mount_Umount::UmountErrNameTooLongFunc ()
 {
@@ -195,6 +208,25 @@ Status Mount_Umount::MountErrEbusyFunc ()
 	return Success;
 }
 
+Status Mount_Umount::UmountErrEbusyFunc ()
+{			
+	int ret_umount;
+	ret_umount = umount(MountPoint);
+	if ( ret_umount == 0 )
+	{
+		cerr << "umount returns success in case of a busy partition";
+	    return Fail;
+	} 
+  	if( errno != EBUSY )
+	{
+		cerr << "Incorrect error set in errno in case of unmounting a busy partition: "<<strerror(errno);
+		return Fail;
+	}
+	
+	return Success;
+}
+
+
 /*
 Status Mount_Umount::MountErrEAccesFunc ()
 {
@@ -244,14 +276,37 @@ Status Mount_Umount::MountErrEFaultFunc ()
 	ret_mount = mount (DeviceName, (char*)-1, FileSystemType, 0, 0);
 	if(ret_mount != -1)
 	{
-			cerr << "Mount didn't return Fail in case of non acessible address. ";
+			cerr << "Mount didn't return Fail in case of non accessible address. ";
 			return Fail;
 	}
 	else
 	{
 		if(errno != EFAULT)
 		{
-				cerr << "Incorrect error set in errno in case of EFAULT: "<<strerror(errno);
+				cerr << "Incorrect error set in errno in case of EFAULT(Mount): "<<strerror(errno);
+				return Fail;
+		}
+	}
+	return Success;
+}
+
+Status Mount_Umount::UmountErrEFaultFunc ()
+{
+
+	int ret_umount;		
+	
+    //(char*)-1 is outside of accessible address space
+	ret_umount = umount ((char*)-1);
+	if(ret_umount != -1)
+	{
+			cerr << "Umount didn't return Fail in case of non accessible address. ";
+			return Fail;
+	}
+	else
+	{
+		if(errno != EFAULT)
+		{
+				cerr << "Incorrect error set in errno in case of EFAULT(Umount): "<<strerror(errno);
 				return Fail;
 		}
 	}
@@ -285,12 +340,12 @@ Status Mount_Umount::MountErrEInval1Func ()
 	ret_mount = mount("dummy", MountPoint, FileSystemType, MS_REMOUNT, 0);
 	if(ret_mount == 0)
 	{
-			cerr << "Mount returns Success in case when MS_REMOUNT was attepted and source was not mounted on target";
+			cerr << "Mount returns Success in case when MS_REMOUNT was attepted and source was not already mounted on target";
 			return Fail;
 	}
 	if(errno != EINVAL)
 	{
-			cerr << "Incorrect error set in errno in case of EINVAL: " << strerror(errno);
+			cerr << "Incorrect error set in errno in case of EINVAL(Mount): " << strerror(errno);
 			return Fail;
 	}
 
@@ -309,12 +364,67 @@ Status Mount_Umount::MountErrEInval2Func ()
 	}
 	if(errno != EINVAL)
 	{
-			cerr << "Incorrect error set in errno in case of EINVAL: " << strerror(errno);
+			cerr << "Incorrect error set in errno in case of EINVAL(Mount): " << strerror(errno);
 			return Fail;
 	}
 
 	return Success;
 }
+
+
+Status Mount_Umount::UmountErrEInval1Func ()
+{
+
+	try
+	{
+		string path = "/notAMountPoint.txt";
+		File file(path);
+		int ret_umount;	
+		
+		ret_umount = umount(path.c_str());
+		if(ret_umount == 0)
+		{
+			cerr << "Umount returns Success in case when target is not a mount Point";
+			return Fail;
+		}
+		if(errno != EINVAL)
+		{
+			cerr << "Incorrect error set in errno in case of EINVAL(umount): "<<strerror(errno);
+			return Fail;
+		}
+		
+		return Success;
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Fail;
+	}
+
+	
+	
+	
+}
+Status Mount_Umount::UmountErrEInval2Func ()
+{
+
+	int ret_umount;	
+	const char* source = "/";	
+	ret_umount = umount2(source, MNT_EXPIRE);
+	if(ret_umount == 0)
+	{
+			cerr << "Umount returns Success in case when MNT_EXPIRE was attepted ";
+			return Fail;
+	}
+	if(errno != EINVAL)
+	{
+			cerr << "Incorrect error set in errno in case of EINVAL(umount): " << strerror(errno);
+			return Fail;
+	}
+
+	return Success;
+}
+
 
 Status Mount_Umount::MountErrENotblkFunc ()
 {
@@ -349,6 +459,26 @@ Status Mount_Umount::MountErrENoentFunc ()
 	if(errno != ENOENT)
 	{
 			cerr << "Incorrect error set in errno in case of ENOENT: "<<strerror(errno);
+			return Fail;
+	}
+
+	return Success;
+}
+
+
+Status Mount_Umount::UmountErrENoentFunc ()
+{
+
+	int ret_umount;	
+	ret_umount = umount("");
+	if(ret_umount == 0)
+	{
+			cerr << "Umount returns Success in case when pathname was empty. ";
+			return Fail;
+	}
+	if(errno != ENOENT)
+	{
+			cerr << "Incorrect error set in errno in case of ENOENT(umount): "<<strerror(errno);
 			return Fail;
 	}
 
@@ -436,3 +566,32 @@ Status Mount_Umount::MountErrEPermFunc ()
 	return Success;
 }
 
+
+Status Mount_Umount::UmountErrEPermFunc ()
+{
+	struct passwd * noBody;
+	if((noBody = getpwnam("nobody")) == NULL)
+	{
+		cerr<< "Cannot get struct nobody";
+		return Unres;
+	}
+	if (setuid(noBody->pw_uid) != 0)
+	{
+        cerr<<"Cannot set uid";
+        return Unres;
+    }
+	int ret_umount;	
+	ret_umount = umount(MountPoint);
+	if(ret_umount == 0)
+	{
+			cerr << "Umount returns Success in case when the user is set to NOBODY";
+			return Fail;
+	}
+	if(errno != EPERM)
+	{
+			cerr << "Incorrect error set in errno in case of EPERM(umount): "<<strerror(errno);
+			return Fail;
+	}
+
+	return Success;
+}
