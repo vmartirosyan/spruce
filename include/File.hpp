@@ -45,6 +45,7 @@ using std::endl;
 class File
 {	
 	public:
+		File() {}
 		explicit File(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_RDWR | O_CREAT) : 
 		_pathname(pathname),
 		_mode(mode),
@@ -54,24 +55,23 @@ class File
 			if ( _flags & O_CREAT )
 				if ( access(pathname.c_str(), F_OK ) == 0 )
 					if ( unlink(pathname.c_str())  == -1 )
-						throw Exception("File " + _pathname + " exists but cannot be removed. Error : " + strerror(errno) );
+						throw Exception("File " + _pathname + " exists but cannot be removed. Error : " + strerror(errno) + "\n");
+			
 			_fd = open(pathname.c_str(), _flags, _mode);
 			if (_fd == -1)
 			{								
-				throw Exception("Cannot create file " + _pathname + 
-				". Error : " + (string)strerror(errno));
-			}
+				throw Exception("Cannot create file " + _pathname + ". Error : " + (string)strerror(errno) + (string)"\n");
+			}			
 		}
 		~File()
 		{
 			try
-			{
+			{				
 				close(_fd);
 				
 				if ( (_flags & O_CREAT) &&  (unlink(_pathname.c_str()) != 0) )
 				{
-					throw Exception("Cannot delete file " + _pathname + 
-					". Error : " + (string)strerror(errno));
+					throw Exception("Cannot delete file " + _pathname + ". Error : " + (string)strerror(errno) + (string)"\n");
 				}
 				
 			}

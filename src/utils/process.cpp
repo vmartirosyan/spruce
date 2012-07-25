@@ -61,7 +61,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	int fds[2];
 	if ( pipe(fds) == -1 )
 	{
-		return new ProcessResult(Unres, "Cannot create pipe. " + (string)strerror(errno));		
+		return new ProcessResult(Unresolved, "Cannot create pipe. " + (string)strerror(errno));		
 	}
 	
 	// Create the child process
@@ -69,7 +69,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	
 	if ( ChildId == -1 )
 	{
-		return new ProcessResult(Unres, "Cannot create child process. " + (string)strerror(errno));		
+		return new ProcessResult(Unresolved, "Cannot create child process. " + (string)strerror(errno));		
 	}
 	
 	if ( ChildId == 0 ) // Child process. Run the Main method
@@ -81,13 +81,13 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 		if ( (_stdout = dup(fds[1])) != 1 )
 		{
 			cerr << "Child: cannot open pipe for writing. Error: " << strerror(errno);
-			_exit(Unres);
+			_exit(Unresolved);
 		}
 		if ( (_stderr = dup(1)) != 2 )
 		{
 			cerr << "Child: cannot create error stream. Error: " << strerror(errno);
 			close(1);
-			_exit(Unres);
+			_exit(Unresolved);
 		}
 		cerr << " ";
 		int status = (*this.*func)(args);
@@ -161,7 +161,7 @@ ProcessResult * BackgroundProcess::Execute(vector<string> args)
 	
 	if ( ChildId == -1 )
 	{
-		return new ProcessResult(Unres, "Cannot create child process. " + (string)strerror(errno));		
+		return new ProcessResult(Unresolved, "Cannot create child process. " + (string)strerror(errno));		
 	}
 	
 	if ( ChildId == 0 ) // Child process. Run the Main method

@@ -1,0 +1,170 @@
+<TestSet Name="chdir">	
+	<Requires>fcntl.h</Requires>
+	<Requires>pwd.h</Requires>				
+	<Internal></Internal>
+	<Test Name="ChdirNormal" FaultSimulationReady="true">
+		<Description>chdir() changes the current working directory of the calling process to the directory specified in path.</Description>			
+		<Dir count="1"/>
+		<Code>
+			char * cwd;
+			long size;
+			int  ret_chdir;
+			ret_chdir = chdir(DirPaths[0].c_str());
+			if(ret_chdir != 0)
+			{
+				Error("chdir does not change the working directory.", Fail);
+			} 
+			
+			
+			cwd = NULL;
+			size = pathconf(".", _PC_PATH_MAX);
+			Unres ((cwd = new char[size]) == NULL, "Can not allocate memmory.");
+			
+			cwd = getcwd(cwd, (size_t)size);
+			
+			Unres (cwd == NULL, "Can not read changed working directory.");
+			
+			if( strstr(cwd, DirPaths[0].c_str()) == NULL)
+			{
+				delete cwd;
+				Error("Directory change error.", Fail);
+			}
+			delete cwd;
+			
+			ret_chdir = chdir("..");
+			if(ret_chdir != 0)
+			{
+				Error("chdir does not change the working directory.", Fail);
+			} 
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="ChdirErrFault">
+		<Description>path points outside your accessible address space.</Description>
+		<Code>
+		if(chdir((char *)-1) == 0)
+		{
+			Error("Chdir returned 0, but pathname points outside the accessible address space.", Fail);
+		}
+		if(errno != EFAULT)
+		{
+			
+			Error("Incorrect error set in errno. ", Fail);
+		}
+		return Success;	
+		</Code>
+	</Test>
+	<Test Name="ChdirErrIsNotDirectory">
+		<Description>A component of path is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+		int  ret_chdir;
+		ret_chdir = chdir(FilePaths[0].c_str());
+				
+		if(ret_chdir == 0)
+		{
+			Error("chdir reruns 0 but it should return -1 when  component of the path prefix is not a directory.", Fail);
+		}
+		if(errno != ENOTDIR)
+		{
+			
+			Error("Incorrect error set in errno in case of component of the path prefix is not a directory.", Fail);
+		}
+		
+		return Success;
+		</Code>
+	</Test>
+	<Test Name="ChdirErrTooLongPath">
+		<Description></Description>		
+		<Code>
+		int ret_chdir;
+		char tooLongPath[1000];
+		for ( int i = 0; i < 1000; ++i )
+			tooLongPath[i] = 'a';
+		
+		ret_chdir = chdir(tooLongPath);
+		
+		if(ret_chdir == 0)
+		{
+			Error("chdir retuns 0 but it should return -1 when the path is too long.", Fail);
+		}
+		if(errno != ENAMETOOLONG)
+		{
+			
+			Error("Incorrect error set in errno in case of too long file name.", Fail);
+		}
+		return Success;	
+		</Code>
+	</Test>
+	<Test Name="ChdirErrFileNotExist">
+		<Description></Description>		
+		<Code>
+		const char *path="/notExistPath198/2/7/1/htap";
+		int ret_chdir;
+		
+		ret_chdir = chdir(path);
+		if(ret_chdir == 0)
+		{
+			Error("chdir return 0 but it should return -1 when the file is not exist", Fail);
+		}
+		if(errno != ENOENT)
+		{
+			
+			Error("Incorrect error set in errno in case of file does not exists.", Fail);
+		}
+		
+		return Success;
+		</Code>
+	</Test>
+	<Test Name="ChdirErrLoopInSymLink">
+		<Description></Description>		
+		<Code>
+		int ret_chdir = 0;
+		
+		Unres(mkdir("ChdirTest", 0777) == -1, "Cannot create folder");
+		
+		Unres (symlink ("ChdirTest", "ChdirTest_new") != 0, "symlink() can't create symlink.");
+		
+		Unres(rmdir("ChdirTest") == -1, "Cannot remove the original folder");
+		
+		Unres (symlink ("ChdirTest_new", "ChdirTest") != 0, "symlink() can't create symlink.");
+		
+		//passing pathname with looping symbolic links .. expected to get ELOOP
+		ret_chdir = chdir("ChdirTest");
+	   
+		if (ret_chdir != -1) 
+		{
+			Error("Creat should return -1 when we are passing pathname with looping symbolic links.", Fail);
+		}    
+		if (errno != ELOOP) 
+		{
+			Error("Incorrect error set in errno in case of looping symbolic links.",  Fail);
+		}
+		 
+		return Success;
+		</Code>
+	</Test>	
+	<Test Name="ChdirErrNoAcces">
+		<Description></Description>			
+		<Dir count="1" />
+		<Code>
+		struct passwd * noBody;
+		int ret_chdir;
+		// Change root to nobody
+		Unres((noBody = getpwnam("nobody")) == NULL, "Can not get the 'nobody' user data.")
+		
+		Unres (setuid(noBody->pw_uid) != 0, "Can not set uid");
+		
+		ret_chdir = chdir(DirPaths[0].c_str());
+		if (ret_chdir != -1) {
+			Error("chdir should return -1 when search permission was denied.", Fail);
+		}
+		
+		if (errno != EACCES) {
+			Error("Incorrect error set in errno in case of search permission assces denied.", Fail);
+		}
+		return Success;
+		</Code>
+	</Test>
+</TestSet>
+	

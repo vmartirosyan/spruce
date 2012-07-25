@@ -50,7 +50,7 @@ ProcessResult * Test::Execute(vector<string> args)
 	sa.sa_handler = SignalHandler;
 	if ( sigaction(SIGALRM, &sa, NULL) == -1 )
 	{	
-		return new ProcessResult(Unres, "Cannot set signal handler. " + (string)strerror(errno));
+		return new ProcessResult(Unresolved, "Cannot set signal handler. " + (string)strerror(errno));
 	}
 	
 	alarm(TEST_TIMEOUT);

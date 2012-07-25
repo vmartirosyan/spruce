@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" 
+		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+		xmlns:exsl="http://exslt.org/common"
+		extension-element-prefixes="exsl">
 
 <xsl:output method="text" encoding="utf-8" indent="yes"/>
 <xsl:include href="testset.xslt" />
@@ -72,9 +75,13 @@ string MountPoint = "";
 		
 		<xsl:for-each select="TestSet">
 			<xsl:variable name="TestSetFile"><xsl:value-of select="$XmlFolder"/>/<xsl:value-of select="@Name"/>.xml</xsl:variable>
-			<xsl:apply-templates select="document($TestSetFile)" >
-				<xsl:with-param name="ModuleName" select="$ModuleName"/>
-			</xsl:apply-templates>
+			<xsl:variable name="HeaderFile"><xsl:value-of select="$XmlFolder"/>/<xsl:value-of select="@Name"/>.hpp</xsl:variable>
+			<exsl:document href="{$HeaderFile}" method="text">
+				<xsl:apply-templates select="document($TestSetFile)" >
+					<xsl:with-param name="ModuleName" select="$ModuleName"/>
+				</xsl:apply-templates>
+			</exsl:document>
+#include "<xsl:value-of select="$HeaderFile"/>"
 		</xsl:for-each>
 		
 		<!--xsl:for-each select="TestSet">

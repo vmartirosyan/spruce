@@ -77,7 +77,7 @@ protected:
 		
 		execvp(argv[0], argv);
 		cerr << "Cannot execute unix command: " << argv[0] << " Error: " << strerror(errno);
-		return static_cast<int>(Unres);
+		return static_cast<int>(Unresolved);
 	}
 protected:
 	string _name;

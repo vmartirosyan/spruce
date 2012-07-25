@@ -46,12 +46,39 @@ enum Status
 	Success,
 	Shallow,
 	Fail,
-	Unres,
+	Unresolved,
 	Fatal,
 	Timeout,
 	Signaled,
 	Unsupported,
 	Unknown
 };
+
+#define ERROR_3_ARGS(message, add_msg, status)\
+	cerr << message << add_msg;\
+	if ( errno ) cerr << "\nError: " << strerror(errno) << endl;\
+	if (status != -1) return status;
+
+#define ERROR_1_ARGS(message)\
+	ERROR_2_ARGS(message, -1)
+		
+#define ERROR_2_ARGS(message, status)\
+	ERROR_3_ARGS(message, "", status)
+	
+
+#define GET_4TH_ARG(arg1, arg2, arg3, arg4, ...) arg4
+#define ERROR_MACRO_CHOOSER(...) \
+    GET_4TH_ARG(__VA_ARGS__, ERROR_3_ARGS, ERROR_2_ARGS, ERROR_1_ARGS )
+
+#define Error(...) ERROR_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
+
+#define Fail(message, cond)\
+	if ( (cond) )\
+		{ Error(message, Fail) }\
+	else return Success;
+	
+#define Unres(cond, message)\
+	if ( (cond) )\
+	{ Error(message, Unresolved) }
 
 #endif /* COMMON_HPP */
