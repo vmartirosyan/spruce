@@ -4,12 +4,13 @@
 <xsl:output method="text" encoding="utf-8" />
 	
 
-	<xsl:template match="/TestSet">
+<xsl:template match="/TestSet">
 		<xsl:param name="ModuleName" />
 	<xsl:for-each select="Requires">
 #include &lt;<xsl:value-of select="." />>
 	</xsl:for-each> 
 	
+#include &lt;process.hpp>
 	<xsl:variable name="TestSetName" select="@Name" />
 	
 
@@ -38,30 +39,45 @@ public:
 	}
 	<xsl:for-each select="Test">
 	int <xsl:value-of select="@Name" />Func(vector&lt;string>)
-	{
+	{		
 		<xsl:value-of select="Header" />
 		cerr &lt;&lt; "Description: " &lt;&lt; "<xsl:value-of select="Description" />" &lt;&lt; endl;
 		try
 		{
-			string dir_path = "<xsl:value-of select="@Name" />_dir";
-			string file_path = dir_path + "/_file";
-			Directory dir(dir_path.c_str(), S_IRWXU);
-			File file(file_path.c_str());
-			
-			int fd = file.GetFileDescriptor();
-			if (fd == -1)
+			// Prepare the files and directories to be used in the test.
+			<xsl:if test="Dir">
+			const int DirCount = <xsl:value-of select="Dir/@count"/>;
+			string DirPaths[DirCount];
+			Directory *Dirs[DirCount];
+			for ( int i = 0 ; i &lt; DirCount; ++i )
 			{
-				cerr &lt;&lt; "Cannot obtain file descriptor";
-				return Unres;
+				char buf[2];
+				sprintf(buf, "%d", i);
+				DirPaths[i] = "<xsl:value-of select="@Name" />_dir_" + (string)buf;
+				Dirs[i] = new Directory(DirPaths[i], S_IRWXU);
 			}
+			</xsl:if>
+			<xsl:if test="File">
+			const int FileCount = <xsl:value-of select="File/@count"/>;
+			string FilePaths[FileCount];
+			File * Files[FileCount];
+			int FDs[FileCount];
+			for ( int i = 0 ; i &lt; FileCount; ++i )
+			{
+				char buf[2];
+				sprintf(buf, "%d", i);
+				FilePaths[i] = "<xsl:value-of select="@Name" />_file_" + (string)buf;
+				Files[i] = new File(FilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
+				FDs[i] = Files[i]->GetFileDescriptor();
+			}	
+			</xsl:if>
 			
 			<xsl:value-of select="Code" />
 			
 		}
 		catch (Exception e)
 		{
-			cerr &lt;&lt; "Exception was thrown: " &lt;&lt; e.GetMessage();
-			return Unres;
+			Error("Exception was thrown: ", e.GetMessage(), Unresolved);
 		}
 		
 		<xsl:value-of select="Footer" />

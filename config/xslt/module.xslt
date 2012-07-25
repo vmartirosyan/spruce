@@ -33,9 +33,11 @@
 			<xsl:attribute name="id"><xsl:value-of select="$Module" />_<xsl:value-of select="$Item" /></xsl:attribute>
 			<xsl:for-each select="//Module[@Name=$Module]/Item[@Name=$Item]">
 				<div>
-					<xsl:attribute name="class"><xsl:value-of select="Status" /></xsl:attribute>
-					<xsl:value-of select="Operation" />: <xsl:value-of select="Status" /><br />
-					<xsl:if test="Status!='Success'">----> Output: <xsl:value-of select="Output" /></xsl:if>
+					<xsl:if test="Status!='Success'">
+						<xsl:attribute name="class"><xsl:value-of select="Status" /></xsl:attribute>
+						<!--xsl:value-of select="Operation" />:--><xsl:value-of select="Status" /><br />
+						<pre><xsl:value-of select="Output" /></pre>
+					</xsl:if>
 				</div>
 			</xsl:for-each>
 			<hr />

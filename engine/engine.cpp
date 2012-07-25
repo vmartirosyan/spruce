@@ -40,7 +40,7 @@ int main(int argc, char ** argv)
 		return 1;
 	}
 	
-	cout << "Processing folder " << argv[1] << endl;
+	//cout << "Processing folder " << argv[1] << endl;
 	
 	UnixCommand find("find");
 	
@@ -91,14 +91,15 @@ int main(int argc, char ** argv)
 		
 		string contents(read_buf);
 			
-		const int CODE_TAGS_NUM = 1;
+		const int CODE_TAGS_NUM = 3;
 		string code_tags[CODE_TAGS_NUM];
 		code_tags[0] = "Code";
-		//code_tags[0] = "Main";
-		//code_tags[1] = "Finally";
+		code_tags[1] = "Header";
+		code_tags[2] = "Footer";
 		for(int i = 0; i < CODE_TAGS_NUM; i++)
 		{
-			int pos1 = 0, pos2;	
+			unsigned int pos1 = 0, pos2;	
+			//cerr << "Processing tag " << code_tags[i] << endl;
 			do
 			{
 				pos1 = contents.find("<" + code_tags[i]+ ">", pos1);
@@ -111,7 +112,7 @@ int main(int argc, char ** argv)
 				
 				string part = contents.substr(pos1, pos2-pos1);
 				
-				int pos = 0;
+				unsigned int pos = 0;
 				while ( true )
 				{
 					pos = part.find("&", pos + 1);
