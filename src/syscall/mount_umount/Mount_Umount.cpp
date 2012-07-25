@@ -21,7 +21,7 @@
 //      MA 02110-1301, USA.
 
 
-#include <Mount_Umount.hpp>
+#include "Mount_Umount.hpp"
 #include <stdlib.h>
 #include <cstring>
 #include <sys/mount.h>
@@ -35,7 +35,6 @@
 #include "Directory.hpp"
 
 #include <fcntl.h>
-#include "StatFile.hpp"
 
 
 int Mount_Umount::Main(vector<string>)
@@ -50,23 +49,23 @@ int Mount_Umount::Main(vector<string>)
 		   
 		switch (_operation)
 		{
-			case MountUmountGeneral:			
-				return MountUmountGeneralFunc();	
+			//case MountUmountGeneral:			
+			//	return MountUmountGeneralFunc();	
 			case UmountErrNameTooLong :
 				return UmountErrNameTooLongFunc();	
 			case MountErrNameTooLong :
 				return MountErrNameTooLongFunc();	
 			case MountErrEbusy :
 				return MountErrEbusyFunc();
-			case MountErrEAcces :
-				return MountErrEAccesFunc();
+			//case MountErrEAcces :
+				//return MountErrEAccesFunc();
 			case MountErrEFault :
-				return 	MountErrEFaultFunc ();
+				return MountErrEFaultFunc ();
 			case MountErrELoop :
 				return MountErrELoopFunc ();
 			case MountErrEInval1 :
 				return MountErrEInval1Func ();
-				case MountErrEInval2 :
+			case MountErrEInval2 :
 				return MountErrEInval2Func ();
 			case MountErrENotblk:
 				return 	MountErrENotblkFunc ();
@@ -90,7 +89,7 @@ int Mount_Umount::Main(vector<string>)
 }
 
 
-               
+ /*              
 Status Mount_Umount::MountUmountGeneralFunc ()
 {
 	int ret_value;
@@ -125,7 +124,7 @@ Status Mount_Umount::MountUmountGeneralFunc ()
 
 }
                
-
+*/
 
 Status Mount_Umount::UmountErrNameTooLongFunc ()
 {
@@ -196,7 +195,7 @@ Status Mount_Umount::MountErrEbusyFunc ()
 	return Success;
 }
 
-
+/*
 Status Mount_Umount::MountErrEAccesFunc ()
 {
 	int ret_mount;
@@ -234,7 +233,7 @@ Status Mount_Umount::MountErrEAccesFunc ()
 	}
 	return Success;
 }
-
+*/
 
 Status Mount_Umount::MountErrEFaultFunc ()
 {
@@ -286,7 +285,7 @@ Status Mount_Umount::MountErrEInval1Func ()
 	ret_mount = mount("dummy", MountPoint, FileSystemType, MS_REMOUNT, 0);
 	if(ret_mount == 0)
 	{
-			cerr << "Mount returns Success in case when move was attepted and source was not mounted on target";
+			cerr << "Mount returns Success in case when MS_REMOUNT was attepted and source was not mounted on target";
 			return Fail;
 	}
 	if(errno != EINVAL)
