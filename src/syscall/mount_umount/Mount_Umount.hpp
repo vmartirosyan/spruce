@@ -26,13 +26,11 @@
 #include "SyscallTest.hpp"
 
 // Operations
-enum MountOperations
+/*enum MountOperations
 {
-	MountUmountGeneral, 
 	UmountErrNameTooLong, //done
 	MountErrNameTooLong, //done
 	MountErrEbusy,    //done
-	MountErrEAcces, 
 	MountErrEFault,  //done
 	MountErrELoop,   //done
 	MountErrEInval1, //done
@@ -43,7 +41,7 @@ enum MountOperations
 	MountErrENodev,  //done
 	MountErrENotdir, //done
 	
-};
+};*/
 
 class Mount_Umount : public SyscallTest
 {			

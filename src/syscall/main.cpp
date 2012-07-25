@@ -37,7 +37,7 @@
 #include <platform_config.hpp>
 
 // Karen
-//#include "Mount_Umount.hpp"
+#include "mount_umount/Mount_Umount.hpp"
 // Gio
 #include "chdir/Chdir.hpp"
 #include "mkdir_rmdir/Mkdir_rmdir.hpp"
@@ -108,7 +108,7 @@ int main(int argc, char ** argv)
 		Configuration<Xattr> xattrConf(INSTALL_PREFIX"/share/spruce/config/xattr.conf");
 		
 		// Karen
-		//Configuration<Mount_Umount> mount_umountConf(INSTALL_PREFIX"/share/spruce/config/mount_umount.conf");
+		Configuration<Mount_Umount> mount_umountConf(INSTALL_PREFIX"/share/spruce/config/mount_umount.conf");
 		// Gio
 		Configuration<Chdir> chdirConf(INSTALL_PREFIX"/share/spruce/config/chdir.conf");		
 		Configuration<Getcwd> getcwdConf(INSTALL_PREFIX"/share/spruce/config/getcwd.conf");	
@@ -167,7 +167,7 @@ int main(int argc, char ** argv)
 		TestCollection xattrTests = xattrConf.Read();
 		
 		// Karen
-		//TestCollection mount_umountTests = mount_umountConf.Read();
+		TestCollection mount_umountTests = mount_umountConf.Read();
 		// Gio
 		TestCollection chdirTests = chdirConf.Read();
 		TestCollection getcwdTests = getcwdConf.Read();
@@ -227,7 +227,7 @@ int main(int argc, char ** argv)
 		tests.Merge(xattrTests);
 		
 		// Karen
-		//tests.Merge(mount_umountTests);		
+		tests.Merge(mount_umountTests);		
 		// Gio
 		tests.Merge(chdirTests);	
 		tests.Merge(getcwdTests);	
