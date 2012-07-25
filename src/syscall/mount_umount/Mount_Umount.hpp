@@ -28,18 +28,25 @@
 // Operations
 /*enum MountOperations
 {
+	MountUmountGeneral,
 	UmountErrNameTooLong, //done
-	MountErrNameTooLong, //done
+	MountErrNameTooLong,  //done
 	MountErrEbusy,    //done
-	MountErrEFault,  //done
-	MountErrELoop,   //done
-	MountErrEInval1, //done
-	MountErrEInval2, 
-	MountErrENotblk, //done
-	MountErrEPerm,   //done
-	MountErrENoent,  //done
-	MountErrENodev,  //done
-	MountErrENotdir, //done
+	UmountErrEbusy,   //done
+	MountErrEFault,   //done
+	UmountErrEFault,  //done
+	MountErrELoop,    //done
+	MountErrEInval1,  //done
+	MountErrEInval2,  //done
+	UmountErrEInval1, //done
+	UmountErrEInval2, //done
+	MountErrENotblk,  //done
+	MountErrEPerm,    //done
+	UmountErrEPerm,	  //done
+	MountErrENoent,   //done
+	UmountErrENoent,  //done
+	MountErrENodev,   //done
+	MountErrENotdir,  //done
 	
 };*/
 
@@ -79,14 +86,20 @@ protected:
 	Status UmountErrNameTooLongFunc();
 	Status MountErrNameTooLongFunc();
 	Status MountErrEbusyFunc();
+	Status UmountErrEbusyFunc();
 	Status MountErrEAccesFunc();
 	Status MountErrEFaultFunc();
+	Status UmountErrEFaultFunc();
 	Status MountErrELoopFunc();
 	Status MountErrEInval1Func();
 	Status MountErrEInval2Func();
+	Status UmountErrEInval1Func();
+	Status UmountErrEInval2Func();
 	Status MountErrENotblkFunc();
 	Status MountErrEPermFunc ();
+	Status UmountErrEPermFunc ();
 	Status MountErrENoentFunc ();
+	Status UmountErrENoentFunc ();
 	Status MountErrENodevFunc ();
 	Status MountErrENotdirFunc ();
 	
