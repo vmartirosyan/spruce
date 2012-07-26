@@ -100,63 +100,32 @@
 		<Description>A loop exists in symbolic links encountered during resolution of the path argument.</Description>			
 		<File count="1" />
 		<Code>
-			Unres(symlink(FilePaths[0].c_str(), "new_file") == -1, "Cannot create symlink on old_file.");
-			
-			Unres( unlink(FilePaths[0].c_str()) == -1, "Cannot remove old_file. ");
-			
-			Unres( symlink("new_file", FilePaths[0].c_str()) == -1, "Cannot create symlink on new_file.");
-			
-			int res = access(FilePaths[0].c_str(), W_OK);
-			
-			unlink("new_file");
-			
-			if ( res == 0 || errno != ELOOP )
-			{
-				Error("access should return ELOOP error code but it did not.", Fail);
-			}
-			
-			return Success;
+			ELoopTest(access(FilePaths[0].c_str(), W_OK), -1);
 		</Code>
 	</Test>
 	<Test Name="AccessErrNameTooLong">
 		<Description>The length of the path argument exceeds {PATH_MAX} or a pathname component is longer than {NAME_MAX}.</Description>
 		<Code>
-		std::string filename = "asdf";
-		for ( int i = 0; i < PATH_MAX; ++i )
-			filename += "a";
-			
-		if ( access(filename.c_str(), W_OK) == 0 || errno != ENAMETOOLONG )
-		{
-			Error("access should return ENAMETOOLONG error code but it did not.", Fail);
-		}
-		
-		return Success;
+			ENameTooLongTest(access(path, F_OK), -1);
 		</Code>
 	</Test>
-	<Test Name="AccessErrNoEnt">
-		<Description>A component of path does not name an existing file or path is an empty string.</Description>
+	<Test Name="AccessErrNoEnt1">
+		<Description>A component of path does not name an existing file. or path is an empty string.</Description>
 		<Code>
-		if ( access("non_existing_file", W_OK) == 0 || errno != ENOENT )
-		{
-			Error("access should return ENOENT error code in case of non-existing file but it did not.", Fail);
-		}
-		if ( access("", W_OK) == 0 || errno != ENOENT )
-		{
-			Error("access should return ENOENT error code in case of empty file name but it did not.", Fail);
-		}
-		
-		return Success;
+			ErrorTest(access("non_existing_file", W_OK), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="AccessErrNoEnt2">
+		<Description>Path is an empty string.</Description>
+		<Code>
+			ErrorTest(access("", W_OK), -1, ENOENT);
 		</Code>
 	</Test>
 	<Test Name="AccessErrNotDir">
 		<Description>A component of the path prefix is not a directory.</Description>
+		<File count="1"/>
 		<Code>
-		if ( access("not_a_dir_name/some_file", W_OK) == 0 || errno != ENOTDIR )
-		{
-			Error("access should return ENOTDIR error code but it did not.", Fail);
-		}
-		
-		return Success;
+			ENotDirTest(access(path, W_OK), -1 );
 		</Code>
 	</Test>
 	<FaultSimulation>
