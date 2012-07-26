@@ -44,7 +44,6 @@ public:
 		cerr &lt;&lt; "Description: " &lt;&lt; "<xsl:value-of select="Description" />" &lt;&lt; endl;
 		try
 		{
-			// Prepare the files and directories to be used in the test.
 			<xsl:if test="Dir">
 			const int DirCount = <xsl:value-of select="Dir/@count"/>;
 			string DirPaths[DirCount];
@@ -88,6 +87,7 @@ public:
 protected:
 	const unsigned int _testCount;
 	int (<xsl:value-of select="@Name" />Tests::*_tests[<xsl:value-of select="count(Test)"/>])(vector&lt;string>);
+	<xsl:value-of select="/TestSet/Internal"/>
 };
 	</xsl:template>
 

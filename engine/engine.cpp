@@ -91,11 +91,12 @@ int main(int argc, char ** argv)
 		
 		string contents(read_buf);
 			
-		const int CODE_TAGS_NUM = 3;
-		string code_tags[CODE_TAGS_NUM];
+		const int CODE_TAGS_NUM = 4;
+		string code_tags[CODE_TAGS_NUM];		
 		code_tags[0] = "Code";
 		code_tags[1] = "Header";
 		code_tags[2] = "Footer";
+		code_tags[3] = "Internal";
 		for(int i = 0; i < CODE_TAGS_NUM; i++)
 		{
 			unsigned int pos1 = 0, pos2;	
