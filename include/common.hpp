@@ -119,7 +119,7 @@ enum Status
 #define ENameTooLongTest(func_call, error_val)\
 {\
 	char path[PATH_MAX+1];\
-	for ( int i = 0; i <= PATH_MAX + 1; ++i )\
+	for ( int i = 0; i < PATH_MAX + 1; ++i )\
 		path[i] = 'a';\
 	if ( func_call != error_val || errno != ENAMETOOLONG )\
 	{\
