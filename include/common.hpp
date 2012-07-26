@@ -81,4 +81,82 @@ enum Status
 	if ( (cond) )\
 	{ Error(message, Unresolved) }
 
+#define ELoopTest(func_call, error_val)\
+{\
+	Unres( symlink(FilePaths[0].c_str(), "new_file") == -1, "Cannot create symlink on old file.");\
+	Unres( unlink(FilePaths[0].c_str()) == -1, "Cannot remove old_file. ");\
+	Unres( symlink("new_file", FilePaths[0].c_str()) == -1, "Cannot create symlink on new_file.");\
+	int res = func_call;\
+	unlink("new_file");\
+	if ( res !=  error_val || errno != ELOOP )\
+	{\
+		Error("Function should return '" + (string)strerror(ELOOP) +  "' error code but it did not.", Fail);\
+	}\
+	return Success;\
+}\
+
+#define ELoopDirTest(func_call, error_val)\
+{\
+    string dirPath = "TestDirectory/";\
+    string link1 = "link1";\
+    string link2 = "link2";\
+	Directory dir(dirPath, 0777);\
+	chdir(dirPath.c_str());\
+	Unres (symlink (dirPath.c_str(), link1.c_str()) != 0, "symlink() can't create symlink.");\
+	Unres (symlink (link1.c_str(), link2.c_str()) != 0, "symlink() can't create symlink.");\
+	Unres (unlink (link1.c_str()) != 0, "remove() can't remove symlink.");\
+	Unres (symlink (link2.c_str(), link1.c_str()) != 0, "symlink() can't create symlink.");\
+	chdir("..");\
+	const char *path = (dirPath + link1).c_str();\
+	int res = func_call;\
+	if ( res !=  error_val || errno != ELOOP )\
+	{\
+		Error("Function should return '" + (string)strerror(ELOOP) +  "' error code but it did not.", Fail);\
+	}\
+	return Success;\
+}\
+
+#define ENameTooLongTest(func_call, error_val)\
+{\
+	char path[PATH_MAX+1];\
+	for ( int i = 0; i <= PATH_MAX + 1; ++i )\
+		path[i] = 'a';\
+	if ( func_call != error_val || errno != ENAMETOOLONG )\
+	{\
+		Error("Function should return '" + (string)strerror(ENAMETOOLONG) +  "'error  but it did not.", Fail);\
+	}\
+	return Success;\
+}\
+
+#define ENotDirTest(func_call, error_val)\
+{\
+	const char * path = (FilePaths[0] + "/some_file").c_str();\
+	if ( func_call != error_val || errno != ENOTDIR )\
+	{\
+		Error("Function should return '" + (string)strerror(ENOTDIR) +  "' error but it did not.", Fail);\
+	}\
+	return Success;\
+}\
+
+#define ENoAccessTest(func_call, error_val)\
+{\
+	struct passwd * noBody;\
+	/* Change root user to nobody */\
+	Unres((noBody = getpwnam("nobody")) == NULL, "Can not get the 'nobody' user data.");\
+	Unres(seteuid(noBody->pw_uid) != 0, "Can not set uid");\
+	if (func_call != error_val || errno != EACCES) {\
+		Error("Function should return '" + (string)strerror(EACCES) +  "' when permission was denied but it did not.", Fail);\
+	}\
+	return Success;\
+}\
+
+#define ErrorTest(func_call, error_val, error_code)\
+{\
+	if ( func_call != error_val || errno != error_code )\
+	{\
+		Error("Function should return '" + (string)strerror(error_code) +  "' error but it did not.", Fail);\
+	}\
+	return Success;\
+}\
+
 #endif /* COMMON_HPP */
