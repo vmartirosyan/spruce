@@ -27,4 +27,5 @@
 	<TestSet Name="chmod"/>
 	<TestSet Name="chown"/>
 	<TestSet Name="chroot"/>
+	<TestSet Name="close"/>
 </Module>
