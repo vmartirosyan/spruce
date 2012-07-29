@@ -28,4 +28,5 @@
 	<TestSet Name="chown"/>
 	<TestSet Name="chroot"/>
 	<TestSet Name="close"/>
+	<TestSet Name="creat"/>
 </Module>

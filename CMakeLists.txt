@@ -48,9 +48,9 @@ add_subdirectory (bin)
 add_subdirectory (include)
 add_subdirectory (lib)
 add_subdirectory (src)
-add_subdirectory (tests)
-add_subdirectory (config)
-add_subdirectory (doc)
+#add_subdirectory (tests)
+#add_subdirectory (config)
+#add_subdirectory (doc)
 
 
 # Uninstall the system

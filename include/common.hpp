@@ -150,6 +150,36 @@ enum Status
 	return Success;\
 }\
 
+#define EMaxFilesOpenTest(func_call, error_val)\
+{\
+	long max_files_open=sysconf(_SC_OPEN_MAX);\
+	int FirstFileDesc = -1;\
+	const char * path = "max_files_test";\
+	FirstFileDesc = func_call;\
+	Unres(FirstFileDesc == -1, "Cannot create the first file.");\
+	\
+	for (int file_index = FirstFileDesc + 1; file_index < max_files_open - 1; ++file_index)\
+	{\
+		int ret_val = func_call;\
+		if ( ret_val == error_val )\
+		{\
+			for ( int i = FirstFileDesc; i <= file_index; ++i )\
+				close(i);\
+			char buf[3];\
+			sprintf(buf, "%d", file_index);\
+			Unres(true, "Cannot create file " + (string)buf);\
+		}\
+	}\
+	int ret_val = func_call;\
+	for ( int i = FirstFileDesc; i < max_files_open - 1; ++i )\
+		close(i);\
+	if ( ret_val != error_val || errno != EMFILE )\
+	{\
+		Error("Function should return '" + (string)strerror(EMFILE) +  "' error but it did not.", Fail);\
+	}\
+	return Success;\
+}\
+
 #define ErrorTest(func_call, error_val, error_code)\
 {\
 	if ( func_call != error_val || errno != error_code )\

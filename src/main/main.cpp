@@ -377,6 +377,7 @@ int main(int argc, char ** argv)
 			
 			of.close();
 			
+			
 			//cerr << "res = " << result << endl;
 			//str << result->GetOutput() << endl;
 			Status |= result->GetStatus();

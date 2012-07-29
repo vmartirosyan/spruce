@@ -47,27 +47,26 @@ public:
 			<xsl:if test="Dir">
 			const int DirCount = <xsl:value-of select="Dir/@count"/>;
 			string DirPaths[DirCount];
-			Directory *Dirs[DirCount];
+			Directory Dirs[DirCount];
 			for ( int i = 0 ; i &lt; DirCount; ++i )
 			{
 				char buf[2];
 				sprintf(buf, "%d", i);
 				DirPaths[i] = "<xsl:value-of select="@Name" />_dir_" + (string)buf;
-				Dirs[i] = new Directory(DirPaths[i], S_IRWXU);
+				Dirs[i].Open(DirPaths[i], S_IRWXU);
 			}
 			</xsl:if>
 			<xsl:if test="File">
 			const int FileCount = <xsl:value-of select="File/@count"/>;
 			string FilePaths[FileCount];
-			File * Files[FileCount];
+			File Files[FileCount];
 			int FDs[FileCount];
 			for ( int i = 0 ; i &lt; FileCount; ++i )
 			{
 				char buf[2];
 				sprintf(buf, "%d", i);
 				FilePaths[i] = "<xsl:value-of select="@Name" />_file_" + (string)buf;
-				Files[i] = new File(FilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
-				FDs[i] = Files[i]->GetFileDescriptor();
+				FDs[i] = Files[i].Open(FilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
 			}	
 			</xsl:if>
 			

@@ -10,7 +10,6 @@
 
 	<xsl:template match="/Module">
 #include &lt;common.hpp>
-#include &lt;config.hpp>
 #include &lt;time.h>
 #include &lt;test.hpp>
 #include &lt;File.hpp>

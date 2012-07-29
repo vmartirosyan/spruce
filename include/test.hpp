@@ -25,7 +25,7 @@
 
 #include "common.hpp"
 #include "process.hpp"
-#include "operations.hpp"
+//#include "operations.hpp"
 #include <sstream>
 #include <fstream>
 using namespace std;
@@ -64,7 +64,8 @@ public:
 	virtual string ToXML();
 	virtual string OperationToString()
 	{
-		return Operation::ToString((Operations)_operation);
+		return "Unknown";
+		//return Operation::ToString((Operations)_operation);
 	}
 protected:
 	int _operation;

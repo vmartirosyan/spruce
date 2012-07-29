@@ -25,7 +25,7 @@
 #include <sys/mount.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <config.hpp>
+//#include <config.hpp>
 #include <stdlib.h>
 
 string DeviceName = "";

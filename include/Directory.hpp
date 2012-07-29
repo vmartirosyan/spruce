@@ -45,12 +45,19 @@ using std::string;
 class Directory
 {	
 	public:
+		Directory() {}
 		Directory(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_DIRECTORY ) : 
 		_pathname(pathname),
 		_mode(mode),
 		_flags(flags)
 		{
-			//cerr<<"Creating directory "<<_pathname;
+			Open(pathname, mode, flags);
+		}
+		int Open(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_DIRECTORY )
+		{
+			_pathname = pathname;
+			_mode = mode;
+			_flags = flags;
 			if (mkdir(_pathname.c_str(), _mode) == -1 && errno != EEXIST)
 			{								
 				throw Exception("Cannot create directory " + _pathname + 
@@ -62,6 +69,7 @@ class Directory
 				throw Exception("Cannot open directory " + _pathname + 
 				": error = " + static_cast<string>(strerror(errno)));
 			}
+			return _fd;
 		}
 		~Directory()
 		{			
@@ -75,19 +83,7 @@ class Directory
 				{
 					cerr << "Cannot remove directory " << _pathname << ". Error: " << strerror(errno);					
 				}
-				
-				//if (rmdir(_pathname.c_str()) != 0) Does not work in case of non-empty directories...
-				/*UnixCommand rm("rm");
-				vector<string> args;
-				args.push_back("-r");
-				args.push_back(_pathname);				
-				
-				ProcessResult * res = rm.Execute(args);
-				
-				if ( res->GetStatus() != Success )
-				{
-					throw Exception("Cannot delete directory " + _pathname + ". " + res->GetOutput());
-				}*/
+			
 								
 			}
 			catch (Exception ex)
