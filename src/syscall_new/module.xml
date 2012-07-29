@@ -29,4 +29,5 @@
 	<TestSet Name="chroot"/>
 	<TestSet Name="close"/>
 	<TestSet Name="creat"/>
+	<TestSet Name="fchmod"/>
 </Module>
