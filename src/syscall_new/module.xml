@@ -30,4 +30,5 @@
 	<TestSet Name="close"/>
 	<TestSet Name="creat"/>
 	<TestSet Name="fchmod"/>
+	<TestSet Name="fchown"/>
 </Module>
