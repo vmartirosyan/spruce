@@ -85,8 +85,10 @@ int main(int argc, char ** argv)
 		if ( read(fd, read_buf, buf.st_size) == -1 )
 		{
 			cerr << "Canot read file " << file << ". Error: " << strerror(errno) << endl;
+			close(fd);
 			continue;
 		}
+		close(fd);
 		read_buf[buf.st_size] = 0;
 		
 		string contents(read_buf);

@@ -1,0 +1,103 @@
+<!--    creat.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//      	Suren Gishyan <sgishyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="creat">
+	<Requires>pwd.h</Requires>				
+	<Internal></Internal>
+	<Test Name="CreatNormal" FaultSimulationReady="true">
+		<Description>Open and possibly create a file or device.</Description>			
+		<Code>
+			const char * filename = "creatNormal.txt";	
+			int ret_val = creat(filename, S_IRWXU);
+			if(ret_val == -1)
+			{
+				Error("creat returned error in case of noraml filename.", Fail);
+			}
+			close(ret_val);
+			unlink(filename);
+			return Success;			
+		</Code>
+	</Test>
+	<Test Name="CreatTooLongPath">
+		<Description>Pathname was too long.</Description>			
+		<Code>
+			ENameTooLongTest(creat(path, S_IRUSR), -1);
+		</Code>
+	</Test>
+	<Test Name="CreatMaxProcessFilesOpen">
+		<Description>The process already has the maximum number of files open.</Description>			
+		<Code>
+			EMaxFilesOpenTest(creat(path, S_IRUSR), -1);
+		</Code>
+	</Test>
+	<Test Name="CreatOutside">
+		<Description>Pathname points outside your accessible address space.</Description>			
+		<Code>
+			ErrorTest(creat((const char *)-1, S_IRUSR), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="CreatPathIsNotDir">
+		<Description>Pathname was too long.</Description>			
+		<File count="1"/>
+		<Code>
+			ENotDirTest(creat(path, S_IRUSR), -1);
+		</Code>
+	</Test>
+	<Test Name="CreatLoopInSymLink">
+		<Description>Too  many symbolic links were encountered in resolving pathname.</Description>
+		<File count="1"/>
+		<Code>
+			ELoopTest(creat(FilePaths[0].c_str(), S_IRUSR), -1);
+		</Code>
+	</Test>
+	
+	<Test Name="CreatNoAcces">
+		<Description>The requested access to the file is not allowed.</Description>			
+		<File count="1"/>
+		<Code>
+			ENoAccessTest(creat(FilePaths[0].c_str(), S_IRUSR), -1);
+		</Code>
+	</Test>
+	<Test Name="CreatNoEnt">
+		<Description>A directory component in pathname does not exist.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(creat("/home/some_impossible_user/some_file.txt", S_IRUSR), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="CreatPathIsDir">
+		<Description>pathname refers to a directory and the access requested involved writing (that is, O_WRONLY or O_RDWR is set).</Description>			
+		<Dir count="1"/>
+		<Code>
+			ErrorTest(creat(DirPaths[0].c_str(), S_IWUSR), -1, EISDIR);
+		</Code>
+	</Test>
+	<FaultSimulation>
+		<Simulate function="kmalloc" condition="" />
+		<Simulate function="copy_to_user" condition="" />
+		<!-- ... -->
+	</FaultSimulation>
+</TestSet>
+
+

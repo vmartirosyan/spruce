@@ -58,6 +58,7 @@ ProcessResult * Process::Execute(vector<string> args)
 
 ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<string> args)
 {
+	
 	int fds[2];
 	if ( pipe(fds) == -1 )
 	{
@@ -119,13 +120,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 			if ( bytes == -1 )
 				break;
 			buf[bytes] = 0;
-			//cerr << Output.size() << "+" << bytes << ">=" << Output.max_size() << endl;
-			/*if ( Output.size() + bytes >= Output.max_size() )
-			{
-				//cerr << "Waiting for child" << endl;
-				return new ProcessResult(WEXITSTATUS(status), "Overflow! ");
-			}*/
-			
+		
 			Output += (string)buf;
 			
 			
@@ -141,16 +136,9 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	}
 	
 	
-	close(fds[1]);
+	close(fds[0]);
 	
-	/*ofstream of("/tmp/tests", ios_base::app);
-	
-			//of << "Bytes read: " << bytes << endl;
-	of << Output << endl; 
-	of.close();
-	*/
-	//cerr << "Output:  " << Output.substr(0,10) << endl;
-	
+
 	return new ProcessResult(WEXITSTATUS(status), Output);
 }
 

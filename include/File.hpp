@@ -50,23 +50,34 @@ class File
 		_pathname(pathname),
 		_mode(mode),
 		_flags(flags)
-		{	
+		{
+			
+			Open(pathname, mode, flags);		
+			
+		}
+		int Open(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_RDWR | O_CREAT)
+		{
+			_pathname = pathname;
+			_mode = mode;
+			_flags = flags;
 			// Remove the file first
-			if ( _flags & O_CREAT )
+			if ( flags & O_CREAT )
 				if ( access(pathname.c_str(), F_OK ) == 0 )
 					if ( unlink(pathname.c_str())  == -1 )
-						throw Exception("File " + _pathname + " exists but cannot be removed. Error : " + strerror(errno) + "\n");
+						throw Exception("File " + pathname + " exists but cannot be removed. Error : " + strerror(errno) + "\n");
 			
-			_fd = open(pathname.c_str(), _flags, _mode);
+			_fd = open(pathname.c_str(), flags, mode);
+			
 			if (_fd == -1)
 			{								
 				throw Exception("Cannot create file " + _pathname + ". Error : " + (string)strerror(errno) + (string)"\n");
-			}			
+			}
+			return _fd;
 		}
 		~File()
 		{
 			try
-			{				
+			{
 				close(_fd);
 				
 				if ( (_flags & O_CREAT) &&  (unlink(_pathname.c_str()) != 0) )

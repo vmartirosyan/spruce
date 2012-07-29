@@ -93,22 +93,12 @@ public:
 	
 	Process()
 	{
-		ofstream of("/tmp/test", ios_base::app);
-				
-		//cerr << "Constructing. Level : " << Level++ << endl;
-		of << "Constructing. Level : " << Level++ << endl;
 		
-		of.close();
 	}
 	
 	virtual ~Process() 
 	{
-		ofstream of("/tmp/test", ios_base::app);
-				
-		//cerr << "Destructing. Level : " << Level << endl;
-		of << "Destructing. Level : " << Level-- << endl;
 		
-		of.close();
 	}
 protected:
 	static int Level;
