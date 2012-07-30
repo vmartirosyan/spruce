@@ -155,12 +155,12 @@ enum Status
 	long max_files_open=sysconf(_SC_OPEN_MAX);\
 	int FirstFileDesc = -1;\
 	const char * path = "max_files_test";\
-	FirstFileDesc = func_call;\
+	FirstFileDesc = open(path, O_CREAT | O_RDONLY, 0777);\
 	Unres(FirstFileDesc == -1, "Cannot create the first file.");\
 	\
-	for (int file_index = FirstFileDesc + 1; file_index < max_files_open - 1; ++file_index)\
+	for (int file_index = FirstFileDesc + 1; file_index < max_files_open - 2; ++file_index)\
 	{\
-		int ret_val = func_call;\
+		int ret_val = open(path, O_RDONLY, 0777);\
 		if ( ret_val == error_val )\
 		{\
 			for ( int i = FirstFileDesc; i <= file_index; ++i )\
