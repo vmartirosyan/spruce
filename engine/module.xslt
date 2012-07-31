@@ -14,11 +14,12 @@
 #include &lt;test.hpp>
 #include &lt;File.hpp>
 #include &lt;Directory.hpp>
-		
-		<xsl:variable name="ModuleName" select="@Name" />
-		
+#include &lt;map>
+#include &lt;sys/vfs.h>
 
-		
+using namespace std;
+
+		<xsl:variable name="ModuleName" select="@Name" />
 class <xsl:value-of select="$ModuleName"/>TestResult : public TestResult 
 {
 	public:
@@ -71,6 +72,9 @@ class <xsl:value-of select="$ModuleName"/>Test : public Test
 
 string DeviceName = "";
 string MountPoint = "";
+string FileSystem = "";
+map&lt;string, int> FileSystemTypesMap;
+
 		
 		<xsl:for-each select="TestSet">
 			<xsl:variable name="TestSetFile"><xsl:value-of select="$XmlFolder"/>/<xsl:value-of select="@Name"/>.xml</xsl:variable>
@@ -100,6 +104,14 @@ int main(int argc, char ** argv)
 
 	if ( getenv("MountAt") )
 		MountPoint = getenv("MountAt");
+		
+	if ( getenv("FileSystem") )
+		FileSystem = getenv("FileSystem");
+		
+	FileSystemTypesMap["ext4"] = 0xEF53; //EXT4_SUPER_MAGIC;
+	FileSystemTypesMap["btrfs"] = -1; // does not support?
+	FileSystemTypesMap["xfs"] = 0x58465342; //XFS_SUPER_MAGIC;
+	FileSystemTypesMap["jfs"] = 0x3153464a; //JFS_SUPER_MAGIC
 		
 	TestResultCollection Results;
 	try

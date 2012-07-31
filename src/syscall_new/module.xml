@@ -34,4 +34,5 @@
 	<TestSet Name="fcntl"/>
 	<TestSet Name="fdatasync"/>
 	<TestSet Name="fstat"/>
+	<TestSet Name="fstatfs"/>
 </Module>
