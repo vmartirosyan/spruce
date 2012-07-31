@@ -39,4 +39,5 @@
 	<TestSet Name="ftruncate"/>
 	<TestSet Name="getcwd"/>
 	<TestSet Name="ioctl"/>
+	<TestSet Name="lchown"/>
 </Module>
