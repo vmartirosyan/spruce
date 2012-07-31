@@ -184,9 +184,19 @@ enum Status
 
 #define ErrorTest(func_call, error_val, error_code)\
 {\
-	if ( func_call != error_val || errno != error_code )\
+	if (error_code != 0)\
 	{\
-		Error("Function should return '" + (string)strerror(error_code) +  "' error but it did not.", Fail);\
+		if ( func_call != error_val || errno != error_code )\
+		{\
+			Error("Function should return '" + (string)strerror(error_code) +  "' error but it did not.", Fail);\
+		}\
+	}\
+	else\
+	{\
+		if ( func_call != error_val )\
+		{\
+			Error("Function should fail but it did not.", Fail);\
+		}\
 	}\
 	return Success;\
 }\
