@@ -145,8 +145,10 @@ enum Status
 	Unres((noBody = getpwnam("nobody")) == NULL, "Can not get the 'nobody' user data.");\
 	Unres(seteuid(noBody->pw_uid) != 0, "Can not set uid");\
 	if (func_call != error_val || errno != EACCES) {\
+		seteuid(0);\
 		Error("Function should return '" + (string)strerror(EACCES) +  "' when permission was denied but it did not.", Fail);\
 	}\
+	seteuid(0);\
 	return Success;\
 }\
 

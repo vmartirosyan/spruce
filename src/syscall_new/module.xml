@@ -37,4 +37,5 @@
 	<TestSet Name="fstatfs"/>
 	<TestSet Name="fsync"/>
 	<TestSet Name="ftruncate"/>
+	<TestSet Name="getcwd"/>
 </Module>
