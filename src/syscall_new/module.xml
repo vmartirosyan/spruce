@@ -32,4 +32,5 @@
 	<TestSet Name="fchmod"/>
 	<TestSet Name="fchown"/>
 	<TestSet Name="fcntl"/>
+	<TestSet Name="fdatasync"/>
 </Module>
