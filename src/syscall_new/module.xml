@@ -38,4 +38,5 @@
 	<TestSet Name="fsync"/>
 	<TestSet Name="ftruncate"/>
 	<TestSet Name="getcwd"/>
+	<TestSet Name="ioctl"/>
 </Module>
