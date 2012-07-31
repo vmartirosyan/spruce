@@ -21,14 +21,12 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="access">
-	<Requires>sys/ioctl.h</Requires>
-	<Requires>fcntl.h</Requires>
+<TestSet Name="access">	
 	<Requires>linux/fs.h</Requires>
 	<Requires>pwd.h</Requires>				
 	<Internal></Internal>
 	<Test Name="AccessNormal" FaultSimulationReady="true">
-		<Description>access()  checks  whether the calling process can access the file pathname.</Description>			
+		<Description>access()  checks  whether the calling process can access the file pathname.</Description>
 		<File count="1" />
 		<Code>
 			
@@ -68,7 +66,7 @@
 		</Code>
 	</Test>
 	<Test Name="AccessFileExists" FaultSimulationReady="true">
-		<Description>the existence test (F_OK)</Description>			
+		<Description>the existence test (F_OK)</Description>
 		<File count="1" />
 		<Code>
 			if ( access(FilePaths[0].c_str(), F_OK) != 0 )

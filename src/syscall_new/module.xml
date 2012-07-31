@@ -36,4 +36,5 @@
 	<TestSet Name="fstat"/>
 	<TestSet Name="fstatfs"/>
 	<TestSet Name="fsync"/>
+	<TestSet Name="ftruncate"/>
 </Module>
