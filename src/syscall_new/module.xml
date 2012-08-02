@@ -42,4 +42,5 @@
 	<TestSet Name="lchown"/>
 	<TestSet Name="link"/>
 	<TestSet Name="linkat"/>
+	<TestSet Name="lseek"/>
 </Module>
