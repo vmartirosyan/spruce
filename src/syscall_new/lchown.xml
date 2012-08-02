@@ -64,7 +64,7 @@
 			return Success;
 		</Code>
 	</Test>
-	<Test Name="LchownSymlink">
+	<Test Name="LchownSymlink" FaultSimulationReady="true">
 		<Description>lchown() is like chown(), but does not dereference symbolic links.</Description>
 		<File count="1"/>
 		<Code>

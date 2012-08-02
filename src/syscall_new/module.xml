@@ -40,4 +40,5 @@
 	<TestSet Name="getcwd"/>
 	<TestSet Name="ioctl"/>
 	<TestSet Name="lchown"/>
+	<TestSet Name="link"/>
 </Module>
