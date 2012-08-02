@@ -140,16 +140,34 @@ enum Status
 
 #define ENoAccessTest(func_call, error_val)\
 {\
-	struct passwd * noBody;\
-	/* Change root user to nobody */\
-	Unres((noBody = getpwnam("nobody")) == NULL, "Can not get the 'nobody' user data.");\
-	Unres(seteuid(noBody->pw_uid) != 0, "Can not set uid");\
-	if (func_call != error_val || errno != EACCES) {\
-		seteuid(0);\
-		Error("Function should return '" + (string)strerror(EACCES) +  "' when permission was denied but it did not.", Fail);\
+	pid_t pid = 0;\
+	Unres( (pid = fork()) == -1, "Cannot fork!");\
+	if ( pid == 0 )\
+	{\
+		struct passwd * noBody;\
+		/* Change root user to nobody */\
+		if((noBody = getpwnam("nobody")) == NULL)\
+		{\
+			cerr << "Can not get the 'nobody' user data.";\
+			_exit(Unresolved);\
+		}\
+		if(setuid(noBody->pw_uid) != 0)\
+		{\
+			cerr << "Can not set uid";\
+			_exit(Unresolved);\
+		}\
+		errno = 0;\
+		if (func_call != error_val || ( ( errno != EACCES ) && ( errno != EPERM ) )) {\
+			cerr << "Function should return '" + (string)strerror(EACCES) +  "' or '" + (string)strerror(EPERM) +  "' when permission was denied but it did not.";\
+			if ( errno )\
+				cerr << "Error: " << strerror(errno) << endl;\
+			_exit( Fail );\
+		}\
+		_exit(Success);\
 	}\
-	seteuid(0);\
-	return Success;\
+	int status;\
+	wait(&status);\
+	return WEXITSTATUS(status);\
 }\
 
 #define EMaxFilesOpenTest(func_call, error_val)\
