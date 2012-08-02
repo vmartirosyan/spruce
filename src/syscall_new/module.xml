@@ -41,4 +41,5 @@
 	<TestSet Name="ioctl"/>
 	<TestSet Name="lchown"/>
 	<TestSet Name="link"/>
+	<TestSet Name="linkat"/>
 </Module>
