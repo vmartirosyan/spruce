@@ -43,4 +43,5 @@
 	<TestSet Name="link"/>
 	<TestSet Name="linkat"/>
 	<TestSet Name="lseek"/>
+	<TestSet Name="lseek64"/>
 </Module>
