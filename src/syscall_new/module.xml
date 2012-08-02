@@ -45,4 +45,5 @@
 	<TestSet Name="lseek"/>
 	<TestSet Name="lseek64"/>
 	<TestSet Name="mkdir_rmdir"/>
+	<TestSet Name="mknod"/>
 </Module>

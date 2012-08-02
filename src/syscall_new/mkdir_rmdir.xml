@@ -95,7 +95,7 @@
 		<Dir count="1"/>
 		<Code>
 			Unres( chmod(DirPaths[0].c_str(), 0700) == -1, "Cannot change directory permissions." );
-			ErrorTest(mkdir((DirPaths[0] + "/some_dir").c_str(), 0777), -1, EACCES);
+			ENoAccessTest(mkdir((DirPaths[0] + "/some_dir").c_str(), 0777), -1);
 		</Code>
 	</Test>
 	<!-- rmdir error cases -->
@@ -139,10 +139,11 @@
 		<Dir count="1"/>
 		<Code>
 			Unres( chmod(DirPaths[0].c_str(), 0700) == -1, "Cannot change directory permissions." );
-			const char * path = (DirPaths[0] + "/some_dir").c_str();
-			Directory d(path);
+			Unres( chdir( DirPaths[0].c_str() ) == -1, "Cannot change directory.");
+			const char * path = "some_dir";
+			Directory d(path);			
 			
-			ErrorTest(rmdir(path), -1, EACCES);
+			ENoAccessTest(rmdir(path), -1);
 		</Code>
 	</Test>
 </TestSet>

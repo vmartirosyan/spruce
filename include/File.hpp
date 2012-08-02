@@ -2,8 +2,9 @@
 //      
 //		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
-//      Author:
+//      Authors:
 //      	Narek Saribekyan <narek.saribekyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -62,10 +63,20 @@ class File
 			_flags = flags;
 			// Remove the file first
 			if ( flags & O_CREAT )
+			{
 				if ( access(pathname.c_str(), F_OK ) == 0 )
+				{
 					if ( unlink(pathname.c_str())  == -1 )
+					{
 						throw Exception("File " + pathname + " exists but cannot be removed. Error : " + strerror(errno) + "\n");
-			
+					}
+				}
+				else //clear the errno variable...
+				{
+					errno = 0;
+				}
+			}
+				
 			_fd = open(pathname.c_str(), flags, mode);
 			
 			if (_fd == -1)
