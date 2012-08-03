@@ -74,6 +74,14 @@ public:
 			</xsl:if>
 			<xsl:if test="File">
 			const int FileCount = <xsl:value-of select="File/@count"/>;
+			int FileFlags = O_CREAT | O_RDWR;
+			int FileMode = S_IRWXU;
+			<xsl:if test="File/@flags != ''">
+			FileFlags = <xsl:value-of select="File/@flags"/>;
+			</xsl:if>
+			<xsl:if test="File/@mode != ''">
+			FileMode = <xsl:value-of select="File/@mode"/>;
+			</xsl:if>
 			string FilePaths[FileCount];
 			File Files[FileCount];
 			int FDs[FileCount];
@@ -82,7 +90,7 @@ public:
 				char buf[2];
 				sprintf(buf, "%d", i);
 				FilePaths[i] = "<xsl:value-of select="@Name" />_file_" + (string)buf;
-				FDs[i] = Files[i].Open(FilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
+				FDs[i] = Files[i].Open(FilePaths[i], FileMode, FileFlags);
 			}	
 			</xsl:if>
 			
