@@ -29,6 +29,7 @@
 	<TestSet Name="chroot"/>
 	<TestSet Name="close"/>
 	<TestSet Name="creat"/>
+	<TestSet Name="dup"/>
 	<TestSet Name="fchmod"/>
 	<TestSet Name="fchown"/>
 	<TestSet Name="fcntl"/>
@@ -40,10 +41,5 @@
 	<TestSet Name="getcwd"/>
 	<TestSet Name="ioctl"/>
 	<TestSet Name="lchown"/>
-	<TestSet Name="link"/>
-	<TestSet Name="linkat"/>
-	<TestSet Name="lseek"/>
-	<TestSet Name="lseek64"/>
-	<TestSet Name="mkdir_rmdir"/>
-	<TestSet Name="mknod"/>
+	<TestSet Name="mmap"/>
 </Module>
