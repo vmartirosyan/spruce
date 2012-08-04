@@ -23,10 +23,6 @@
 -->
 
 <TestSet Name="chmod">
-	<Requires>sys/ioctl.h</Requires>
-	<Requires>fcntl.h</Requires>
-	<Requires>linux/fs.h</Requires>
-	<Requires>pwd.h</Requires>
 	<Test Name="ChmodNormal" FaultSimulationReady="true">
 		<Description>Change permissions of a file.</Description>
 		<Code>

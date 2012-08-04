@@ -10,7 +10,7 @@
 
 	<xsl:template match="/Module">
 #include &lt;common.hpp>
-#include &lt;time.h>
+#include &lt;sys/mount.h>
 #include &lt;test.hpp>
 #include &lt;File.hpp>
 #include &lt;Directory.hpp>
@@ -70,9 +70,9 @@ class <xsl:value-of select="$ModuleName"/>Test : public Test
 		string _spec;
 };
 
-string DeviceName = "";
-string MountPoint = "";
-string FileSystem = "";
+char * DeviceName = (char*)"";
+char * MountPoint = (char*)"";
+char * FileSystem = (char*)"";
 map&lt;string, int> FileSystemTypesMap;
 
 		
