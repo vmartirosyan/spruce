@@ -58,7 +58,7 @@
 		</Code>
 	</Test>
 	<Test Name="CreatPathIsNotDir">
-		<Description>Pathname was too long.</Description>			
+		<Description>A component of path name is not a directory.</Description>			
 		<File count="1"/>
 		<Code>
 			ENotDirTest(creat(path, S_IRUSR), -1);
