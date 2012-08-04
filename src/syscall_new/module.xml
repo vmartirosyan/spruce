@@ -51,4 +51,6 @@
 	<TestSet Name="mount_umount"/>
 	<TestSet Name="open"/>
 	<TestSet Name="openat"/>
+	<TestSet Name="pread_pwrite"/>
+	<TestSet Name="read_write"/>
 </Module>
