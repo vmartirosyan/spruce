@@ -59,16 +59,15 @@ enum Status
 	if ( errno ) cerr << "\nError: " << strerror(errno) << endl;\
 	if (status != -1) return status;
 
-#define ERROR_1_ARGS(message)\
-	ERROR_2_ARGS(message, -1)
-		
 #define ERROR_2_ARGS(message, status)\
 	ERROR_3_ARGS(message, "", status)
-	
+
+#define ERROR_1_ARGS(message)\
+	ERROR_3_ARGS(message, "", -1)
 
 #define GET_4TH_ARG(arg1, arg2, arg3, arg4, ...) arg4
 #define ERROR_MACRO_CHOOSER(...) \
-    GET_4TH_ARG(__VA_ARGS__, ERROR_3_ARGS, ERROR_2_ARGS, ERROR_1_ARGS )
+    GET_4TH_ARG(__VA_ARGS__, ERROR_3_ARGS, ERROR_2_ARGS, ERROR_1_ARGS, )
 
 #define Error(...) ERROR_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
 
@@ -83,11 +82,12 @@ enum Status
 
 #define ELoopTest(func_call, error_val)\
 {\
-	Unres( symlink(FilePaths[0].c_str(), "new_file") == -1, "Cannot create symlink on old file.");\
+	const char * Link = (FilePaths[0] + "_link").c_str();\
+	Unres( symlink(FilePaths[0].c_str(), Link) == -1, "Cannot create symlink on old file.");\
 	Unres( unlink(FilePaths[0].c_str()) == -1, "Cannot remove old_file. ");\
-	Unres( symlink("new_file", FilePaths[0].c_str()) == -1, "Cannot create symlink on new_file.");\
+	Unres( symlink(Link, FilePaths[0].c_str()) == -1, "Cannot create symlink on new_file.");\
 	int res = func_call;\
-	unlink("new_file");\
+	unlink(Link);\
 	if ( res !=  error_val || errno != ELOOP )\
 	{\
 		Error("Function should return '" + (string)strerror(ELOOP) +  "' error code but it did not.", Fail);\

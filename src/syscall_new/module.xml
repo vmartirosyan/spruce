@@ -49,4 +49,5 @@
 	<TestSet Name="mknod"/>
 	<TestSet Name="mmap"/>
 	<TestSet Name="mount_umount"/>
+	<TestSet Name="open"/>
 </Module>
