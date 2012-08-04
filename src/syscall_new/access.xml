@@ -22,7 +22,7 @@
 -->
 
 <TestSet Name="access">	
-	<Requires>linux/fs.h</Requires>
+	<Requires>linux/limits.h</Requires>
 	<Requires>pwd.h</Requires>				
 	<Internal></Internal>
 	<Test Name="AccessNormal" FaultSimulationReady="true">

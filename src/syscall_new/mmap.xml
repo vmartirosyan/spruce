@@ -102,7 +102,7 @@
 	<Test Name="MmapErrBadF">
 		<Description>fd is not a valid file descriptor  (and  MAP_ANONYMOUS  was  not set)</Description>
 		<Code>
-			void * addr = 0;
+			
 			size_t length = 10;
 			int prot = PROT_READ;
 			int flags = MAP_PRIVATE;

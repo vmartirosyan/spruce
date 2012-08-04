@@ -26,11 +26,11 @@
 		<Description>Get file system statistics.</Description>
 		<File count="1"/>
 		<Code>
-			Unres ( FileSystem == "", "FileSystem env variable is not defined");
+			Unres ( ! strcmp(FileSystem,""), "FileSystem env variable is not defined");
 			
 			if ( FileSystemTypesMap[FileSystem] == -1 )
 			{
-				Error("fstatfs is not supported by " + FileSystem, Unsupported);
+				Error("fstatfs is not supported by " + (string)FileSystem, Unsupported);
 			}
 						
 			struct statfs buf;

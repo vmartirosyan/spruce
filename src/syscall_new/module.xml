@@ -41,5 +41,12 @@
 	<TestSet Name="getcwd"/>
 	<TestSet Name="ioctl"/>
 	<TestSet Name="lchown"/>
+	<TestSet Name="link"/>
+	<TestSet Name="linkat"/>
+	<TestSet Name="lseek"/>
+	<TestSet Name="lseek64"/>
+	<TestSet Name="mkdir_rmdir"/>
+	<TestSet Name="mknod"/>
 	<TestSet Name="mmap"/>
+	<TestSet Name="mount_umount"/>
 </Module>
