@@ -37,11 +37,11 @@
 			
 			Unres( linkat(DirDs[0], FileNameOnly.c_str(), DirDs[0], NewFilePath, 0) == -1, "Cannot create link.");
 			
-			Unres( write(DirFDs[0], OrigBuf, strlen(OrigBuf)) != strlen(OrigBuf), "Error in writing to original file." );
+			Unres( write(DirFDs[0], OrigBuf, strlen(OrigBuf)) != (int)strlen(OrigBuf), "Error in writing to original file." );
 			
 			File new_file(DirPaths[0] + "/" + NewFilePath, 0777, O_RDONLY);
 			
-			Unres( read(new_file.GetFileDescriptor(), NewBuf, strlen(OrigBuf) ) != strlen(OrigBuf), "Error reading data from new file." );
+			Unres( read(new_file.GetFileDescriptor(), NewBuf, strlen(OrigBuf) ) != (int)strlen(OrigBuf), "Error reading data from new file." );
 			
 			if ( strncmp(OrigBuf, NewBuf, strlen(OrigBuf)) != 0 )
 			{
