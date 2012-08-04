@@ -603,12 +603,13 @@
 		<Description>Too many segment locks open.</Description>
 		<File count="1"/>
 		<Code>
+			Error("Problems with too large array... Needs to be refactored.", Unsupported);
 			// No way to overcome the array creation... addresses of the lock structures must be different.
 			const int IterationCount = 660000;
-			struct flock flocks[IterationCount];
-			int ind;
+			//struct flock flocks[IterationCount];
+			int ind = 0;
 			
-			for ( ind = 0; ind < IterationCount; ++ind )
+			/*for ( ind = 0; ind < IterationCount; ++ind )
 			{
 				flocks[ind].l_whence = SEEK_SET;
 				flocks[ind].l_start = 0;
@@ -616,7 +617,7 @@
 				flocks[ind].l_pid = getpid();
 				flocks[ind].l_type = F_WRLCK ;
 				
-				if ( fcntl( FDs[0], F_SETLK, &flocks[ind] ) == -1 )
+				if ( fcntl( FDs[0], F_SETLK, &(flocks[ind]) ) == -1 )
 				{
 					cerr << "Error: " << strerror(errno) << endl;
 					if ( errno != ENOLCK )
@@ -625,7 +626,7 @@
 					}
 					break;
 				}
-			}
+			}*/
 			if ( ind == IterationCount )
 			{
 				Error("flock failed with success or wrong error code.", Fail);

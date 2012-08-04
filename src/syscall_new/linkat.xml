@@ -57,12 +57,6 @@
 			ErrorTest(linkat(-1, "some_file", -1, "some_link", 0), -1, EBADF);
 		</Code>
 	</Test>
-	<Test Name="LinkatNotDir">
-		<Description></Description>
-		<Code>
-			ErrorTest(linkat(1, "some_file", 0, "some_link", 0), -1, ENOTDIR);
-		</Code>
-	</Test>
 	<Test Name="LinkatNameTooLong">
 		<Description>Oldpath or newpath was too long.</Description>
 		<Dir count="1"/>
@@ -70,21 +64,21 @@
 			ENameTooLongTest(linkat(DirDs[0], "/", DirDs[0], path, 0), -1);
 		</Code>
 	</Test>
-	<Test Name="LinkNewPathAlreadyExist">
+	<Test Name="LinkatNewPathAlreadyExist">
 		<Description>Newpath already exists.</Description>
 		<Dir count="1"/>
 		<Code>
 			ErrorTest(linkat(DirDs[0], "/", DirDs[0], "/", 0), -1, EEXIST);
 		</Code>
 	</Test>
-	<Test Name="LinkOldPathIsDirectory">
+	<Test Name="LinkatOldPathIsDirectory">
 		<Description>Oldpath is a directory.</Description>
 		<Dir count="1"/>
 		<Code>
 			ErrorTest(linkat(DirDs[0], ".", DirDs[0], "some_link", 0), -1, EPERM);
 		</Code>
 	</Test>
-	<Test Name="LinkIsNotDirectory">
+	<Test Name="LinkatIsNotDirectory">
 		<Description>A component used as a directory in oldpath or newpath is not, in fact, a directory.</Description>
 		<Dir count="1">
 			<File count="1"/>

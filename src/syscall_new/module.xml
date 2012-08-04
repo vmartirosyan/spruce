@@ -50,4 +50,5 @@
 	<TestSet Name="mmap"/>
 	<TestSet Name="mount_umount"/>
 	<TestSet Name="open"/>
+	<TestSet Name="openat"/>
 </Module>

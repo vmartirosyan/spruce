@@ -130,7 +130,7 @@ enum Status
 
 #define ENotDirTest(func_call, error_val)\
 {\
-	const char * path = (FilePaths[0] + "/some_file").c_str();\
+	char * path = (char*)(FilePaths[0] + "/some_file").c_str();\
 	if ( func_call != error_val || errno != ENOTDIR )\
 	{\
 		Error("Function should return '" + (string)strerror(ENOTDIR) +  "' error but it did not.", Fail);\
@@ -185,6 +185,7 @@ enum Status
 		{\
 			for ( int i = FirstFileDesc; i <= file_index; ++i )\
 				close(i);\
+			unlink(path);\
 			char buf[3];\
 			sprintf(buf, "%d", file_index);\
 			Unres(true, "Cannot create file " + (string)buf);\
@@ -193,6 +194,7 @@ enum Status
 	int ret_val = func_call;\
 	for ( int i = FirstFileDesc; i < max_files_open - 1; ++i )\
 		close(i);\
+	unlink(path);\
 	if ( ret_val != error_val || errno != EMFILE )\
 	{\
 		Error("Function should return '" + (string)strerror(EMFILE) +  "' error but it did not.", Fail);\

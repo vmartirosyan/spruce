@@ -59,10 +59,11 @@ class Directory
 			_mode = mode;
 			_flags = flags;
 			if (mkdir(_pathname.c_str(), _mode) == -1 && errno != EEXIST)
-			{								
+			{
 				throw Exception("Cannot create directory " + _pathname + 
 				": error = " + static_cast<string>(strerror(errno)));
 			}
+			errno = 0;
 			_fd = open( _pathname.c_str(), _flags );
 			if ( _fd == -1 )
 			{
