@@ -237,6 +237,7 @@
 		<Description>readv: The  vector  count  iovcnt is greater than the permitted maximum.</Description>
 		<File count="1"/>
 		<Code>
+			Error("Makes the process to uninterraptable sleep... Needs to be refactored.", Unsupported);
 			const int BufCount = 2;
 			char ReadBuf1[10];
 			char ReadBuf2[10];
@@ -249,6 +250,7 @@
 		<Description>writev: The  vector  count  iovcnt is greater than the permitted maximum.</Description>
 		<File count="1"/>
 		<Code>
+			Error("Makes the process to uninterraptable sleep... Needs to be refactored.", Unsupported);
 			const int BufCount = 2;
 			char WriteBuf1[10];
 			char WriteBuf2[10];
