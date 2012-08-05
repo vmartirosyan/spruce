@@ -23,7 +23,7 @@
 
 <TestSet Name="statfs">	
 	<Test Name="StatfsNormal" FaultSimulationReady="true">
-		<Description></Description>
+		<Description>Get file system statistics.</Description>
 		<File count="1"/>
 		<Code>	
 			Unres ( !strcmp(MountPoint, "") || !strcmp(FileSystem, "") , "Either MountPoint or FileSystem variables are not defined");
