@@ -71,11 +71,10 @@ enum Status
 
 #define Error(...) ERROR_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
 
-#define Fail(message, cond)\
+#define Fail(cond, message)\
 	if ( (cond) )\
 		{ Error(message, Fail) }\
-	else return Success;
-	
+		
 #define Unres(cond, message)\
 	if ( (cond) )\
 	{ Error(message, Unresolved) }
