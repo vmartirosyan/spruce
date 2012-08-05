@@ -62,4 +62,5 @@
 	<TestSet Name="sync"/>
 	<TestSet Name="truncate"/>
 	<TestSet Name="umask"/>
+	<TestSet Name="unlink"/>
 </Module>
