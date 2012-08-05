@@ -60,4 +60,5 @@
 	<TestSet Name="stat"/>
 	<TestSet Name="statfs"/>
 	<TestSet Name="sync"/>
+	<TestSet Name="truncate"/>
 </Module>
