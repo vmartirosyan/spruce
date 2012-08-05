@@ -195,4 +195,198 @@
 			return status;
 		</Code>
 	</Test>
+	<Test Name="Mremap">
+		<Description>remap a virtual memory address</Description>
+		<File count="1"/>
+		<Code>
+			char * buff = (char *)"abc";
+			if(write(FDs[0], buff, strlen(buff)) == -1)
+			{
+				cerr << "write failed: " << strerror(errno);
+				return Unresolved;
+			}
+			
+			size_t length = strlen(buff);
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE;
+			off_t offset = 0;
+		
+			void * oldAddr = mmap(0, length, prot, flags, FDs[0], offset);
+			if(oldAddr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);
+			}
+			
+			void * newAddr = mremap(oldAddr, length, length + 3, MREMAP_MAYMOVE);
+			if(newAddr == MAP_FAILED)
+			{
+				Error("System call mremap failed", Fail);
+			}
+			
+			if(strncmp((char *)oldAddr, (char *)newAddr, strlen((char *)oldAddr)))
+			{
+				Error("System call mmap failed: mapped content differs from initial content", Fail);
+			}
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="MremapErrInval">
+		<Description>an invalid argument was given</Description>
+		<File count="1"/>
+		<Code>
+			int status = Success;
+			size_t length = 3;
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE;
+			off_t offset = 0;
+		
+			void * oldAddr = mmap(0, length, prot, flags, FDs[0], offset);
+			if(oldAddr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);
+			}
+			
+			void * newAddr = mremap(oldAddr, length, length + 3, MREMAP_MAYMOVE | MREMAP_FIXED);
+			if(newAddr != MAP_FAILED || errno != EINVAL)
+			{
+				Error("EINVAL error expected: flags contain invalid value");
+				status = Fail;
+			}
+
+			newAddr = mremap(oldAddr, length, 0, MREMAP_MAYMOVE);
+			if(newAddr != MAP_FAILED || errno != EINVAL)
+			{
+				Error("EINVAL error expected: new size is set to zero");
+				status = Fail;
+			}
+			
+			newAddr = mremap(oldAddr, length, -1, MREMAP_MAYMOVE);
+			if(newAddr != MAP_FAILED || errno != EINVAL)
+			{
+				Error("EINVAL error expected: new size contains invalid value");
+				status = Fail;
+			}
+			
+			newAddr = mremap(oldAddr, length, length + 3, MREMAP_FIXED);
+			if(newAddr != MAP_FAILED || errno != EINVAL)
+			{
+				Error("EINVAL error expected: MREMAP_FIXED was specified without also specifying MREMAP_MAYMOVE");
+				status = Fail;
+			}		
+			
+			return status;
+		</Code>
+	</Test>
+	<Test Name="Mmap2Normal">
+		<Description>the mmap2() system call operates in exactly the same way as mmap, except that the final argument specifies the offset into the file in 4096-byte units</Description>
+		<File count = "1"/>
+		<Code>
+			char * buff = (char *)"abc";
+			if(write(FDs[0], buff, strlen(buff)) == -1)
+			{
+				Error("write failed", Unresolved);
+			}
+			
+			size_t length = strlen(buff);
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE;
+			off64_t offset = 0;
+		
+			void * addr = mmap64(0, length, prot, flags, FDs[0], offset);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Fail);
+			}
+			
+			if(strncmp(buff, (char *)addr, strlen(buff)))
+			{
+				Error("System call mmap failed: mapped content differs from file content", Fail);
+			}
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="Mmap2ErrInval">
+		<Description>offset * 4096 is not a multiple of the system page size</Description>
+		<File count="1"/>
+		<Code>
+			int status = Success;
+			void * addr = 0;
+			size_t length = 10;
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE;
+			off_t offset = 0;
+			
+			addr = mmap64(0, length, prot, flags, FDs[0], ~PAGE_MASK);
+			if(addr != MAP_FAILED || errno != EINVAL)
+			{
+				Error("EINVAL error expected: offset contains invalid value");
+				status = Fail;	
+			}
+		
+			addr = mmap64(0, 0, prot, flags, FDs[0], offset);
+			if(addr != MAP_FAILED || errno != EINVAL)
+			{
+				Error("EINVAL error expected: length contains 0 value");
+				status = Fail;	
+			}
+		
+			addr = mmap64(0, length, prot, MAP_PRIVATE | MAP_SHARED, FDs[0], offset);
+			if(addr != MAP_FAILED || errno != EINVAL)
+			{
+				Error("EINVAL error expected: flags contain invalid value, MAP_PRIVATE and MAP_SHARED are set");
+				status = Fail;	
+			}
+
+			addr = mmap64(0, length, prot, 0, FDs[0], offset);
+			if(addr != MAP_FAILED || errno != EINVAL)
+			{
+				Error("EINVAL error expected: flags contain 0 value");
+				status = Fail;	
+			}
+			
+			return status;
+		</Code>
+	</Test>
+	<Test Name="Mmap2ErrBadf">
+		<Description>fd is not a valid file descriptor</Description>
+		<Code>
+			void * addr = 0;
+			size_t length = 10;
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE;
+			off_t offset = 0;
+			int fd = -1;
+			ErrorTest(mmap64(0, length, prot, flags, fd, offset), MAP_FAILED, EBADF);
+		</Code>
+	</Test>
+	<Test Name="Mmap2ErrAcces">
+		<Description>a file descriptor refers to a non-regular file. Or MAP_PRIVATE was requested, but fd is not open for reading. Or MAP_SHARED was requested and PROT_WRITE is set, but fd is not open in read/write (O_RDWR) mode. Or PROT_WRITE is set, but the file is append-only</Description>
+		<File count="1" mode="S_IRUSR | S_IWUSR" flags="O_WRONLY | O_CREAT"/>
+		<Code>
+			int status = Success;
+			void * addr = 0;
+			size_t length = 10;
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE;
+			off_t offset = 0;
+
+			addr = mmap64(0, length, prot, flags, FDs[0], offset);		
+			if(addr != MAP_FAILED || errno != EACCES)
+			{
+				Error("EACCES error expected: MAP_PRIVATE was requested, but fd is not opened for reading");
+				status = Fail;
+			}
+			
+			addr = mmap64(0, length, PROT_WRITE, MAP_SHARED, FDs[0], offset);
+			if(addr != MAP_FAILED || errno != EACCES)
+			{
+				Error("EACCES error expected: fd is not opened in read/write mode");
+				status = Fail;
+			}
+			
+			return status;
+		</Code>
+	</Test>
 </TestSet>
