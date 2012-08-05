@@ -20,11 +20,16 @@ public:
 	<xsl:value-of select="@Name" />Tests():
 		_testCount(<xsl:value-of select="count(Test)"/>)
 	{
-		
+		<xsl:value-of select="StartUp"/>
 		<xsl:for-each select="Test">
 		_tests[<xsl:value-of select="position()-1"/>] = &amp;<xsl:value-of select="$TestSetName" />Tests::<xsl:value-of select="@Name" />Func;
 		</xsl:for-each>
 	}
+	~<xsl:value-of select="@Name" />Tests()
+	{
+		<xsl:value-of select="CleanUp"/>
+	}
+	
 	virtual TestResultCollection RunTests()
 	{
 		TestResultCollection res;
@@ -39,7 +44,8 @@ public:
 	}
 	<xsl:for-each select="Test">
 	int <xsl:value-of select="@Name" />Func(vector&lt;string>)
-	{		
+	{
+		<xsl:value-of select="/TestSet/Header" />
 		<xsl:value-of select="Header" />
 		cerr &lt;&lt; "Description: " &lt;&lt; "<xsl:value-of select="Description" />" &lt;&lt; endl;
 		try
@@ -103,7 +109,7 @@ public:
 		}
 		
 		<xsl:value-of select="Footer" />
-			
+		<xsl:value-of select="/TestSet/Footer" />	
 
 	}
 	</xsl:for-each>

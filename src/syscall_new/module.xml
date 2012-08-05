@@ -53,4 +53,5 @@
 	<TestSet Name="openat"/>
 	<TestSet Name="pread_pwrite"/>
 	<TestSet Name="read_write"/>
+	<TestSet Name="readdir"/>
 </Module>
