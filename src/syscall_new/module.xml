@@ -57,4 +57,5 @@
 	<TestSet Name="readv_writev"/>
 	<TestSet Name="rename"/>
 	<TestSet Name="select"/>
+	<TestSet Name="stat"/>
 </Module>
