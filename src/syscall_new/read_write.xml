@@ -33,7 +33,7 @@
 			
 			if ( write(FDs[0], WriteBuf, strlen(WriteBuf)) != (int)strlen(WriteBuf) )
 			{
-				Error("Cannot write to file using.", Fail);
+				Error("Cannot write to file.", Fail);
 			}
 			
 			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");

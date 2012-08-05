@@ -54,4 +54,5 @@
 	<TestSet Name="pread_pwrite"/>
 	<TestSet Name="read_write"/>
 	<TestSet Name="readdir"/>
+	<TestSet Name="readv_writev"/>
 </Module>
