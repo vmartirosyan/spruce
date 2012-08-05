@@ -59,4 +59,5 @@
 	<TestSet Name="select"/>
 	<TestSet Name="stat"/>
 	<TestSet Name="statfs"/>
+	<TestSet Name="sync"/>
 </Module>

@@ -24,7 +24,7 @@
 
 <TestSet Name="stat">
 	<Test Name="StatNormal" FaultSimulationReady="true">
-		<Description></Description>
+		<Description>Get file status.</Description>
 		<File count="1" mode="S_IRUSR" flags="O_CREAT | O_RDONLY"/>
 		<Code>
 			struct stat st;
