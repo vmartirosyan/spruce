@@ -1,0 +1,99 @@
+<!--    access.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Giorgi Gulabyan <gulabyang@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="getcwd">
+	<Internal></Internal>
+	<Test Name="GetcwdNormal" FaultSimulationReady="true">
+		<Description>Get current working directory.</Description>
+		<Code>			
+			string dir = "/";
+			Unres( chdir(dir.c_str()) == -1, "Cannot change directory." );
+			
+			char buf[10];
+			
+			if ( getcwd(buf, 10) == NULL )
+			{
+				Error("Cannot get current working directory", Fail);
+			}
+			
+			if ( dir != (string)buf )
+			{
+				Error("getcwd returned wrong directory.", Fail);
+			}
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="GetcwdErrAccess">
+		<Description>Permission to read or search a component of the filename was denied.</Description>		
+		<Code>
+			char cwd[100];
+			string dirPath = "GetcwdErrAccess_dir";
+			string subdirPath = dirPath + "/subdir";
+			
+			Directory dir(dirPath, 0000);
+			Directory subdir(subdirPath, 0000);
+						 
+			Unres (chdir(subdirPath.c_str()) != 0, "Chdir can not change the working directory.");
+			
+			ENoAccessTest(getcwd(cwd, 100), NULL);
+		</Code>
+	</Test>
+	<Test Name="GetcwdErrFault">
+		<Description>buf points to a bad address.</Description>
+		<Code>			
+			ErrorTest(getcwd((char*)-1, 100), NULL, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="GetcwdErrInval">
+		<Description>The size argument is zero and buf is not a null pointer.</Description>		
+		<Code>			
+			char buf[1];
+			ErrorTest(getcwd(buf, 0), NULL, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="GetcwdErrNoEnt">
+		<Description>The current working directory has been unlinked.</Description>		
+		<Code>
+			const char * path = "getcwdtestdir";
+			Unres (mkdir(path, 0777) != 0, "Can not make directore.");
+			
+			Unres(chdir(path) != 0, "Can not change the working directory.");
+			
+			Unres (rmdir(("../" + (string)path).c_str()) != 0, "Can not delete the working directory.");
+			
+			char buf;
+			
+			ErrorTest(getcwd(&buf, 100), NULL, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="GetcwdErrRange">
+		<Description>The  size  argument  is  less than the length of the absolute pathname of the working directory, including the terminating null byte.</Description>
+		<Code>
+			char buf;
+			ErrorTest( getcwd(&buf, 1), NULL, ERANGE );
+		</Code>
+	</Test>
+	
+</TestSet>

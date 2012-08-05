@@ -1,0 +1,760 @@
+<!--    fcntl.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Shahzadyan Khachik <qwerity@gmail.com>
+//          Ani Tumanyan <ani.tumanyan92@gmail.com>  
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="fcntl">
+	<Requires>fcntl.h</Requires>
+	<Requires>linux/version.h</Requires>
+	<Internal></Internal>
+	<!-- Normal functionality tests -->
+	<Test Name="FcntlDupFileDescriptor" FaultSimulationReady="true">
+		<Description>F_DUPFD: Find the lowest numbered available file descriptor greater than or equal to arg and make it be a copy of fd.</Description>
+		<File count="1" />
+		<Code>
+			int new_fd;
+			const char *buff = "test";
+			char nbuff[5];
+			long _arg = rand() % 99;
+			cerr << "arg: " << _arg << endl;
+			if( (new_fd = fcntl(FDs[0], F_DUPFD, _arg)) == -1 )
+			{
+				Error("Error in fcntl.", Fail);
+			}
+			cerr << "new_fd: " << new_fd << endl;
+			Unres ( write(FDs[0], buff, strlen(buff)) == -1, "Error in writing. ");
+		
+			Unres ( lseek(FDs[0], 0, SEEK_SET) == -1, "Error in lseek.");
+			
+			Unres ( read(new_fd, nbuff, strlen(buff) ) == -1, "Error in reading.");
+
+			close(new_fd);			
+
+			if( strncmp(buff, nbuff, strlen(buff)) != 0 )
+			{
+				cerr << buff << " != " << nbuff << endl; 
+				Error("Wrong or corrupted data.", Fail);
+			}
+			if (new_fd < _arg)
+			{				
+				Error("Returned wrong file descriptor", Fail);
+			}
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlGetSetFileStatusFlagsIgnore" FaultSimulationReady="true">
+		<Description>F_GETFL, F_SETFL: File access mode (O_RDONLY, O_WRONLY, O_RDWR) and file creation flags (i.e., O_CREAT, O_EXCL, O_NOCTTY, O_TRUNC) in arg are ignored.</Description>
+		<File count="1" />
+		<Code>
+			long set_flags;
+			long get_flags1, get_flags2;
+			
+			Unres( (get_flags1 = fcntl( FDs[0], F_GETFL )) == -1, "Error in fcntl.");
+			
+			// set File Descriptor Flags
+			set_flags = O_RDONLY | O_WRONLY | O_RDWR | O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC ;
+			if ( fcntl(FDs[0], F_SETFL, set_flags) == -1 )
+			{
+				Error("Error in fcntl. Cannot set flags.", Fail);
+			}
+
+			// get File Descriptor Flags
+			if ( (get_flags2 = fcntl(FDs[0], F_GETFL)) == -1 )
+			{
+				Error("Error in fcntl. Cannot get flags.", Fail);
+			}
+			if ( get_flags1 !=  get_flags2 )
+			{
+				Error("The flags should be ignored.", Fail);
+			}
+ 	
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlGetSetFileStatusFlags" FaultSimulationReady="true">
+		<Description>F_GETFL, F_SETFL: On Linux this command can only change the O_APPEND, O_ASYNC, O_DIRECT, O_NOATIME, and O_NONBLOCK flags.</Description>
+		<File count="1" />
+		<Code>
+			long set_flags;
+			long get_flags1, get_flags;
+			
+			if ( (get_flags1 = fcntl( FDs[0], F_GETFL )) == -1 )
+			{
+				Error("Error in fcntl. Cannot get initial flags.", Fail);
+			}
+			
+			// set File Descriptor Flags
+			set_flags =  O_APPEND | O_DIRECT | O_NOATIME | O_NONBLOCK ;
+			if ( fcntl(FDs[0], F_SETFL, set_flags) == -1 )
+			{
+				Error("Error in fcntl. Cannot set flags.", Fail);
+			}
+
+			// get File Descriptor Flags
+			if( (get_flags = fcntl(FDs[0], F_GETFL)) == -1 )
+			{
+				Error("Error in fcntl. Cannot get finl flags.", Fail);
+			}
+			if( (set_flags | get_flags1) != get_flags)
+			{
+				Error("Can't get right file descriptor flags! ", Fail);
+			}
+ 	
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlGetSetFileDescriptorFlags" FaultSimulationReady="true">
+		<Description>F_GETFD, F_SETFD: Currently, only one such flag is defined: FD_CLOEXEC, the close-on-exec flag.</Description>
+		<File count="1" />
+		<Code>
+			long set_flags = FD_CLOEXEC;
+			long get_flags;
+			if ( fcntl(FDs[0], F_SETFD, set_flags) == -1 )
+			{
+				Error("Error in fcntl. Cannot set FD flags.", Fail);
+			}
+
+			// get File Descriptor Flags
+			if ( (get_flags = fcntl(FDs[0], F_GETFD)) == -1 )
+			{
+				Error("Error in fcntl. Cannot get FD flags.", Fail);
+			}
+
+			if( FD_CLOEXEC == get_flags )
+			{
+				return Success;
+			}
+			else
+			{
+				Error("Cannot get right file descriptor flags!", Fail);
+			}
+		</Code>
+	</Test>
+	<Test Name="FcntlFDGetLock" FaultSimulationReady="true">
+		<Description>F_GETLK: If the lock could be placed, fcntl() does not actually place it, but returns F_UNLCK in the l_type field of lock and leaves the other fields of the structure unchanged.</Description>
+		<File count="1" />
+		<Code>
+			int ret_fcntl;
+			struct flock flocks;
+	
+			//setting flock structure
+			flocks.l_whence = SEEK_SET;
+			flocks.l_start = 0;
+			flocks.l_len = 0;
+			flocks.l_pid = getpid();
+			flocks.l_type = F_RDLCK ;
+	   
+			ret_fcntl = fcntl( FDs[0], F_GETLK, &flocks );
+	   
+			if ( ret_fcntl == -1 )
+			{
+				Error("Error in fcntl. Cannot get lock settings.", Fail);
+			}
+	  
+			if( flocks.l_type != F_UNLCK && flocks.l_whence != SEEK_SET && 
+				flocks.l_start != 0 && flocks.l_len != 0 )
+			{
+				Error("Incompatible locks prevent this lock.", Fail);
+			}
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlFDSetLock" FaultSimulationReady="true">
+		<Description>F_SETLK: Acquire a lock (when l_type is F_RDLCK or F_WRLCK) or release a lock (when l_type is F_UNLCK) on the bytes specified by the l_whence, l_start, and l_len fields of lock.</Description>
+		<File count="1"/>
+		<Code>
+			struct flock flocks;
+			int type, ret_fcntl;
+			flocks.l_whence = SEEK_SET;
+			flocks.l_start = 0;
+			flocks.l_len = 0;
+			flocks.l_pid = getpid();
+		
+			
+			for ( type = 0; type < 2; ++type )
+			{
+				flocks.l_type = type ? F_RDLCK : F_WRLCK;
+				ret_fcntl = fcntl( FDs[0], F_SETLK, &flocks );
+				
+				if ( ret_fcntl == -1 )
+				{
+					Error("Cannot set lock.", Fail);
+				}
+				
+			}
+			
+			flocks.l_type = F_UNLCK;
+			ret_fcntl = fcntl( FDs[0], F_SETLK, &flocks );
+			if ( ret_fcntl == -1 )
+			{
+				Error("Cannot unlock.", Fail);
+			}
+				
+			return Success;  
+		</Code>
+	</Test>
+	<Test Name="FcntlFDSetLockWithWait" FaultSimulationReady="true">
+		<Description>F_SETLKW: As for F_SETLK, but if a conflicting lock is held on the file, then wait for that lock to be released.</Description>
+		<File count="1"/>
+		<Code>
+			struct flock flocks;
+			int type, ret_fcntl;
+			flocks.l_whence = SEEK_SET;
+			flocks.l_start = 0;
+			flocks.l_len = 0;
+			flocks.l_pid = getpid();
+		
+			
+			for ( type = 0; type < 2; ++type )
+			{
+				flocks.l_type = type ? F_RDLCK : F_WRLCK;
+				ret_fcntl = fcntl( FDs[0], F_SETLKW, &flocks );
+				
+				if ( ret_fcntl == -1 )
+				{
+					Error("Cannot set lock with wait.", Fail);
+				}
+				
+			}
+			
+			flocks.l_type = F_UNLCK;
+			ret_fcntl = fcntl( FDs[0], F_SETLKW, &flocks );
+			if ( ret_fcntl == -1 )
+			{
+				Error("Cannot unlock.", Fail);
+			}
+				
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlFDNoteDir" FaultSimulationReady="true">
+		<Description>F_NOTIFY: Provide notification when the directory referred to by fd is changed.</Description>
+		<Code>
+			int  dirfd;
+			const char *dirname = "fcntl_directory";
+
+			//DN_CREATE
+			Unres ( mkdir( dirname, 0700 ) == -1, "Error in making directory.");
+			
+			Unres ( (dirfd= open( dirname, O_DIRECTORY )) == -1, "Error in opening directory.");
+			
+			if ( fcntl( dirfd, F_NOTIFY,  DN_CREATE ) == -1 )
+			{
+				Error("Must return Success because directory has been created and opened.", Fail);
+			}
+			
+			//DN_ATTRIB
+			Unres ( chmod( dirname , 0000 ) == -1, "Error in chmod.");
+			if ( fcntl ( dirfd, F_NOTIFY, DN_ATTRIB ) == -1 )
+			{
+				Error("Must return Success because permission set has been changed by chmod system call.", Fail);
+			}
+			
+			//DN_DELETE
+			Unres ( rmdir( dirname ) == -1, "Error in removing directory.");
+			
+			if ( fcntl ( dirfd, F_NOTIFY, DN_DELETE ) == -1 )
+			{
+				Error("Must return Success because directory has been removed.", Fail);
+			}
+			
+			return  Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlFDNoteFile" FaultSimulationReady="true">
+		<Description>F_NOTIFY: Provide notification when the directory referred to by fd or any of the files that it contains is changed.</Description>
+		<Code>
+			int fd, dirfd ;
+			char w_buffer_[5]="1234";
+			char r_buffer_[5];
+			const char *dir = "fcntl_directory_";
+			const char *newfile = "fcntl_directory_/fcntl_file_";
+			const char *file = "fcntl_directory_/fcntl_newfile_";
+			
+
+			//DN_CREATE
+			Unres ( mkdir ( dir, 0700 ) == -1, "Error in making directory.");
+			
+			Unres ( (dirfd = open ( dir, O_DIRECTORY )) == -1, "Error in opening directory.");
+			
+			Unres ( (fd = open ( file, O_CREAT | O_RDWR, 0777 )) == -1, "Error in opening file.");
+			
+			if ( fcntl ( dirfd, F_NOTIFY, DN_CREATE ) == -1 )
+			{
+				Error("fcntl must return Success because directory and file in that directory have been created and opened.", Fail);
+			}
+			//DN_ATTRIB
+			Unres ( chmod( file, 0700 ) == -1, "Error in chmod.");
+			
+			if ( fcntl ( dirfd, F_NOTIFY, DN_ATTRIB ) == -1 )
+			{
+				Error("fcntl must return Success because permissions of the file in directory with descriptor eqaul to dirfd has been changed.", Fail);
+			}
+			
+			//DN_RENAME
+			Unres ( rename ( file, newfile ) == -1, "Error in renaming.");
+			
+			if ( fcntl ( dirfd, F_NOTIFY, DN_RENAME ) == -1 )
+			{
+				Error("fcntl must return Success because the file in derectory with directory descriptor equal to dirfd has been renamed.", Fail);
+			}
+			
+			//DN_MODIFY
+			Unres ( write ( fd, w_buffer_, strlen(w_buffer_) ) == -1, "Error in writing to the file.");
+			
+			if ( fcntl ( dirfd, F_NOTIFY, DN_MODIFY ) == -1 )
+			{
+				Error("fcntl must return Success because the file in directory with directory descriptor equal to dirfd has been modified by write system call.", Fail);
+			}
+			
+			//DN_ACCESS
+			Unres ( read ( fd, r_buffer_, 5 ) == -1, "Error in reading.");
+			
+			if ( fcntl ( dirfd, F_NOTIFY, DN_ACCESS ) == -1 )
+			{
+				Error("fcntl must return Success because file in directory with directory descriptor equal to dirfd has been accessed by read system call.", Fail);
+			}
+
+			//DN_DELETE
+			Unres ( unlink( newfile ) == -1, "Error in unlinking file.");
+			
+			if ( fcntl ( dirfd, F_NOTIFY, DN_DELETE ) == -1 )
+			{
+				Error("fcntl must return Success because file in directory with directory descriptor equal to dirfd has been unlinked.", Fail);
+			}
+			close(fd);
+			close(dirfd);
+			
+			return  Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlFDGetSetLease" FaultSimulationReady="true">
+		<Description>F_SETLEASE  and  F_GETLEASE are used (respectively) to establish a new lease, and retrieve the current lease, on the open file description referred to by the file descriptor fd.</Description>
+		<Code>
+			int fd1, fd2;
+			const char *filename1 = "file1.txt";
+			const char *filename2 = "file2.txt";
+			File file1( filename1, 0777, O_RDONLY | O_CREAT );
+			fd1 = file1.GetFileDescriptor();
+			File file2 ( filename2, 0777, O_CREAT | O_RDWR );
+			fd2 = file2.GetFileDescriptor();
+		
+		  
+			if ( fcntl( fd1, F_SETLEASE, F_RDLCK ) == -1 )
+			{
+				Error("Error in fcntl. Cannot set read lease.", Fail);
+			}
+		
+			if ( fcntl( fd1, F_GETLEASE ) != F_RDLCK )
+			{
+				Error("Get-set lease failed for read lease.", Fail);
+			}
+				
+			// write lease ( F_SETLEASE & F_WRLCK )			
+			if ( fcntl ( fd2, F_SETLEASE, F_WRLCK ) == -1 )
+			{
+				Error("Error in fcntl. Cannot set write lease.", Fail);
+			}
+			if ( fcntl( fd2, F_GETLEASE ) != F_WRLCK )
+			{
+				Error("Get-set lease failed for write lease.", Fail);
+			}
+		
+			// removing lease ( F_SETLEASE & F_UNLCK )
+			if ( fcntl ( fd2, F_SETLEASE , F_UNLCK ) == -1 )
+			{
+				Error("Error in fcntl. Cannot remove lease.", Fail);
+			}
+			if ( fcntl ( fd2, F_GETLEASE ) != F_UNLCK )
+			{
+				Error("Get-set lease failed for remove lease.", Fail);		
+			}
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlFDGetSetOwn" FaultSimulationReady="true">
+		<Description>F_GETOWN and F_SETOWN are used to manage I/O availability signals.</Description>
+		<File count="1"/>
+		<Code>
+			if ( fcntl ( FDs[0], F_SETOWN, getpid() ) == -1 )
+			{
+				Error("Error in fcntl. Cannot set owner.", Fail);
+			}
+			if ( fcntl( FDs[0], F_GETOWN ) != getpid() )
+			{
+				Error("Get-set owner failed.", Fail);
+			}
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlFDGetSetSig" FaultSimulationReady="true">
+		<Description>F_GETSIG and F_SETSIG are used to manage I/O availability signals.</Description>
+		<File count="1"/>
+		<Code>
+			if ( fcntl( FDs[0], F_SETSIG, SIGIO ) == -1 )
+			{
+				Error("Error in fcntl. Cannot set signal", Fail);
+			}
+			if ( fcntl( FDs[0], F_GETSIG ) != SIGIO )
+			{
+				Error("Get-set signal failed.", Fail);
+			}
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlFDGetSetOwn_Ex" FaultSimulationReady="true">
+		<Description>F_GETOWN_EX and F_SETOWN_EX are used to manage I/O availability signals.</Description>
+		<File count="1"/>
+		<Code>
+			struct f_owner_ex owner;
+			struct f_owner_ex owner1; 
+
+			owner.type =  F_OWNER_PID;
+			owner.pid = getpid();
+			if ( fcntl( FDs[0], F_SETOWN_EX, &owner ) == -1 )
+			{
+				Error("Error in fcntl. Cannot set extended owner.", Fail);
+			}
+
+			if ( fcntl( FDs[0], F_GETOWN_EX, &owner1 ) == -1 )
+			{
+				Error("Error in fcntl. Cannot get extended owner.", Fail);
+			}
+			if ( owner1.type != F_OWNER_PID || owner1.pid != getpid() )
+			{
+				Error("Get-set owner_ex failed.", Fail);
+			}
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlFDGetSetPipeSize" FaultSimulationReady="true">
+		<Description>F_SETPIPE_SZ and F_GETPIPE_SZ (since Linux 2.6.35). Changing the capacity of a pipe.</Description>
+		<Header>
+#if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
+	Unres(true, "Kernel version doesn't support this operation.");
+#endif
+#ifndef F_SETPIPE_SZ
+	Unres(true, "Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined.");
+#else
+		</Header>
+		<Code>
+			int pipefd[2];
+
+			Unres ( pipe ( pipefd ) == -1, "Error in creating pipe.");
+			
+			//setting pipe's capability to be at least arg_ bytes 
+			if ( fcntl( pipefd[1], F_SETPIPE_SZ, 100) == -1 )
+			{
+				Error("Error in fcntl. Cannot set pipe size.", Fail);
+			}
+			// checking whether capability of the pipe is at least equal to arg_
+			if ( fcntl ( pipefd[1], F_GETPIPE_SZ ) < 100 )
+			{
+				Error("Get-set pipe size failed", Fail);
+			}
+			return Success;
+		</Code>
+		<Footer>
+#endif 
+		</Footer>
+	</Test>
+	<Test Name="FcntlFDDupWithClExFlag" FaultSimulationReady="true">
+		<Description>.</Description>
+		<File count="1"/>
+		<Code>
+			int flags_, fd2;
+			if ( (fd2 = fcntl( FDs[0],F_DUPFD_CLOEXEC,1)) == -1 )
+			{
+				Error("Error in fcntl. Cannot dulicate file descriptor.", Fail);
+			} 
+			if ( (flags_ = fcntl( fd2, F_GETFD)) == -1 )
+			{
+				Error("Error in fcntl. Cannot get file descriptor flags.", Fail);
+			}
+			if ( flags_ != FD_CLOEXEC )
+			{
+				Error("Setting the close-on-exec flag for the  duplicate  descriptor failed.", Fail);       
+			}
+			return Success;
+		</Code>
+	</Test>
+	<!-- Error tests -->
+	<Test Name="FcntlFDBadFileDescriptor1">
+		<Description>File descriptor open mode doesn't match with the type of lock requested.</Description>
+		<Code>
+			const char *filename = "some_file1";
+			struct flock flocks;
+			int fd;
+			
+			File file( filename, 0777, O_RDONLY | O_CREAT );
+			fd = file.GetFileDescriptor();
+		
+			//setting flock structure
+			flocks.l_whence = SEEK_SET;
+			flocks.l_start = 0;
+			flocks.l_len = 0;
+			flocks.l_pid = getpid();
+			flocks.l_type = F_WRLCK; // write lock 
+			
+			ErrorTest(fcntl ( fd, F_SETLK, &flocks ), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="FcntlFDBadFileDescriptor2">
+		<Description>fd is not opened file descriptor.</Description>
+		<Code>
+			ErrorTest(fcntl(-1, F_SETFD, FD_CLOEXEC), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="FcntlFDTooManyOpenedFiles">
+		<Description>For F_DUPFD, the process already has the maximum number of file descriptors open.</Description>
+		<Code>
+			EMaxFilesOpenTest(fcntl(1, F_DUPFD, 1), -1);
+		</Code>
+	</Test>
+	<Test Name="FcntlFDInvalidArg1">
+		<Description>Setting negative argument for F_DUPFD operation.</Description>
+		<Code>
+			ErrorTest(fcntl(1, F_DUPFD, -1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="FcntlFDInvalidArg2">
+		<Description>Setting unallowable  argument for F_SETSIG operation.</Description>
+		<Code>
+			ErrorTest(fcntl(1, F_SETSIG, -1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="FcntlFDInvalidArg3">
+		<Description>Setting negative argument to l_whence field of flock structure in locking operations.</Description>
+		<Code>
+			struct flock flocks;
+			flocks.l_whence = -1;
+			flocks.l_start = 0;
+			flocks.l_len = 0;
+			flocks.l_pid = getpid();
+			flocks.l_type = F_WRLCK ;
+
+			ErrorTest(fcntl(1, F_SETLK, &flocks), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="FcntlFDBadAdress">
+		<Description>Lock is outside your accessible address space.</Description>
+		<Code>
+			ErrorTest(fcntl(1, F_SETLK, (struct flocks *)-1), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="FcntlFDResTempUnavailable">
+		<Description>Operation is prohibited by locks held by other processes.</Description>
+		<File count="1"/>
+		<Code>
+			pid_t pid;
+			struct flock flocks;
+			
+			flocks.l_whence = SEEK_SET;
+			flocks.l_start = 0;
+			flocks.l_len = 0;
+			flocks.l_pid = getpid();
+			flocks.l_type = F_WRLCK ;
+			
+			//setting write lock
+			if ( fcntl ( FDs[0], F_SETLK, &flocks) == -1 )
+			{
+				Error("Error in fcntl. Cannot set lock in parent process.", Fail);
+			}
+			
+			pid = fork();
+			
+			Unres ( pid < 0, "Cannot create child process.");
+			
+			if ( pid == 0 )  //child process
+			{
+				ErrorTest ( fcntl ( FDs[0], F_SETLK , &flocks), -1, EAGAIN );
+				
+			}
+			else
+			{
+				//parent process waits for child process termination
+				wait(0);
+			}
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlFDNoLock">
+		<Description>Too many segment locks open.</Description>
+		<File count="1"/>
+		<Code>
+			Error("Problems with too large array... Needs to be refactored.", Unsupported);
+			// No way to overcome the array creation... addresses of the lock structures must be different.
+			const int IterationCount = 660000;
+			//struct flock flocks[IterationCount];
+			int ind = 0;
+			
+			/*for ( ind = 0; ind < IterationCount; ++ind )
+			{
+				flocks[ind].l_whence = SEEK_SET;
+				flocks[ind].l_start = 0;
+				flocks[ind].l_len = ind;
+				flocks[ind].l_pid = getpid();
+				flocks[ind].l_type = F_WRLCK ;
+				
+				if ( fcntl( FDs[0], F_SETLK, &(flocks[ind]) ) == -1 )
+				{
+					cerr << "Error: " << strerror(errno) << endl;
+					if ( errno != ENOLCK )
+					{
+						Error("Incorrect error set in errno in case of no locks available.", Fail);
+					}
+					break;
+				}
+			}*/
+			if ( ind == IterationCount )
+			{
+				Error("flock failed with success or wrong error code.", Fail);
+			}
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="FcntlFDCapAboveLimit">
+		<Description></Description>
+		<File count="1"/>
+		<Header>
+#if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
+	Unres(true, "Kernel version doesn't support this operation.");
+#endif
+#ifndef F_SETPIPE_SZ
+	Unres(true, "Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined.");
+#else
+		</Header>
+		<Code>
+			struct passwd pw;
+			int pipe_max_size, fd;
+			char buf[1024];
+			int pipefd[2];
+			
+			pw = *getpwnam("nobody");
+			Unres ( setuid( pw.pw_uid ) == -1, "Error in setuid.");
+			
+			Unres ( (fd = open( "/proc/sys/fs/pipe-max-size",O_CREAT, 0777 )) == -1, "Error in opening /proc/sys/fs/pipe-max-size file.");
+			Unres ( read( fd, buf, 1024 ) == -1, "Error in read system call.");
+			close( fd );
+			pipe_max_size = atoi( buf );
+			
+			Unres (pipe( pipefd ) == -1, "Error in creating file.");
+			
+			ErrorTest ( fcntl ( pipefd[1], F_SETPIPE_SZ, pipe_max_size + 10 ), -1, EPERM);
+						
+			return Success;
+		</Code>
+		<Footer>
+#endif
+		</Footer>
+	</Test>
+	<Test Name="FcntlFDIntrSysCall">
+		<Description>For  F_SETLKW,  the command was interrupted by a signal.</Description>
+		<File count="1"/>
+		<Code>
+			struct flock fl;
+			pid_t pid;
+			
+			fl.l_whence = SEEK_SET;
+			fl.l_start = 0;
+			fl.l_len = 0;
+			fl.l_pid = getpid();
+			fl.l_type = F_WRLCK ;
+			 
+			Unres ( fcntl ( FDs[0], F_SETLK, &fl ) == -1, "Error in fcntl. Cannot set lock in parent process.");
+			
+			pid = fork();
+			
+			Unres ( pid < 0, "Cannot create child process.");
+			
+			if ( pid == 0 )    /* child proccess*/
+			{
+				Unres ( fcntl( FDs[0],F_SETLKW, &fl) == -1, "Error in fcntl. Cannot set lock in child process.");
+				
+				Unres ( kill ( getpid(), SIGINT ) == -1, "Cannot send signal.");
+				
+				if ( fcntl( FDs[0], F_SETLKW, &fl ) != -1 )
+				{
+					Error("returhvns 0 in case of system call was interrupted.", Fail);
+				}
+				if ( errno != EINTR )
+				{
+					cerr << "Incorrect error set in errno in case of "
+					  "interrupted system call: "<<strerror(errno);
+					return Fail;  
+				}
+			} 
+			else
+			{
+				//wait(0);
+			}
+
+			return Success;
+		</Code>
+	</Test>
+	<!--Test Name="">
+		<Description></Description>
+		<Code></Code>
+	</Test>
+	<Test Name="">
+		<Description></Description>
+		<Code></Code>
+	</Test>
+	<Test Name="">
+		<Description></Description>
+		<Code></Code>
+	</Test>
+	<Test Name="">
+		<Description></Description>
+		<Code></Code>
+	</Test>
+	<Test Name="">
+		<Description></Description>
+		<Code></Code>
+	</Test>
+	<Test Name="">
+		<Description></Description>
+		<Code></Code>
+	</Test>
+	<Test Name="">
+		<Description></Description>
+		<Code></Code>
+	</Test>
+	<Test Name="">
+		<Description></Description>
+		<Code></Code>
+	</Test>
+	<Test Name="">
+		<Description></Description>
+		<Code></Code>
+	</Test-->
+	<FaultSimulation>
+		<Simulate function="kmalloc" condition="" />
+		<Simulate function="copy_to_user" condition="" />
+		<!-- ... -->
+	</FaultSimulation>
+</TestSet>
+
+
