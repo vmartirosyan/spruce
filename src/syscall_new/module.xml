@@ -58,4 +58,5 @@
 	<TestSet Name="rename"/>
 	<TestSet Name="select"/>
 	<TestSet Name="stat"/>
+	<TestSet Name="statfs"/>
 </Module>
