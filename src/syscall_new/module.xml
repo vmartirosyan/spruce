@@ -55,4 +55,5 @@
 	<TestSet Name="read_write"/>
 	<TestSet Name="readdir"/>
 	<TestSet Name="readv_writev"/>
+	<TestSet Name="rename"/>
 </Module>
