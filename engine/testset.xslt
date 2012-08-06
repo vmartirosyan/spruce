@@ -6,6 +6,7 @@
 
 <xsl:template match="/TestSet">
 		<xsl:param name="ModuleName" />
+	<xsl:value-of select="GlobalHeader"/>
 	<xsl:for-each select="Requires">
 #include &lt;<xsl:value-of select="." />>
 	</xsl:for-each> 
@@ -118,6 +119,8 @@ protected:
 	int (<xsl:value-of select="@Name" />Tests::*_tests[<xsl:value-of select="count(Test)"/>])(vector&lt;string>);
 	<xsl:value-of select="/TestSet/Internal"/>
 };
+
+<xsl:value-of select="GlobalFooter"/>
 	</xsl:template>
 
 </xsl:stylesheet>

@@ -220,4 +220,18 @@ enum Status
 	return Success;\
 }\
 
+#define EmptyTestSet(module_name, test_set_name, status, message)\
+class test_set_name##Tests : public Process\
+{\
+public:\
+	virtual TestResultCollection RunTests()\
+	{\
+		cerr << "EmptyTestSet" << endl;\
+		TestResultCollection res;\
+		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name);\
+		res.AddResult(tr);\
+		return res;\
+	}\
+};
+
 #endif /* COMMON_HPP */
