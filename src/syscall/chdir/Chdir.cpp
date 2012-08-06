@@ -20,12 +20,13 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include "chdir.hpp"
+#include "Chdir.hpp"
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <string.h>
+#include <pwd.h>
 #include "File.hpp"
 #include "Directory.hpp"
 
@@ -36,49 +37,24 @@ int Chdir::Main(vector<string>)
 	if ( _mode == Normal )
 	{	
 		switch (_operation)
-		{
-			/*case CHDIR_S_IRWXU:
-				return PermissionsTest(S_IRWXU);
-	        case CHDIR_S_IRUSR:
-				return PermissionsTest(S_IRUSR);
-			case CHDIR_S_IWUSR:
-				return PermissionsTest(S_IWUSR);
-			case CHDIR_S_IXUSR:
-				return PermissionsTest(S_IXUSR);
-				
-			case CHDIR_S_IRWXG:
-				return PermissionsTest(S_IRWXG);
-			case CHDIR_S_IRGRP:
-				return PermissionsTest(S_IRGRP);
-			case CHDIR_S_IWGRP:
-				return PermissionsTest(S_IWGRP);
-			case CHDIR_S_IXGRP:
-				return PermissionsTest(S_IXGRP);
-				
-			case CHDIR_S_IRWXO:
-				return PermissionsTest(S_IRWXO);
-			case CHDIR_S_IROTH:
-				return PermissionsTest(S_IROTH);
-			case CHDIR_S_IWOTH:
-				return PermissionsTest(S_IWOTH);
-			case CHDIR_S_IXOTH:
-				return PermissionsTest(S_IXOTH);
-			case CHDIR_S_ISUID:
-				return PermissionsTest(S_ISUID);*/
-				
+		{			
 		    case CHDIR_ERR_ENAMETOOLONG:
-				return ChdirTooLongPath();
+				return chdirTooLongPath();
+			case CHDIR_ERR_EFAULT:
+				return chdirFault();
 			case CHDIR_ERR_ENOENT:
-				return ChdirFileNotExist();
+				return chdirFileNotExist();
 		    case CHDIR_ERR_ENOTDIR:
-				return ChdirIsNotDirectory();
+				return chdirIsNotDirectory();
 		    case CHDIR_NORMAL_FUNC:
-				return ChdirNormalFunc();	
+				return chdirNormalFunc();	
 			case CHDIR_ERR_ELOOP:
-				return ChdirLoopInSymLink();			
+				return chdirLoopInSymLink();	
+			case CHDIR_ERR_EACCES:
+				return chdirNoAcces();
 			default:
 				cerr << "Unsupported operation.";
-				return Unres;		
+				return Unsupported;		
 		}
 	}
 	cerr << "Test was successful";
@@ -86,8 +62,23 @@ int Chdir::Main(vector<string>)
 }
 
 
+Status Chdir::chdirFault()
+{
+	if(chdir((char *)-1) == 0)
+	{
+		cerr<<"Chdir return 0, but pathname points outside your accessible address space. "<<strerror(errno);
+		return Fail;
+	}
+	if(errno != EFAULT)
+	{
+		
+		cerr << "Incorrect error set in errno. "<<strerror(errno);
+		return Fail;
+	}
+	return Success;	
+}
 
-Status Chdir::ChdirIsNotDirectory()
+Status Chdir::chdirIsNotDirectory()
 {
 	const char *path="chdirTest.txt";
 	const char *pathNotDirectory = "chdirTest.txt/somthingelse" ;
@@ -100,19 +91,14 @@ Status Chdir::ChdirIsNotDirectory()
 				
 		if(ret_chdir == 0)
 		{
-			cerr << "Chdir reruns 0 but it should return -1 when  component of the path prefix is not a directory  "<<strerror(errno);
+			cerr << "chdir reruns 0 but it should return -1 when  component of the path prefix is not a directory  "<<strerror(errno);
 			return Fail;
 		}
-		else 
+		if(errno != ENOTDIR)
 		{
 			
-			if(errno != ENOTDIR)
-			{
-				
-				cerr << "Incorrect error set in errno in case of component of the path prefix is not a directory "<<strerror(errno);
-				return Fail;
-			}
-			
+			cerr << "Incorrect error set in errno in case of component of the path prefix is not a directory "<<strerror(errno);
+			return Fail;
 		}
 		
 		return Success;
@@ -127,7 +113,7 @@ Status Chdir::ChdirIsNotDirectory()
 }
 
 
-Status Chdir::ChdirTooLongPath()
+Status Chdir::chdirTooLongPath()
 {
     int ret_chdir;
 	const char* tooLongPath = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
@@ -136,23 +122,20 @@ Status Chdir::ChdirTooLongPath()
 	
 	if(ret_chdir == 0)
 	{
-		cerr << "Chdir reruns 0 but it should return -1 when the path is too long  "<<strerror(errno);
+		cerr << "chdir reruns 0 but it should return -1 when the path is too long  "<<strerror(errno);
 		return Fail;
 	}
-	else
+	if(errno != ENAMETOOLONG)
 	{
-		if(errno != ENAMETOOLONG)
-		{
-			
-			cerr << "Incorrect error set in errno in case of too long file name "<<strerror(errno);
-			return Fail;
-		}
+		
+		cerr << "Incorrect error set in errno in case of too long file name "<<strerror(errno);
+		return Fail;
 	}
 	return Success;	
 }
 
 
-Status Chdir::ChdirFileNotExist()
+Status Chdir::chdirFileNotExist()
 {
 	
 	const char *path="/notExistPath198/2/7/1/htap";
@@ -161,23 +144,20 @@ Status Chdir::ChdirFileNotExist()
 	ret_chdir = chdir(path);
 	if(ret_chdir == 0)
 	{
-		cerr << "Chdir reruns 0 but it should return -1 when the file is not exist  "<<strerror(errno);
+		cerr << "chdir return 0 but it should return -1 when the file is not exist  "<<strerror(errno);
 		return Fail;
 	}
-	else
+	if(errno != ENOENT)
 	{
-		if(errno != ENOENT)
-		{
-			
-			cerr << "Incorrect error set in errno in case of file does not exists "<<strerror(errno);
-			return Fail;
-		}
+		
+		cerr << "Incorrect error set in errno in case of file does not exists "<<strerror(errno);
+		return Fail;
 	}
 	
 	return Success;
 }
 
-Status Chdir::ChdirNormalFunc()
+Status Chdir::chdirNormalFunc()
 {
 	string dirPath = (string)_cwd + "/chdirTestDirectory";
 	char * cwd;
@@ -191,31 +171,38 @@ Status Chdir::ChdirNormalFunc()
 		ret_chdir = chdir(dirPath.c_str());
 		if(ret_chdir != 0)
 		{
-			cerr << "Chdir does not change the working directory. "<<strerror(errno);
+			cerr << "chdir does not change the working directory. "<<strerror(errno);
 			return Fail;
 		} 
 		
 		
 		cwd = NULL;
 		size = pathconf(".", _PC_PATH_MAX);
-		if ((cwd = (char *)malloc((size_t)size)) != NULL)
-			cwd = getcwd(cwd, (size_t)size);
+		if ((cwd = (char *)malloc((size_t)size)) == NULL)
+		{
+			cerr << "Can not allocate memmory. "<<strerror(errno);
+			return Unres;			
+		}
+		cwd = getcwd(cwd, (size_t)size);
 		if(cwd == NULL)
 		{
-			cerr << "Cannot read changed working directory. "<<strerror(errno);
+			cerr << "Can not read changed working directory. "<<strerror(errno);
+			free(cwd);
 			return Unres;
 		}
 		
 		if(strcmp(cwd, dirPath.c_str()) != 0)
 		{
 			cerr << "Directory change error ";
+			free(cwd);
 			return Fail;
 		}
+		free(cwd);
 		
 		ret_chdir = chdir(_cwd);
 		if(ret_chdir != 0)
 		{
-			cerr << "Chdir does not change the working directory. "<<strerror(errno);
+			cerr << "chdir does not change the working directory. "<<strerror(errno);
 			return Fail;
 		} 
 		return Success;
@@ -230,7 +217,7 @@ Status Chdir::ChdirNormalFunc()
 }
 
 
-Status Chdir::ChdirLoopInSymLink()
+Status Chdir::chdirLoopInSymLink()
 {
 	
 	int ret_chdir = 0;	
@@ -285,59 +272,45 @@ Status Chdir::ChdirLoopInSymLink()
 	}
 	
 }
-/*
-Status Chdir::ChdirNoAcces ()
+
+Status Chdir::chdirNoAcces ()
 {
 	
-    string dirPath = this->_statDir + "/creat_noaccess_dir";
-    string filePath = dirPath + "/creat_file";
+    string dirPath = (string)_cwd + "/chdir_noaccess_dir";
     struct passwd * noBody;
-    int ret_val;
-    struct stat stat_buf;
+    int ret_chdir;
     const int FILE_MODE = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-   
-   
-    if (mkdir (dirPath.c_str(), FILE_MODE) == -1) {
-        cerr<<"mkdir() can't create directory.";
-        return Unres;
-    }
-   
-    StatFile file (filePath);
-   
-    if (0 != chmod (filePath.c_str(), FILE_MODE)) {
-        cerr<<"Can not chmod file";
-        return Unres;
-    }
-    if (0 != chmod (dirPath.c_str(), FILE_MODE)) {
-        cerr<<"can not chmod directory";
-        return Unres;
-    }
-    
-    // Change root to nobody
-    if((noBody = getpwnam("nobody")) == NULL) {
-        cerr<< "Can not set user to nobody";
-        return Unres;
-    }
-    if (0 != setuid(noBody->pw_uid)) {
-        cerr<<"Can not set uid";
-        return Unres;
-    }
-    
-    
-	ret_val = creat(filePath.c_str(), S_IRWXU );
-    
  
-    if (ret_val != -1) {
-           cerr<<"Creat should return -1 when search permission was denied .";
-       return Fail;
-    }
-    
-    if (errno != EACCES) {
-           cerr << "Incorrect error set in errno in case of search permission assces denied "<<strerror(errno);
-
-        return Fail;
-    }
-    return Success;
+ 
+	try
+	{
+		Directory dir(dirPath, FILE_MODE);	
+		
+		// Change root to nobody
+		if((noBody = getpwnam("nobody")) == NULL) {
+			cerr<< "Can not set user to nobody";
+			return Unres;
+		}
+		if (setuid(noBody->pw_uid) != 0) {
+			cerr<<"Can not set uid";
+			return Unres;
+		}
+		
+		ret_chdir = chdir(dirPath.c_str());	 
+		if (ret_chdir != -1) {
+			cerr<<"chdir should return -1 when search permission was denied .";
+			return Fail;
+		}
+		
+		if (errno != EACCES) {
+			cerr << "Incorrect error set in errno in case of search permission assces denied "<<strerror(errno);
+			return Fail;
+		}
+		return Success;
+	}
+	catch (Exception ex)
+	{
+		cerr << ex.GetMessage();
+		return Unres;
+	}	
 }
-	
-*/

@@ -25,7 +25,10 @@
 
 #include "common.hpp"
 #include "process.hpp"
-#include "operations.hpp"
+//#include "operations.hpp"
+#include <sstream>
+#include <fstream>
+using namespace std;
 
 class TestResult : public ProcessResult
 {
@@ -59,15 +62,16 @@ public:
 		_arguments(tr._arguments) {}
 	 	 	 
 	virtual string ToXML();
+	virtual string OperationToString()
+	{
+		return "Unknown";
+		//return Operation::ToString((Operations)_operation);
+	}
 protected:
 	int _operation;
 	string _stroperation;
 	string _arguments;
-	string StatusToString();
-	virtual string OperationToString()
-	{
-		return Operation::ToString((Operations)_operation);
-	}
+
 };
 
 class TestResultCollection 
@@ -82,12 +86,24 @@ public:
 	{
 		_results.push_back(result);
 	}
+	void Merge(TestResultCollection results)
+	{
+		for ( unsigned int i = 0; i < results._results.size(); )
+		{
+			_results.push_back(results._results[i]);
+			// Erase the original pointer so that the destructors do not overlap
+			results._results.erase(results._results.begin() + i);
+		}
+	}
 	string ToXML()
 	{
 		string result = "";
 		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
-			result += (*i)->ToXML();		
-			
+		{
+			//cerr << (*i)->ToXML() << endl;
+			result += (*i)->ToXML();			
+		}
+		
 		return result;
 	}
 	Status GetStatus()
@@ -96,6 +112,10 @@ public:
 			if ( (*i)->GetStatus() != Success )
 				return Fail;
 		return Success;
+	}
+	string GetOutput() const
+	{
+		return "asdf";
 	}
 	~TestResultCollection()
 	{

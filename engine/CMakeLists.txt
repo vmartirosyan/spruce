@@ -6,6 +6,6 @@ add_executable(engine engine.cpp ${CMAKE_SOURCE_DIR}/src/utils/process.cpp )
    
 add_custom_target(Engine ALL 
 				COMMENT "Generating engine"
-				DEPENDS engine.cpp)
+				DEPENDS engine.cpp module.xslt testset.xslt)
 
 add_dependencies(utils Engine)

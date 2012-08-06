@@ -37,9 +37,12 @@
 #include <platform_config.hpp>
 
 // Karen
-//#include "Mount_Umount.hpp"
+#include "mount_umount/Mount_Umount.hpp"
 // Gio
-#include "chdir/chdir.hpp"
+#include "chdir/Chdir.hpp"
+#include "mkdir_rmdir/Mkdir_rmdir.hpp"
+#include "getcwd/Getcwd.hpp"
+#include "chroot/Chroot.hpp"
 // Vahram
 #include "utime/Utime.hpp"
 #include "access/Access.hpp"
@@ -54,12 +57,18 @@
 #include "fchmod/Fchmod.hpp"
 #include "sync/Sync.hpp"
 #include "fchown/Fchown.hpp"
+#include "lchown/Lchown.hpp"
 // Ruzanna
 
 // Ani
 
 int main(int argc, char ** argv)
 {
+	if ( argc < 2 )
+	{
+		cerr << "Usage " << argv[0] << " <output_file>" << endl;
+		return -1;
+	}
 	srand(time(0));
 	TestCollection tests;
 	try
@@ -99,9 +108,12 @@ int main(int argc, char ** argv)
 		Configuration<Xattr> xattrConf(INSTALL_PREFIX"/share/spruce/config/xattr.conf");
 		
 		// Karen
-		//Configuration<Mount_Umount> mount_umountConf(INSTALL_PREFIX"/share/spruce/config/mount_umount.conf");
+		Configuration<Mount_Umount> mount_umountConf(INSTALL_PREFIX"/share/spruce/config/mount_umount.conf");
 		// Gio
-		Configuration<Chdir> chdirConf(INSTALL_PREFIX"/share/spruce/config/chdir.conf");			
+		Configuration<Chdir> chdirConf(INSTALL_PREFIX"/share/spruce/config/chdir.conf");		
+		Configuration<Getcwd> getcwdConf(INSTALL_PREFIX"/share/spruce/config/getcwd.conf");	
+		Configuration<Mkdir_rmdir> mkdir_rmdirConf(INSTALL_PREFIX"/share/spruce/config/mkdir_rmdir.conf");	
+		Configuration<Chroot> chrootConf(INSTALL_PREFIX"/share/spruce/config/chroot.conf");		
 		// Vahram
 		Configuration<UtimeTest> utimeConf(INSTALL_PREFIX"/share/spruce/config/utime.conf");
 		Configuration<AccessTest> accessConf(INSTALL_PREFIX"/share/spruce/config/access.conf");
@@ -116,6 +128,7 @@ int main(int argc, char ** argv)
 			Configuration<Fchmod> fchmodConf(INSTALL_PREFIX"/share/spruce/config/fchmod.conf");
 			Configuration<Sync> syncConf(INSTALL_PREFIX"/share/spruce/config/sync.conf");		
 			Configuration<Fchown> fchownConf(INSTALL_PREFIX"/share/spruce/config/fchown.conf");		
+			Configuration<Lchown> lchownConf(INSTALL_PREFIX"/share/spruce/config/lchown.conf");		
 		// Ruzanna
 		
 		// Ani
@@ -154,9 +167,12 @@ int main(int argc, char ** argv)
 		TestCollection xattrTests = xattrConf.Read();
 		
 		// Karen
-		//TestCollection mount_umountTests = mount_umountConf.Read();
+		TestCollection mount_umountTests = mount_umountConf.Read();
 		// Gio
-		TestCollection chdirTests = chdirConf.Read();		
+		TestCollection chdirTests = chdirConf.Read();
+		TestCollection getcwdTests = getcwdConf.Read();
+		TestCollection mkdir_rmdirTests = mkdir_rmdirConf.Read();		
+		TestCollection chrootTests = chrootConf.Read();		
 		// Vahram
 		TestCollection utimeTests = utimeConf.Read();
 		TestCollection accessTests = accessConf.Read();
@@ -171,6 +187,7 @@ int main(int argc, char ** argv)
 		TestCollection fchmodTests = fchmodConf.Read();
 		TestCollection syncTests = syncConf.Read();
 		TestCollection fchownTests = fchownConf.Read();
+		TestCollection lchownTests = lchownConf.Read();
 		// Ruzanna
 		
 		// Ani
@@ -210,9 +227,12 @@ int main(int argc, char ** argv)
 		tests.Merge(xattrTests);
 		
 		// Karen
-		//tests.Merge(mount_umountTests);		
+		tests.Merge(mount_umountTests);		
 		// Gio
-		tests.Merge(chdirTests);		
+		tests.Merge(chdirTests);	
+		tests.Merge(getcwdTests);	
+		tests.Merge(mkdir_rmdirTests);		
+		tests.Merge(chrootTests);		
 		// Vahram
 		tests.Merge(utimeTests);
 		tests.Merge(accessTests);
@@ -227,14 +247,37 @@ int main(int argc, char ** argv)
 		tests.Merge(fchmodTests);
 		tests.Merge(syncTests);
 		tests.Merge(fchownTests);
+		tests.Merge(lchownTests);
 		// Ruzanna
 		
 		// Ani
 		
 		
-		TestResultCollection res = tests.Run();
-	
-		cerr << "<Module Name=\"Syscall\">\n" << res.ToXML() << "</Module>" << endl;
+		TestResultCollection res = tests.Run();		
+		
+		string XML = res.ToXML();
+		// unsigned int XMLLength = XML.size();
+		
+		
+		
+		XML = "\n<Module Name=\"Syscall\">\n\t" + XML + "\n</Module>\n";
+		
+		ofstream of(argv[1], ios_base::app);				
+		
+		of << XML;
+		
+		of.close();			
+		
+		/*for ( unsigned int i = 0; i < XMLLength / 1000 + 1; ++i )
+		{
+			
+			cerr << XML.substr(i*1000, 1000);
+		}*/
+		
+		//cout << XML << endl;
+		
+		//cerr << "<Module Name=\"Syscall\">\n" << res.ToXML() << "</Module>" << endl;
+			
 		
 		return res.GetStatus();
 	}

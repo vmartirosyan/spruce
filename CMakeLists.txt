@@ -9,12 +9,16 @@ IF (NOT CMAKE_INSTALL_PREFIX)
 ENDIF (NOT CMAKE_INSTALL_PREFIX)
 
 IF (NOT CMAKE_CXX_FLAGS)
-	SET( CMAKE_CXX_FLAGS "-Wall -pedantic")
+	SET( CMAKE_CXX_FLAGS "-Wall -pedantic -Wno-variadic-macros")
 ENDIF (NOT CMAKE_CXX_FLAGS)
 
 IF (NOT TEST_TIMEOUT)
-	SET ( TEST_TIMEOUT 15 )
+	SET ( TEST_TIMEOUT 2 )
 ENDIF (NOT TEST_TIMEOUT)
+
+IF (NOT FIFO_PATH)
+	SET ( FIFO_PATH "/tmp/spruce_fifo" )
+ENDIF (NOT FIFO_PATH)
 
 SET (LIBRARY_OUTPUT_PATH
  ${PROJECT_BINARY_DIR}/lib
@@ -44,9 +48,9 @@ add_subdirectory (bin)
 add_subdirectory (include)
 add_subdirectory (lib)
 add_subdirectory (src)
-add_subdirectory (tests)
-add_subdirectory (config)
-add_subdirectory (doc)
+#add_subdirectory (tests)
+#add_subdirectory (config)
+#add_subdirectory (doc)
 
 
 # Uninstall the system
@@ -57,3 +61,5 @@ configure_file(
 
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+    
+

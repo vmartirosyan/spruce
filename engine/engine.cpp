@@ -40,7 +40,7 @@ int main(int argc, char ** argv)
 		return 1;
 	}
 	
-	cout << "Processing folder " << argv[1] << endl;
+	//cout << "Processing folder " << argv[1] << endl;
 	
 	UnixCommand find("find");
 	
@@ -85,35 +85,37 @@ int main(int argc, char ** argv)
 		if ( read(fd, read_buf, buf.st_size) == -1 )
 		{
 			cerr << "Canot read file " << file << ". Error: " << strerror(errno) << endl;
+			close(fd);
 			continue;
 		}
+		close(fd);
 		read_buf[buf.st_size] = 0;
 		
 		string contents(read_buf);
 			
-		
-		
-		const int CODE_TAGS_NUM = 2;
-		string code_tags[CODE_TAGS_NUM];
-		code_tags[0] = "Main";
-		code_tags[1] = "Finally";
+		const int CODE_TAGS_NUM = 4;
+		string code_tags[CODE_TAGS_NUM];		
+		code_tags[0] = "Code";
+		code_tags[1] = "Header";
+		code_tags[2] = "Footer";
+		code_tags[3] = "Internal";
 		for(int i = 0; i < CODE_TAGS_NUM; i++)
 		{
-			int pos1 = 0, pos2;
+			unsigned int pos1 = 0, pos2;	
+			//cerr << "Processing tag " << code_tags[i] << endl;
 			do
 			{
-				pos1 = contents.find("<"+code_tags[i]+">", pos1);
+				pos1 = contents.find("<" + code_tags[i]+ ">", pos1);
 				if ( pos1 == string::npos )
 					break;
+				pos1 += 6;
+				pos2 = contents.find("</" + code_tags[i] + ">", pos1);
 				
-				pos1 += code_tags[i].length() + 2;
-				pos2 = contents.find("</"+code_tags[i]+">", pos1);
-
 				//cout << "pos1 " << pos1 << "\tpos2 " << pos2 << endl;
 				
 				string part = contents.substr(pos1, pos2-pos1);
-			
-				int pos = 0;
+				
+				unsigned int pos = 0;
 				while ( true )
 				{
 					pos = part.find("&", pos + 1);
@@ -164,8 +166,6 @@ int main(int argc, char ** argv)
 		cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;
 		return 3;
 	}
-	
-	//cerr << res->GetOutput() << endl;
 	
 	if ( res->GetStatus() != Success )
 	{

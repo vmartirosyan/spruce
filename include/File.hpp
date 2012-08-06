@@ -2,8 +2,9 @@
 //      
 //		Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
-//      Author:
+//      Authors:
 //      	Narek Saribekyan <narek.saribekyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -45,22 +46,44 @@ using std::endl;
 class File
 {	
 	public:
+		File() {}
 		explicit File(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_RDWR | O_CREAT) : 
 		_pathname(pathname),
 		_mode(mode),
 		_flags(flags)
-		{	
+		{
+			
+			Open(pathname, mode, flags);		
+			
+		}
+		int Open(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_RDWR | O_CREAT)
+		{
+			_pathname = pathname;
+			_mode = mode;
+			_flags = flags;
 			// Remove the file first
-			if ( _flags & O_CREAT )
+			if ( flags & O_CREAT )
+			{
 				if ( access(pathname.c_str(), F_OK ) == 0 )
+				{
 					if ( unlink(pathname.c_str())  == -1 )
-						throw Exception("File " + _pathname + " exists but cannot be removed. Error : " + strerror(errno) );
-			_fd = open(pathname.c_str(), _flags, _mode);
+					{
+						throw Exception("File " + pathname + " exists but cannot be removed. Error : " + strerror(errno) + "\n");
+					}
+				}
+				else //clear the errno variable...
+				{
+					errno = 0;
+				}
+			}
+				
+			_fd = open(pathname.c_str(), flags, mode);
+			
 			if (_fd == -1)
 			{								
-				throw Exception("Cannot create file " + _pathname + 
-				". Error : " + (string)strerror(errno));
+				throw Exception("Cannot create file " + _pathname + ". Error : " + (string)strerror(errno) + (string)"\n");
 			}
+			return _fd;
 		}
 		~File()
 		{
@@ -70,8 +93,7 @@ class File
 				
 				if ( (_flags & O_CREAT) &&  (unlink(_pathname.c_str()) != 0) )
 				{
-					throw Exception("Cannot delete file " + _pathname + 
-					". Error : " + (string)strerror(errno));
+					throw Exception("Cannot delete file " + _pathname + ". Error : " + (string)strerror(errno) + (string)"\n");
 				}
 				
 			}

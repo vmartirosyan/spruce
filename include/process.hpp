@@ -37,15 +37,34 @@ enum ProcessMode
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <fstream>
+using namespace std;
 
 class ProcessResult
 {
 public:
 	ProcessResult(int s, string output):
-		_status(s),	_output(output) {}
+		_status(s),	_output(output) 
+	{
+		/*if ( _output.size() > 1000 )
+		{
+			ofstream of("/tmp/tests", ios_base::app);
+	
+			of << "Process result: output : " << _output << endl; 
+		
+			of.close();
+		}*/
+	}
 								
-	ProcessResult(ProcessResult const & pr) :
-		_status(pr._status), _output(pr._output) {}
+	ProcessResult(const ProcessResult & pr) :
+		_status(pr._status), _output(pr._output) 
+	{
+		/*ofstream of("/tmp/tests", ios_base::app);
+	
+		of << "copy: output : " << _output << endl; 
+		
+		of.close();*/
+	}
 	
 	virtual ~ProcessResult();
 	
@@ -56,20 +75,34 @@ public:
 	string GetOutput() const
 	{
 		return _output;
-	}		
+	}
+		
+	
 protected:
 	int _status;
 	string _output;
+	string StatusToString();
+	
 };
 
 class Process
 {
 public:	
 	virtual ProcessResult * Execute(vector<string> args = vector<string>());
+	virtual ProcessResult * Execute( int (Process::* func) (vector<string>), vector<string> args = vector<string>() );
 	
-	virtual ~Process() {}
+	Process()
+	{
+		
+	}
+	
+	virtual ~Process() 
+	{
+		
+	}
 protected:
-	virtual int Main(vector<string> args) = 0;
+	static int Level;
+	virtual int Main(vector<string> args) { cerr << "Main not imeplemented."; return Unsupported; }
 };
 
 class BackgroundProcess : public Process

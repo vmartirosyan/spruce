@@ -1,4 +1,4 @@
-//      chdir.hpp
+//      Chdir.hpp
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
@@ -27,18 +27,13 @@
 // Operations
 /*enum ChdirOperations
 {
+	CHDIR_NORMAL_FUNC,
 	CHDIR_ERR_EACCES,
 	CHDIR_ERR_EFAULT,
-	CHDIR_ERR_EIO,
 	CHDIR_ERR_ELOOP,
 	CHDIR_ERR_ENAMETOOLONG,
 	CHDIR_ERR_ENOENT,
-	CHDIR_ERR_ENOMEM,
-	CHDIR_ERR_ENOTDIR,
-	
-	CHDIR_ERR_EBADF,
-	CHDIR_NORMAL_FUNC
-
+	CHDIR_ERR_ENOTDIR
 };*/
 
 class Chdir : public SyscallTest
@@ -54,12 +49,17 @@ public:
 		if ((_cwd = (char *)malloc((size_t)size)) != NULL)
 			_cwd = getcwd(_cwd, (size_t)size);
 	}
-	virtual ~Chdir() {}	
-	Status ChdirTooLongPath();
-	Status ChdirFileNotExist();
-	Status ChdirIsNotDirectory();
-	Status ChdirNormalFunc();
-	Status ChdirLoopInSymLink();
+	virtual ~Chdir() 
+	{
+		free(_cwd);
+	}	
+	Status chdirTooLongPath();
+	Status chdirFileNotExist();
+	Status chdirIsNotDirectory();
+	Status chdirNormalFunc();
+	Status chdirLoopInSymLink();
+	Status chdirNoAcces();
+	Status chdirFault();
 
 protected:
 	virtual int Main(vector<string> args);	

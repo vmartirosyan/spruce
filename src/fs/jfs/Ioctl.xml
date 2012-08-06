@@ -5,53 +5,120 @@
 				<Header>sys/ioctl.h</Header>
 				<Header>fcntl.h</Header>
 				<Header>linux/fs.h</Header>
+				<Header>pwd.h</Header>
 			</Requires>
 		<Code>
-			int set_flags = 1; // We may NOT clear the extents flag...
-			int get_flags = 0;
-			
-			// Backup the old values just in case
-			int old_flags;
-			if ( ioctl(fd, FS_IOC_GETFLAGS, &old_flags) == -1 )
-			{
-				cerr << "Error backing up old values. " << strerror(errno);
-				return Unres;
-			}
-			
-			// Set our testing flag values
-			if ( ioctl(fd, FS_IOC_SETFLAGS, &set_flags) == -1 )
-			{
-				cerr << "Error setting new flag values. " << strerror(errno);
-				return Unres;
-			}
-			
-			// Get the flags back
-			if ( ioctl(fd, FS_IOC_GETFLAGS, &get_flags) == -1 )
-			{
-				cerr << "Error getting flag values back. " << strerror(errno);
-				return Unres;
-			}
-			
-			// Restore the original flags
-			if ( ioctl(fd, FS_IOC_SETFLAGS, &old_flags) == -1 )
-			{
-				cerr << "Error restoring old flag values. " << strerror(errno);
-				return Unres;
-			}
-			
-			// Compare them
-			if ( get_flags != set_flags )
-			{
-				cerr << "Set and Get flags mismatch";
-				return Fail;
-			}
-			else
-			{
-				cerr << "Set and Get flags match";
-				return Success;
-			}
+			<Main>
+				//sleep(10);
+				int set_flags = 1; // We may NOT clear the extents flag...
+				int get_flags = 0;
+				
+				// Backup the old values just in case
+				int old_flags;
+				if ( ioctl(fd, FS_IOC_GETFLAGS, &old_flags) == -1 )
+				{
+					cerr << "Error backing up old values. " << strerror(errno);
+					return Unres;
+				}
+				
+				// Set our testing flag values
+				if ( ioctl(fd, FS_IOC_SETFLAGS, &set_flags) == -1 )
+				{
+					cerr << "Error setting new flag values. " << strerror(errno);
+					return Unres;
+				}
+				
+				// Get the flags back
+				if ( ioctl(fd, FS_IOC_GETFLAGS, &get_flags) == -1 )
+				{
+					cerr << "Error getting flag values back. " << strerror(errno);
+					return Unres;
+				}
+				
+				// Restore the original flags
+				if ( ioctl(fd, FS_IOC_SETFLAGS, &old_flags) == -1 )
+				{
+					cerr << "Error restoring old flag values. " << strerror(errno);
+					return Unres;
+				}
+				
+				// Compare them
+				if ( get_flags != set_flags )
+				{
+					cerr << "Set and Get flags mismatch";
+					return Fail;
+				}
+				else
+				{
+					cerr << "Set and Get flags match";
+					return Success;
+				}
+			</Main>
+			<Finally>
+			</Finally>
 		</Code>
 	</Test>
+	<Test Name="ClearExtentsFlags">
+	<Description></Description>
+	<Requires>
+	</Requires>
+	<Code>
+		<Main>
+			return Unsupported;
+		</Main>
+		<Finally>
+		</Finally>
+	</Code>
+	</Test>
+	<Test Name="SetFlagsNotOwner">
+		<Description></Description>
+		<Requires>
+		</Requires>
+		<Code>
+			<Main>
+				int flags = 1;
+				int result = 0;
+				
+				struct passwd* Nobody = getpwnam("nobody");
+				if ( Nobody == NULL )
+				{
+					cerr << "Cannot obtain information about the 'nobody' user. " << strerror(errno);
+					return Unres;
+				}
+				
+				if (  seteuid( Nobody->pw_uid ) == -1 )
+				{
+					cerr << "Cannot change the user ID: " <<  strerror(errno);
+					return Unres;
+				}
+				
+				// Try to set the non-permitted flag
+				
+				result = ioctl(fd, FS_IOC_SETFLAGS, &flags );
+				
+				// Restore root user
+				seteuid(0);
+				
+				if ( result == 0 )
+				{
+					cerr << "It was permitted to set the flag not being file owner!. ";
+					return Fail;
+				}
+				else if ( result == -1 && errno != EACCES )
+				{
+					cerr << "Error while setting flags. " << strerror(errno);
+					return Fail;
+				}
+				else 
+				{
+					cerr << "It was NOT permitted to set flag not being file owner!. " << strerror(errno);
+					return Success;
+				}
+			</Main>
+			<Finally>
+			</Finally>
+		</Code>
+	</Test>	
 	<Test Name="Unsupported">
 		<Description>Try to perform an unsupported operation.</Description>
 			<Requires>
@@ -60,16 +127,20 @@
 				<Header>linux/fs.h</Header>
 			</Requires>
 		<Code>
-			if ( ( ioctl(fd, -100, 0) == -1 ) && ( errno == ENOTTY ) )
-			{
-				cerr << "Unsupported command was processed successfully. " << strerror(errno);
-				return Success;
-			}
-			else
-			{
-				cerr << "Error on unsupported command. " << strerror(errno);
-				return Fail;
-			}
+			<Main>
+				if ( ( ioctl(fd, -100, 0) == -1 ) && ( errno == ENOTTY ) )
+				{
+					cerr << "Unsupported command was processed successfully. " << strerror(errno);
+					return Success;
+				}
+				else
+				{
+					cerr << "Error on unsupported command. " << strerror(errno);
+					return Fail;
+				}
+			</Main>
+			<Finally>
+			</Finally>
 		</Code>
 	</Test>
 </TestSet>
