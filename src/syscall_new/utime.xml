@@ -23,6 +23,8 @@
 
 <TestSet Name="utime">	
 	<Requires>utime.h</Requires>
+	<Requires>limits.h</Requires>
+	<Requires>pwd.h</Requires>
 	<Test Name="UtimeNormalNotNull" FaultSimulationReady="true">
 		<Description>The  utime()  system  call changes the access and modification times of the inode specified by filename to the actime  and  modtime  fields  of times respectively.</Description>
 		<File count="1"/>

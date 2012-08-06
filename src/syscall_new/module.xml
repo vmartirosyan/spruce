@@ -65,4 +65,5 @@
 	<TestSet Name="unlink"/>
 	<TestSet Name="unlinkat"/>
 	<TestSet Name="utime"/>
+	<TestSet Name="xattr"/>
 </Module>
