@@ -25,5 +25,6 @@
 
 #define INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 #define TEST_TIMEOUT ${TEST_TIMEOUT}
+#define FIFO_PATH "${FIFO_PATH}"
 
 #endif

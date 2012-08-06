@@ -27,23 +27,49 @@
 #include <sys/wait.h>
 #include <algorithm>
 
-char * StatusMessages[] = {
-	(char * )"Success",
-	(char * )"Shallow",
-	(char * )"Failed",
-	(char * )"Unresolved",
-	(char * )"Fatal",
-	(char * )"Timeout",
-	(char * )"Signaled",
-	(char * )"Unsupported",
-	(char * )"Unknown"
-	};
+
+
+	
+bool Alarmed = false;
+
+void  SignalHandler(int signum)
+{
+	switch (signum)
+	{
+		case SIGALRM:			
+			Alarmed = true;
+			break;
+	}
+}
 	
 ProcessResult * Test::Execute(vector<string> args)
 {
+	struct sigaction sa;
+	bzero(&sa, sizeof(sa));
+	
+	sa.sa_handler = SignalHandler;
+	if ( sigaction(SIGALRM, &sa, NULL) == -1 )
+	{	
+		return new ProcessResult(Unresolved, "Cannot set signal handler. " + (string)strerror(errno));
+	}
+	
+	alarm(TEST_TIMEOUT);
+	
 	ProcessResult * p_res = Process::Execute(args);
 	
-	TestResult * t_res = new TestResult(*p_res, _operation, _args);
+	alarm(0);
+	
+	TestResult * t_res = NULL;
+	
+	if ( Alarmed )
+	{
+		Alarmed = false;
+		t_res = new TestResult(ProcessResult(Timeout, "Timeout"), _operation, _args);
+	}
+	else
+	{
+		t_res = new TestResult(*p_res, _operation, _args);
+	}
 	
 	delete p_res;
 	
@@ -64,11 +90,14 @@ void TestCollection::Merge(TestCollection & tc)
 TestResultCollection TestCollection::Run()
 {
 	TestResultCollection Results;
+	
 		
 	for ( unsigned int index = 0 ; index < _tests.size(); ++index)
 	{
 		TestResult * res = (TestResult *)_tests[index]->Execute();
 		Results.AddResult( res );
+		
+
 		
 		// If Fatal error has rised quit!
 		if ( res->GetStatus() == Fatal )
@@ -80,19 +109,14 @@ TestResultCollection TestCollection::Run()
 	return Results;
 }
 
-string TestResult::StatusToString()
-{ 
-	if ( _status >= Success && _status <= Unknown )
-		return (string)StatusMessages[_status];
-	else
-		return (string)StatusMessages[Unknown];
-}
+
 
 string TestResult::ToXML()
 {
 	// Just for debugging
 	// return OperationToString() + " : " + StatusToString() + " : " + _output + " : Arguments: " + _arguments;
 	// The real XML...
+	
 	return "\n\t<Operation>" + OperationToString() + "</Operation>\n\t<Status>" + StatusToString() + "</Status>\n\t<Output>" +
 		_output +  "</Output>\n\t<Arguments>" + _arguments + "</Arguments>";
 	

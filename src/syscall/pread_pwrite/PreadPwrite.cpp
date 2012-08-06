@@ -361,6 +361,7 @@ Status PreadPwrite::PreadIsdirErrorFunc()
 	char buf[BUF_SIZE];
 	
 	ssize_t status = pread(fd, buf, BYTES_COUNT, OFFSET);
+	close(fd)
 	if (errno != EISDIR || status != -1)
 	{
 		cerr << "Expecting to get EISDIR error";

@@ -22,46 +22,47 @@
 
 #include <process.hpp>
 #include <signal.h>
+#include <fstream>
+using namespace std;
+
+char * StatusMessages[] = {
+	(char * )"Success",
+	(char * )"Shallow",
+	(char * )"Failed",
+	(char * )"Unresolved",
+	(char * )"Fatal",
+	(char * )"Timeout",
+	(char * )"Signaled",
+	(char * )"Unsupported",
+	(char * )"Unknown"
+	};
+	
+string ProcessResult::StatusToString()
+{ 
+	if ( _status >= Success && _status <= Unknown )
+		return (string)StatusMessages[_status];
+	else
+		return (string)StatusMessages[Unknown];
+}
+
+int Process::Level = 0;
 
 ProcessResult::~ProcessResult()
 {
 }
 
-int SignalHandler(int signum)
-{
-	switch (signum)
-	{
-		case SIGALRM:
-			_exit(Timeout);
-	}
-}
-
-#include <fstream>
 ProcessResult * Process::Execute(vector<string> args)
 {
-	// Duplicate the stdin/stdout/stderr descriptors
-	int _stdin = dup(0);
-	int _stdout = dup(1);
-	int _stderr = dup(2);
+	return Execute(&Process::Main, args);
+}
+
+ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<string> args)
+{
 	
-	// Close the original descriptors
-	close(0);
-	close(1);
-	close(2);
-	
-	// Create the pipe to be used between the parent and child processes
 	int fds[2];
-	// if the pipe could not be created then it's a fatal!
 	if ( pipe(fds) == -1 )
 	{
-		return new ProcessResult(Unres, "Cannot create pipe. " + (string)strerror(errno));
-	}
-	
-	// Create the error stream
-	int error_stream = dup(fds[1]);
-	if ( error_stream == -1 )
-	{
-		return new ProcessResult(Unres, "Cannot create error stream. " + (string)strerror(errno));		
+		return new ProcessResult(Unresolved, "Cannot create pipe. " + (string)strerror(errno));		
 	}
 	
 	// Create the child process
@@ -69,48 +70,75 @@ ProcessResult * Process::Execute(vector<string> args)
 	
 	if ( ChildId == -1 )
 	{
-		return new ProcessResult(Unres, "Cannot create child process. " + (string)strerror(errno));		
+		return new ProcessResult(Unresolved, "Cannot create child process. " + (string)strerror(errno));		
 	}
 	
 	if ( ChildId == 0 ) // Child process. Run the Main method
 	{
-		alarm(TEST_TIMEOUT);
+		close(1);
+		close(2);
+		close(fds[0]);
+		int _stdout = -1, _stderr = -1;
+		if ( (_stdout = dup(fds[1])) != 1 )
+		{
+			cerr << "Child: cannot open pipe for writing. Error: " << strerror(errno);
+			_exit(Unresolved);
+		}
+		if ( (_stderr = dup(1)) != 2 )
+		{
+			cerr << "Child: cannot create error stream. Error: " << strerror(errno);
+			close(1);
+			_exit(Unresolved);
+		}
 		cerr << " ";
-		_exit(Main(args));
+		int status = (*this.*func)(args);
+		close(1);
+		close(2);
+		close(fds[1]);
+		_exit(status);
 	}
 	
 	// Parent process...
-	int status;
-	if ( waitpid(ChildId, &status, 0) == -1)
-	{
-		return new ProcessResult(Unres, "Cannot wait for child process. " + (string)strerror(errno));
-	}
-
-	// Probably normal end of test. Let's collect the result;
-	string Output = "";
-	char buf[10000];
-	int bytes;
-	while ( true )
-	{
-		bytes = read( fds[0], buf, 9999 );		
-		buf[bytes] = 0;		
-		Output += (string)buf;
-				
-		if (bytes != 9999)
-			break;
-	}
-	
-	// Restore the stdin, stdout and stderr descriptors
-	close(fds[0]);
 	close(fds[1]);
-	close(error_stream);
-	dup(_stdin);
-	dup(_stdout);
-	dup(_stderr);
-	close(_stdin);
-	close(_stdout);
-	close(_stderr);
 	
+	int status;
+	int wait_res = waitpid(ChildId, &status, 0);
+	//cerr << "wait_res=" << wait_res << endl;
+	//cerr << "Error: " << strerror(errno) << endl;
+			
+	// In case of normal end of process. Let's collect the result;
+	string Output = "";
+	if ( wait_res != -1 )
+	{
+				
+		char buf[1000];
+		int bytes;
+		while ( true )
+		{
+			bytes = read( fds[0], buf, 999 );
+			//cerr << "bytes = " << bytes << endl;
+			if ( bytes == -1 )
+				break;
+			buf[bytes] = 0;
+		
+			Output += (string)buf;
+			
+			
+			
+			if (bytes < 999)
+				break;
+		}
+	}
+	else
+	{
+		// Kill the child. Just in case.
+		kill(ChildId, SIGKILL);
+	}
+	
+	
+	close(fds[0]);
+	
+
 	return new ProcessResult(WEXITSTATUS(status), Output);
 }
 
@@ -121,7 +149,7 @@ ProcessResult * BackgroundProcess::Execute(vector<string> args)
 	
 	if ( ChildId == -1 )
 	{
-		return new ProcessResult(Unres, "Cannot create child process. " + (string)strerror(errno));		
+		return new ProcessResult(Unresolved, "Cannot create child process. " + (string)strerror(errno));		
 	}
 	
 	if ( ChildId == 0 ) // Child process. Run the Main method
@@ -134,6 +162,10 @@ ProcessResult * BackgroundProcess::Execute(vector<string> args)
 		int in_stream = open("/dev/zero", O_RDONLY);		
 		int out_stream = open("/dev/null", O_WRONLY);		
 		int err_stream = open("/dev/null", O_WRONLY);
+		if ( in_stream == -1 || out_stream == -1 || err_stream == -1 )
+		{
+			cerr << "Error opening dummy streams. Error : " << strerror(errno);			
+		}
 		
 		_exit(Main(args));
 	}

@@ -60,14 +60,16 @@ int main(int argc, char ** argv)
 		return Usage(argv);
 	cout << "++ Generating operations header file..." << endl;
 	
-	cout << "Args: " << argv[1] << "\t" << argv[2] << endl;
-	
 	Operations.push_back("UnknownOperation");
 	
 	//rename("/home/vmartirosyan/workspace/build/include/operations.hpp.old", "/home/vmartirosyan/workspace/build/include/operations.hpp");
 	
+	
+	
 	// Find all the header files in the source tree
 	vector<string> files = GetHeaderFiles(static_cast<string>(argv[1]));
+	
+	//cout << "Args: " << argv[1] << "\t" << argv[2] << endl;
 	
 	// Procses each of them making the original enums comments 
 	// Also collect all the operation enum values into the Operations vector
@@ -106,10 +108,15 @@ vector<string> GetHeaderFiles(const string & root)
 	
 	ProcessResult * res = NULL;
 	
+	
 	if ( ( res = cmd.Execute(args) ) )
 	{
+		
 		string file;
 		string FindOutput = res->GetOutput();
+		
+		//cerr << "FindOutput : " << FindOutput << endl;
+		//_exit(-1);
 		
 		stringstream s(FindOutput);
 		
@@ -143,7 +150,7 @@ void ProcessFile(string file, string source, string dest)
 {
 	// TODO: mkdir output directory
 	size_t BaseNameEnd = (dest + file).rfind("/");
-	if ( BaseNameEnd > (dest + file).size() )
+	if ( BaseNameEnd == string::npos || BaseNameEnd > (dest + file).size() )
 	{
 		cerr << "Cannot obtain directory name of file " << file << endl;
 		return;

@@ -52,12 +52,12 @@ public:
 	}
 	virtual ~GetDentsTest() 
 	{
-		vector<string> arguments;
+		/*vector<string> arguments;
 		arguments.push_back(directory);
 		arguments.push_back("-rf");
 		
 		UnixCommand command("rm");
-		auto_ptr<ProcessResult> result(command.Execute(arguments));
+		auto_ptr<ProcessResult> result(command.Execute(arguments));*/
 	}
 	
 	Status GetDentsEbadfErrorTest();

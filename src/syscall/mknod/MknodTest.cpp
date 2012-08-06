@@ -97,6 +97,7 @@ Status MknodTest:: MknodTestPathExistsFunc()
 		cerr << "Error in opening file: "<<strerror(errno);
 		return Unres;
 	  }
+	  close(fd);
 	  if ( mknod( filename, Test[i].mode , 0 ) != -1 )
 	  {
 		cerr << "For" << Test[i].msg.c_str() << " mknod returns 0 in case of File exists. ";
@@ -286,7 +287,7 @@ Status MknodTest :: MknodTestNotDirFunc()
 		cerr << "Error in opening and creating file: "<<strerror(errno);
 		return Unres;
 	}
-	
+	close(fd);
 	if ( mknod( pathname.c_str(), S_IFREG | 0777, 0 ) != -1 )
 	{
 		cerr << "returns 0 in case of not directory in the pathname "<<strerror(errno);
@@ -449,8 +450,7 @@ Status MknodTest :: MknodTestNormalCase1Func()
 		return Fail;
 	}
 	
-#warning What is this????
-	if ( (st_buf.st_mode & S_IFREG | 0777) == 0 )
+	if ( (st_buf.st_mode & (S_IFREG | 0777)) == 0 )
 	{
 		cerr << "Mknod failed. ";
 		return Fail;

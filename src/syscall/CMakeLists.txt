@@ -42,9 +42,12 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/readlink/Readlink.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/xattr/Xattr.cpp
 						# Karen
-						#${CMAKE_CURRENT_SOURCE_DIR}/mount_umount/Mount_Umount.cpp		
+						${CMAKE_CURRENT_SOURCE_DIR}/mount_umount/Mount_Umount.cpp		
 						# Gio
-						${CMAKE_CURRENT_SOURCE_DIR}/chdir/chdir.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/chdir/Chdir.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/getcwd/Getcwd.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/mkdir_rmdir/Mkdir_rmdir.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/chroot/Chroot.cpp	
 						# Vahram
 						${CMAKE_CURRENT_SOURCE_DIR}/utime/Utime.cpp	
 						${CMAKE_CURRENT_SOURCE_DIR}/access/Access.cpp	
@@ -59,6 +62,7 @@ ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 						${CMAKE_CURRENT_SOURCE_DIR}/fchmod/Fchmod.cpp	
 						${CMAKE_CURRENT_SOURCE_DIR}/fchown/Fchown.cpp	
 						${CMAKE_CURRENT_SOURCE_DIR}/sync/Sync.cpp	
+						${CMAKE_CURRENT_SOURCE_DIR}/lchown/Lchown.cpp
 						# Ruzanna
 
 						# Ani

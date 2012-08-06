@@ -1,0 +1,79 @@
+<!--    access.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Giorgi Gulabyan <gulabyang@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="chroot">
+	<Requires>pwd.h</Requires>				
+	<Test Name="ChrootNormal" FaultSimulationReady="true">
+		<Description>chroot() changes the root directory of the calling process to that specified in path.</Description>
+		<Code>
+			Directory dir("chrootTestDirectory", 0777);		
+			File file("chrootTestDirectory/chrootTestFile.txt");
+			
+			if( chroot("chrootTestDirectory") != 0 )
+			{
+				Error("Chroot can not change the root directory.", Fail);
+			} 
+			if(access("/chrootTestFile.txt", F_OK) != 0)
+			{
+				Error("Chroot does not change the working directory.", Fail);
+			}	
+		
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="ChrootIsNotDirectory">
+		<Description>A component of path is not a directory.</Description>
+		<File count="1" />
+		<Code>
+			ENotDirTest(chroot(path), -1);
+		</Code>
+	</Test>
+	<Test Name="ChrootTooLongPath">
+		<Description>path is too long.</Description>		
+		<Code>
+			ENameTooLongTest(chroot(path), -1);
+		</Code>
+	</Test>
+	<Test Name="ChrootFileNotExist">
+		<Description></Description>		
+		<Code>
+			ErrorTest(chroot("non_existing_file"), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="ChrootLoopInSymLink">
+		<Description>Too many symbolic links were encountered in resolving path.</Description>
+		<Dir count="1" />
+		<Code>		
+			ELoopDirTest(chroot(path), -1);
+		</Code>
+	</Test>
+	
+	<FaultSimulation>
+		<Simulate function="kmalloc" condition="" />
+		<Simulate function="copy_to_user" condition="" />
+		<!-- ... -->
+	</FaultSimulation>
+</TestSet>
+
+

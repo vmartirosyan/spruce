@@ -113,7 +113,7 @@ Status Chmod::ChmodIsNotDirectory()
 			
 		}
 		
-	return Success;
+		return Success;
 
 
 	}
@@ -123,7 +123,7 @@ Status Chmod::ChmodIsNotDirectory()
 	catch (Exception ex)
 	{
 		cerr << ex.GetMessage();
-		return Fail;
+		return Unres;
 	}
 
 	
@@ -167,7 +167,7 @@ Status Chmod::ChmodTooLongPath()
 	catch (Exception ex)
 	{
 		cerr << ex.GetMessage();
-		return Fail;
+		return Unres;
 	}
 	
 }
@@ -245,7 +245,7 @@ Status Chmod::PermissionsTest(mode_t open_mode)
 	catch (Exception ex)
 	{
 		cerr << ex.GetMessage();
-		return Fail;
+		return Unres;
 	}
 }
 
