@@ -64,4 +64,5 @@
 	<TestSet Name="umask"/>
 	<TestSet Name="unlink"/>
 	<TestSet Name="unlinkat"/>
+	<TestSet Name="utime"/>
 </Module>
