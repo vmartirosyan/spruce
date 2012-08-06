@@ -63,4 +63,5 @@
 	<TestSet Name="truncate"/>
 	<TestSet Name="umask"/>
 	<TestSet Name="unlink"/>
+	<TestSet Name="unlinkat"/>
 </Module>
