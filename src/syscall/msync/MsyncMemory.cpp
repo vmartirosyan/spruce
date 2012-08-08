@@ -161,9 +161,9 @@ int MsyncMemoryTest:: MsyncErrENOMEMTest(vector<string> args)
 		if(munmap(addr, length) == -1)
 		{
 			cerr << "System call munmap failed: " << strerror(errno);
-			status = Unres;
+			return Unres;
 		}
-		else if(msync(addr, length, MS_SYNC | MS_INVALIDATE) != -1 || errno != ENOMEM)
+		if(msync(addr, length, MS_SYNC | MS_INVALIDATE) != -1 || errno != ENOMEM)
 		{
 			cerr << "ENOMEM error expected: the indicated memory was not mapped";
 			status = Fail;			
