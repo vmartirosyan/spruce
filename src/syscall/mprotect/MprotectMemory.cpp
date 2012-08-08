@@ -89,7 +89,6 @@ int MprotectMemoryTest:: MprotectTest(vector<string> args)
 
 int MprotectMemoryTest:: MprotectErrEACCESTest(vector<string> args)
 {
-	int status = Success;
 	try
 	{
 		File file1("file1", S_IRUSR | S_IWUSR, O_RDONLY | O_CREAT);
@@ -103,21 +102,72 @@ int MprotectMemoryTest:: MprotectErrEACCESTest(vector<string> args)
 		if(addr == MAP_FAILED)
 		{
 			cerr << "System call mmap failed: " << strerror(errno);
-			status = Unres;	
+			return Unres;	
 		}
-		else if(mprotect(addr, length, PROT_WRITE) != -1 || errno != EACCES)
+		if(mprotect(addr, length, PROT_WRITE) != -1 || errno != EACCES)
 		{
 			cerr << "EACCES error expected: file is read-only, PROT_WRITE can't be set";
-			status = Fail;
+			return Fail;
 		}
 
 	}
 	catch(Exception ex)
 	{
 		cerr << ex.GetMessage();
-		status = Unres;
+		return Unres;
 	}
 	
+	return Success;
+}
+
+int MprotectMemoryTest:: MprotectErrEINVALTest(vector<string> args)
+{
+	int status = Success;
+	
+	try
+	{		
+		const int FileCount = 1;
+		int FileFlags = O_CREAT | O_RDWR;
+		int FileMode = S_IRWXU;
+		
+		string FilePaths[FileCount];
+		File Files[FileCount];
+		int FDs[FileCount];
+		for ( int i = 0 ; i < FileCount; ++i )
+		{
+			char buf[2];
+			sprintf(buf, "%d", i);
+			FilePaths[i] = "MprotectErrInval_file_" + (string)buf;
+			FDs[i] = Files[i].Open(FilePaths[i], FileMode, FileFlags);
+		}	
+		
+		int length = 3;	
+		void * addr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0);
+		if(addr == MAP_FAILED)
+		{
+			cerr << "System call mmap failed: " << strerror(errno);
+			return Unres;
+		}
+		
+		if(mprotect(addr + 1, length, PROT_NONE) != -1 || errno != EINVAL)
+		{
+			cerr << "EINVAL error expected: memory was not mapped";
+			status = Fail;
+		}
+		
+		if(mprotect((void *)(-1), 3, PROT_NONE) != -1 || errno != EINVAL)
+		{
+			cerr << "EINVAL error expected: addr is not a valid pointer";
+			status = Fail;
+		}
+		
+	}
+	catch (Exception e)
+	{
+		cerr << "Exception was thrown: " << e.GetMessage();
+		return Unres;
+	}
+		
 	return status;
 }
 

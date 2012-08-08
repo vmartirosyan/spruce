@@ -50,6 +50,7 @@ protected:
 private:
 	int MprotectTest(vector<string> args);
 	int MprotectErrEACCESTest(vector<string> args);
+	int MprotectErrEINVALTest(vector<string> args);
 	int MprotectErrENOMEMTest(vector<string> args);
 }; 
 #endif /*MPROTECT_MEMORY_H*/

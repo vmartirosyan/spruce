@@ -117,7 +117,7 @@ int MlockMemoryTest:: MlockErrEINVALTest(vector<string> args)
 			cerr << "System call mmap failed: " << strerror(errno);
 			return Unres;	
 		}
-		else if(mlock(addr, -1) != -1 || errno != EINVAL)
+		if(mlock(addr, -1) != -1 || errno != EINVAL)
 		{
 			cerr << "EINVAL error expected: length is negative";
 			return Fail;
@@ -244,7 +244,7 @@ int MlockMemoryTest:: MunlockErrEINVALTest(vector<string> args)
 			cerr << "System call mmap failed: " << strerror(errno);
 			return Unres;	
 		} 
-		else if(munlock(addr, -1) != -1 || errno != EINVAL)
+		if(munlock(addr, -1) != -1 || errno != EINVAL)
 		{
 			cerr << "EINVAL error expected: length is negative";
 			return Fail;

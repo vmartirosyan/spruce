@@ -47,8 +47,11 @@
 	<TestSet Name="lseek64"/>
 	<TestSet Name="mkdir_rmdir"/>
 	<TestSet Name="mknod"/>
+	<TestSet Name="mlock"/>
 	<TestSet Name="mmap"/>
 	<TestSet Name="mount_umount"/>
+	<TestSet Name="mprotect"/>
+	<TestSet Name="msync"/>
 	<TestSet Name="open"/>
 	<TestSet Name="openat"/>
 	<TestSet Name="pread_pwrite"/>
