@@ -2,7 +2,8 @@
 //      
 //      Copyright (C) 2011, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
-//      Author:
+//      Authors:
+//      	Ruzanna Karakozova <r.karakozova@gmail.com>
 //			Vahram Martirosyan <vmartirosyan@gmail.com>
 //      
 //      This program is free software; you can redistribute it and/or modify

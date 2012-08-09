@@ -91,7 +91,8 @@ public:
 	virtual ProcessResult * Execute(vector<string> args = vector<string>());
 	virtual ProcessResult * Execute( int (Process::* func) (vector<string>), vector<string> args = vector<string>() );
 	
-	Process()
+	Process():
+		EnableAlarm(false)
 	{
 		
 	}
@@ -101,6 +102,7 @@ public:
 		
 	}
 protected:
+	bool EnableAlarm;
 	static int Level;
 	virtual int Main(vector<string> args) { cerr << "Main not imeplemented."; return Unsupported; }
 };

@@ -46,6 +46,8 @@
 #include <stdlib.h>
 #include <platform_config.hpp>
 #include <pwd.h>
+#include <kedr_integrator.hpp>
+#include <leak_checker.hpp>
 
 using std::ifstream;
 using std::ofstream;
@@ -80,10 +82,11 @@ enum ErrorCodes
 	NOMODULES
 };
 
-
+void OpenLogFiles(string browser, string logfolder, vector<string> XMLFilesToProcess);
 
 int main(int argc, char ** argv)
 {
+	KedrIntegrator kedr;
 	// The status of the whole process.
 	// If any of the tests does not succeed then FAULT is returned!
 	int Status = 0;
@@ -94,9 +97,10 @@ int main(int argc, char ** argv)
 	
 	//Prepare the allowed modules list
 	ModulesAvailable.push_back("syscall");
-	ModulesAvailable.push_back("benchmark");
+	//ModulesAvailable.push_back("benchmark");
 	ModulesAvailable.push_back("fs-spec");
-	//ModulesAvailable.push_back("jfs");
+	ModulesAvailable.push_back("leak-check");
+	ModulesAvailable.push_back("fault-sim");
 	
 	// Prepare the allowed FS list
 	FSAvailable.push_back("ext4");
@@ -139,14 +143,27 @@ int main(int argc, char ** argv)
 		cerr << Modules[i] << " ";
 	cerr << endl;*/
 	
-	// Search for the "fs-spec" module
+	// Search for the special modules ("fs-spec", "leak-check", "fault-sim" )
 	bool PerformFS_SpecificTests = false;
+	bool PerformLeakCheck = false;
+	bool PerformFaultSimulation = false;
 	vector<string>::iterator it = Modules.end();
-	cerr << "Searching for FS-specific module" << endl;
 	if ( (it = find(Modules.begin(), Modules.end(), "fs-spec")) != Modules.end() )
 	{
 		cerr << "FS-specific module is enabled" << endl;
 		PerformFS_SpecificTests = true;
+		Modules.erase(it);
+	}
+	if ( (it = find(Modules.begin(), Modules.end(), "leak-check")) != Modules.end() )
+	{
+		cerr << "Leak checker module is enabled" << endl;
+		PerformLeakCheck = true;
+		Modules.erase(it);
+	}
+	if ( (it = find(Modules.begin(), Modules.end(), "fault-sim")) != Modules.end() )
+	{
+		cerr << "Fault simulation module is enabled" << endl;
+		PerformFaultSimulation = true;
 		Modules.erase(it);
 	}
 	
@@ -158,7 +175,8 @@ int main(int argc, char ** argv)
 	}
 	else
 		FileSystems.push_back("current");
-	
+	for ( int i = 0; i < FileSystems.size(); ++i )
+		cout << "FS : " << FileSystems[i] << endl;
 	// Find out the partition to be tested on. If there is no partition provided
 	// Spruce will use the current partition. 
 	// By default tests will be executed in the /tmp folder
@@ -238,6 +256,7 @@ int main(int argc, char ** argv)
 	cerr << "Executing modules." << endl;
 	for ( vector<string>::iterator fs = FileSystems.begin(); fs != FileSystems.end(); ++fs )
 	{
+		cerr << "Filesystem : " << *fs << endl;
 		//stringstream str;
 		/*str << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n\
 			<?xml-stylesheet type=\"application/xml\" href=\"" << logfolder << "/xslt/processor.xslt\"?>\n\
@@ -253,6 +272,29 @@ int main(int argc, char ** argv)
 			continue;
 		}
 		cout << "Unmounted" << endl;
+		
+		// Check if KEDR needs to be loaded
+		if ( PerformLeakCheck || PerformFaultSimulation )
+		{
+			try
+			{
+				cout << "Loading KEDR framework for module : " << *fs << endl;
+				kedr.SetTargetModule(*fs);
+				if ( PerformLeakCheck )
+					kedr.EnableMemLeakCheck();
+				if ( PerformFaultSimulation )
+					kedr.EnableFaultSimulation();
+				kedr.LoadKEDR();
+				cout << "KEDR is successfully loaded." << endl;
+				
+			}
+			catch (Exception e)
+			{
+				cerr << "KEDR cannot be loaded." << endl;
+				cerr << "Exception is thrown. " << e.GetMessage() << endl;
+				
+			}
+		}
 		// If there are any filesystems mentioned, then let's create the filesystem
 		UnixCommand * mkfs = new UnixCommand("mkfs." + *fs);
 		vector<string> args;		
@@ -287,7 +329,7 @@ int main(int argc, char ** argv)
 		if ( res->GetStatus() != Success )
 		{
 			cerr << "Cannot mount " << partition << " at folder " << MountAt << endl;
-			cerr << "Error: " << strerror(errno) << endl;
+			cerr << "Error: " << res->GetOutput() << endl;
 			continue;
 		}
 		/*
@@ -382,6 +424,10 @@ int main(int argc, char ** argv)
 			//str << result->GetOutput() << endl;
 			Status |= result->GetStatus();
 		}
+		if ( PerformFaultSimulation && kedr.IsRunning() )
+		{
+			// Do some fault simulation staff ;)
+		}
 		
 		//str << "</FS>";
 		
@@ -406,107 +452,156 @@ int main(int argc, char ** argv)
 			cerr << "Error: " << strerror(errno) << endl;
 			//continue;
 		}
-		
-		// Open the log file in the selected browser
-		if ( browser != "" )
+		// Process the memory leak checker output
+		if ( PerformLeakCheck && kedr.IsRunning() )
 		{
-			// Process the module log files
-			for ( unsigned int i = 0; i < XMLFilesToProcess.size(); ++i )
+			string FileName = logfolder + "/" + *fs + "_leak_check_log.xml";
+			ofstream of(FileName.c_str());
+			
+			of << "<SpruceLog><FS Name=\"" << *fs << "\">\n";
+			
+			of.close();
+			
+			LeakChecker leak_check(FileName);
+			if ( leak_check.ProcessLeakCheckerOutput() )
+				XMLFilesToProcess.push_back(FileName);
+			
+			of.open(FileName.c_str(), ios_base::app);
+			
+			of << "\n</FS></SpruceLog>";
+			
+			of.close();
+		}
+		
+		// Unload the KEDR framework
+		try
+		{
+			if ( kedr.IsRunning() )
 			{
-				cout << "Processing file " << XMLFilesToProcess[i] << "... ";
-				UnixCommand xslt("xsltproc");
-				vector<string> xslt_args;
-				
-				xslt_args.push_back("-o");
-				xslt_args.push_back(XMLFilesToProcess[i].substr(0, XMLFilesToProcess[i].size() - 3) + "html");
-				xslt_args.push_back("-novalid");			
-				xslt_args.push_back(logfolder + "/xslt/processor.xslt");
-				xslt_args.push_back(XMLFilesToProcess[i]);
-				
-				res = xslt.Execute(xslt_args);
-	
-				if ( res == NULL )
-				{
-					cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;
-					continue;
-				}
-				
-				if ( res->GetStatus() != Success )
-				{
-					cerr << res->GetOutput() << endl;
-					continue;
-				}			
-				cout << "Done" << endl;
-			}
-			
-			// Change the effective user id to real user id... browsers don't like ronning as root.
-			
-			char * UserName = getenv("SUDO_USER");
-			//char * UserName = "nobody";
-			
-			if ( UserName == NULL )
-			{
-				cerr << "Cannot obtain user name. " << strerror(errno) << endl;
-				break;
-			}
-			
-			cout << "Switching to user `" << UserName << "`" << endl;
-			
-			setenv("HOME", ((string)"/home/" + UserName).c_str(), 1);
-			
-			struct passwd * nobody = getpwnam(UserName);
-			if ( nobody == NULL )
-			{
-				cerr << "Cannot switch to user `" << UserName << "`. Browser won't start. " << strerror(errno) << endl;
-				break;
-			}
-				
-			if ( setuid(nobody->pw_uid) == -1 )
-			{
-				cerr << "Cannot switch to user `" << UserName << "`. Browser won't start. " << strerror(errno) << endl;
-				break;
-			}
-			
-			cerr << "UserId: " << getuid() << endl;
-			
-			
-			
-			cerr << "$HOME: " << getenv("HOME") << endl;
-			
-			for ( unsigned int i = 0; i < XMLFilesToProcess.size(); ++i )
-			{
-				// Hold on a while...
-				sleep(1);
-				
-				UnixCommand * browser_cmd = new UnixCommand(browser, ProcessBackground);
-				vector<string> browser_args;
-				browser_args.push_back(XMLFilesToProcess[i].substr(0, XMLFilesToProcess[i].size() - 3) + "html");
-				/*if ( browser.find("chrom") != string::npos )
-				{
-					//browser = "chromium";
-					browser_args.push_back("--allow-file-access-from-files");
-					browser_args.push_back("--user-data-dir");
-					browser_args.push_back("/tmp");
-				}*/
-				res = browser_cmd->Execute(browser_args);
-				delete browser_cmd;
-				
-				if ( res == NULL )
-				{
-					cerr << "Cannot execute the browser: " << browser << endl;
-					continue;
-				}
-				if ( res->GetStatus() != Success )
-				{
-					cerr << "Error executing " << browser << ". " << strerror(errno) << "\n Output: " << res->GetOutput() << endl;
-					continue;
-				}
+				kedr.UnloadKEDR();
+				cout << "KEDR is successfully unloaded." << endl;
 			}
 		}
-		return ( Status == 0 ) ? SUCCESS : FAULT;
+		catch(Exception e)
+		{
+			cerr << "Error unloading KEDR. " << e.GetMessage() << endl;
+		}
+		
+		// Open the log files in the selected browser
+		if ( browser != "" )
+		{
+			OpenLogFiles(browser, logfolder, XMLFilesToProcess);
+			XMLFilesToProcess.erase(XMLFilesToProcess.begin(), XMLFilesToProcess.end());
+		}
 	}
-	
-	return 0;
+	return ( Status == 0 ) ? SUCCESS : FAULT;
+	//return 0;
+}
+
+void OpenLogFiles(string browser, string logfolder, vector<string> XMLFilesToProcess)
+{
+	// The new process must be created to be able to execute the browser as non-privileged user.
+	if ( fork() == 0 )
+	{
+		ProcessResult * res = NULL;
+		// Process the module log files
+		for ( unsigned int i = 0; i < XMLFilesToProcess.size(); ++i )
+		{
+			cout << "Processing file " << XMLFilesToProcess[i] << "... ";
+			UnixCommand xslt("xsltproc");
+			vector<string> xslt_args;
+			
+			xslt_args.push_back("-o");
+			xslt_args.push_back(XMLFilesToProcess[i].substr(0, XMLFilesToProcess[i].size() - 3) + "html");
+			xslt_args.push_back("-novalid");			
+			xslt_args.push_back(logfolder + "/xslt/processor.xslt");
+			xslt_args.push_back(XMLFilesToProcess[i]);
+			
+			res = xslt.Execute(xslt_args);
+
+			if ( res == NULL )
+			{
+				cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;
+				continue;
+			}
+			
+			if ( res->GetStatus() != Success )
+			{
+				cerr << res->GetOutput() << endl;
+				continue;
+			}			
+			cout << "Done" << endl;
+		}
+		
+		// Change the effective user id to real user id... browsers don't like ronning as root.
+		
+		char * UserName = getenv("SUDO_USER");
+		//char * UserName = "nobody";
+		
+		if ( UserName == NULL )
+		{
+			cerr << "Cannot obtain user name. " << strerror(errno) << endl;
+			return;
+		}
+		
+		cout << "Switching to user `" << UserName << "`" << endl;
+		
+		setenv("HOME", ((string)"/home/" + UserName).c_str(), 1);
+		
+		struct passwd * nobody = getpwnam(UserName);
+		if ( nobody == NULL )
+		{
+			cerr << "Cannot switch to user `" << UserName << "`. Browser won't start. " << strerror(errno) << endl;
+			return;
+		}
+			
+		if ( setuid(nobody->pw_uid) == -1 )
+		{
+			cerr << "Cannot switch to user `" << UserName << "`. Browser won't start. " << strerror(errno) << endl;
+			return;
+		}
+		
+		cerr << "UserId: " << getuid() << endl;
+		
+		
+		
+		cerr << "$HOME: " << getenv("HOME") << endl;
+		
+		for ( unsigned int i = 0; i < XMLFilesToProcess.size(); ++i )
+		{
+			// Hold on a while...
+			sleep(1);
+			
+			UnixCommand * browser_cmd = new UnixCommand(browser, ProcessBackground);
+			vector<string> browser_args;
+			browser_args.push_back(XMLFilesToProcess[i].substr(0, XMLFilesToProcess[i].size() - 3) + "html");
+			/*if ( browser.find("chrom") != string::npos )
+			{
+				//browser = "chromium";
+				browser_args.push_back("--allow-file-access-from-files");
+				browser_args.push_back("--user-data-dir");
+				browser_args.push_back("/tmp");
+			}*/
+			res = browser_cmd->Execute(browser_args);
+			delete browser_cmd;
+			
+			if ( res == NULL )
+			{
+				cerr << "Cannot execute the browser: " << browser << endl;
+				continue;
+			}
+			if ( res->GetStatus() != Success )
+			{
+				cerr << "Error executing " << browser << ". " << strerror(errno) << "\n Output: " << res->GetOutput() << endl;
+				continue;
+			}
+		}
+		_exit(0);
+	}
+	else
+	{
+		wait(0);
+	}
 }
 
 ConfigValues ParseOptions(int argc, char ** argv)
