@@ -6,7 +6,7 @@ project (Spruce)
 
 #CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${CMAKE_CURRENT_BINARY_DIR}/main.cpp)
 
-ADD_EXECUTABLE(spruce 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
+ADD_EXECUTABLE(spruce 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${CMAKE_SOURCE_DIR}/include/kedr_integrator.hpp ${CMAKE_SOURCE_DIR}/include/leak_checker.hpp )
 
 TARGET_LINK_LIBRARIES(spruce utils)
 
