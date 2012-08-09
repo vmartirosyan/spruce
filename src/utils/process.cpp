@@ -56,9 +56,26 @@ ProcessResult * Process::Execute(vector<string> args)
 	return Execute(&Process::Main, args);
 }
 
+bool ProcessAlarmed = false;
+
+void ProcessSignalHandler(int signum)
+{
+	cerr << "Processing signal: " << signum << endl;
+	switch (signum)
+	{
+		case SIGALRM:
+			ProcessAlarmed = true;
+			break;
+		case SIGSEGV:
+			cerr << "Segmentation fault!";
+		default:
+			_exit(Signaled);
+	}	
+	
+}
+
 ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<string> args)
 {
-	
 	int fds[2];
 	if ( pipe(fds) == -1 )
 	{
@@ -75,6 +92,18 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	
 	if ( ChildId == 0 ) // Child process. Run the Main method
 	{
+		// Set up the handler for segmentation fault 
+		
+		struct sigaction sa;
+		bzero(&sa, sizeof(sa));
+		
+		sa.sa_handler = ProcessSignalHandler;
+		if ( sigaction(SIGSEGV, &sa, NULL) == -1 )
+		{	
+			cerr << "Cannot set signal handler. " << strerror(errno);
+			_exit(Unresolved);
+		}
+		
 		close(1);
 		close(2);
 		close(fds[0]);
@@ -90,7 +119,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 			close(1);
 			_exit(Unresolved);
 		}
-		cerr << " ";
+		//cerr << " ";
 		int status = (*this.*func)(args);
 		close(1);
 		close(2);
@@ -101,11 +130,37 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	// Parent process...
 	close(fds[1]);
 	
+	if (EnableAlarm)
+	{
+		struct sigaction sa;
+		bzero(&sa, sizeof(sa));
+		
+		sa.sa_handler = ProcessSignalHandler;
+		if ( sigaction(SIGALRM, &sa, NULL) == -1 )
+		{	
+			return new ProcessResult(Unresolved, "Cannot set signal handler. " + (string)strerror(errno));
+		}
+	
+		alarm(TEST_TIMEOUT);
+	}
+	
 	int status;
-	int wait_res = waitpid(ChildId, &status, 0);
-	//cerr << "wait_res=" << wait_res << endl;
-	//cerr << "Error: " << strerror(errno) << endl;
-			
+	int wait_res = waitpid(ChildId, &status, WUNTRACED);
+	
+	alarm(0);
+	
+	if ( wait_res == -1 )
+	{
+		cerr << "wait_res=" << wait_res << endl;
+		cerr << "Error: " << strerror(errno) << endl;
+	
+		kill(ChildId, SIGKILL);
+		if ( ProcessAlarmed )
+			return new ProcessResult(Timeout, "Child process has timed out.");
+		else
+			return new ProcessResult(Signaled, "Child process has been signalled.");
+	}
+	
 	// In case of normal end of process. Let's collect the result;
 	string Output = "";
 	if ( wait_res != -1 )
@@ -116,29 +171,22 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 		while ( true )
 		{
 			bytes = read( fds[0], buf, 999 );
-			//cerr << "bytes = " << bytes << endl;
+
 			if ( bytes == -1 )
 				break;
 			buf[bytes] = 0;
 		
 			Output += (string)buf;
 			
-			
-			
 			if (bytes < 999)
 				break;
 		}
 	}
-	else
-	{
-		// Kill the child. Just in case.
-		kill(ChildId, SIGKILL);
-	}
+	// Kill the child. Just in case.
+	kill(ChildId, SIGKILL);
 	
 	
 	close(fds[0]);
-	
-
 	return new ProcessResult(WEXITSTATUS(status), Output);
 }
 
