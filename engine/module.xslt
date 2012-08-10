@@ -30,6 +30,7 @@
 
 <xsl:output method="text" encoding="utf-8" indent="yes"/>
 <xsl:include href="testset.xslt" />
+
 	
 
 	<xsl:template match="/Module">
@@ -99,6 +100,8 @@ char * MountPoint = (char*)"";
 char * FileSystem = (char*)"";
 map&lt;string, int> FileSystemTypesMap;
 
+
+
 		
 		<xsl:for-each select="TestSet">
 			<xsl:variable name="TestSetFile"><xsl:value-of select="$XmlFolder"/>/<xsl:value-of select="@Name"/>.xml</xsl:variable>
@@ -142,7 +145,7 @@ int main(int argc, char ** argv)
 	{				
 		<xsl:for-each select="TestSet">
 			<xsl:value-of select="@Name" />Tests <xsl:value-of select="@Name" />_tests;
-		Results.Merge(<xsl:value-of select="@Name" />_tests.RunTests());
+		Results.Merge(<xsl:value-of select="@Name" />_tests.RunNormalTests());
 		</xsl:for-each>
 		
 		ofstream of(argv[1], ios_base::app);

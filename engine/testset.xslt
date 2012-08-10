@@ -39,24 +39,43 @@
 	<xsl:variable name="TestSetName" select="@Name" />
 	
 
+
 class <xsl:value-of select="@Name" />Tests : public Process
 {
 public:
 	<xsl:value-of select="@Name" />Tests():
-		_testCount(<xsl:value-of select="count(Test)"/>)
+		_fsim_enabled(false),
+		_testCount(<xsl:value-of select="count(Test)"/>),
+		_fsim_testCount(<xsl:value-of select="count(Test[@FaultSimulationReady='true'])"/>)
 	{
 		Process::EnableAlarm = true;
-		<xsl:value-of select="StartUp"/>
-		<xsl:for-each select="Test">
+	<xsl:value-of select="StartUp"/>
+	<xsl:for-each select="Test">
 		_tests[<xsl:value-of select="position()-1"/>] = &amp;<xsl:value-of select="$TestSetName" />Tests::<xsl:value-of select="@Name" />Func;
-		</xsl:for-each>
+	</xsl:for-each>
+	<xsl:for-each select="Test[@FaultSimulationReady='true']">
+		_fsim_tests[<xsl:value-of select="position()-1"/>] = &amp;<xsl:value-of select="$TestSetName" />Tests::<xsl:value-of select="@Name" />Func;
+	</xsl:for-each>
+		
+	struct FSimInfo info;
+	<xsl:for-each select="FaultSimulation/Simulate">
+	info.Count = 1;
+	info.Point = "<xsl:value-of select="@point" />";
+	<xsl:if test="@count">
+	info.Count = <xsl:value-of select="@count" />;
+	</xsl:if>
+	<xsl:if test="@expression">
+	info.Expression = "<xsl:value-of select="@expression" />";
+	</xsl:if>
+	_fsim_info_vec.push_back(info);
+	</xsl:for-each>
 	}
 	~<xsl:value-of select="@Name" />Tests()
 	{
 		<xsl:value-of select="CleanUp"/>
 	}
 	
-	virtual TestResultCollection RunTests()
+	virtual TestResultCollection RunNormalTests()
 	{
 		TestResultCollection res;
 		for ( unsigned int i  = 0; i &lt; _testCount; ++i)
@@ -66,6 +85,35 @@ public:
 			delete pr;
 			res.AddResult( tr );
 		}
+		return res;
+	}
+	virtual TestResultCollection RunFaultyTests()
+	{
+		_fsim_enabled = true;
+		TestResultCollection res;
+		for ( unsigned int i = 0; i &lt; _fsim_info_vec.size(); ++i )
+		{
+			_fsim_point = _fsim_info_vec[i].Point;
+			_fsim_expression = _fsim_info_vec[i].Expression;
+			for ( unsigned int j = 0; j &lt; _fsim_info_vec[i].Count; ++j )
+			{
+				for ( unsigned int k = 0; k &lt; _fsim_testCount; ++k)
+				{
+					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))_fsim_tests[k]);
+					if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
+						pr->SetStatus(Success);
+					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />");
+					delete pr;
+					res.AddResult( tr );
+					// If one of the tests makes the process to get a signal, then the driver probably is not functional any more.
+					if ( tr->GetStatus() == Signaled )
+					{
+						return res;
+					}
+				}
+			}
+		}
+		
 		return res;
 	}
 	<xsl:for-each select="Test">
@@ -140,8 +188,14 @@ public:
 	}
 	</xsl:for-each>
 protected:
+	bool _fsim_enabled;
+	string _fsim_point;
+	string _fsim_expression;
 	const unsigned int _testCount;
+	const unsigned int _fsim_testCount;
 	int (<xsl:value-of select="@Name" />Tests::*_tests[<xsl:value-of select="count(Test)"/>])(vector&lt;string>);
+	int (<xsl:value-of select="@Name" />Tests::*_fsim_tests[<xsl:value-of select="count(Test)"/>])(vector&lt;string>);
+	vector&lt;FSimInfo> _fsim_info_vec;
 	<xsl:value-of select="/TestSet/Internal"/>
 };
 
