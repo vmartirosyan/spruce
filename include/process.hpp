@@ -72,6 +72,13 @@ public:
 	{
 		return _status;
 	}
+	void SetStatus(int st)
+	{
+		if (st < 0 || st > Unknown)
+			_status = Unknown;
+		else
+			_status = st;
+	}
 	string GetOutput() const
 	{
 		return _output;

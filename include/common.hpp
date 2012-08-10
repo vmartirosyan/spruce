@@ -54,6 +54,32 @@ enum Status
 	Unknown
 };
 
+struct FSimInfo
+{
+	FSimInfo():
+		Point(""),
+		Count(1),
+		Expression("") {}
+	string Point;
+	unsigned int Count;
+	string Expression;
+};
+
+#define EnableFaultSim() \
+{\
+	if (_fsim_enabled)\
+	{\
+		cerr << "Fault simulation is enabled for module " << FileSystem << "(" << _fsim_point << ", " << _fsim_expression << ")" << endl;\
+	}\
+}
+	
+#define DisableFaultSim() \
+{\
+	if (_fsim_enabled)\
+	{\
+		cerr << "Fault simulation is disabled for module " << FileSystem << "(" << _fsim_point << ", " << _fsim_expression << ")" << endl;\
+	}\
+}
 #define ERROR_3_ARGS(message, add_msg, status)\
 	cerr << message << add_msg;\
 	if ( errno ) cerr << "\nError: " << strerror(errno) << endl;\
