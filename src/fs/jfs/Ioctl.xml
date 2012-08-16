@@ -2,7 +2,7 @@
 	<Requires>sys/ioctl.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>linux/fs.h</Requires>
-	<Test Name="SetFlagsGetFlags">
+	<Test Name="SetFlagsGetFlags" FaultSimulationReady="true">
 		<Description>Try to set and get some flag values.</Description>
 		<File count="1"/>			
 		<Code>

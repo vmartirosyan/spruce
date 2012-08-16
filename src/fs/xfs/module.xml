@@ -1,0 +1,3 @@
+<Module Name="xfs">
+	<TestSet Name="Ioctl" />	
+</Module>
