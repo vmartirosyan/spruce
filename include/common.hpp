@@ -27,6 +27,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <pwd.h>
 using std::string;
 using std::cout;
 using std::cerr;
