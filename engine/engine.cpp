@@ -102,7 +102,7 @@ int main(int argc, char ** argv)
 		code_tags[3] = "Internal";
 		for(int i = 0; i < CODE_TAGS_NUM; i++)
 		{
-			unsigned int pos1 = 0, pos2;	
+			size_t pos1 = 0, pos2;
 			//cerr << "Processing tag " << code_tags[i] << endl;
 			do
 			{
@@ -116,21 +116,23 @@ int main(int argc, char ** argv)
 				
 				string part = contents.substr(pos1, pos2-pos1);
 				
-				unsigned int pos = 0;
+				size_t pos = 0;
 				while ( true )
 				{
 					pos = part.find("&", pos + 1);
 					if ( pos == string::npos )
 						break;
+						//cout<<"first  "<<pos<<endl;
 					part.replace(pos, 1, "&amp;");
 				}
-				
+					
 				pos = 0;
 				while ( true )
 				{
 					pos = part.find("<", pos + 1);
 					if ( pos == string::npos )
 						break;
+					//cout<<"second  "<<pos<<endl;
 					part.replace(pos, 1, "&lt;");
 				}
 				
