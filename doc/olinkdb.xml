@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!DOCTYPE targetset 
+       SYSTEM "file:///usr/share/xml/docbook/stylesheet/docbook-xsl/common/targetdatabase.dtd" [
+<!ENTITY sprucetargets SYSTEM "spruce.db">
+<!ENTITY maintargets SYSTEM "main.db"> 
+<!ENTITY syscalltargets SYSTEM "syscall.db"> 
+<!ENTITY commontargets SYSTEM "common.db"> 
+<!ENTITY benchmarktargets SYSTEM "benchmark.db"> 
+<!ENTITY ext4fstargets SYSTEM "ext4fs.db"> 
+ 
+]>
+<targetset> 
+  <targetsetinfo> 
+    Description of this target database document,
+    which is for the examples in olink doc.
+  </targetsetinfo>
+
+  <!-- Site map for generating relative paths between documents -->
+  <sitemap>
+	<document targetdoc="spruce" baseuri="index.html">&sprucetargets;</document>
+    
+    <document targetdoc="main" baseuri="main/">&maintargets;</document>
+    
+    <document targetdoc="syscall" baseuri="syscall/">&syscalltargets;</document>
+    
+    <document targetdoc="common" baseuri="common/">&commontargets;</document>
+    
+    <document targetdoc="benchmark" baseuri="benchmark/">&benchmarktargets;</document>
+    
+    <document targetdoc="ext4fs" baseuri="ext4fs/">&ext4fstargets;</document>
+        
+  </sitemap>
+</targetset>
