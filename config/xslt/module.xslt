@@ -16,7 +16,7 @@
 		
 		<xsl:variable name="Item" select="@Name" />
 		<xsl:variable name="TestsTotal" select="count(//Module[@Name=$Module]/Item[@Name=$Item])" />
-		<xsl:variable name="TestsPassed" select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Success'])" />
+		<xsl:variable name="TestsPassed" select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Success']) + count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Shallow'])" />
 		<span class="Failed">
 			<xsl:if test="$TestsPassed=$TestsTotal">
 				<xsl:attribute name="class">					

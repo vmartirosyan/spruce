@@ -3,7 +3,7 @@
 	<Requires>fcntl.h</Requires>
 	<Requires>ext4.hpp</Requires>
 	<Requires>pwd.h</Requires>
-	<Test Name="SetFlagsGetFlags">		
+	<Test Name="SetFlagsGetFlags" FaultSimulationReady="true">		
 		<Description>Try to set and get some flag values.</Description>
 		<File count="1"/>
 		<Code>
@@ -54,7 +54,7 @@
 			ENoAccessTest(ioctl(FDs[0], EXT4_IOC_SETFLAGS, &flags ), -1);			
 		</Code>
 	</Test>
-	<Test Name="SetVersionGetVersion">
+	<Test Name="SetVersionGetVersion" FaultSimulationReady="true">
 		<Description>Get and set version.</Description>
 		<File count="1"/>
 		<Code>
@@ -79,7 +79,7 @@
 			return Success;				
 		</Code>
 	</Test>
-	<Test Name="WaitForReadonly">
+	<Test Name="WaitForReadonly" FaultSimulationReady="true">
 		<Description>Wait for read only.</Description>
 		<File count="1"/>
 		<Code>
@@ -87,7 +87,7 @@
 			return Shallow;
 		</Code>
 	</Test>
-	<Test Name="GroupExtend">
+	<Test Name="GroupExtend" FaultSimulationReady="true">
 		<Description>Group extend.</Description>
 		<File count="1"/>
 		<Code>
@@ -115,7 +115,7 @@
 			}*/
 		</Code>
 	</Test>
-	<Test Name="MoveExtent">
+	<Test Name="MoveExtent" FaultSimulationReady="true">
 		<Description>Move extent.</Description>
 		<File count="2"/>
 		<Code>			
@@ -140,7 +140,7 @@
 			return Success;
 		</Code>
 	</Test>
-	<Test Name="GroupAdd">
+	<Test Name="GroupAdd" FaultSimulationReady="true">
 		<Description>Group add.</Description>
 		<File count="1"/>
 		<Code>
@@ -153,7 +153,7 @@
 			return Shallow;		
 		</Code>
 	</Test>
-	<Test Name="Migrate">
+	<Test Name="Migrate" FaultSimulationReady="true">
 		<Header>
 			Status result = Unknown;
 		</Header>
@@ -228,7 +228,7 @@
 			return result;
 		</Footer>
 	</Test>
-	<Test Name="AllocDABlocks">
+	<Test Name="AllocDABlocks" FaultSimulationReady="true">
 		<Description>Allocate delayed-allocation blocks.</Description>
 		<File count="1"/>
 		<Code>
@@ -237,7 +237,7 @@
 			
 		</Code>
 	</Test>
-	<Test Name="Fitrim">
+	<Test Name="Fitrim" FaultSimulationReady="true">
 		<Dessription>FITRIM?</Dessription>
 		<File count="1"/>
 		<Header>
