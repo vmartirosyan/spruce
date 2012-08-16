@@ -14,9 +14,26 @@ message("Configuring EXT4 specific sources.")
 
 #configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ext4fs.cpp ${CMAKE_CURRENT_BINARY_DIR}/ext4fs.cpp)
 
-add_executable( ext4 ${CMAKE_CURRENT_SOURCE_DIR}/ext4fs.cpp ioctl_test.cpp ioctl_test.hpp ${CMAKE_SOURCE_DIR}/include/config.hpp)
-target_link_libraries(ext4 utils)
+#add_executable( ext4 ${CMAKE_CURRENT_SOURCE_DIR}/ext4fs.cpp ioctl_test.cpp ioctl_test.hpp ${CMAKE_SOURCE_DIR}/include/config.hpp)
+#target_link_libraries(ext4 utils)
 
+#install (	FILES "${CMAKE_BINARY_DIR}/bin/ext4"
+#			DESTINATION bin
+#			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
+
+ADD_CUSTOM_COMMAND(
+   OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp
+   COMMAND ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/engine
+   DEPENDS ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_SOURCE_DIR}/engine/module.xslt ${CMAKE_SOURCE_DIR}/engine/testset.xslt ${CMAKE_CURRENT_SOURCE_DIR}/module.xml Ioctl.xml
+   )
+
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+
+ADD_EXECUTABLE(ext4 ${CMAKE_CURRENT_BINARY_DIR}/module.cpp )
+target_link_libraries(ext4 utils)
+						
 install (	FILES "${CMAKE_BINARY_DIR}/bin/ext4"
 			DESTINATION bin
 			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
+

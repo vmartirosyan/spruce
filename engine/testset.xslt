@@ -141,6 +141,10 @@ public:
 				sprintf(buf, "%d", i);
 				DirPaths[i] = "<xsl:value-of select="@Name" />_dir_" + (string)buf;
 				DirDs[i] = Dirs[i].Open(DirPaths[i], S_IRWXU);
+				if ( DirDs[i] == -1 )
+				{
+					throw Exception("Directory descriptor is not valid.");
+				}
 				<xsl:if test="Dir/File">
 				for ( int i = 0 ; i &lt; DirFileCount; ++i )
 				{
@@ -148,6 +152,10 @@ public:
 					sprintf(buf, "%d", i);
 					DirFilePaths[i] = DirPaths[i] + "/file_" + (string)buf;
 					DirFDs[i] = DirFiles[i].Open(DirFilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
+					if ( DirFDs[i] == -1 )
+					{
+						throw Exception("File descriptor is not valid.");
+					}
 				}	
 				</xsl:if>
 			}
@@ -171,6 +179,10 @@ public:
 				sprintf(buf, "%d", i);
 				FilePaths[i] = "<xsl:value-of select="@Name" />_file_" + (string)buf;
 				FDs[i] = Files[i].Open(FilePaths[i], FileMode, FileFlags);
+				if ( FDs[i] == -1 )
+				{
+					throw Exception("File descriptor is not valid.");
+				}
 			}	
 			</xsl:if>
 			
