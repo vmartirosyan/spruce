@@ -251,7 +251,7 @@ struct FSimInfo
 class test_set_name##Tests : public Process\
 {\
 public:\
-	virtual TestResultCollection RunTests()\
+	virtual TestResultCollection RunNormalTests()\
 	{\
 		cerr << "EmptyTestSet" << endl;\
 		TestResultCollection res;\

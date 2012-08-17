@@ -142,7 +142,12 @@ int main(int argc, char ** argv)
 		
 	TestResultCollection Results;
 	try
-	{				
+	{
+		<xsl:variable name="RunTest" value="Normal">
+			<xsl:if test="@RunTest">
+				<xsl:value-of select="@RunTest"/>
+			</xsl:if>
+		</xsl:variable>
 		<xsl:for-each select="TestSet">
 			<xsl:value-of select="@Name" />Tests <xsl:value-of select="@Name" />_tests;
 		Results.Merge(<xsl:value-of select="@Name" />_tests.RunNormalTests());
