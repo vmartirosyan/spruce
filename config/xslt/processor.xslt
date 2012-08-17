@@ -17,6 +17,10 @@
 			{
 				color:Green;
 			}
+			.Shallow
+			{
+				color:Lime;
+			}
 			.Unresolved
 			{
 				color:Orange;

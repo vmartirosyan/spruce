@@ -23,8 +23,7 @@ ENDIF (NOT FIFO_PATH)
 
 #SET(HAVE_XATTR_H 0)
 CHECK_INCLUDE_FILES ("sys/types.h;attr/xattr.h" HAVE_XATTR_H)
-message("Have xattr header? ${HAVE_XATTR_H}")
-
+CHECK_INCLUDE_FILES ("xfs/xfs.h" HAVE_XFS_H)
 
 SET (LIBRARY_OUTPUT_PATH
  ${PROJECT_BINARY_DIR}/lib
