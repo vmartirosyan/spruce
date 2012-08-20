@@ -1,0 +1,99 @@
+<!--    Ioctl.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			
+//			
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+<TestSet Name="Ioctl">
+	<Requires>sys/ioctl.h</Requires>
+	<Requires>linux/fs.h</Requires>
+	<Requires>fcntl.h</Requires>
+	
+	
+	<Test Name="SetGetFlags" FaultSimulationReady="true">
+		<Description>Try to set and get flag values. </Description>
+		<File count="1"/>
+		<Code>
+			
+			int  set_flags = FS_IMMUTABLE_FL;
+			int  get_flags, flags;
+			
+			// get flag initial values
+			Unres( ioctl(FDs[0], FS_IOC_GETFLAGS, &flags ) == -1 , "Error getting flag initial value. ");
+			
+			//Set test value to flags
+			Unres( ioctl(FDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting test value to flag. ");
+			
+			Fail( unlink(FilePaths[0].c_str()) == 0 ,  "File must be immutable but it isn't. ");
+			
+			//Get new flag value
+			Unres ( ioctl(FDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1 , "Error getting new flag value. ");
+		
+			//Restore the initial flag value
+			Unres( ioctl(FDs[0], FS_IOC_SETFLAGS, &flags ) == -1, "Error setting initial value to flag. ");
+			
+			Fail ( get_flags != set_flags, "Get and Set flag values do not match!" );
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name ="SetFlagsNotOwner" >
+		<Description> Try to change flag by not the file owner.</Description>
+		<File count="1"/>
+		<Code>
+			int flags = FS_APPEND_FL;
+			ENoAccessTest(ioctl(FDs[0], FS_IOC_SETFLAGS, &flags ), -1);
+		</Code>	
+	</Test>
+	
+	<Test Name ="InappropriateIoctl" >
+		<Description> Try to set inappropriate request for ioctl.</Description>
+		<File count="1"/>
+		<Code>
+			int version = rand();
+			ErrorTest( ioctl(FDs[0], FS_IOC_SETVERSION, &version ) ,-1, ENOTTY );
+		</Code> 
+	</Test>
+	<Test Name = "UnsupportedFlag">
+		<Description> Try to set unsupported flag value. </Description>
+		<File count="1"/>
+		<Code>
+			int flags = FS_SECRM_FL;
+			ErrorTest( ioctl(FDs[0], FS_IOC_SETFLAGS, &flags ), -1, EOPNOTSUPP );
+		</Code>
+	</Test>
+	<!-- shallow test -->
+	<Test Name="Fitrim" FaultSimulationReady="true">
+		<Dessription> FITRIM </Dessription>
+		<File count="1"/>
+		<Header>
+#ifdef FITRIM
+		</Header>
+		<Code>				
+			Fail ( ioctl(FDs[0], FITRIM, 0) == -1 , "Error FITRIM.");
+			return Shallow;				
+		</Code>
+		<Footer>
+#else
+	Error("FITRIM is not supported", Unsupported);
+#endif
+		</Footer>
+	</Test>	
+</TestSet>
