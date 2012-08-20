@@ -86,415 +86,423 @@ void OpenLogFiles(string browser, string logfolder, vector<string> XMLFilesToPro
 
 int main(int argc, char ** argv)
 {
-	KedrIntegrator kedr;
-	// The status of the whole process.
-	// If any of the tests does not succeed then FAULT is returned!
-	int Status = 0;
-	
-	
-	// Log files of the modules
-	vector<string> XMLFilesToProcess;
-	
-	//Prepare the allowed modules list
-	ModulesAvailable.push_back("syscall");
-	//ModulesAvailable.push_back("benchmark");
-	ModulesAvailable.push_back("fs-spec");
-	ModulesAvailable.push_back("leak-check");
-	ModulesAvailable.push_back("fault-sim");
-	
-	// Prepare the allowed FS list
-	FSAvailable.push_back("ext4");
-	FSAvailable.push_back("btrfs");
-	FSAvailable.push_back("xfs");	
-	FSAvailable.push_back("jfs");
-	
-	// Parse the arguments
-	ConfigValues options = ParseOptions(argc, argv);
-	ConfigValues configValues;
-	
-	// Parse the configuration file
-	ConfigValues::const_iterator configFile;
-	if ( ( configFile = options.find("c")) != options.end() )
+	try
 	{
-		configValues = ParseConfigFile(configFile->second);
-	}
-	else
-	{
-		cerr << "No configuration file is given. Aborting" << endl;
-		return NOCFGFILE;
-	}
-	
-	if ( configValues.empty() )
-	{
-		cerr << "Cannot parse the configuration file. Aborting" << endl;
-		return FAULT;
-	}	
-	// Execute the tests
-	// Check if the modules key exists in the config file
-	if ( configValues.find("modules") == configValues.end() )
-	{
-		cerr << "Cannot find modules list to be executed. Aborting." << endl;
-		return NOMODULES;
-	}
-	// Split the module list into module names
-	vector<string> Modules = SplitString(configValues["modules"], ';', ModulesAvailable);
-	
-	/*for ( int i = 0; i < Modules.size(); ++i )
-		cerr << Modules[i] << " ";
-	cerr << endl;*/
-	
-	// Search for the special modules ("fs-spec", "leak-check", "fault-sim" )
-	bool PerformFS_SpecificTests = false;
-	bool PerformLeakCheck = false;
-	bool PerformFaultSimulation = false;
-	vector<string>::iterator it = Modules.end();
-	if ( (it = find(Modules.begin(), Modules.end(), "fs-spec")) != Modules.end() )
-	{
-		cerr << "FS-specific module is enabled" << endl;
-		PerformFS_SpecificTests = true;
-		Modules.erase(it);
-	}
-	if ( (it = find(Modules.begin(), Modules.end(), "leak-check")) != Modules.end() )
-	{
-		cerr << "Leak checker module is enabled" << endl;
-		PerformLeakCheck = true;
-		Modules.erase(it);
-	}
-	if ( (it = find(Modules.begin(), Modules.end(), "fault-sim")) != Modules.end() )
-	{
-		cerr << "Fault simulation module is enabled" << endl;
-		PerformFaultSimulation = true;
-		Modules.erase(it);
-	}
-	
-	// Get the filesystem names to be tested
-	vector<string> FileSystems;
-	if ( configValues.find("fs") != configValues.end() )
-	{
-		FileSystems = SplitString(configValues["fs"], ';', FSAvailable);
-	}
-	else
-		FileSystems.push_back("current");
-	for ( int i = 0; i < FileSystems.size(); ++i )
-		cout << "FS : " << FileSystems[i] << endl;
-	// Find out the partition to be tested on. If there is no partition provided
-	// Spruce will use the current partition. 
-	// By default tests will be executed in the /tmp folder
-	string partition = "current";
-	string MountAt = "/tmp/spruce_test";
-	vector<string> MountOpts;
-	if ( configValues.find("partition") != configValues.end() )
-	{
-		partition = configValues["partition"];
-		if ( configValues.find("mount_at") != configValues.end() )
-			MountAt = configValues["mount_at"];
-		if ( configValues.find("mount_opts") != configValues.end() )
-			MountOpts = SplitString(configValues["mount_opts"], ';', vector<string>());
-	}
-	else
-	{
-		cerr << "Warning. No partition name provided. Using /tmp folder." << endl;
-		if ( chdir("/tmp") )
+		KedrIntegrator kedr;
+		// The status of the whole process.
+		// If any of the tests does not succeed then FAULT is returned!
+		int Status = 0;
+		
+		
+		// Log files of the modules
+		vector<string> XMLFilesToProcess;
+		
+		//Prepare the allowed modules list
+		ModulesAvailable.push_back("syscall");
+		//ModulesAvailable.push_back("benchmark");
+		ModulesAvailable.push_back("fs-spec");
+		ModulesAvailable.push_back("leak-check");
+		ModulesAvailable.push_back("fault-sim");
+		
+		// Prepare the allowed FS list
+		FSAvailable.push_back("ext4");
+		FSAvailable.push_back("btrfs");
+		FSAvailable.push_back("xfs");	
+		FSAvailable.push_back("jfs");
+		
+		// Parse the arguments
+		ConfigValues options = ParseOptions(argc, argv);
+		ConfigValues configValues;
+		
+		// Parse the configuration file
+		ConfigValues::const_iterator configFile;
+		if ( ( configFile = options.find("c")) != options.end() )
 		{
-			cerr << "Cannot change to /tmp folder. Aborting." << endl;
+			configValues = ParseConfigFile(configFile->second);
+		}
+		else
+		{
+			cerr << "No configuration file is given. Aborting" << endl;
+			return NOCFGFILE;
+		}
+		
+		if ( configValues.empty() )
+		{
+			cerr << "Cannot parse the configuration file. Aborting" << endl;
+			return FAULT;
+		}	
+		// Execute the tests
+		// Check if the modules key exists in the config file
+		if ( configValues.find("modules") == configValues.end() )
+		{
+			cerr << "Cannot find modules list to be executed. Aborting." << endl;
+			return NOMODULES;
+		}
+		// Split the module list into module names
+		vector<string> Modules = SplitString(configValues["modules"], ';', ModulesAvailable);
+		
+		/*for ( int i = 0; i < Modules.size(); ++i )
+			cerr << Modules[i] << " ";
+		cerr << endl;*/
+		
+		// Search for the special modules ("fs-spec", "leak-check", "fault-sim" )
+		bool PerformFS_SpecificTests = false;
+		bool PerformLeakCheck = false;
+		bool PerformFaultSimulation = false;
+		vector<string>::iterator it = Modules.end();
+		if ( (it = find(Modules.begin(), Modules.end(), "fs-spec")) != Modules.end() )
+		{
+			cerr << "FS-specific module is enabled" << endl;
+			PerformFS_SpecificTests = true;
+			Modules.erase(it);
+		}
+		if ( (it = find(Modules.begin(), Modules.end(), "leak-check")) != Modules.end() )
+		{
+			cerr << "Leak checker module is enabled" << endl;
+			PerformLeakCheck = true;
+			Modules.erase(it);
+		}
+		if ( (it = find(Modules.begin(), Modules.end(), "fault-sim")) != Modules.end() )
+		{
+			cerr << "Fault simulation module is enabled" << endl;
+			PerformFaultSimulation = true;
+			Modules.erase(it);
+		}
+		
+		// Get the filesystem names to be tested
+		vector<string> FileSystems;
+		if ( configValues.find("fs") != configValues.end() )
+		{
+			FileSystems = SplitString(configValues["fs"], ';', FSAvailable);
+		}
+		else
+			FileSystems.push_back("current");
+		for ( int i = 0; i < FileSystems.size(); ++i )
+			cout << "FS : " << FileSystems[i] << endl;
+		// Find out the partition to be tested on. If there is no partition provided
+		// Spruce will use the current partition. 
+		// By default tests will be executed in the /tmp folder
+		string partition = "current";
+		string MountAt = "/tmp/spruce_test";
+		vector<string> MountOpts;
+		if ( configValues.find("partition") != configValues.end() )
+		{
+			partition = configValues["partition"];
+			if ( configValues.find("mount_at") != configValues.end() )
+				MountAt = configValues["mount_at"];
+			if ( configValues.find("mount_opts") != configValues.end() )
+				MountOpts = SplitString(configValues["mount_opts"], ';', vector<string>());
+		}
+		else
+		{
+			cerr << "Warning. No partition name provided. Using /tmp folder." << endl;
+			if ( chdir("/tmp") )
+			{
+				cerr << "Cannot change to /tmp folder. Aborting." << endl;
+				return FAULT;
+			}
+		}
+			
+		// Where the output must be stored?
+		string logfolder = "/tmp";
+		if ( configValues.find("logfolder") != configValues.end() )
+		{
+			logfolder = configValues["logfolder"];
+		}
+		else
+		{
+			cerr << "Notice. No log folder specified. Using " << logfolder << "." << endl;
+		}
+
+		// Find out which browser must be used to view the log file
+		// If no browser name is specified, then the system will be executed in batch mode.
+		string browser = "";
+		if ( configValues.find("browser") != configValues.end() )
+		{
+			browser = configValues["browser"];
+		}
+		else
+		{
+			cerr << "Notice. No browser specified. Switching to batch mode." << endl;
+		}
+		
+		//mkdir((logfolder + "/xslt").c_str(), 0700);
+		
+		// A small hack for firefox to overcome a security problem
+		// Copy the transformation file to the log folder	
+		vector<string> args;
+		
+		args.push_back("cp");
+		args.push_back("-r");
+		args.push_back(INSTALL_PREFIX"/share/spruce/config/xslt/");
+		args.push_back(logfolder);
+		
+		UnixCommand * copy = new UnixCommand("cp");
+		if ( copy->Execute(args) == NULL )
+		{
+			cerr << "Cannot copy the transformation file. Error " << strerror(errno) << endl;
 			return FAULT;
 		}
-	}
-		
-	// Where the output must be stored?
-	string logfolder = "/tmp";
-	if ( configValues.find("logfolder") != configValues.end() )
-	{
-		logfolder = configValues["logfolder"];
-	}
-	else
-	{
-		cerr << "Notice. No log folder specified. Using " << logfolder << "." << endl;
-	}
-
-	// Find out which browser must be used to view the log file
-	// If no browser name is specified, then the system will be executed in batch mode.
-	string browser = "";
-	if ( configValues.find("browser") != configValues.end() )
-	{
-		browser = configValues["browser"];
-	}
-	else
-	{
-		cerr << "Notice. No browser specified. Switching to batch mode." << endl;
-	}
-	
-	//mkdir((logfolder + "/xslt").c_str(), 0700);
-	
-	// A small hack for firefox to overcome a security problem
-	// Copy the transformation file to the log folder	
-	vector<string> args;
-	
-	args.push_back("cp");
-	args.push_back("-r");
-	args.push_back(INSTALL_PREFIX"/share/spruce/config/xslt/");
-	args.push_back(logfolder);
-	
-	UnixCommand * copy = new UnixCommand("cp");
-	if ( copy->Execute(args) == NULL )
-	{
-		cerr << "Cannot copy the transformation file. Error " << strerror(errno) << endl;
-		return FAULT;
-	}
-	delete copy;
-		
-	// Create the mount point	
-	if ( mkdir(MountAt.c_str(), S_IRUSR | S_IWUSR ) == -1 && errno != EEXIST )
-	{
-		cerr << "Cannot create folder " << MountAt << endl;
-		cerr << "Error: " << strerror(errno) << endl;
-		return errno;
-	}
-	
-	// Go through the modules, execute them
-	// and collect the output
-	cerr << "Executing modules." << endl;
-	for ( vector<string>::iterator fs = FileSystems.begin(); fs != FileSystems.end(); ++fs )
-	{
-		cerr << "Filesystem : " << *fs << endl;
-		//stringstream str;
-		/*str << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n\
-			<?xml-stylesheet type=\"application/xml\" href=\"" << logfolder << "/xslt/processor.xslt\"?>\n\
-			<SpruceLog>";
-		*/
-		
-		
-		// Unmount the MountAt folder first (just in case)		
-		if ( umount( MountAt.c_str() ) != 0 && errno != EINVAL)
+		delete copy;
+			
+		// Create the mount point	
+		if ( mkdir(MountAt.c_str(), S_IRUSR | S_IWUSR ) == -1 && errno != EEXIST )
 		{
-			cerr << "Cannot unmount folder " << MountAt << endl;
+			cerr << "Cannot create folder " << MountAt << endl;
 			cerr << "Error: " << strerror(errno) << endl;
-			continue;
+			return errno;
 		}
-		cout << "Unmounted" << endl;
 		
-		// Check if KEDR needs to be loaded
-		if ( PerformLeakCheck || PerformFaultSimulation )
+		// Go through the modules, execute them
+		// and collect the output
+		cerr << "Executing modules." << endl;
+		for ( vector<string>::iterator fs = FileSystems.begin(); fs != FileSystems.end(); ++fs )
 		{
+			cerr << "Filesystem : " << *fs << endl;
+			//stringstream str;
+			/*str << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n\
+				<?xml-stylesheet type=\"application/xml\" href=\"" << logfolder << "/xslt/processor.xslt\"?>\n\
+				<SpruceLog>";
+			*/
+			
+			
+			// Unmount the MountAt folder first (just in case)		
+			if ( umount( MountAt.c_str() ) != 0 && errno != EINVAL)
+			{
+				cerr << "Cannot unmount folder " << MountAt << endl;
+				cerr << "Error: " << strerror(errno) << endl;
+				continue;
+			}
+			cout << "Unmounted" << endl;
+			
+			// Check if KEDR needs to be loaded
+			if ( PerformLeakCheck || PerformFaultSimulation )
+			{
+				try
+				{
+					cout << "Loading KEDR framework for module : " << *fs << endl;
+					kedr.SetTargetModule(*fs);
+					if ( PerformLeakCheck )
+						kedr.EnableMemLeakCheck();
+					if ( PerformFaultSimulation )
+						kedr.EnableFaultSimulation();
+					kedr.LoadKEDR();
+					cout << "KEDR is successfully loaded." << endl;
+					
+				}
+				catch (Exception e)
+				{
+					cerr << "KEDR cannot be loaded." << endl;
+					cerr << "Exception is thrown. " << e.GetMessage() << endl;
+					
+				}
+			}
+			// If there are any filesystems mentioned, then let's create the filesystem
+			UnixCommand * mkfs = new UnixCommand("mkfs." + *fs);
+			vector<string> args;		
+			args.push_back(partition);		
+			if ( *fs == "xfs" || *fs == "jfs" ) //Force if necessary
+				args.push_back("-f");
+			if ( *fs == "ext4" )
+				args.push_back("-F");
+			ProcessResult * res;
+			res = mkfs->Execute(args);
+			delete mkfs;
+			if ( res->GetStatus() != Success )
+			{
+				cerr << "Cannot create " << *fs << " filesystem on device " << partition << endl;
+				cerr << "Error: " << res->GetOutput() << endl;
+				continue;
+			}
+			cout << "Mkfs complete" << endl;
+			
+			
+			// Then mount the filesystem
+			UnixCommand * mnt = new UnixCommand("mount");
+			vector<string> mnt_args;		
+			mnt_args.push_back(partition);
+			mnt_args.push_back(MountAt);
+			
+			if ( !MountOpts.empty() )
+				mnt_args.insert(mnt_args.end(), MountOpts.begin(), MountOpts.end());
+			
+			res = mnt->Execute(mnt_args);
+			delete mnt;
+			if ( res->GetStatus() != Success )
+			{
+				cerr << "Cannot mount " << partition << " at folder " << MountAt << endl;
+				cerr << "Error: " << res->GetOutput() << endl;
+				continue;
+			}
+			/*
+			if ( mount(partition.c_str(), MountAt.c_str(), fs->c_str(), 0, 0) != 0 )
+			{
+				cerr << "Cannot mount " << partition << " at folder " << MountAt << endl;
+				cerr << "Error: " << strerror(errno) << endl;
+				continue;
+			}
+			*/
+			// Now change current dir to the newly mounted partition folder
+			if ( chdir(MountAt.c_str()) != 0 )
+			{
+				cerr << "Cannot change current dir to " << MountAt << endl;
+				cerr << "Error: " << strerror(errno) << endl;
+				continue;
+			}
+			cout << "Changed dir" << endl;
+			
+			// Before executing the modules prepare the environment
+			setenv("MountAt", MountAt.c_str(), 1);
+			setenv("Partition", partition.c_str(), 1);
+			setenv("FileSystem", (*fs).c_str(), 1);
+			setenv("INSTALL_PREFIX", INSTALL_PREFIX, 1);
+			
+			//str << "<FS Name=\"" << *fs << "\" >";
+			
+			for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
+			{
+				cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
+				UnixCommand * command = new UnixCommand(( (string)(INSTALL_PREFIX"/bin/" + (*module)).c_str()));
+				
+				string FileName = logfolder + "/" + *fs + "_" + *module + "_log.xml";
+				
+				ofstream of(FileName.c_str());
+				
+				of << "<SpruceLog><FS Name=\"" << *fs << "\">\n";
+				
+				of.close();
+				
+				XMLFilesToProcess.push_back(FileName);
+				
+				vector<string> module_args;
+				module_args.push_back(FileName);
+				
+				ProcessResult * result = command->Execute(module_args);
+				delete command;
+				
+				of.open(FileName.c_str(), ios_base::app);
+				
+				of << "</FS></SpruceLog>";
+				
+				of.close();
+				
+				//cerr << "res = " << result << endl;
+				//str << result->GetOutput() << endl;
+				Status |= result->GetStatus();
+				cerr << "Module " << *module << " exits with status " << result->GetStatus() << endl;
+			}
+			
+			// Should we perform the FS-specific tests?
+			if ( PerformFS_SpecificTests )
+			{
+				cerr << "Executing FS-specific tests for " << *fs << endl;
+				UnixCommand * command = new UnixCommand( (string)(INSTALL_PREFIX"/bin/" + *fs));
+				//auto_ptr<ProcessResult> result(command.Execute());
+				
+				string FileName = logfolder + "/" + *fs + "_" + *fs + "_log.xml";
+				
+				ofstream of(FileName.c_str());
+				
+				of << "<SpruceLog><FS Name=\"" << *fs << "\">\n";
+				
+				of.close();
+				
+				XMLFilesToProcess.push_back(FileName);
+				
+				vector<string> module_args;
+				module_args.push_back(FileName);
+				
+				ProcessResult * result = command->Execute(module_args);			
+				delete command;
+				
+				of.open(FileName.c_str(), ios_base::app);
+				
+				of << "</FS></SpruceLog>";
+				
+				of.close();
+				
+				
+				//cerr << "res = " << result << endl;
+				//str << result->GetOutput() << endl;
+				Status |= result->GetStatus();
+			}
+			if ( PerformFaultSimulation && kedr.IsRunning() )
+			{
+				// Do some fault simulation staff ;)
+			}
+			
+			//str << "</FS>";
+			
+			//str << "</SpruceLog>";
+			// Forward the output to the log file	
+			/*ofstream of((configValues["logfolder"] + "/spruce_log_" + *fs + ".xml").c_str());
+			of << str.str();
+			of.close();*/
+			
+			// Now change current dir to log folder to free the MountAt folder (to unmount later)
+			if ( chdir(logfolder.c_str()) != 0 )
+			{
+				cerr << "Cannot change current dir to " << MountAt << endl;
+				cerr << "Error: " << strerror(errno) << endl;
+				continue;
+			}
+			
+			// Unmount the MountAt folder
+			if ( umount( MountAt.c_str() ) != 0 && errno != EINVAL)
+			{
+				cerr << "Cannot unmount folder " << MountAt << endl;
+				cerr << "Error: " << strerror(errno) << endl;
+				//continue;
+			}
+			// Process the memory leak checker output
+			if ( PerformLeakCheck && kedr.IsRunning() )
+			{
+				string FileName = logfolder + "/" + *fs + "_leak_check_log.xml";
+				ofstream of(FileName.c_str());
+				
+				of << "<SpruceLog><FS Name=\"" << *fs << "\">\n";
+				
+				of.close();
+				
+				LeakChecker leak_check(FileName);
+				if ( leak_check.ProcessLeakCheckerOutput() )
+					XMLFilesToProcess.push_back(FileName);
+				
+				of.open(FileName.c_str(), ios_base::app);
+				
+				of << "\n</FS></SpruceLog>";
+				
+				of.close();
+			}
+			
+			// Unload the KEDR framework
 			try
 			{
-				cout << "Loading KEDR framework for module : " << *fs << endl;
-				kedr.SetTargetModule(*fs);
-				if ( PerformLeakCheck )
-					kedr.EnableMemLeakCheck();
-				if ( PerformFaultSimulation )
-					kedr.EnableFaultSimulation();
-				kedr.LoadKEDR();
-				cout << "KEDR is successfully loaded." << endl;
-				
+				if ( kedr.IsRunning() )
+				{
+					kedr.UnloadKEDR();
+					cout << "KEDR is successfully unloaded." << endl;
+				}
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
-				cerr << "KEDR cannot be loaded." << endl;
-				cerr << "Exception is thrown. " << e.GetMessage() << endl;
-				
+				cerr << "Error unloading KEDR. " << e.GetMessage() << endl;
 			}
-		}
-		// If there are any filesystems mentioned, then let's create the filesystem
-		UnixCommand * mkfs = new UnixCommand("mkfs." + *fs);
-		vector<string> args;		
-		args.push_back(partition);		
-		if ( *fs == "xfs" || *fs == "jfs" ) //Force if necessary
-			args.push_back("-f");
-		if ( *fs == "ext4" )
-			args.push_back("-F");
-		ProcessResult * res;
-		res = mkfs->Execute(args);
-		delete mkfs;
-		if ( res->GetStatus() != Success )
-		{
-			cerr << "Cannot create " << *fs << " filesystem on device " << partition << endl;
-			cerr << "Error: " << res->GetOutput() << endl;
-			continue;
-		}
-		cout << "Mkfs complete" << endl;
-		
-		
-		// Then mount the filesystem
-		UnixCommand * mnt = new UnixCommand("mount");
-		vector<string> mnt_args;		
-		mnt_args.push_back(partition);
-		mnt_args.push_back(MountAt);
-		
-		if ( !MountOpts.empty() )
-			mnt_args.insert(mnt_args.end(), MountOpts.begin(), MountOpts.end());
-		
-		res = mnt->Execute(mnt_args);
-		delete mnt;
-		if ( res->GetStatus() != Success )
-		{
-			cerr << "Cannot mount " << partition << " at folder " << MountAt << endl;
-			cerr << "Error: " << res->GetOutput() << endl;
-			continue;
-		}
-		/*
-		if ( mount(partition.c_str(), MountAt.c_str(), fs->c_str(), 0, 0) != 0 )
-		{
-			cerr << "Cannot mount " << partition << " at folder " << MountAt << endl;
-			cerr << "Error: " << strerror(errno) << endl;
-			continue;
-		}
-		*/
-		// Now change current dir to the newly mounted partition folder
-		if ( chdir(MountAt.c_str()) != 0 )
-		{
-			cerr << "Cannot change current dir to " << MountAt << endl;
-			cerr << "Error: " << strerror(errno) << endl;
-			continue;
-		}
-		cout << "Changed dir" << endl;
-		
-		// Before executing the modules prepare the environment
-		setenv("MountAt", MountAt.c_str(), 1);
-		setenv("Partition", partition.c_str(), 1);
-		setenv("FileSystem", (*fs).c_str(), 1);
-		setenv("INSTALL_PREFIX", INSTALL_PREFIX, 1);
-		
-		//str << "<FS Name=\"" << *fs << "\" >";
-		
-		for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
-		{
-			cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
-			UnixCommand * command = new UnixCommand(( (string)(INSTALL_PREFIX"/bin/" + (*module)).c_str()));
 			
-			string FileName = logfolder + "/" + *fs + "_" + *module + "_log.xml";
-			
-			ofstream of(FileName.c_str());
-			
-			of << "<SpruceLog><FS Name=\"" << *fs << "\">\n";
-			
-			of.close();
-			
-			XMLFilesToProcess.push_back(FileName);
-			
-			vector<string> module_args;
-			module_args.push_back(FileName);
-			
-			ProcessResult * result = command->Execute(module_args);
-			delete command;
-			
-			of.open(FileName.c_str(), ios_base::app);
-			
-			of << "</FS></SpruceLog>";
-			
-			of.close();
-			
-			//cerr << "res = " << result << endl;
-			//str << result->GetOutput() << endl;
-			Status |= result->GetStatus();
-			cerr << "Module " << *module << " exits with status " << result->GetStatus() << endl;
-		}
-		
-		// Should we perform the FS-specific tests?
-		if ( PerformFS_SpecificTests )
-		{
-			cerr << "Executing FS-specific tests for " << *fs << endl;
-			UnixCommand * command = new UnixCommand( (string)(INSTALL_PREFIX"/bin/" + *fs));
-			//auto_ptr<ProcessResult> result(command.Execute());
-			
-			string FileName = logfolder + "/" + *fs + "_" + *fs + "_log.xml";
-			
-			ofstream of(FileName.c_str());
-			
-			of << "<SpruceLog><FS Name=\"" << *fs << "\">\n";
-			
-			of.close();
-			
-			XMLFilesToProcess.push_back(FileName);
-			
-			vector<string> module_args;
-			module_args.push_back(FileName);
-			
-			ProcessResult * result = command->Execute(module_args);			
-			delete command;
-			
-			of.open(FileName.c_str(), ios_base::app);
-			
-			of << "</FS></SpruceLog>";
-			
-			of.close();
-			
-			
-			//cerr << "res = " << result << endl;
-			//str << result->GetOutput() << endl;
-			Status |= result->GetStatus();
-		}
-		if ( PerformFaultSimulation && kedr.IsRunning() )
-		{
-			// Do some fault simulation staff ;)
-		}
-		
-		//str << "</FS>";
-		
-		//str << "</SpruceLog>";
-		// Forward the output to the log file	
-		/*ofstream of((configValues["logfolder"] + "/spruce_log_" + *fs + ".xml").c_str());
-		of << str.str();
-		of.close();*/
-		
-		// Now change current dir to log folder to free the MountAt folder (to unmount later)
-		if ( chdir(logfolder.c_str()) != 0 )
-		{
-			cerr << "Cannot change current dir to " << MountAt << endl;
-			cerr << "Error: " << strerror(errno) << endl;
-			continue;
-		}
-		
-		// Unmount the MountAt folder
-		if ( umount( MountAt.c_str() ) != 0 && errno != EINVAL)
-		{
-			cerr << "Cannot unmount folder " << MountAt << endl;
-			cerr << "Error: " << strerror(errno) << endl;
-			//continue;
-		}
-		// Process the memory leak checker output
-		if ( PerformLeakCheck && kedr.IsRunning() )
-		{
-			string FileName = logfolder + "/" + *fs + "_leak_check_log.xml";
-			ofstream of(FileName.c_str());
-			
-			of << "<SpruceLog><FS Name=\"" << *fs << "\">\n";
-			
-			of.close();
-			
-			LeakChecker leak_check(FileName);
-			if ( leak_check.ProcessLeakCheckerOutput() )
-				XMLFilesToProcess.push_back(FileName);
-			
-			of.open(FileName.c_str(), ios_base::app);
-			
-			of << "\n</FS></SpruceLog>";
-			
-			of.close();
-		}
-		
-		// Unload the KEDR framework
-		try
-		{
-			if ( kedr.IsRunning() )
+			// Open the log files in the selected browser
+			if ( browser != "" )
 			{
-				kedr.UnloadKEDR();
-				cout << "KEDR is successfully unloaded." << endl;
+				OpenLogFiles(browser, logfolder, XMLFilesToProcess);
+				XMLFilesToProcess.erase(XMLFilesToProcess.begin(), XMLFilesToProcess.end());
 			}
-		}
-		catch(Exception e)
-		{
-			cerr << "Error unloading KEDR. " << e.GetMessage() << endl;
-		}
-		
-		// Open the log files in the selected browser
-		if ( browser != "" )
-		{
-			OpenLogFiles(browser, logfolder, XMLFilesToProcess);
-			XMLFilesToProcess.erase(XMLFilesToProcess.begin(), XMLFilesToProcess.end());
-		}
+		}		
+		return ( Status == 0 ) ? SUCCESS : FAULT;
 	}
-	return ( Status == 0 ) ? SUCCESS : FAULT;
+	catch (Exception e)
+	{
+		cerr << "Exception is thrown: " << e.GetMessage() << endl;
+		return FAULT;
+	}
 	//return 0;
 }
 
