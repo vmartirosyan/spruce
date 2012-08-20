@@ -31,11 +31,16 @@ using namespace std;
 class KedrIntegrator
 {
 public:
-	KedrIntegrator(string module = ""):
+	KedrIntegrator():
+		DebugFSPath("/sys/kernel/debug")
+	{
+		
+	}
+	KedrIntegrator(string module):
 		DebugFSPath("/sys/kernel/debug")
 	{
 		if ( !IsKEDRInstalled() )
-			throw (new Exception("KEDR framework is not installed on the system."));
+			throw (Exception("KEDR framework is not installed on the system."));
 			
 		if ( module != "" )
 			if ( !SetTargetModule(module) )
