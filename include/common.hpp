@@ -261,6 +261,14 @@ public:\
 		res.AddResult(tr);\
 		return res;\
 	}\
+	virtual TestResultCollection RunFaultyTests()\
+	{\
+		cerr << "EmptyTestSet" << endl;\
+		TestResultCollection res;\
+		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name);\
+		res.AddResult(tr);\
+		return res;\
+	}\
 };
 
 #endif /* COMMON_HPP */
