@@ -22,7 +22,6 @@
 -->
 <TestSet Name="msync">
 	<Requires>sys/mman.h</Requires>
-	<Internal></Internal>
 	<Test Name="MsyncNormal">
 		<Description>set protection on a region of memory</Description>
 		<File count="1"/>

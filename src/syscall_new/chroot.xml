@@ -23,7 +23,6 @@
 -->
 
 <TestSet Name="chroot">
-	<Requires>pwd.h</Requires>				
 	<Test Name="ChrootNormal" FaultSimulationReady="true">
 		<Description>chroot() changes the root directory of the calling process to that specified in path.</Description>
 		<Code>

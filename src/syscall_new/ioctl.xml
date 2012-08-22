@@ -25,7 +25,6 @@
 <TestSet Name="ioctl">	
 	<Requires>linux/fs.h</Requires>
 	<Requires>sys/ioctl.h</Requires>				
-	<Internal></Internal>
 	<Test Name="IoctlGetSetVersion" FaultSimulationReady="true">
 		<Description>Set and get version.</Description>
 		<File count="1"/>

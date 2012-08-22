@@ -23,7 +23,6 @@
 -->
 
 <TestSet Name="open">	
-	<Internal></Internal>
 	<Test Name="OpenNormal" FaultSimulationReady="true">
 		<Description>Open and possibly create a file or device.</Description>
 		<Code>

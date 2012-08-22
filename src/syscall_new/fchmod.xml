@@ -23,7 +23,6 @@
 -->
 
 <TestSet Name="fchmod">
-	<Requires>pwd.h</Requires>				
 	<Internal>
 	Status PermissionsTest(mode_t open_mode)
 	{
@@ -54,8 +53,7 @@
 		}
 		catch (Exception ex)
 		{
-			cerr << ex.GetMessage();
-			return Fail;
+			Fail(true, ex.GetMessage());
 		}
 	}
 	</Internal>

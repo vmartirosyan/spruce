@@ -22,7 +22,6 @@
 -->
 
 <TestSet Name="fstat">
-	<Internal></Internal>
 	<Test Name="FstatNormal" FaultSimulationReady="true">
 		<Description>This function returns information about a file.</Description>
 		<File count="1" />

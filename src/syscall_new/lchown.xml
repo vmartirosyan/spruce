@@ -23,7 +23,6 @@
 -->
 
 <TestSet Name="lchown">	
-	<Internal></Internal>
 	<Test Name="LchownNormal" FaultSimulationReady="true">
 		<Description>Change ownership of a file.</Description>
 		<File count="1" />

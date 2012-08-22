@@ -26,7 +26,6 @@
 	<Requires>sys/time.h</Requires>
 	<Requires>sys/resource.h</Requires>
 	<Requires>linux/version.h</Requires>
-	<Internals></Internals>
 	<Test Name="MlockNormal">
 		<Description>lock memory</Description>
 		<File count="1"/>

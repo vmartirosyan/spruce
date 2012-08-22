@@ -24,8 +24,6 @@
 
 <TestSet Name="close">
 	<Requires>fcntl.h</Requires>
-	<Requires>pwd.h</Requires>				
-	<Internal></Internal>
 	<Test Name="CloseCorrectDescriptorTest" FaultSimulationReady="true">
 		<Description>close()  closes  a  file descriptor, so that it no longer refers to any file and may be reused.</Description>			
 		<File count="1" />

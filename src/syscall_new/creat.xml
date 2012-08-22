@@ -22,9 +22,7 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="creat">
-	<Requires>pwd.h</Requires>				
-	<Internal></Internal>
+<TestSet Name="creat">		
 	<Test Name="CreatNormal" FaultSimulationReady="true">
 		<Description>Open and possibly create a file or device.</Description>			
 		<Code>

@@ -23,7 +23,6 @@
 -->
 
 <TestSet Name="mkdir_rmdir">	
-	<Internal></Internal>
 	<Test Name="MkdirRmdirNormal" FaultSimulationReady="true">
 		<Description>Create and remove a directory.</Description>
 		<Code>

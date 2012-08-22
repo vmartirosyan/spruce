@@ -23,7 +23,6 @@
 -->
 
 <TestSet Name="lseek">	
-	<Internal></Internal>
 	<Test Name="LseekNormal1" FaultSimulationReady="true">
 		<Description>SEEK_SET - The offset is set to offset bytes.</Description>
 		<File count="1"/>

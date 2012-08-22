@@ -23,8 +23,6 @@
 -->
 
 <TestSet Name="fchown">
-	<Requires>pwd.h</Requires>				
-	<Internal></Internal>
 	<Test Name="FchownNormal" FaultSimulationReady="true">
 		<Description>.</Description>
 		<File count="1" />

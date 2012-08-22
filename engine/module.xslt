@@ -143,14 +143,16 @@ int main(int argc, char ** argv)
 	TestResultCollection Results;
 	try
 	{
-		<xsl:variable name="RunTest" value="Normal">
-			<xsl:if test="@RunTest">
-				<xsl:value-of select="@RunTest"/>
-			</xsl:if>
-		</xsl:variable>
 		<xsl:for-each select="TestSet">
 			<xsl:value-of select="@Name" />Tests <xsl:value-of select="@Name" />_tests;
-		Results.Merge(<xsl:value-of select="@Name" />_tests.RunNormalTests());
+			<xsl:choose>
+				<xsl:when test="@RunTests">
+					Results.Merge(<xsl:value-of select="@Name" />_tests.Run<xsl:value-of select="@RunTests"/>Tests());
+				</xsl:when>
+				<xsl:otherwise>
+					Results.Merge(<xsl:value-of select="@Name" />_tests.RunNormalTests());
+				</xsl:otherwise>
+			</xsl:choose>
 		</xsl:for-each>
 		
 		ofstream of(argv[1], ios_base::app);
