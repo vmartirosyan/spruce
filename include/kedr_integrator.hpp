@@ -32,12 +32,12 @@ class KedrIntegrator
 {
 public:
 	KedrIntegrator():
-		DebugFSPath("/sys/kernel/debug")
+		DebugFSPath("/sys/kernel/debug"), _IsRunning(false)
 	{
 		
 	}
 	KedrIntegrator(string module):
-		DebugFSPath("/sys/kernel/debug")
+		DebugFSPath("/sys/kernel/debug"), _IsRunning(false)
 	{
 		if ( !IsKEDRInstalled() )
 			throw (Exception("KEDR framework is not installed on the system."));
