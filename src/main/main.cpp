@@ -428,7 +428,36 @@ int main(int argc, char ** argv)
 			}
 			if ( PerformFaultSimulation && kedr.IsRunning() )
 			{
-				// Do some fault simulation staff ;)
+				cerr << "Executing fault simulation tests for " << *fs << endl;
+				UnixCommand * command = new UnixCommand( (string)(INSTALL_PREFIX"/bin/fault_sim"));
+				//auto_ptr<ProcessResult> result(command.Execute());
+				
+				string FileName = logfolder + "/" + *fs + "_fault_sim_log.xml";
+				
+				ofstream of(FileName.c_str());
+				
+				of << "<SpruceLog><FS Name=\"" << *fs << "\">\n";
+				
+				of.close();
+				
+				XMLFilesToProcess.push_back(FileName);
+				
+				vector<string> module_args;
+				module_args.push_back(FileName);
+				
+				ProcessResult * result = command->Execute(module_args);			
+				delete command;
+				
+				of.open(FileName.c_str(), ios_base::app);
+				
+				of << "</FS></SpruceLog>";
+				
+				of.close();
+				
+				
+				//cerr << "res = " << result << endl;
+				//str << result->GetOutput() << endl;
+				Status |= result->GetStatus();
 			}
 			
 			//str << "</FS>";

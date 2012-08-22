@@ -15,4 +15,5 @@ add_subdirectory (main)
 add_subdirectory (syscall_new)
 #add_subdirectory (syscall)
 #add_subdirectory (utils)
+add_subdirectory (fault_sim)
 
