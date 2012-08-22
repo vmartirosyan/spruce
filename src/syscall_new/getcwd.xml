@@ -23,7 +23,6 @@
 -->
 
 <TestSet Name="getcwd">
-	<Internal></Internal>
 	<Test Name="GetcwdNormal" FaultSimulationReady="true">
 		<Description>Get current working directory.</Description>
 		<Code>			

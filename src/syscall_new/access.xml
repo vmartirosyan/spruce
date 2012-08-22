@@ -22,9 +22,6 @@
 -->
 
 <TestSet Name="access">	
-	<Requires>linux/limits.h</Requires>
-	<Requires>pwd.h</Requires>				
-	<Internal></Internal>
 	<Test Name="AccessNormal" FaultSimulationReady="true">
 		<Description>access()  checks  whether the calling process can access the file pathname.</Description>
 		<File count="1"/>

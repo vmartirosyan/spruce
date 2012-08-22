@@ -22,7 +22,6 @@
 -->
 
 <TestSet Name="ftruncate">	
-	<Internal></Internal>
 	<Test Name="FtruncateNormalIncrease" FaultSimulationReady="true">
 		<Description></Description>
 		<File count="1"/>

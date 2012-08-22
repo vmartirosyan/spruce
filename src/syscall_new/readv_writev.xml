@@ -24,7 +24,6 @@
 
 <TestSet Name="readv_writev">	
 	<Requires>sys/uio.h</Requires>
-	<Requires>limits.h</Requires>
 	<Test Name="ReadvWritevNormal" FaultSimulationReady="true">
 		<Description>Read or write data into multiple buffers.</Description>
 		<File count="1"/>

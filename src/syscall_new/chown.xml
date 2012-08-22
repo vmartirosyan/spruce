@@ -23,7 +23,6 @@
 -->
 
 <TestSet Name="chown">
-	<Requires>pwd.h</Requires>				
 	<Test Name="ChownNormal" FaultSimulationReady="true">
 		<Description>Change ownership of a file.</Description>
 		<File count="1" />

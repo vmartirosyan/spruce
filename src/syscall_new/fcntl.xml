@@ -26,7 +26,6 @@
 <TestSet Name="fcntl">
 	<Requires>fcntl.h</Requires>
 	<Requires>linux/version.h</Requires>
-	<Internal></Internal>
 	<!-- Normal functionality tests -->
 	<Test Name="FcntlDupFileDescriptor" FaultSimulationReady="true">
 		<Description>F_DUPFD: Find the lowest numbered available file descriptor greater than or equal to arg and make it be a copy of fd.</Description>
@@ -36,12 +35,12 @@
 			const char *buff = "test";
 			char nbuff[5];
 			long _arg = rand() % 99;
-			cerr << "arg: " << _arg << endl;
+			
 			if( (new_fd = fcntl(FDs[0], F_DUPFD, _arg)) == -1 )
 			{
 				Error("Error in fcntl.", Fail);
 			}
-			cerr << "new_fd: " << new_fd << endl;
+			
 			Unres ( write(FDs[0], buff, strlen(buff)) == -1, "Error in writing. ");
 		
 			Unres ( lseek(FDs[0], 0, SEEK_SET) == -1, "Error in lseek.");
@@ -52,7 +51,6 @@
 
 			if( strncmp(buff, nbuff, strlen(buff)) != 0 )
 			{
-				cerr << buff << " != " << nbuff << endl; 
 				Error("Wrong or corrupted data.", Fail);
 			}
 			if (new_fd < _arg)

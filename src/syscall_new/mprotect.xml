@@ -22,7 +22,6 @@
 -->
 <TestSet Name="mprotect">
 	<Requires>sys/mman.h</Requires>
-	<Internal></Internal>
 	<Test Name="MprotectNormal">
 		<Description>set protection on a region of memory</Description>
 		<File count="1"/>
@@ -89,7 +88,7 @@
 				Error("System call mmap failed", Unresolved);
 			}
 			
-			if(mprotect(addr + 1, length, PROT_NONE) != -1 || errno != EINVAL)
+			if(mprotect((char*)addr + 1, length, PROT_NONE) != -1 || errno != EINVAL)
 			{
 				Error("EINVAL error expected: memory was not mapped");
 				status = Fail;

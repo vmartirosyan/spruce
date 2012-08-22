@@ -32,8 +32,7 @@ struct old_linux_dirent {
 	off_t          d_off;
 	unsigned short d_reclen;
 	char           d_name[NAME_MAX + 1];
-	};
-	old_linux_dirent dir;
+	};	
 	</Header>
 	<Requires>sys/syscall.h</Requires>
 	<Test Name="ReaddirNormal" FaultSimulationReady="true">
@@ -56,7 +55,8 @@ struct old_linux_dirent {
 	</Test>
 	<Test Name="ReaddirBadFile1">
 		<Description>Bad file descriptor.</Description>
-		<Code>			
+		<Code>
+			old_linux_dirent dir;
 			ErrorTest( syscall(SYS_readdir, -1, &dir, 0), -1, EBADF);
 		</Code>
 	</Test>
@@ -65,12 +65,14 @@ struct old_linux_dirent {
 		<Dir count="1"/>
 		<Code>
 			close(DirDs[0]);
+			old_linux_dirent dir;
 			ErrorTest( syscall(SYS_readdir, DirDs[0], &dir, 0), -1, EBADF);
 		</Code>
 	</Test>
 	<Test Name="ReaddirNotDir">
 		<Description>dirfd does not refer to a directory.</Description>
 		<Code>
+			old_linux_dirent dir;
 			ErrorTest( syscall(SYS_readdir, 0, &dir, 0), -1, ENOTDIR);
 		</Code>
 	</Test>
@@ -92,6 +94,7 @@ struct old_linux_dirent {
 		<Description>No such directory.</Description>
 		<Dir count="1"/>
 		<Code>
+			old_linux_dirent dir;
 			Unres(rmdir(DirPaths[0].c_str()) == -1, "Cannot remove directory.");
 			ErrorTest( syscall(SYS_readdir, DirDs[0], &dir, 0), -1, ENOENT);
 		</Code>

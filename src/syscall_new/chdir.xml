@@ -24,8 +24,6 @@
 
 <TestSet Name="chdir">	
 	<Requires>fcntl.h</Requires>
-	<Requires>pwd.h</Requires>				
-	<Internal></Internal>
 	<Test Name="ChdirNormal" FaultSimulationReady="true">
 		<Description>chdir() changes the current working directory of the calling process to the directory specified in path.</Description>			
 		<Dir count="1"/>

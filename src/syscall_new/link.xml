@@ -23,7 +23,6 @@
 -->
 
 <TestSet Name="link">	
-	<Internal></Internal>
 	<Test Name="LinkNormal" FaultSimulationReady="true">
 		<Description></Description>
 		<File count="1"/>

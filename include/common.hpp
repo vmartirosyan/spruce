@@ -28,6 +28,8 @@
 #include <iostream>
 #include <vector>
 #include <pwd.h>
+#include <linux/limits.h>
+#include <limits.h>
 using std::string;
 using std::cout;
 using std::cerr;

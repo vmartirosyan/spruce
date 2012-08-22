@@ -23,7 +23,6 @@
 -->
 
 <TestSet Name="linkat">	
-	<Internal></Internal>
 	<Test Name="LinkatNormal" FaultSimulationReady="true">
 		<Description>Create a file link relative to directory file descriptors.</Description>
 		<Dir count="1">

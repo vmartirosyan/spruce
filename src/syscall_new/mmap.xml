@@ -25,7 +25,6 @@
 	<Requires>sys/mman.h</Requires>
 	<Requires>sys/user.h</Requires>
 	<Requires>linux/version.h</Requires>
-	<Internal></Internal>
 	<Test Name="MmapNormal">
 		<Description>map files or devices into memory</Description>
 		<File count="1"/>
@@ -352,7 +351,6 @@
 	<Test Name="Mmap2ErrBadf">
 		<Description>fd is not a valid file descriptor</Description>
 		<Code>
-			void * addr = 0;
 			size_t length = 10;
 			int prot = PROT_READ;
 			int flags = MAP_PRIVATE;

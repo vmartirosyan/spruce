@@ -23,7 +23,6 @@
 -->
 
 <TestSet Name="mknod">	
-	<Internal></Internal>
 	<Test Name="MknodNormal1" FaultSimulationReady="true">
 		<Description>The system call mknod() creates a file system node (file, device special file or named pipe) named pathname, with attributes specified by mode and dev.</Description>
 		<Code>
@@ -110,7 +109,7 @@
 					cerr << "Error in unlinking node: "<<strerror(errno);					
 				}
 			}
-			return Success;
+			return status;
 		</Code>
 	</Test>
 	<Test Name="MknodPathExists">
