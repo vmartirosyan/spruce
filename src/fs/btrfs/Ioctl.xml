@@ -81,9 +81,10 @@
 			ErrorTest( ioctl(FDs[0], FS_IOC_SETFLAGS, &flags ), -1, EOPNOTSUPP );
 		</Code>
 	</Test>
-	<!-- shallow test -->
-	<Test Name="Fitrim" FaultSimulationReady="true">
-		<Dessription> FITRIM </Dessription>
+	
+	<!-- shallow tests -->
+	<Test Name="Fitrim" >
+		<Description>FITRIM shallow test</Description>
 		<File count="1"/>
 		<Header>
 #ifdef FITRIM
@@ -161,11 +162,19 @@
 		</Code>
 	</Test>
 	
-	<Test Name="BTRFS_IOC_DEFRAG">
-		<Description>BTRFS_IOC_DEFRAG.</Description>
+	<Test Name="DefragFile">
+		<Description>Defragment file.</Description>
 		<File count="1"/>
 		<Code>
 			ioctl( FDs[0], BTRFS_IOC_DEFRAG, 0 );
+			return Shallow;
+		</Code>
+	</Test>
+	<Test Name="DefragDirectory">
+		<Description>Defragment the entire b-tree under the directory.</Description>
+		<Dir count="1"/>
+		<Code>
+			ioctl( DirDs[0], BTRFS_IOC_DEFRAG, 0 );
 			return Shallow;
 		</Code>
 	</Test>
