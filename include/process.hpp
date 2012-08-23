@@ -46,24 +46,13 @@ public:
 	ProcessResult(int s, string output):
 		_status(s),	_output(output) 
 	{
-		/*if ( _output.size() > 1000 )
-		{
-			ofstream of("/tmp/tests", ios_base::app);
-	
-			of << "Process result: output : " << _output << endl; 
 		
-			of.close();
-		}*/
 	}
 								
 	ProcessResult(const ProcessResult & pr) :
 		_status(pr._status), _output(pr._output) 
 	{
-		/*ofstream of("/tmp/tests", ios_base::app);
-	
-		of << "copy: output : " << _output << endl; 
 		
-		of.close();*/
 	}
 	
 	virtual ~ProcessResult();

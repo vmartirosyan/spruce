@@ -20,6 +20,9 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
+#ifndef KEDR_INTEGRATOR
+#define KEDR_INTEGRATOR
+
 #include <exception.hpp>
 #include <UnixCommand.hpp>
 #include <sys/utsname.h>
@@ -32,12 +35,12 @@ class KedrIntegrator
 {
 public:
 	KedrIntegrator():
-		DebugFSPath("/sys/kernel/debug"), _IsRunning(false)
+		_IsRunning(false)
 	{
 		
 	}
 	KedrIntegrator(string module):
-		DebugFSPath("/sys/kernel/debug"), _IsRunning(false)
+		_IsRunning(false)
 	{
 		if ( !IsKEDRInstalled() )
 			throw (Exception("KEDR framework is not installed on the system."));
@@ -72,7 +75,7 @@ public:
 	}
 	
 	// The process ID is set to the curent PID
-	bool SetIndicator(string point, string indicator, string expression)
+	static bool SetIndicator(string point, string indicator, string expression)
 	{
 		try
 		{
@@ -97,13 +100,28 @@ public:
 			return false;
 		}
 	}
+	static bool ClearIndicator(string point)
+	{
+		try
+		{
+			ofstream of((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/current_indicator").c_str());
+			of << "none";
+			of.close();
+			cerr << "Indicator is cleared." << endl;
+			return true;
+		}
+		catch (...)
+		{
+			return false;
+		}
+	}
 	
 	bool LoadKEDR()
 	{
 		// Try to unload KEDR first
 		UnloadKEDR();
 		
-		MountDebugFS();
+		//MountDebugFS();
 		
 		UnixCommand kedr("kedr");
 		vector<string> args;
@@ -165,13 +183,13 @@ public:
 	}
 	
 protected:
-	string DebugFSPath;
+	static string DebugFSPath;
 	string TargetModule;
 	bool MemLeakCheckEnabled;
 	bool FaultSimulationEnabled;
 	vector<string> KEDRProfiles;
 	bool _IsRunning;
-	bool MountDebugFS()
+	static bool MountDebugFS()
 	{
 		// Is DebugFS already mounted?
 		UnixCommand mount("mount");
@@ -227,7 +245,7 @@ protected:
 		vector<string> args;
 		args.push_back(ModulesDir);
 		args.push_back("-name");
-		args.push_back(module + ".ko");
+		args.push_back(module + ".ko*");
 		
 		ProcessResult * res = find.Execute(args);
 		
@@ -317,3 +335,4 @@ protected:
 		cerr << res->GetOutput() << endl;
 	}
 };
+#endif // #ifndef KEDR_INTEGRATOR

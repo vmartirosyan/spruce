@@ -42,17 +42,8 @@ public:
 	}
 	
 	virtual ProcessResult * Execute(vector<string> args = vector<string>())
-	{
-		ofstream of("/tmp/test", ios_base::app);
-		
+	{		
 		ProcessResult * res = ( ( _mode == ProcessBackground ) ? BackgroundProcess::Execute(args) : Process::Execute(args) );
-		//ProcessResult * res = Process::Execute(args);
-		
-		
-		
-		of << res << "\tOutput \"" << res->GetOutput().substr(0,30) << "\"" << endl;
-		
-		of.close();		
 		
 		return res;
 	}

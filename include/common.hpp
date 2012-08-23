@@ -72,6 +72,7 @@ struct FSimInfo
 {\
 	if (_fsim_enabled)\
 	{\
+		KedrIntegrator::SetIndicator(_fsim_point, "common", _fsim_expression);\
 		cerr << "Fault simulation is enabled for module " << FileSystem << "(" << _fsim_point << ", " << _fsim_expression << ")" << endl;\
 	}\
 }
@@ -80,6 +81,7 @@ struct FSimInfo
 {\
 	if (_fsim_enabled)\
 	{\
+		KedrIntegrator::ClearIndicator(_fsim_point);\
 		cerr << "Fault simulation is disabled for module " << FileSystem << "(" << _fsim_point << ", " << _fsim_expression << ")" << endl;\
 	}\
 }

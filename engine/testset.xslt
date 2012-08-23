@@ -36,6 +36,7 @@
 	</xsl:for-each> 
 	
 #include &lt;process.hpp>
+#include &lt;kedr_integrator.hpp>
 	<xsl:variable name="TestSetName" select="@Name" />
 	
 
@@ -93,10 +94,17 @@ public:
 		TestResultCollection res;
 		for ( unsigned int i = 0; i &lt; _fsim_info_vec.size(); ++i )
 		{
-			_fsim_point = _fsim_info_vec[i].Point;
-			_fsim_expression = _fsim_info_vec[i].Expression;
+			_fsim_point = _fsim_info_vec[i].Point;			
 			for ( unsigned int j = 0; j &lt; _fsim_info_vec[i].Count; ++j )
 			{
+				if ( _fsim_info_vec[i].Expression != "" )
+					_fsim_expression = _fsim_info_vec[i].Expression;
+				else
+				{
+					char buf[3];
+					sprintf(buf, "%d", i);
+					_fsim_expression = "(times%" + (string)buf + " = 0)";
+				}
 				for ( unsigned int k = 0; k &lt; _fsim_testCount; ++k)
 				{
 					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))_fsim_tests[k]);
