@@ -20,10 +20,13 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
+#include <kedr_integrator.hpp>
 #include <process.hpp>
 #include <signal.h>
 #include <fstream>
 using namespace std;
+
+string KedrIntegrator::DebugFSPath = "/sys/kernel/debug";
 
 char * StatusMessages[] = {
 	(char * )"Success",

@@ -125,7 +125,7 @@
 		</Code>
 	</Test>
 	<FaultSimulation>
-		<Simulate point="kmalloc" count="1" />
+		<Simulate point="kmalloc" count="10" />
 		<Simulate point="copy_to_user" expression="(times%3 = 0)" />
 		<!-- ... -->
 	</FaultSimulation>
