@@ -238,7 +238,7 @@
 		</Code>
 	</Test>
 	<Test Name="Fitrim" FaultSimulationReady="true">
-		<Dessription>FITRIM?</Dessription>
+		<Description>FITRIM?</Description>
 		<File count="1"/>
 		<Header>
 #ifdef FITRIM
