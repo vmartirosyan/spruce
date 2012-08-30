@@ -17,28 +17,41 @@
 		<xsl:variable name="Item" select="@Name" />
 		<xsl:variable name="TestsTotal" select="count(//Module[@Name=$Module]/Item[@Name=$Item])" />
 		<xsl:variable name="TestsPassed" select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Success']) + count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Shallow'])" />
-		<span class="Success">
-			<xsl:if test="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Fail'])">
-				<xsl:attribute name="class">					
-					Fail
-				</xsl:attribute>
-			</xsl:if>			
+		<span class="Success">			
+			<xsl:if test="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Timeout'])">
+				<xsl:attribute name="class">Timeout</xsl:attribute>
+			</xsl:if>
+			<xsl:if test="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Unsupported'])">
+				<xsl:attribute name="class">Unsupported</xsl:attribute>
+			</xsl:if>
+			<xsl:if test="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Unresolved'])">
+				<xsl:attribute name="class">Unresolved</xsl:attribute>
+			</xsl:if>
+			<xsl:if test="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Failed'])">
+				<xsl:attribute name="class">Failed</xsl:attribute>
+			</xsl:if>
+			<xsl:choose>
+				<xsl:when test="$TestsTotal != $TestsPassed">
+					<a href="#" style="text-decoration:none">
+						<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Module" />_<xsl:value-of select="$Item" />')</xsl:attribute> +</a>
+				</xsl:when>
+				<xsl:otherwise>&#160;&#160;&#160;</xsl:otherwise>
+			</xsl:choose>
+			
 		<xsl:value-of select="$Item" />
 		(Passed : <xsl:value-of select="$TestsPassed" />/<xsl:value-of select="$TestsTotal" />)
-		</span>
-		<a href="#" style="text-decoration:none">
-		<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Module" />_<xsl:value-of select="$Item" />')</xsl:attribute> +</a>
+		</span>		
 		<br />
 		<div style="border: solid 1px black; padding: 5px; display:none;">	
 			<xsl:attribute name="id"><xsl:value-of select="$Module" />_<xsl:value-of select="$Item" /></xsl:attribute>
 			<xsl:for-each select="//Module[@Name=$Module]/Item[@Name=$Item]">
-				<div>
-					<xsl:if test="Status!='Success' and Status!='Shallow'">
+				<xsl:if test="Status!='Success' and Status!='Shallow'">
+					<div>
 						<xsl:attribute name="class"><xsl:value-of select="Status" /></xsl:attribute>
 						<!--xsl:value-of select="Operation" />:--><xsl:value-of select="Status" /><br />
 						<pre><xsl:value-of select="Output" /></pre>
-					</xsl:if>
-				</div>
+					</div>
+				</xsl:if>
 			</xsl:for-each>
 			<hr />
 			Total Tests: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item])" /><br />
