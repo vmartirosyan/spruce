@@ -177,7 +177,7 @@ int main(int argc, char ** argv)
 		}
 		else
 			FileSystems.push_back("current");
-		for ( int i = 0; i < FileSystems.size(); ++i )
+		for ( unsigned int i = 0; i < FileSystems.size(); ++i )
 			cout << "FS : " << FileSystems[i] << endl;
 		// Find out the partition to be tested on. If there is no partition provided
 		// Spruce will use the current partition. 

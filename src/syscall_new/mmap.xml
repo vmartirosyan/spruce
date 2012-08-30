@@ -185,7 +185,7 @@
 			}
 			
 			int pageSize = getpagesize();
-			if(munmap((void *)(pageSize + 1), length) != -1)
+			if(munmap(reinterpret_cast<void*>(pageSize + 1), length) != -1)
 			{
 				Error("Error expected: addr contains invalid value");
 				status = Fail;
