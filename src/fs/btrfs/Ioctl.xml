@@ -27,7 +27,7 @@
 	<Requires>linux/fs.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>btrfs.hpp</Requires>
-	
+	<Header>char buf[2];</Header>
 	
 	<Test Name="SetGetFlags" FaultSimulationReady="true">
 		<Description>Try to set and get flag values. </Description>
@@ -103,7 +103,7 @@
 		<Description>BTRFS_IOC_SNAP_CREATE.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SNAP_CREATE, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SNAP_CREATE, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -112,7 +112,7 @@
 		<Description>BTRFS_IOC_SNAP_CREATE_V2.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SNAP_CREATE_V2, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SNAP_CREATE_V2, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -121,7 +121,7 @@
 		<Description>BTRFS_IOC_SUBVOL_CREATE.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SUBVOL_CREATE, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SUBVOL_CREATE, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -130,7 +130,7 @@
 		<Description>BTRFS_IOC_SNAP_DESTROY.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SNAP_DESTROY, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SNAP_DESTROY, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -139,7 +139,7 @@
 		<Description>BTRFS_IOC_SUBVOL_GETFLAGS.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SUBVOL_GETFLAGS, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SUBVOL_GETFLAGS, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -148,7 +148,7 @@
 		<Description>BTRFS_IOC_SUBVOL_SETFLAGS.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SUBVOL_SETFLAGS, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SUBVOL_SETFLAGS, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -157,7 +157,7 @@
 		<Description>BTRFS_IOC_DEFAULT_SUBVOL.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_DEFAULT_SUBVOL, 0 );
+			ioctl( FDs[0], BTRFS_IOC_DEFAULT_SUBVOL, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -166,7 +166,7 @@
 		<Description>Defragment file.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_DEFRAG, 0 );
+			ioctl( FDs[0], BTRFS_IOC_DEFRAG, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -174,7 +174,7 @@
 		<Description>Defragment the entire b-tree under the directory.</Description>
 		<Dir count="1"/>
 		<Code>
-			ioctl( DirDs[0], BTRFS_IOC_DEFRAG, 0 );
+			ioctl( DirDs[0], BTRFS_IOC_DEFRAG, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -183,7 +183,7 @@
 		<Description>BTRFS_IOC_DEFRAG_RANGE.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_DEFRAG_RANGE, 0 );
+			ioctl( FDs[0], BTRFS_IOC_DEFRAG_RANGE, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -192,7 +192,7 @@
 		<Description>BTRFS_IOC_RESIZE.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_RESIZE, 0 );
+			ioctl( FDs[0], BTRFS_IOC_RESIZE, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -201,7 +201,7 @@
 		<Description>BTRFS_IOC_ADD_DEV.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_ADD_DEV, 0 );
+			ioctl( FDs[0], BTRFS_IOC_ADD_DEV, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -210,7 +210,7 @@
 		<Description>BTRFS_IOC_RM_DEV.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_RM_DEV, 0 );
+			ioctl( FDs[0], BTRFS_IOC_RM_DEV, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -219,7 +219,7 @@
 		<Description>BTRFS_IOC_FS_INFO.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_FS_INFO, 0 );
+			ioctl( FDs[0], BTRFS_IOC_FS_INFO, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -228,7 +228,7 @@
 		<Description>BTRFS_IOC_DEV_INFO.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_DEV_INFO, 0 );
+			ioctl( FDs[0], BTRFS_IOC_DEV_INFO, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -237,25 +237,30 @@
 		<Description>BTRFS_IOC_BALANCE.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_BALANCE, 0 );
+			ioctl( FDs[0], BTRFS_IOC_BALANCE, buf);
 			return Shallow;
 		</Code>
 	</Test>
 
 	<Test Name="BTRFS_IOC_CLONE">
 		<Description>BTRFS_IOC_CLONE.</Description>
-		<File count="1"/>
+		<File count="2"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_CLONE, 0 );
+			ioctl( FDs[0], BTRFS_IOC_CLONE, FDs[1]);
 			return Shallow;
 		</Code>
 	</Test>
 
 	<Test Name="BTRFS_IOC_CLONE_RANGE">
 		<Description>BTRFS_IOC_CLONE_RANGE.</Description>
-		<File count="1"/>
+		<File count="2"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_CLONE_RANGE, 0 );
+			struct btrfs_ioctl_clone_range_args args;
+			args.src_fd = FDs[1];
+			args.src_offset = 0;
+			args.src_length = 0;
+			args.dest_offset = 0;
+			ioctl( FDs[0], BTRFS_IOC_CLONE_RANGE, &args);
 			return Shallow;
 		</Code>
 	</Test>
@@ -264,7 +269,7 @@
 		<Description>BTRFS_IOC_TRANS_START.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_TRANS_START, 0 );
+			ioctl( FDs[0], BTRFS_IOC_TRANS_START, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -273,7 +278,7 @@
 		<Description>BTRFS_IOC_TRANS_END.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_TRANS_END, 0 );
+			ioctl( FDs[0], BTRFS_IOC_TRANS_END, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -282,7 +287,7 @@
 		<Description>BTRFS_IOC_TREE_SEARCH.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_TREE_SEARCH, 0 );
+			ioctl( FDs[0], BTRFS_IOC_TREE_SEARCH, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -291,7 +296,7 @@
 		<Description>BTRFS_IOC_INO_LOOKUP.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_INO_LOOKUP, 0 );
+			ioctl( FDs[0], BTRFS_IOC_INO_LOOKUP, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -300,7 +305,7 @@
 		<Description>BTRFS_IOC_INO_PATHS.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_INO_PATHS, 0 );
+			ioctl( FDs[0], BTRFS_IOC_INO_PATHS, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -309,7 +314,7 @@
 		<Description>BTRFS_IOC_LOGICAL_INO.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_LOGICAL_INO, 0 );
+			ioctl( FDs[0], BTRFS_IOC_LOGICAL_INO, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -318,7 +323,7 @@
 		<Description>BTRFS_IOC_SPACE_INFO.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SPACE_INFO, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SPACE_INFO, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -327,7 +332,7 @@
 		<Description>BTRFS_IOC_SYNC.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SYNC, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SYNC, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -339,7 +344,7 @@
 		<Description>BTRFS_IOC_START_SYNC.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_START_SYNC, 0 );
+			ioctl( FDs[0], BTRFS_IOC_START_SYNC, buf);
 			return Shallow;
 		</Code>
 		<Footer>
@@ -356,7 +361,7 @@
 		<Description>BTRFS_IOC_WAIT_SYNC.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_WAIT_SYNC, 0 );
+			ioctl( FDs[0], BTRFS_IOC_WAIT_SYNC, buf);
 			return Shallow;
 		</Code>
 		<Footer>
@@ -370,7 +375,7 @@
 		<Description>BTRFS_IOC_SCRUB.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SCRUB, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SCRUB, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -379,7 +384,7 @@
 		<Description>BTRFS_IOC_SCRUB_CANCEL.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SCRUB_CANCEL, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SCRUB_CANCEL, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -388,7 +393,7 @@
 		<Description>BTRFS_IOC_SCRUB_PROGRESS.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SCRUB_PROGRESS, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SCRUB_PROGRESS, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -397,7 +402,7 @@
 		<Description>BTRFS_IOC_BALANCE_V2.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_BALANCE_V2, 0 );
+			ioctl( FDs[0], BTRFS_IOC_BALANCE_V2, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -406,7 +411,7 @@
 		<Description>BTRFS_IOC_BALANCE_CTL.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_BALANCE_CTL, 0 );
+			ioctl( FDs[0], BTRFS_IOC_BALANCE_CTL, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -415,7 +420,7 @@
 		<Description>BTRFS_IOC_BALANCE_PROGRESS.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_BALANCE_PROGRESS, 0 );
+			ioctl( FDs[0], BTRFS_IOC_BALANCE_PROGRESS, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -424,7 +429,7 @@
 		<Description>BTRFS_IOC_SET_RECEIVED_SUBVOL.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SET_RECEIVED_SUBVOL, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SET_RECEIVED_SUBVOL, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -433,7 +438,7 @@
 		<Description>BTRFS_IOC_SEND.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_SEND, 0 );
+			ioctl( FDs[0], BTRFS_IOC_SEND, buf);
 			return Shallow;
 		</Code>
 	</Test>
@@ -445,7 +450,7 @@
 		<Description>BTRFS_IOC_GET_DEV_STATS.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_GET_DEV_STATS, 0 );
+			ioctl( FDs[0], BTRFS_IOC_GET_DEV_STATS, buf);
 			return Shallow;
 		</Code>
 		<Footer>
@@ -462,7 +467,7 @@
 		<Description>BTRFS_IOC_GET_AND_RESET_DEV_STATS.</Description>
 		<File count="1"/>
 		<Code>
-			ioctl( FDs[0], BTRFS_IOC_GET_AND_RESET_DEV_STATS, 0 );
+			ioctl( FDs[0], BTRFS_IOC_GET_AND_RESET_DEV_STATS, buf);
 			return Shallow;
 		</Code>
 		<Footer>
