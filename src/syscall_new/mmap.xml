@@ -387,4 +387,28 @@
 			return status;
 		</Code>
 	</Test>
+	<Test Name="MmapWrite" FaultSimulationReady="true">
+		<Description>Try to read and write to memory mapped file.</Description>
+		<File count="1"/>
+		<Code>
+			char * buff = (char *)"abc";
+			char buff2[10];
+			
+			size_t length = strlen(buff);
+			int prot = PROT_WRITE;
+			int flags = MAP_PRIVATE;
+			off_t offset = 0;
+		
+			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
+			Fail( addr == MAP_FAILED, "System call mmap failed");
+			
+			Unres( memcpy(buff, addr, strlen(buff)) == -1, "Cannot copy data to mapped area." );
+			
+			Unres( read(FDs[0], buff2, strlen(buff)) == -1, "Cannot read from file." );
+						
+			Fail ( strncmp(buff, buff2, strlen(buff)), "System call mmap failed: mapped content differs from file content");
+			
+			return Success;
+		</Code>
+	</Test>
 </TestSet>
