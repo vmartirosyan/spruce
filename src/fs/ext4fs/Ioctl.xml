@@ -26,7 +26,7 @@
 			// Compare them
 			Fail ( get_flags != set_flags, "Set and Get flags mismatch");
 			
-			return Success;			
+			return Success;
 		</Code>
 	</Test>
 	<Test Name="ClearExtentsFlags">

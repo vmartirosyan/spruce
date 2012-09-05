@@ -30,6 +30,7 @@
 	<TestSet Name="close"/>
 	<TestSet Name="creat"/>
 	<TestSet Name="dup"/>
+	<TestSet Name="fallocate"/>
 	<TestSet Name="fchmod"/>
 	<TestSet Name="fchown"/>
 	<TestSet Name="fcntl"/>
@@ -56,10 +57,11 @@
 	<TestSet Name="openat"/>
 	<TestSet Name="pread_pwrite"/>
 	<TestSet Name="read_write"/>
-	<TestSet Name="readdir"/>
+	<-TestSet Name="readdir"/>
 	<TestSet Name="readv_writev"/>
 	<TestSet Name="rename"/>
 	<TestSet Name="select"/>
+	<TestSet Name="splice"/>
 	<TestSet Name="stat"/>
 	<TestSet Name="statfs"/>
 	<TestSet Name="sync"/>

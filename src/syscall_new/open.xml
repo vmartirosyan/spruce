@@ -38,6 +38,21 @@
 			return Success;
 		</Code>
 	</Test>
+	<Test Name="OpenDirect" FaultSimulationReady="true">
+		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
+		<Code>
+			const char * filename = "openDirect.txt";
+			int ret_val = open(filename, O_CREAT | O_DIRECT, S_IRUSR);
+			if(ret_val == -1)
+			{
+				Error("open returned error in case of noraml filename.", Fail);
+			}
+			close(ret_val);
+			unlink(filename);
+			
+			return Success;
+		</Code>
+	</Test>
 	<Test Name="OpenNameTooLong">
 		<Description>File name is too long.</Description>
 		<File count="1"/>

@@ -192,6 +192,14 @@ int main(int argc, char ** argv)
 				MountAt = configValues["mount_at"];
 			if ( configValues.find("mount_opts") != configValues.end() )
 				MountOpts = SplitString(configValues["mount_opts"], ';', vector<string>());
+			// Enable xattr support
+			/*if ( MountOpts.size() == 0 )
+			{
+				MountOpts.push_back("-o");
+				MountOpts.push_back("user_xattr,acl");
+			}
+			else
+				MountOpts[MountOpts.size() - 1] += ",user_xattr,acl";*/
 		}
 		else
 		{
@@ -326,6 +334,7 @@ int main(int argc, char ** argv)
 			if ( !MountOpts.empty() )
 				mnt_args.insert(mnt_args.end(), MountOpts.begin(), MountOpts.end());
 			
+						
 			res = mnt->Execute(mnt_args);
 			delete mnt;
 			if ( res->GetStatus() != Success )
