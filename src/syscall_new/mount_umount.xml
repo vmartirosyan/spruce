@@ -45,7 +45,32 @@
 		</Code>
 		<Footer>return status;</Footer>
 	</Test>
+		<Test Name="RemountGeneral" FaultSimulationReady="true">
+		<Description>Trying to remount the device to the same partition(with MS_REMOUNT flag activated)</Description>
+		<File count="1"/>
+		<Header>int status = Success;</Header>
+		<Code>
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			
+			if(mount( DeviceName, "/tmp", FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, "/tmp", FileSystem, MS_REMOUNT, 0) == -1)
+			{
+				Error("Remount failed (with activated remount flag).");
+				status = Fail;
+			}
+			if(umount("/tmp") == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
 	<Test Name="UmountInval">
 		<Description>Umount: Target is not a mount point.</Description>
 		<Code>
