@@ -131,12 +131,12 @@ struct FSimInfo
     string link1 = "link1";\
     string link2 = "link2";\
 	Directory dir(dirPath, 0777);\
-	chdir(dirPath.c_str());\
+	Unres (chdir(dirPath.c_str()) == -1, "Cannot change directory");\
 	Unres (symlink (dirPath.c_str(), link1.c_str()) != 0, "symlink() can't create symlink.");\
 	Unres (symlink (link1.c_str(), link2.c_str()) != 0, "symlink() can't create symlink.");\
 	Unres (unlink (link1.c_str()) != 0, "remove() can't remove symlink.");\
 	Unres (symlink (link2.c_str(), link1.c_str()) != 0, "symlink() can't create symlink.");\
-	chdir("..");\
+	Unres (chdir("..") == -1, "Cannot change back to parent directory");\
 	const char *path = (dirPath + link1).c_str();\
 	int res = func_call;\
 	if ( res !=  error_val || errno != ELOOP )\

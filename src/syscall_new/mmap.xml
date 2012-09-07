@@ -402,7 +402,7 @@
 			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
 			Fail( addr == MAP_FAILED, "System call mmap failed");
 			
-			Unres( memcpy(buff, addr, strlen(buff)) == -1, "Cannot copy data to mapped area." );
+			Unres( memcpy(buff, addr, strlen(buff)) == (void*)-1, "Cannot copy data to mapped area." );
 			
 			Unres( read(FDs[0], buff2, strlen(buff)) == -1, "Cannot read from file." );
 						
