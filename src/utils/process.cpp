@@ -84,7 +84,13 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	{
 		return new ProcessResult(Unresolved, "Cannot create pipe. " + (string)strerror(errno));		
 	}
-	
+	char * MountPoint = NULL;
+	if ( getenv("MountAt") )
+	{
+		MountPoint = getenv("MountAt");    
+	}
+	//changing directory to mounting point 
+	chdir(MountPoint);
 	// Create the child process
 	pid_t ChildId = fork();
 	
@@ -129,7 +135,9 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 		close(fds[1]);
 		_exit(status);
 	}
-	
+	//Freeing the mount point (have to set the CWD back after)
+	if(MountPoint != NULL)
+		chdir("/");
 	// Parent process...
 	close(fds[1]);
 	
