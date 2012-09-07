@@ -82,9 +82,9 @@
 			
 			Unres (rmdir(("../" + (string)path).c_str()) != 0, "Can not delete the working directory.");
 			
-			char buf;
+			char buf[100];
 			
-			ErrorTest(getcwd(&buf, 100), NULL, ENOENT);
+			ErrorTest(getcwd(buf, 100), NULL, ENOENT);
 		</Code>
 	</Test>
 	<Test Name="GetcwdErrRange">

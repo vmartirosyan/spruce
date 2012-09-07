@@ -57,7 +57,7 @@
 	<TestSet Name="openat"/>
 	<TestSet Name="pread_pwrite"/>
 	<TestSet Name="read_write"/>
-	<-TestSet Name="readdir"/>
+	<TestSet Name="readdir"/>
 	<TestSet Name="readv_writev"/>
 	<TestSet Name="rename"/>
 	<TestSet Name="select"/>
