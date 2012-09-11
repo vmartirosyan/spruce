@@ -1,0 +1,922 @@
+<!--   Mount.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//				Karen Tsirunyan <ktsirunyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+<TestSet Name="Mount">
+	<Requires>sys/mount.h</Requires>
+	<Test Name="MountDegraded" FaultSimulationReady="true">
+		<Description>Trying to mount the device with Degraded mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "degraded") == -1)
+			{
+				Error("Remount with degraded option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	
+	<Test Name="Mountsubvol" FaultSimulationReady="true">
+		<Description>Trying to mount the device with subvol mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "subvol=%s") == -1)
+			{
+				Error("Remount with subvol option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="Mountsubvolid" FaultSimulationReady="true">
+		<Description>Trying to mount the device with subvolID mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "subvolid=1") == -1)
+			{
+				Error("Remount with subvolID option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="Mountdevice" FaultSimulationReady="true">
+		<Description>Trying to mount the device with subvolID mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "device=%s") == -1)
+			{
+				Error("Remount with device option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="MountNoDatasum" FaultSimulationReady="true">
+		<Description>Trying to mount the device with Nodatasum mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "nodatasum") == -1)
+			{
+				Error("Remount with NoDatasum option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="MountNoDatacow" FaultSimulationReady="true">
+		<Description>Trying to mount the device with NoDatacow mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "nodatacow") == -1)
+			{
+				Error("Remount with NoDatacow option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="MountNoBarrier" FaultSimulationReady="true">
+		<Description>Trying to mount the device with nobarrier mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "nobarrier") == -1)
+			{
+				Error("Remount with nobarrier option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="MountMax_inline" FaultSimulationReady="true">
+		<Description>Trying to mount the device with max_inline mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "max_inline=string") == -1)
+			{
+				Error("Remount with max_inline=%s option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+		<Test Name="MountAlloc_start" FaultSimulationReady="true">
+		<Description>Trying to mount the device with alloc_start mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "alloc_start=string") == -1)
+			{
+				Error("Remount with alloc_start option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MountThread_pool" FaultSimulationReady="true">
+		<Description>Trying to mount the device with thread_pool mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "thread_pool=1") == -1)
+			{
+				Error("Remount with thread_pool option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+		<Test Name="MountCompress" FaultSimulationReady="true">
+		<Description>Trying to mount the device with Compress mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "compress") == -1)
+			{
+				Error("Remount with Compress option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MountCompress2" FaultSimulationReady="true">
+		<Description>Trying to mount the device with Compress=%s mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "compress=string") == -1)
+			{
+				Error("Remount with Compress=%s option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MountCompressForce" FaultSimulationReady="true">
+		<Description>Trying to mount the device with compress-force mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "compress-force") == -1)
+			{
+				Error("Remount with Compress-Force option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MountCompressForce2" FaultSimulationReady="true">
+		<Description>Trying to mount the device with compress-force=%s mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "compress-force=string") == -1)
+			{
+				Error("Remount with Compress-Force=%s option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MountSSD" FaultSimulationReady="true">
+		<Description>Trying to mount the device with SSD mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "ssd") == -1)
+			{
+				Error("Remount with SSD option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="Mountssd_spread" FaultSimulationReady="true">
+		<Description>Trying to mount the device with ssd_spread mount option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "ssd_spread") == -1)
+			{
+				Error("Remount with ssd_spread option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="MountNossd" FaultSimulationReady="true">
+		<Description>Trying to mount the device with No_ssd option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "nossd") == -1)
+			{
+				Error("Remount with No_ssd option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="MountNoacl" FaultSimulationReady="true">
+		<Description>Trying to mount the device with noacl option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "noacl") == -1)
+			{
+				Error("Remount with noacl option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="Mountnotreelog" FaultSimulationReady="true">
+		<Description>Trying to mount the device with notreelog option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "notreelog") == -1)
+			{
+				Error("Remount with notreelog option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="Mountflushoncommit" FaultSimulationReady="true">
+		<Description>Trying to mount the device with flushoncommit option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "flushoncommit") == -1)
+			{
+				Error("Remount with flushoncommit option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="MountMetadata_ratio" FaultSimulationReady="true">
+		<Description>Trying to mount the device with metadata_ratio=%d option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "metadata_ratio=1") == -1)
+			{
+				Error("Remount with metadata_ratio=%d option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="MountDiscard" FaultSimulationReady="true">
+		<Description>Trying to mount the device with discard option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "discard") == -1)
+			{
+				Error("Remount with discard option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="MountSpace_cache" FaultSimulationReady="true">
+		<Description>Trying to mount the device with space_cache option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "space_cache") == -1)
+			{
+				Error("Remount with space_cache option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>	
+	<Test Name="MountClear_cache" FaultSimulationReady="true">
+		<Description>Trying to mount the device with clear_cache option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "clear_cache") == -1)
+			{
+				Error("Remount with clear_cache option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MountUser_subvol_rm_allowed" FaultSimulationReady="true">
+		<Description>Trying to mount the device with user_subvol_rm_allowed option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "user_subvol_rm_allowed") == -1)
+			{
+				Error("Remount with user_subvol_rm_allowed option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MountEnospc_debug" FaultSimulationReady="true">
+		<Description>Trying to mount the device with enospc_debug option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "enospc_debug") == -1)
+			{
+				Error("Remount with enospc_debug option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MountSubvolrootid" FaultSimulationReady="true">
+		<Description>Trying to mount the device with subvolrootid=%d option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "subvolrootid=1") == -1)
+			{
+				Error("Remount with subvolrootid=%d option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MountAutodefrag" FaultSimulationReady="true">
+		<Description>Trying to mount the device with autodefrag option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "autodefrag") == -1)
+			{
+				Error("Remount with autodefrag option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MounInode_cache" FaultSimulationReady="true">
+		<Description>Trying to mount the device with inode_cache option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "inode_cache") == -1)
+			{
+				Error("Remount with inode_cache option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MounNospace_cache" FaultSimulationReady="true">
+		<Description>Trying to mount the device with nospace_cache option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "nospace_cache") == -1)
+			{
+				Error("Remount with nospace_cache option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MounRecovery" FaultSimulationReady="true">
+		<Description>Trying to mount the device with recovery option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "recovery") == -1)
+			{
+				Error("Remount with recovery option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MounNULL" FaultSimulationReady="true">
+		<Description>Trying to mount the device with NULL option.</Description>
+		<Header>int status = Success;</Header>
+		<Code>
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			const char * path = "/tmp/MountNormal_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, NULL) == -1)
+			{
+				Error("Remount with NULL option failed");
+				status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			Unres( rmdir(path) == -1, "Cannot delete directory." );
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>					
+</TestSet>
