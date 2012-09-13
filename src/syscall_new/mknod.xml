@@ -173,7 +173,9 @@
 			ENoAccessTest(mknod(path, 0777, 0), -1);
 		</Code>
 	</Test>
+	<FaultSimulation>
 		<Simulate point="kmem_cache_zalloc" count="3" />
 		<Simulate point="kmem_cache_free" count="2" />
 		<Simulate point="kmem_cache_alloc" count="1" />
+	</FaultSimulation>	
 </TestSet>
