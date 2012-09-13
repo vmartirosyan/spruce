@@ -105,10 +105,12 @@ struct old_linux_dirent {
 	<Footer>
 #endif
 	</Footer>
+	<FaultSimulation>
 		<Simulate point="kzalloc" count="1" />
 		<Simulate point="kfree" count="1" />
 		<Simulate point="copy_to_user" count="1" />
 		<Simulate point="__get_free_pages" count="1" />
 		<Simulate point="__free_pages" count="1" />
+	</FaultSimulation>
 
 </TestSet>
