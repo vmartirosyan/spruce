@@ -100,5 +100,9 @@
 		<Code>
 			ErrorTest(unlinkat(DirDs[0], (char*)-1, 0), -1, EFAULT);
 		</Code>
+		<Simulate point="kmalloc" count="1" />
+		<Simulate point="kmem_cache_zalloc"  coutn="1"/> 
+		<Simulate point="kfree" count="1" />
+		<Simulate point="kmem_cache_free" count="2" /> 
 	</Test>
 </TestSet>

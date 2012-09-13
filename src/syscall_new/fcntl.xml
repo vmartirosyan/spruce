@@ -285,7 +285,7 @@
 			int fd, dirfd ;
 			char w_buffer_[5]="1234";
 			char r_buffer_[5];
-			const char *dir = "fcntl_directory_";
+			const char *dir = "fcntl_directory_1";
 			const char *newfile = "fcntl_directory_/fcntl_file_";
 			const char *file = "fcntl_directory_/fcntl_newfile_";
 			
