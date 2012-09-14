@@ -54,16 +54,9 @@ add_subdirectory (include)
 add_subdirectory (lib)
 add_subdirectory (src)
 #add_subdirectory (tests)
-#add_subdirectory (config)
+add_subdirectory (config)
 #add_subdirectory (doc)
 
-install (	FILES "${CMAKE_SOURCE_DIR}/config/xslt/processor.xslt"
-			DESTINATION share/spruce/config/xslt
-			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
-			
-install (	FILES "${CMAKE_SOURCE_DIR}/config/xslt/module.xslt"
-			DESTINATION share/spruce/config/xslt
-			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
 
 
 # Uninstall the system
