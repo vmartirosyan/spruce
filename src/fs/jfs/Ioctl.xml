@@ -7,7 +7,7 @@
 		<File count="1"/>			
 		<Code>
 				
-			int set_flags = 1; // We may NOT clear the extents flag...
+			int set_flags = 1; 
 			int get_flags = 0;
 			
 			// Backup the old values just in case
