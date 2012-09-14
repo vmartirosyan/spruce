@@ -263,12 +263,6 @@ class <xsl:value-of select="$ModuleName"/>Test : public Test
 		
 int main(int argc, char ** argv)
 {
-	if (argc &lt; 2)
-	{
-		cerr &lt;&lt; "No output file specified. Usage: " &lt;&lt; argv[0] &lt;&lt; " &lt;output_file>" &lt;&lt; endl;
-		return EXIT_FAILURE;
-	}
-	
 	if ( getenv("Partition") )
 		DeviceName = getenv("Partition");
 
@@ -301,12 +295,14 @@ int main(int argc, char ** argv)
 			</xsl:for-each>
 		</xsl:for-each>
 		
-		ofstream of(argv[1], ios_base::app);
-		
-		of &lt;&lt; "&lt;Module Name=\"<xsl:value-of select="@Name"/>\">\n" &lt;&lt; Results.ToXML() &lt;&lt; "&lt;/Module>";
-		
-		of.close();
-		
+		if ( argc == 2 )
+		{
+			ofstream of(argv[1], ios_base::app);
+			
+			of &lt;&lt; "&lt;Module Name=\"<xsl:value-of select="@Name"/>\">\n" &lt;&lt; Results.ToXML() &lt;&lt; "&lt;/Module>";
+			
+			of.close();
+		}
 		return Results.GetStatus();
 	}
 	catch (Exception ex)

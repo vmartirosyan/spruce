@@ -27,7 +27,10 @@
 	<Requires>linux/fs.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>btrfs.hpp</Requires>
-	<Header>char buf[2];</Header>
+	<Header>
+		char buf[2];
+		Unres( buf == 0, "Memory allocation problem." );
+	</Header>
 	
 	<Test Name="SetGetFlags" FaultSimulationReady="true">
 		<Description>Try to set and get flag values. </Description>

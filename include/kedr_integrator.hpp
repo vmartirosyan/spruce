@@ -20,6 +20,8 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
+// TODO: Add configuration for the KEDR path!
+
 #ifndef KEDR_INTEGRATOR
 #define KEDR_INTEGRATOR
 
@@ -147,7 +149,8 @@ public:
 		if ( res == NULL || res->GetStatus() != Success )
 			throw(Exception("Error getting KEDR status. " + (res ? res->GetOutput() : "")));
 		
-		LoadIndicators();
+		// No need to load the indicators directly. KEDR loads them itself.
+		// LoadIndicators();
 		_IsRunning = true;
 		return true;
 	}
@@ -156,7 +159,8 @@ public:
 	{
 		try
 		{
-			UnloadIndicators();
+			// No need to unload the indicators. They are not controlled by us.
+			// UnloadIndicators();
 			UnloadModule(TargetModule);			
 		
 			UnixCommand kedr("kedr");
