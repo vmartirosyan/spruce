@@ -1,3 +1,4 @@
-<Module Name="ext4">
-	<TestSet Name="Ioctl" />	
+<Module Name="ext4">	
+	<TestSet Name="Mount" />
+	<TestSet Name="Ioctl" />
 </Module>

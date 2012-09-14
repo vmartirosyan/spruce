@@ -1,7 +1,8 @@
 <TestSet Name="Ioctl">
 	<Requires>sys/ioctl.h</Requires>
+	<Requires>linux/fs.h</Requires>
 	<Requires>fcntl.h</Requires>
-	<Requires>ext4.hpp</Requires>
+	<Requires>ext2fs/ext2_fs.h</Requires>	
 	<Requires>pwd.h</Requires>
 	<Test Name="SetFlagsGetFlags" FaultSimulationReady="true">		
 		<Description>Try to set and get some flag values.</Description>
@@ -12,16 +13,16 @@
 			
 			// Backup the old values just in case
 			int old_flags;	
-			Unres( ioctl(FDs[0], EXT4_IOC_GETFLAGS, &old_flags ) == -1 , "Error backing up old values.");
+			Unres( ioctl(FDs[0], EXT2_IOC_GETFLAGS, &old_flags ) == -1 , "Error backing up old values.");
 			
 			// Set our testing flag values
-			Unres ( ioctl(FDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+			Unres ( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
 		
 			// Get the flags back
-			Unres ( ioctl(FDs[0], EXT4_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+			Unres ( ioctl(FDs[0], EXT2_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
 			
 			// Restore the original flags
-			Unres ( ioctl(FDs[0], EXT4_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+			Unres ( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
 			
 			// Compare them
 			Fail ( get_flags != set_flags, "Set and Get flags mismatch");
@@ -29,7 +30,7 @@
 			return Success;
 		</Code>
 	</Test>
-	<Test Name="ClearExtentsFlags">
+	<!--Test Name="ClearExtentsFlags">
 		<Description>Try to clear the Extentes flag which is not allowed to be cleared.</Description>
 		<File count="1"/>
 		<Code>
@@ -44,14 +45,14 @@
 			
 			return Success;						
 		</Code>
-	</Test>
+	</Test-->
 	<Test Name="SetFlagsNotOwner">
 		<Description>Try to perform a special operation not being file owner.</Description>
 		<File count="1"/>
 		<Code>
 			int flags = EXT4_EXTENTS_FL;			
 			
-			ENoAccessTest(ioctl(FDs[0], EXT4_IOC_SETFLAGS, &flags ), -1);			
+			ENoAccessTest(ioctl(FDs[0], EXT2_IOC_SETFLAGS, &flags ), -1);			
 		</Code>
 	</Test>
 	<Test Name="SetVersionGetVersion" FaultSimulationReady="true">
@@ -63,30 +64,31 @@
 			
 			// Backup the old version just in case
 			int old_version;
-			Unres ( ioctl(FDs[0], EXT4_IOC_GETVERSION, &old_version) == -1, "Error backing up old version.");
+			Unres ( ioctl(FDs[0], EXT2_IOC_GETVERSION, &old_version) == -1, "Error backing up old version.");
 			
 			// Set our testing version value
-			Unres ( ioctl(FDs[0], EXT4_IOC_SETVERSION, &set_version) == -1, "Error setting new version values.");
+			Unres ( ioctl(FDs[0], EXT2_IOC_SETVERSION, &set_version) == -1, "Error setting new version values.");
 			
 			// Get the version back
-			Unres ( ioctl(FDs[0], EXT4_IOC_GETVERSION, &get_version) == -1, "Error getting version value back.");
+			Unres ( ioctl(FDs[0], EXT2_IOC_GETVERSION, &get_version) == -1, "Error getting version value back.");
 			
 			// Restore the original version
-			Unres ( ioctl(FDs[0], EXT4_IOC_SETVERSION, &old_version) == -1, "Error restoring old version value.");
+			Unres ( ioctl(FDs[0], EXT2_IOC_SETVERSION, &old_version) == -1, "Error restoring old version value.");
 			
 			// Compare them
 			Fail ( get_version != set_version, "Set and Get version mismatch");
 			return Success;				
 		</Code>
 	</Test>
-	<Test Name="WaitForReadonly" FaultSimulationReady="true">
+	<!-- This commang is removed in newer kernels... -->
+	<!--Test Name="WaitForReadonly" FaultSimulationReady="true">
 		<Description>Wait for read only.</Description>
 		<File count="1"/>
 		<Code>
 			Fail ( ioctl(FDs[0], EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1, "Error waiting for readonly.");
 			return Shallow;
 		</Code>
-	</Test>
+	</Test-->
 	<Test Name="GroupExtend" FaultSimulationReady="true">
 		<Description>Group extend.</Description>
 		<File count="1"/>
@@ -96,14 +98,14 @@
 		
 			cerr << "Shallow test";
 			int NewPartitionSizeInBlocks = 210000;
-			ioctl(FDs[0], EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks);
+			ioctl(FDs[0], EXT2_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks);
 			
 			return Shallow;
 			
 			//Status status;
 			
-			/*NewPartitionSizeInBlocks = 210000;// _PartitionSizeInBlocks + 10;
-			if ( ioctl(FDs[0], EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1 )
+			/*NewPartitionSizeInBlocks = 21000;// _PartitionSizeInBlocks + 10;
+			if ( ioctl(FDs[0], EXT2_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1 )
 			{
 				cerr << "Error during online resize. " << strerror(errno);
 				return Failure;
@@ -115,7 +117,17 @@
 			}*/
 		</Code>
 	</Test>
-	<Test Name="MoveExtent" FaultSimulationReady="true">
+	<Test Name="ResizeFS" FaultSimulationReady="true">
+		<Description>Resize FS.</Description>
+		<File count="1"/>
+		<Code>
+			__u64 BlockCount = 30000;
+			Fail(ioctl(FDs[0], EXT4_IOC_RESIZE_FS, &BlockCount) == -1, "Resize FS failed");
+			
+			return Shallow;
+		</Code>
+	</Test>
+	<!--Test Name="MoveExtent" FaultSimulationReady="true">
 		<Description>Move extent.</Description>
 		<File count="2"/>
 		<Code>			
@@ -139,8 +151,8 @@
 			Fail ( ioctl(FDs[1], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
 			return Success;
 		</Code>
-	</Test>
-	<Test Name="GroupAdd" FaultSimulationReady="true">
+	</Test-->
+	<!--Test Name="GroupAdd" FaultSimulationReady="true">
 		<Description>Group add.</Description>
 		<File count="1"/>
 		<Code>
@@ -152,8 +164,8 @@
 			
 			return Shallow;		
 		</Code>
-	</Test>
-	<Test Name="Migrate" FaultSimulationReady="true">
+	</Test-->
+	<!--Test Name="Migrate" FaultSimulationReady="true">
 		<Header>
 			Status result = Unknown;
 		</Header>
@@ -227,8 +239,8 @@
 			}
 			return result;
 		</Footer>
-	</Test>
-	<Test Name="AllocDABlocks" FaultSimulationReady="true">
+	</Test-->
+	<!--Test Name="AllocDABlocks" FaultSimulationReady="true">
 		<Description>Allocate delayed-allocation blocks.</Description>
 		<File count="1"/>
 		<Code>
@@ -236,15 +248,16 @@
 			return Shallow;
 			
 		</Code>
-	</Test>
+	</Test-->
 	<Test Name="Fitrim" FaultSimulationReady="true">
 		<Description>FITRIM?</Description>
 		<File count="1"/>
 		<Header>
 #ifdef FITRIM
 		</Header>
-		<Code>				
-			Fail ( ioctl(FDs[0], FITRIM, 0) == -1 , "Error FITRIM.");
+		<Code>
+			struct fstrim_range arg;
+			Fail ( ioctl(FDs[0], FITRIM, &arg) == -1 , "Error FITRIM.");
 			return Shallow;				
 		</Code>
 		<Footer>
