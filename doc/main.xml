@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" id="main">
+	<bookinfo>
+		<title>Spruce : Main module</title>
+		<authorgroup>
+			<author>
+				<firstname>Vahram</firstname>
+				<surname>Martirosyan</surname>
+			</author>	
+			<author>
+				<firstname>Suren</firstname>
+				<surname>Grigoryan</surname>
+			</author>	
+		</authorgroup>	
+		
+	</bookinfo>
+	<chapter id="overview" name="Overview">
+		<para>
+			This is the Main module documentaion of the Spruce system
+		</para>	
+	</chapter>
+</book>
