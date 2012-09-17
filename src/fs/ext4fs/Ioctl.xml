@@ -118,6 +118,9 @@
 		</Code>
 	</Test>
 	<Test Name="ResizeFS" FaultSimulationReady="true">
+		<Header>
+#ifdef EXT4_IOC_RESIZE_FS
+		</Header>
 		<Description>Resize FS.</Description>
 		<File count="1"/>
 		<Code>
@@ -126,6 +129,11 @@
 			
 			return Shallow;
 		</Code>
+		<Footer>
+#else
+			Error("The XFS_IOC_ZERO_RANGE value is not defined.", Unsupported);
+#endif
+	</Footer>
 	</Test>
 	<!--Test Name="MoveExtent" FaultSimulationReady="true">
 		<Description>Move extent.</Description>
