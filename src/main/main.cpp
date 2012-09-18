@@ -308,7 +308,10 @@ int main(int argc, char ** argv)
 				while ( (PS = pm.PreparePartition()) != PS_Done )
 				{
 					if ( PS == PS_Skip )
+					{
+						cerr << "\t\tSkipping case." << endl;
 						continue;
+					}
 						
 					string ModuleBin = (*module == "fs-spec" ? *fs : *module);
 					if ( *module == "fault-sim" )
@@ -327,8 +330,10 @@ int main(int argc, char ** argv)
 						of.close();
 						
 						module_args.push_back(FileName);
-						XMLFilesToProcess.push_back(FileName);
+						
 					}
+					if ( Iteration == 0 )
+						XMLFilesToProcess.push_back(FileName);
 					
 					ProcessResult * result = command->Execute(module_args);
 					delete command;
@@ -346,12 +351,13 @@ int main(int argc, char ** argv)
 					//str << result->GetOutput() << endl;
 					Status |= result->GetStatus();
 					cerr << "Module " << *module << " exits with status " << result->GetStatus() << endl;
-					
-					if ( !pm.ReleasePartition() )
-					{
-						cerr << "Cannot release the partition: " << strerror(errno) << endl;
-						break;
-					}
+										
+				}
+				
+				if ( !pm.ReleasePartition() )
+				{
+					cerr << "Cannot release the partition: " << strerror(errno) << endl;
+					break;
 				}
 			}
 					
