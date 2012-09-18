@@ -67,10 +67,18 @@ class PartitionManager
 
 		PartitionStatus PreparePartition()
 		{
+			if ( !ReleasePartition() )
+			{				
+				return PS_Skip;
+			}
+			
 			cout << "Preparing partition " + _DeviceName << endl;
 			
 			if ( _Index == _AdditionalMountOptions[_FSIndex].size() )
+			{
+				_Index = 0;
 				return PS_Done;
+			}
 				
 			if ( !CreateFilesystem(_FileSystem, _DeviceName) )
 				return PS_Skip;
@@ -113,10 +121,22 @@ class PartitionManager
 		bool ReleasePartition()
 		{
 			cout << "Unmounting partition " << _DeviceName << endl;
-			if ( chdir("/") == -1)
+			if ( chdir("/") == -1)				
 				return false;
-			
-			return (umount(_MountPoint.c_str()) == 0);
+			int res = umount(_MountPoint.c_str());
+			// Check if partition was successfully unmounted, or it was not mounted yet!
+			if ( res == 0 ) 
+			{
+				cout << "Device is unmounted successfully." << endl;
+				return true;
+			}
+			if ( res == -1 && errno == EINVAL )
+			{
+				cout << "Cannot unmount. Device was not mounted!" << endl;
+				return true;
+			}
+			cerr << "Cannot umnount partition " << _DeviceName << ". " << strerror(errno) << endl;
+			return false;
 		}
 	private:
 		string _ConfigFile;
