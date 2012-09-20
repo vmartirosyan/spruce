@@ -24,6 +24,7 @@
 
 <TestSet Name="ioctl">	
 	<Requires>linux/fs.h</Requires>
+	<Requires>linux/fiemap.h</Requires>
 	<Requires>sys/ioctl.h</Requires>				
 	<Test Name="IoctlGetSetVersion" FaultSimulationReady="true">
 		<Description>Set and get version.</Description>
@@ -47,6 +48,19 @@
 			}
 			
 			return Success;
+		</Code>
+	</Test>
+	<Test Name="IoctlFIEMAP" FaultSimulationReady="true">
+		<Description>Ioctl FIEMAP.</Description>
+		<File count="1"/>
+		<Code>
+			struct fiemap arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.fm_length = 1;
+			
+			Fail( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1, "FIEMAP operation failed." );			
+			
+			return Shallow;
 		</Code>
 	</Test>
 	<Test Name="IoctlBadFile">
