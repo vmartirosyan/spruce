@@ -1,3 +1,4 @@
 <Module Name="xfs">
-	<TestSet Name="Ioctl" />	
+	<TestSet Name="Ioctl" />
+	<TestSet Name="quotactl" />
 </Module>
