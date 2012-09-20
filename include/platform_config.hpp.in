@@ -28,6 +28,8 @@
 #define FIFO_PATH "${FIFO_PATH}"
 #define HAVE_XATTR_H ${HAVE_XATTR_H}
 #define HAVE_XFS_H ${HAVE_XFS_H}
-
+#define KEDR_ROOT_DIR "${KEDR_ROOT_DIR}"
+#define QUOTA_ENABLED ${QUOTA_ENABLED}
+#define QUOTACHECK_PATH "${QUOTACHECK_PATH}"
 
 #endif

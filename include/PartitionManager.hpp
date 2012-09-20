@@ -59,6 +59,8 @@ class PartitionManager
 			_Index(0),
 			_FSIndex(FS_UNSUPPORTED)
 			{
+				if ( _MountOpts == "" )
+					_MountOpts = "quota";
 				if ( _MountOpts != "" && _MountOpts[_MountOpts.size() - 1] != ',' )
 					_MountOpts += ',';
 				LoadConfiguration();
@@ -68,7 +70,7 @@ class PartitionManager
 		PartitionStatus PreparePartition()
 		{
 			if ( !ReleasePartition() )
-			{				
+			{
 				return PS_Skip;
 			}
 			
@@ -93,7 +95,7 @@ class PartitionManager
 			{
 				mnt_args.push_back("-o");				
 				mnt_args.push_back(_MountOpts + _AdditionalMountOptions[_FSIndex][_Index]);
-				cout << "Mounting with additional option: " << _MountOpts << _AdditionalMountOptions[_FSIndex][_Index-1] << endl;
+				cout << "Mounting with additional option: " << _MountOpts << _AdditionalMountOptions[_FSIndex][_Index] << endl;
 			}
 			_Index++;
 									
@@ -106,7 +108,7 @@ class PartitionManager
 				return PS_Skip;
 			}
 			
-			cout << "Device " << _DeviceName << " was mounted on folder " << _MountPoint << endl;
+			cout << "Device " << _DeviceName << " was mounted on folder " << _MountPoint << "(opts=" << _MountOpts << endl;
 			
 			// Now change current dir to the newly mounted partition folder
 			if ( chdir(_MountPoint.c_str()) != 0 )
@@ -172,7 +174,8 @@ class PartitionManager
 						continue;
 					cout << "PartitionManager: FS = " << FSName << endl;
 					// Fill in _AdditionalMountOptions[FSNum]
-					_AdditionalMountOptions[_FSIndex].push_back("");					
+					// Set the quota mount option for normal case to be able to run all the quota-related tests
+					_AdditionalMountOptions[_FSIndex].push_back("quota");
 					char buf[255];
 					// Skip the current line
 					input.getline(buf, 255);

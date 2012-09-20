@@ -4,6 +4,14 @@ INCLUDE (CheckIncludeFiles)
 
 project (Spruce)
 
+IF (NOT XSLTPROC_PATH)
+	SET( XSLTPROC_PATH "/usr/bin/xsltproc")
+ENDIF (NOT XSLTPROC_PATH)
+
+IF (NOT EXISTS ${XSLTPROC_PATH})
+	MESSAGE(FATAL_ERROR "xsltproc is not found at ${XSLTPROC_PATH}. Please install the corresponding package and/or provide the XSLTPROC_PATH variable.")
+ENDIF (NOT EXISTS ${XSLTPROC_PATH})
+
 # By default install Spruce to /opt/spruce
 IF (NOT CMAKE_INSTALL_PREFIX)
 	SET( CMAKE_INSTALL_PREFIX "/opt/spruce/")
@@ -20,6 +28,18 @@ ENDIF (NOT TEST_TIMEOUT)
 IF (NOT FIFO_PATH)
 	SET ( FIFO_PATH "/tmp/spruce_fifo" )
 ENDIF (NOT FIFO_PATH)
+
+IF (NOT KEDR_ROOT_DIR)
+	SET ( KEDR_ROOT_DIR "/usr/bin" )
+ENDIF (NOT KEDR_ROOT_DIR)
+
+SET (QUOTA_ENABLED 0)
+Message("-- Looking for quotacheck file")
+IF (EXISTS "/usr/sbin/quotacheck")
+	Message("-- Looking for quotacheck file - found")
+	SET ( QUOTA_ENABLED 1 )
+	SET ( QUOTACHECK_PATH "/usr/sbin/quotacheck" )
+ENDIF (EXISTS "/usr/sbin/quotacheck")
 
 #SET(HAVE_XATTR_H 0)
 CHECK_INCLUDE_FILES ("sys/types.h;attr/xattr.h" HAVE_XATTR_H)
