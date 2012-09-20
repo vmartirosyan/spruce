@@ -194,7 +194,10 @@ int main(int argc, char ** argv)
 			if ( configValues.find("mount_at") != configValues.end() )
 				MountAt = configValues["mount_at"];
 			if ( configValues.find("mount_opts") != configValues.end() )
-				MountOpts = configValues["mount_opts"];			
+			{
+				MountOpts = configValues["mount_opts"];
+				cout << "Mount options : " << MountOpts << endl;
+			}				
 		}
 		else
 		{

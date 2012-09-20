@@ -25,6 +25,7 @@
 #ifndef KEDR_INTEGRATOR
 #define KEDR_INTEGRATOR
 
+#include <platform_config.hpp>
 #include <exception.hpp>
 #include <UnixCommand.hpp>
 #include <sys/utsname.h>
@@ -125,7 +126,7 @@ public:
 		
 		//MountDebugFS();
 		
-		UnixCommand kedr("kedr");
+		UnixCommand kedr(KEDR_ROOT_DIR"/kedr");
 		vector<string> args;
 		args.push_back("start");
 		args.push_back(TargetModule);
@@ -163,7 +164,7 @@ public:
 			// UnloadIndicators();
 			UnloadModule(TargetModule);			
 		
-			UnixCommand kedr("kedr");
+			UnixCommand kedr(KEDR_ROOT_DIR"/kedr");
 			vector<string> args;
 			args.push_back("stop");
 					
@@ -226,16 +227,8 @@ protected:
 		return true;
 	}
 	bool IsKEDRInstalled()
-	{
-		UnixCommand which("which");
-		vector<string> args;
-		args.push_back("kedr");
-		
-		ProcessResult * res = which.Execute(args);
-		
-		if ( res == NULL || res->GetStatus() != Success )  
-			return false;
-		return true;
+	{		
+		return (access(KEDR_ROOT_DIR"/kedr", F_OK) == 0);
 	}
 	
 	void DoesModuleExist(string module)
