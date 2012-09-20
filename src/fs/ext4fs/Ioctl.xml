@@ -30,22 +30,22 @@
 			return Success;
 		</Code>
 	</Test>
-	<!--Test Name="ClearExtentsFlags">
+	<Test Name="ClearExtentsFlags">
 		<Description>Try to clear the Extentes flag which is not allowed to be cleared.</Description>
 		<File count="1"/>
 		<Code>
 			// Backup the old values just in case
 			int old_flags;
-			Unres ( ioctl(FDs[0], EXT4_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+			Unres ( ioctl(FDs[0], EXT2_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
 			
 			int non_permitted_flags = old_flags & ~EXT4_EXTENTS_FL; // We may NOT clear the extents flag... but we shall try!
 			
 			// Try to set the non-permitted flag
-			Fail( ioctl(FDs[0], EXT4_IOC_SETFLAGS, &non_permitted_flags ) == -1, "It was permitted to set non-permitted flag!.");
+			Fail( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &non_permitted_flags ) == -1, "It was permitted to set non-permitted flag!.");
 			
 			return Success;						
 		</Code>
-	</Test-->
+	</Test>
 	<Test Name="SetFlagsNotOwner">
 		<Description>Try to perform a special operation not being file owner.</Description>
 		<File count="1"/>
@@ -81,14 +81,19 @@
 		</Code>
 	</Test>
 	<!-- This commang is removed in newer kernels... -->
-	<!--Test Name="WaitForReadonly" FaultSimulationReady="true">
+	<Test Name="WaitForReadonly" FaultSimulationReady="true">
+		<Header>
+#ifndef EXT4_IOC_WAIT_FOR_READONLY
+#define EXT4_IOC_WAIT_FOR_READONLY	_IOR('f', 99, long)
+#endif
+		</Header>
 		<Description>Wait for read only.</Description>
 		<File count="1"/>
 		<Code>
 			Fail ( ioctl(FDs[0], EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1, "Error waiting for readonly.");
 			return Shallow;
 		</Code>
-	</Test-->
+	</Test>
 	<Test Name="GroupExtend" FaultSimulationReady="true">
 		<Description>Group extend.</Description>
 		<File count="1"/>
@@ -135,7 +140,20 @@
 #endif
 	</Footer>
 	</Test>
-	<!--Test Name="MoveExtent" FaultSimulationReady="true">
+	<Test Name="MoveExtent" FaultSimulationReady="true">
+		<Header>
+#ifndef EXT4_IOC_MOVE_EXT
+struct move_extent {
+	__u32 reserved;		/* should be zero */
+	__u32 donor_fd;		/* donor file descriptor */
+	__u64 orig_start;	/* logical start offset in block for orig */
+	__u64 donor_start;	/* logical start offset in block for donor */
+	__u64 len;		/* block length to be moved */
+	__u64 moved_len;	/* moved block length */
+};
+#define EXT4_IOC_MOVE_EXT		_IOWR('f', 15, struct move_extent)
+#endif
+		</Header>
 		<Description>Move extent.</Description>
 		<File count="2"/>
 		<Code>			
@@ -159,20 +177,34 @@
 			Fail ( ioctl(FDs[1], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
 			return Success;
 		</Code>
-	</Test-->
-	<!--Test Name="GroupAdd" FaultSimulationReady="true">
+	</Test>
+	<Test Name="GroupAdd" FaultSimulationReady="true">
+		<Header>
+struct ext4_new_group_data {
+	__u32 group;
+	__u64 block_bitmap;
+	__u64 inode_bitmap;
+	__u64 inode_table;
+	__u32 blocks_count;
+	__u16 reserved_blocks;
+	__u16 unused;
+	__u32 free_blocks_count;
+};
+#ifndef EXT4_IOC_GROUP_ADD
+#define EXT4_IOC_GROUP_ADD		_IOW('f', 8, struct ext4_new_group_input)
+#endif
+		</Header>
 		<Description>Group add.</Description>
 		<File count="1"/>
 		<Code>
 			struct ext4_new_group_data input;
 			//memset(&input, 0, sizeof(input));		
 			
-			cerr << "Shallow test" << endl;
 			ioctl(FDs[0], EXT4_IOC_GROUP_ADD, &input);
 			
 			return Shallow;		
 		</Code>
-	</Test-->
+	</Test>
 	<!--Test Name="Migrate" FaultSimulationReady="true">
 		<Header>
 			Status result = Unknown;
@@ -248,7 +280,12 @@
 			return result;
 		</Footer>
 	</Test-->
-	<!--Test Name="AllocDABlocks" FaultSimulationReady="true">
+	<Test Name="AllocDABlocks" FaultSimulationReady="true">
+		<Header>
+#ifndef EXT4_IOC_ALLOC_DA_BLKS
+#define EXT4_IOC_ALLOC_DA_BLKS		_IO('f', 12)
+#endif
+		</Header>
 		<Description>Allocate delayed-allocation blocks.</Description>
 		<File count="1"/>
 		<Code>
@@ -256,7 +293,7 @@
 			return Shallow;
 			
 		</Code>
-	</Test-->
+	</Test>
 	<Test Name="Fitrim" FaultSimulationReady="true">
 		<Description>FITRIM?</Description>
 		<File count="1"/>
