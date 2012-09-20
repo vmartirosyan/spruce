@@ -1,0 +1,149 @@
+<!--    quotactl.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="quotactl">
+	<GlobalHeader>
+#if QUOTA_ENABLED != 1
+	EmptyTestSet(syscall, quotactl, Unsupported, "quota-tools are not installed.")
+#else
+	</GlobalHeader>
+	<Requires>sys/quota.h</Requires>
+	<Requires>linux/quota.h</Requires>
+	<Header>
+			Unres( strcmp(DeviceName, "") == 0, "No device name is provided." );
+			Unres( strcmp(MountPoint, "") == 0, "No mount point is provided." );
+			int cmd_on = QCMD(Q_QUOTAON, USRQUOTA);
+			int cmd_off = QCMD(Q_QUOTAOFF, USRQUOTA);
+			// Create the quota file
+			UnixCommand* quotacheck = new UnixCommand(QUOTACHECK_PATH);
+			vector<string> quota_args;
+			quota_args.push_back(MountPoint);
+			
+			ProcessResult * res = quotacheck->Execute(quota_args);
+			delete quotacheck;
+			Unres( res == NULL, "Cannot execute 'quotacheck' command to create the quota file." );
+			Unres( res->GetStatus() != Success, "Error executing 'quotacheck'. " + res->GetOutput() );
+			string QuotaFile = MountPoint;
+			QuotaFile += "/aquota.user";
+	</Header>
+	<Test Name="QuotactlQuotaOnOff" FaultSimulationReady="true">
+		<Description>Turn on and off quotas for a file system.</Description>		
+		<Code>						
+			Fail( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
+			
+			Fail( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot disable quotas V0." );
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="QuotactlGetSetQuota" FaultSimulationReady="true">
+		<Description>Set and get quota information for user or group id.</Description>		
+		<Code>
+			int cmd_get_quota = QCMD(Q_GETQUOTA, USRQUOTA);
+			int cmd_set_quota = QCMD(Q_SETQUOTA, USRQUOTA);
+			
+			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
+			
+			struct dqblk quota_data, quota_data2;
+			memset(&quota_data, 0, sizeof(quota_data));
+			memset(&quota_data2, 0, sizeof(quota_data2));
+			
+			quota_data.dqb_bhardlimit = 1000;
+			quota_data.dqb_valid = QIF_BLIMITS;
+			
+			Fail( quotactl(cmd_set_quota, DeviceName, 0, (caddr_t)&quota_data ) == -1, "Cannot set quota." );
+			
+			Fail( quotactl(cmd_get_quota, DeviceName, 0, (caddr_t)&quota_data2 ) == -1, "Cannot get quota." );
+			
+			Fail( quota_data.dqb_bhardlimit != quota_data2.dqb_bhardlimit, "Different values after set-get operation." );
+			
+			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1)
+				cerr << "Cannot disable quotas V0.";
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="QuotactlGetSetQuotaInfo" FaultSimulationReady="true">
+		<Description>Set and get information about quotafile.</Description>		
+		<Code>	
+			int cmd_get_info = QCMD(Q_GETINFO, USRQUOTA);
+			int cmd_set_info = QCMD(Q_SETINFO, USRQUOTA);
+			
+			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
+			
+			struct dqinfo quota_info, quota_info2;
+			memset(&quota_info, 0, sizeof(quota_info));
+			memset(&quota_info2, 0, sizeof(quota_info2));
+			
+			quota_info.dqi_bgrace = 100;
+			quota_info.dqi_valid = IIF_BGRACE;
+			
+			Fail( quotactl(cmd_set_info, DeviceName, 0, (caddr_t)&quota_info ) == -1, "Cannot set info." );
+			
+			Fail( quotactl(cmd_get_info, DeviceName, 0, (caddr_t)&quota_info2 ) == -1, "Cannot get info." );
+			
+			Fail( quota_info.dqi_bgrace != quota_info2.dqi_bgrace, "Different values after set-get operation." );
+			
+			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1)
+				cerr << "Cannot disable quotas V0.";
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="QuotactlGetFormat" FaultSimulationReady="true">
+		<Description>Get quota format used on the specified file system.</Description>		
+		<Code>
+			int cmd_get_format = QCMD(Q_GETFMT, USRQUOTA);
+			int format;
+			
+			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
+			
+			Fail( quotactl(cmd_get_format, DeviceName, 0, (caddr_t)&format ) == -1, "Cannot get format." );
+			
+			Fail( format != QFMT_VFS_V0, "Format value is not correct" );
+			
+			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1)
+				cerr << "Cannot disable quotas V0.";
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="QuotactlSync" FaultSimulationReady="true">
+		<Description>Update the on-disk copy of quota usages for a file system.</Description>		
+		<Code>
+			int cmd_sync = QCMD(Q_SYNC, USRQUOTA);
+			
+			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
+			
+			Fail( quotactl(cmd_sync, DeviceName, 0, 0 ) == -1, "Cannot sync." );
+			
+			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1)
+				cerr << "Cannot disable quotas V0.";
+			
+			return Shallow;
+		</Code>
+	</Test>
+	<GlobalFooter>
+#endif
+	</GlobalFooter>
+</TestSet>

@@ -55,6 +55,7 @@
 	<TestSet Name="msync"/>
 	<TestSet Name="open"/>
 	<TestSet Name="openat"/>
+	<TestSet Name="quotactl"/>
 	<TestSet Name="pread_pwrite"/>
 	<TestSet Name="read_write"/>
 	<TestSet Name="readdir"/>
