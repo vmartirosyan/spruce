@@ -63,6 +63,17 @@
 			return Shallow;
 		</Code>
 	</Test>
+	<Test Name="IoctlFIFREEZE" FaultSimulationReady="true">
+		<Description>Ioctl FIFREEZE and FITHAW.</Description>
+		<File count="1"/>
+		<Code>
+			Fail( ioctl(FDs[0], FIFREEZE, 0) == -1, "FIFREEZE operation failed." );
+			
+			Fail( ioctl(FDs[0], FITHAW, 0) == -1, "FITHAW operation failed." );			
+			
+			return Success;
+		</Code>
+	</Test>
 	<Test Name="IoctlBadFile">
 		<Description>Not a valid descriptor.</Description>
 		<Code>
