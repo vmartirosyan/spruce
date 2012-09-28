@@ -25,7 +25,7 @@
 	<Requires>sys/mman.h</Requires>
 	<Requires>sys/user.h</Requires>
 	<Requires>linux/version.h</Requires>
-	<Test Name="MmapNormal">
+	<Test Name="MmapNormal" FaultSimulationReady="true">
 		<Description>map files or devices into memory</Description>
 		<File count="1"/>
 		<Code>
@@ -45,13 +45,43 @@
 		{
 			Error("System call mmap failed", Fail);
 		}
-		
 		if(strncmp(buff, (char *)addr, strlen(buff)))
 		{
+			munmap(addr, length);
 			Error("System call mmap failed: mapped content differs from file content", Fail);
 		}
-		
+		munmap(addr, length);
 		return Success;
+		</Code>
+	</Test>
+	<Test Name="MmapWrite" FaultSimulationReady="true">
+		<Description>Try to read and write to memory mapped file.</Description>
+		<File count="1"/>
+		<Code>			
+			const char * buff = (char *)"abc";
+			char buff2[3];
+			
+			// Allocate space for memory-mapped write
+			lseek (FDs[0], strlen(buff) + 1, SEEK_SET);
+			write (FDs[0], "", 1); 
+			lseek (FDs[0], 0, SEEK_SET);
+			
+			size_t length = strlen(buff);			
+			int prot = PROT_WRITE;
+			int flags = MAP_SHARED;
+			off_t offset = 0;
+		
+			char * addr = (char*)mmap(0, length, prot, flags, FDs[0], offset);
+			Fail( addr == MAP_FAILED, "System call mmap failed");
+						
+			sprintf(addr, "%s", buff);
+			munmap(addr, length);
+			
+			Unres( read(FDs[0], buff2, strlen(buff)) == -1, "Cannot read from file." );			
+						
+			Fail ( strncmp(buff, buff2, strlen(buff)), "System call mmap failed: mapped content differs from file content");
+			
+			return Success;
 		</Code>
 	</Test>
 	<Test Name="MmapErrInval">
@@ -387,28 +417,5 @@
 			return status;
 		</Code>
 	</Test>
-	<Test Name="MmapWrite" FaultSimulationReady="true">
-		<Description>Try to read and write to memory mapped file.</Description>
-		<File count="1"/>
-		<Code>
-			char * buff = (char *)"abc";
-			char buff2[10];
-			
-			size_t length = strlen(buff);
-			int prot = PROT_WRITE;
-			int flags = MAP_PRIVATE;
-			off_t offset = 0;
-		
-			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
-			Fail( addr == MAP_FAILED, "System call mmap failed");
-			
-			Unres( memcpy(buff, addr, strlen(buff)) == (void*)-1, "Cannot copy data to mapped area." );
-			
-			Unres( read(FDs[0], buff2, strlen(buff)) == -1, "Cannot read from file." );
-						
-			Fail ( strncmp(buff, buff2, strlen(buff)), "System call mmap failed: mapped content differs from file content");
-			
-			return Success;
-		</Code>
-	</Test>
+	
 </TestSet>
