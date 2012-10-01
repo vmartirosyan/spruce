@@ -63,7 +63,6 @@ using std::stringstream;
 using std::ostream_iterator;
 using std::back_insert_iterator;
 
-
 typedef map<string,string> ConfigValues;
 
 ConfigValues ParseOptions(int argc, char ** argv);
@@ -84,6 +83,7 @@ enum ErrorCodes
 };
 
 void OpenLogFiles(string browser, string logfolder, vector<string> XMLFilesToProcess);
+void OpenDashboard(string browser, string logfolder, string fs);
 
 int main(int argc, char ** argv)
 {
@@ -96,7 +96,8 @@ int main(int argc, char ** argv)
 		
 		
 		// Log files of the modules
-		vector<string> XMLFilesToProcess;
+		//vector<string> XMLFilesToProcess;
+		vector<string> MountOptions;;
 		
 		//Prepare the allowed modules list
 		ModulesAvailable.push_back("syscall");
@@ -210,7 +211,7 @@ int main(int argc, char ** argv)
 		}
 			
 		// Where the output must be stored?
-		string logfolder = "/tmp";
+		string logfolder = "/tmp/spruce_log/";
 		if ( configValues.find("logfolder") != configValues.end() )
 		{
 			logfolder = configValues["logfolder"];
@@ -218,6 +219,12 @@ int main(int argc, char ** argv)
 		else
 		{
 			cerr << "Notice. No log folder specified. Using " << logfolder << "." << endl;
+		}
+		// Prepare the log folder
+		if ( mkdir( logfolder.c_str(), 0777 ) == -1 && errno != EEXIST )
+		{
+			cerr << "Cannot create log folder: " << strerror(errno) << endl;
+			return FAULT;
 		}
 
 		// Find out which browser must be used to view the log file
@@ -302,11 +309,11 @@ int main(int argc, char ** argv)
 				}
 			}
 			PartitionManager pm(INSTALL_PREFIX"/share/spruce/config/PartitionManager.cfg", partition, MountAt, *fs, MountOpts);
-						
+			
 			for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
 			{
 				cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
-				int Iteration = 0;
+								
 				PartitionStatus PS = PS_Done;
 				while ( (PS = pm.PreparePartition()) != PS_Done )
 				{
@@ -321,40 +328,52 @@ int main(int argc, char ** argv)
 						ModuleBin = "fault_sim";
 					UnixCommand * command = new UnixCommand(( (string)(INSTALL_PREFIX"/bin/" + ModuleBin).c_str()));
 					
-					string FileName = logfolder + "/" + *fs + "_" + *module + "_log.xml";
+					string FileName = logfolder + "/" + *fs + "_" + *module + "_" + pm.GetCurrentMountOptions() + "_log.xml";
 					
 					vector<string> module_args;
-					if ( Iteration == 0 )
-					{
-						ofstream of(FileName.c_str());
+					ofstream of(FileName.c_str());
+				
+					of << "<SpruceLog><FS Name=\"" << *fs << "\" MountOptions=\"" << pm.GetCurrentMountOptions() << "\">\n";
 					
-						of << "<SpruceLog><FS Name=\"" << *fs << "\">\n";
-						
-						of.close();
-						
-						module_args.push_back(FileName);
-						
-					}
-					if ( Iteration == 0 )
-						XMLFilesToProcess.push_back(FileName);
+					of.close();
+					
+					module_args.push_back(FileName);
+					//XMLFilesToProcess.push_back(FileName);
+					MountOptions.push_back(pm.GetCurrentMountOptions());
 					
 					ProcessResult * result = command->Execute(module_args);
 					delete command;
 					
-					if ( Iteration++ == 0 )
+					of.open(FileName.c_str(), ios_base::app);
+					
+					of << "</FS></SpruceLog>";
+					
+					of.close();
+					
+					// Generate the HTML log file
+					UnixCommand xslt("xsltproc");
+					vector<string> xslt_args;
+					
+					xslt_args.push_back("-o");
+					xslt_args.push_back(FileName.substr(0, FileName.size() - 3) + "html");
+					xslt_args.push_back("-novalid");			
+					xslt_args.push_back(logfolder + "/xslt/processor.xslt");
+					xslt_args.push_back(FileName);
+										
+					ProcessResult *res = xslt.Execute(xslt_args);
+
+					if ( res == NULL )
 					{
-						ofstream of(FileName.c_str(), ios_base::app);
-						
-						of << "</FS></SpruceLog>";
-						
-						of.close();
+						cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;						
 					}
 					
-					//cerr << "res = " << result << endl;
-					//str << result->GetOutput() << endl;
+					if ( res->GetStatus() != Success )
+					{
+						cerr << res->GetOutput() << endl;						
+					}			
+					
 					Status |= result->GetStatus();
 					cerr << "Module " << *module << " exits with status " << result->GetStatus() << endl;
-										
 				}
 				
 				if ( !pm.ReleasePartition() )
@@ -363,7 +382,6 @@ int main(int argc, char ** argv)
 					break;
 				}
 			}
-					
 			
 			// Process the memory leak checker output
 			if ( PerformLeakCheck && kedr.IsRunning() )
@@ -376,8 +394,8 @@ int main(int argc, char ** argv)
 				of.close();
 				
 				LeakChecker leak_check(FileName);
-				if ( leak_check.ProcessLeakCheckerOutput() )
-					XMLFilesToProcess.push_back(FileName);
+				//if ( leak_check.ProcessLeakCheckerOutput() )
+				//	XMLFilesToProcess.push_back(FileName);
 				
 				of.open(FileName.c_str(), ios_base::app);
 				
@@ -400,13 +418,32 @@ int main(int argc, char ** argv)
 				cerr << "Error unloading KEDR. " << e.GetMessage() << endl;
 			}
 			
+			// Produce the <FS>.xml to pass to the dashboard generator
+			// The file contains information about mount options and modules
+			ofstream fs_xml((logfolder + "/" + *fs + ".xml").c_str());
+			fs_xml << "<SpruceDashboard FS=\"" + *fs + "\">\n";
+			fs_xml << "\t<MountOptions>\n";
+			for ( unsigned int i = 0; i < MountOptions.size(); ++i )
+				fs_xml << "\t\t<Option>" + MountOptions[i] + "</Option>\n";
+			fs_xml << "\t</MountOptions>";
+			
+			fs_xml << "\t<Modules>\n";
+			for ( unsigned int i = 0; i < Modules.size(); ++i )
+				fs_xml << "\t\t<Module>" + Modules[i] + "</Module>\n";
+			fs_xml << "\t</Modules>\n";
+			fs_xml << "</SpruceDashboard>";
+			
+			fs_xml.close();
+			MountOptions.erase(MountOptions.begin(), MountOptions.end());
+			
 			// Open the log files in the selected browser
 			if ( browser != "" )
 			{
-				OpenLogFiles(browser, logfolder, XMLFilesToProcess);
-				XMLFilesToProcess.erase(XMLFilesToProcess.begin(), XMLFilesToProcess.end());
+				OpenDashboard(browser, logfolder, *fs);
+				//OpenLogFiles(browser, logfolder, XMLFilesToProcess);
+				//XMLFilesToProcess.erase(XMLFilesToProcess.begin(), XMLFilesToProcess.end());
 			}
-		}		
+		}
 		return ( Status == 0 ) ? SUCCESS : FAULT;
 	}
 	catch (Exception e)
@@ -415,6 +452,95 @@ int main(int argc, char ** argv)
 		return FAULT;
 	}
 	//return 0;
+}
+
+void OpenDashboard(string browser, string logfolder, string fs)
+{
+	// The new process must be created to be able to execute the browser as non-privileged user.
+	if ( fork() == 0 )
+	{
+		ProcessResult * res = NULL;
+		// Process the dashboard file
+		cout << "Processing file " << fs << ".xml ...";
+		UnixCommand xslt("xsltproc");
+		vector<string> xslt_args;
+		
+		xslt_args.push_back("-o");
+		xslt_args.push_back(logfolder + "/" + fs + ".html");
+		xslt_args.push_back("-novalid");			
+		xslt_args.push_back("--stringparam");
+		xslt_args.push_back("LogFolder");
+		xslt_args.push_back(logfolder + "/");
+		xslt_args.push_back(logfolder + "/xslt/dashboard.xslt");
+		xslt_args.push_back(logfolder + +"/" + fs + ".xml");
+		
+		res = xslt.Execute(xslt_args);
+
+		if ( res == NULL )
+		{
+			cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;
+			_exit(1);
+		}
+		
+		if ( res->GetStatus() != Success )
+		{
+			cerr << res->GetOutput() << endl;
+			_exit(1);
+		}			
+		cout << "Done" << endl;
+	
+		
+		// Change the effective user id to real user id... browsers don't like ronning as root.
+		
+		char * UserName = getenv("SUDO_USER");
+		//char * UserName = "nobody";
+		
+		if ( UserName == NULL )
+		{
+			cerr << "Cannot obtain user name. " << strerror(errno) << endl;
+			return;
+		}
+		
+		cout << "Switching to user `" << UserName << "`" << endl;
+		
+		setenv("HOME", ((string)"/home/" + UserName).c_str(), 1);
+		
+		struct passwd * nobody = getpwnam(UserName);
+		if ( nobody == NULL )
+		{
+			cerr << "Cannot switch to user `" << UserName << "`. Browser won't start. " << strerror(errno) << endl;
+			return;
+		}
+			
+		if ( setuid(nobody->pw_uid) == -1 )
+		{
+			cerr << "Cannot switch to user `" << UserName << "`. Browser won't start. " << strerror(errno) << endl;
+			return;
+		}
+		
+		UnixCommand * browser_cmd = new UnixCommand(browser, ProcessBackground);
+		vector<string> browser_args;
+		browser_args.push_back(logfolder + "/" + fs + ".html");
+		
+		res = browser_cmd->Execute(browser_args);
+		delete browser_cmd;
+		
+		if ( res == NULL )
+		{
+			cerr << "Cannot execute the browser: " << browser << endl;
+			_exit(1);
+		}
+		if ( res->GetStatus() != Success )
+		{
+			cerr << "Error executing " << browser << ". " << strerror(errno) << "\n Output: " << res->GetOutput() << endl;
+			_exit(1);
+		}
+		_exit(0);
+	}
+	else
+	{
+		wait(0);
+	}
 }
 
 void OpenLogFiles(string browser, string logfolder, vector<string> XMLFilesToProcess)
