@@ -27,9 +27,13 @@
 	EmptyTestSet(syscall, quotactl, Unsupported, "quota-tools are not installed.")
 #else
 	</GlobalHeader>
-	<Requires>sys/quota.h</Requires>
-	<Requires>linux/quota.h</Requires>
+	<Requires>sys/quota.h</Requires>	
 	<Header>
+// QFMT_VFS_V0 is defined in linux/quota.h. On 64-bit systems this file cannot be included
+// because quotactl is defined in different ways in those files...
+#ifndef QFMT_VFS_V0
+#define QFMT_VFS_V0 2
+#endif
 			Unres( strcmp(DeviceName, "") == 0, "No device name is provided." );
 			Unres( strcmp(MountPoint, "") == 0, "No mount point is provided." );
 			int cmd_on = QCMD(Q_QUOTAON, USRQUOTA);
