@@ -93,9 +93,10 @@ class PartitionManager
 			
 			if ( _MountOpts != "" || _Index > 1)
 			{
-				mnt_args.push_back("-o");				
-				mnt_args.push_back(_MountOpts + _AdditionalMountOptions[_FSIndex][_Index]);
-				cout << "Mounting with additional option: " << _MountOpts << _AdditionalMountOptions[_FSIndex][_Index] << endl;
+				_CurrentMountOptions = _MountOpts + _AdditionalMountOptions[_FSIndex][_Index];
+				mnt_args.push_back("-o");
+				mnt_args.push_back(_CurrentMountOptions);
+				cout << "Mounting with additional option: " << _CurrentMountOptions << endl;
 			}
 			_Index++;
 									
@@ -140,12 +141,17 @@ class PartitionManager
 			cerr << "Cannot umnount partition " << _DeviceName << ". " << strerror(errno) << endl;
 			return false;
 		}
+		string GetCurrentMountOptions() const
+		{
+			return _CurrentMountOptions;
+		}
 	private:
 		string _ConfigFile;
 		string _DeviceName;
 		string _MountPoint;
 		string _FileSystem;
-		string _MountOpts;		
+		string _MountOpts;
+		string _CurrentMountOptions;
 		unsigned int _Index;
 		FileSystems _FSIndex;		
 		vector<string> _AdditionalMountOptions[FS_UNSUPPORTED];
@@ -232,10 +238,7 @@ class PartitionManager
 				cerr << "Error getting device size: " << blkdev_res->GetOutput() << endl;
 				return false;
 			}
-			
-			int DeviceSize = atoi(blkdev_res->GetOutput().c_str());
-			
-			cout << "Device size: " << DeviceSize << endl;
+			long DeviceSize = atoll(blkdev_res->GetOutput().c_str());
 			
 			UnixCommand * mkfs = new UnixCommand("mkfs." + fs);
 			vector<string> args;		
@@ -248,7 +251,7 @@ class PartitionManager
 			// Reserve empty space on device for later resize tests.
 			int BlockSize = 4096;
 			char buf[10];
-			sprintf(buf, "%d", DeviceSize / BlockSize - 10);
+			sprintf(buf, "%ld", DeviceSize / BlockSize - 10);
 			char buf2[10];
 			sprintf(buf2, "%d", BlockSize);
 			if ( fs == "ext4" )
@@ -268,7 +271,7 @@ class PartitionManager
 			if ( fs == "btrfs" )
 			{
 				char buf3[10];
-				sprintf(buf3, "%d", DeviceSize - 10*4096);
+				sprintf(buf3, "%ld", DeviceSize - 10*4096);
 				args.push_back("-b");
 				args.push_back(buf3);
 			}
