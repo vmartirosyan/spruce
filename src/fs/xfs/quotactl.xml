@@ -28,12 +28,18 @@
 
 #if EXPAND(HAVE_XFS_H) == 1
 	EmptyTestSet(xfs, quotactl, Unsupported, "XFS header file is not found in the system. Please install the xfslibs-dev package.")
+#elif QUOTA_ENABLED != 1
+	EmptyTestSet(xfs, quotactl, Unsupported, "quota-tools are not installed.")
 #else
-	</GlobalHeader>
-	<Requires>linux/quota.h</Requires>
+	</GlobalHeader>	
 	<Requires>sys/quota.h</Requires>
-	<Requires>xfs/xqm.h</Requires>	
+	<Requires>xfs/xqm.h</Requires>
 	<Header>
+// QFMT_VFS_V0 is defined in linux/quota.h. On 64-bit systems this file cannot be included
+// because quotactl is defined in different ways in those files...
+#ifndef QFMT_VFS_V0
+#define QFMT_VFS_V0 2
+#endif
 			Unres( strcmp(DeviceName, "") == 0, "No device name is provided." );
 			Unres( strcmp(MountPoint, "") == 0, "No mount point is provided." );			
 	</Header>
