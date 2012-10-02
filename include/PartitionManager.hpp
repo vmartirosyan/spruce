@@ -59,8 +59,6 @@ class PartitionManager
 			_Index(0),
 			_FSIndex(FS_UNSUPPORTED)
 			{
-				if ( _MountOpts == "" )
-					_MountOpts = "quota";
 				if ( _MountOpts != "" && _MountOpts[_MountOpts.size() - 1] != ',' )
 					_MountOpts += ',';
 				LoadConfiguration();
@@ -181,7 +179,8 @@ class PartitionManager
 					cout << "PartitionManager: FS = " << FSName << endl;
 					// Fill in _AdditionalMountOptions[FSNum]
 					// Set the quota mount option for normal case to be able to run all the quota-related tests
-					_AdditionalMountOptions[_FSIndex].push_back("quota");
+					//_AdditionalMountOptions[_FSIndex].push_back("quota");
+					_AdditionalMountOptions[_FSIndex].push_back("");
 					char buf[255];
 					// Skip the current line
 					input.getline(buf, 255);
