@@ -49,8 +49,8 @@ class <xsl:value-of select="$ModuleName"/>TestResult : public TestResult
 {
 	public:
 		
-		<xsl:value-of select="$ModuleName"/>TestResult(ProcessResult* pr, string spec) :	
-		TestResult(ProcessResult(*pr), "", ""), _spec(spec)
+		<xsl:value-of select="$ModuleName"/>TestResult(ProcessResult* pr, string spec, string oper) :	
+		TestResult(ProcessResult(*pr), "", ""), _spec(spec), _operation(oper)
 		{						
 		}
 		virtual string ToXML()
@@ -59,41 +59,13 @@ class <xsl:value-of select="$ModuleName"/>TestResult : public TestResult
 			stringstream str;
 			str &lt;&lt; rand();
 			
-			return "&lt;Item Name=\"" + _spec + "\" Id=\"" + str.str() + " \">" + "\n\t&lt;Operation>" + "Unknown" + "&lt;/Operation>\n\t&lt;Status>" + StatusToString() + "&lt;/Status>\n\t&lt;Output>" +	_output +  "&lt;/Output>\n\t&lt;Arguments>" + "" + "&lt;/Arguments>" + "\n\t" +  "&lt;/Item>";
+			return "&lt;Item Name=\"" + _spec + "\" Id=\"" + str.str() + " \">" + "\n\t&lt;Operation>" + _operation + "&lt;/Operation>\n\t&lt;Status>" + StatusToString() + "&lt;/Status>\n\t&lt;Output>" +	_output +  "&lt;/Output>\n\t&lt;Arguments>" + "" + "&lt;/Arguments>" + "\n\t" +  "&lt;/Item>";
 		}
 	protected:
 		string _spec;
+		string _operation;
 };
 
-class <xsl:value-of select="$ModuleName"/>Test : public Test
-{
-	public:		
-		<xsl:value-of select="$ModuleName"/>Test(Mode mode, int operation, string arguments, string spec) : 
-		Test(mode, operation, arguments), _spec(spec) 
-		{
-		}
-		
-		<xsl:value-of select="$ModuleName"/>Test(Mode mode, string operation, string arguments, string spec) : 
-		Test(mode, operation, arguments), _spec(spec) 
-		{
-		}														
-		
-		string GetSpec() const 
-		{
-			return _spec;
-		}				
-		
-		virtual <xsl:value-of select="$ModuleName"/>TestResult* Execute(vector&lt;string> args)
-		{
-			TestResult* tr = (TestResult*)Test::Execute(args);						
-			<xsl:value-of select="$ModuleName"/>TestResult* ModuleTestResult = new <xsl:value-of select="$ModuleName"/>TestResult(tr, _spec);			
-			delete tr;
-			return ModuleTestResult;			
-		}
-		
-	protected:
-		string _spec;
-};
 
 char * DeviceName = (char*)"";
 char * MountPoint = (char*)"";

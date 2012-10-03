@@ -34,28 +34,32 @@
 	<xsl:for-each select="Requires">
 #include &lt;<xsl:value-of select="." />>
 	</xsl:for-each> 
-	
+
+#include &lt;map>
 #include &lt;process.hpp>
 #include &lt;kedr_integrator.hpp>
+using std::map;
 	<xsl:variable name="TestSetName" select="@Name" />
 	
-
-
 class <xsl:value-of select="@Name" />Tests : public Process
 {
+	typedef map&lt;string, int (<xsl:value-of select="@Name" />Tests::*)(vector&lt;string>)> TestMap;
 public:
 	<xsl:value-of select="@Name" />Tests():
+		_name("<xsl:value-of select="@Name" />"),
 		_fsim_enabled(false),
-		_testCount(<xsl:value-of select="count(Test)"/>),
-		_fsim_testCount(<xsl:value-of select="count(Test[@FaultSimulationReady='true'])"/>)
-	{
+		DirPrefix("<xsl:value-of select="@Name" />_dir_"),
+		FilePrefix("<xsl:value-of select="@Name" />_file_")
+		//_testCount(<xsl:value-of select="count(Test)"/>),
+		//_fsim_testCount(<xsl:value-of select="count(Test[@FaultSimulationReady='true'])"/>)		
+	{	
 		Process::EnableAlarm = true;
 	<xsl:value-of select="StartUp"/>
 	<xsl:for-each select="Test">
-		_tests[<xsl:value-of select="position()-1"/>] = &amp;<xsl:value-of select="$TestSetName" />Tests::<xsl:value-of select="@Name" />Func;
+		_tests["<xsl:value-of select="@Name"/>"] = &amp;<xsl:value-of select="$TestSetName" />Tests::<xsl:value-of select="@Name" />Func;
 	</xsl:for-each>
 	<xsl:for-each select="Test[@FaultSimulationReady='true']">
-		_fsim_tests[<xsl:value-of select="position()-1"/>] = &amp;<xsl:value-of select="$TestSetName" />Tests::<xsl:value-of select="@Name" />Func;
+		_fsim_tests["<xsl:value-of select="@Name"/>"] = &amp;<xsl:value-of select="$TestSetName" />Tests::<xsl:value-of select="@Name" />Func;
 	</xsl:for-each>
 		
 	struct FSimInfo info;
@@ -75,16 +79,41 @@ public:
 	{
 		<xsl:value-of select="CleanUp"/>
 	}
+	string GetName() { return _name; }
+	void ExcludeTest(string test) { _tests_to_exclude.push_back(test); }
+	void RunTest(string test) { _tests_to_run.push_back(test); }
+	
+	bool IsTestExcluded(string test)
+	{
+		return (std::find(_tests_to_exclude.begin(), _tests_to_exclude.end(), test) != _tests_to_exclude.end());
+	}
 	
 	virtual TestResultCollection RunNormalTests()
 	{
 		TestResultCollection res;
-		for ( unsigned int i  = 0; i &lt; _testCount; ++i)
+		//for ( unsigned int i  = 0; i &lt; _tests.size(); ++i)
+		if ( _tests_to_run.empty() )
 		{
-			ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))_tests[i]);
-			<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />");
-			delete pr;
-			res.AddResult( tr );
+			for ( TestMap::iterator it = _tests.begin(); it != _tests.end(); ++it )
+			{
+				// Check if the test is set to be excluded
+				if ( IsTestExcluded(it->first) )
+					continue;
+				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
+				<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
+				delete pr;
+				res.AddResult( tr );
+			}
+		}
+		else
+		{
+			for ( unsigned int i = 0; i &lt; _tests_to_run.size(); ++i )
+			{				
+				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))_tests[_tests_to_run[i]]);
+				<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", _tests_to_run[i]);
+				delete pr;
+				res.AddResult( tr );
+			}
 		}
 		return res;
 	}
@@ -105,12 +134,13 @@ public:
 					sprintf(buf, "%d", i);
 					_fsim_expression = "(times%" + (string)buf + " = 0)";
 				}
-				for ( unsigned int k = 0; k &lt; _fsim_testCount; ++k)
+				//for ( unsigned int k = 0; k &lt; _fsim_testCount; ++k)
+				for ( TestMap::iterator it = _fsim_tests.begin(); it != _fsim_tests.end(); ++it )
 				{
-					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))_fsim_tests[k]);
+					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
 					if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
 						pr->SetStatus(Success);
-					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />");
+					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
 					delete pr;
 					res.AddResult( tr );
 					// If one of the tests makes the process to get a signal, then the driver probably is not functional any more.
@@ -147,7 +177,7 @@ public:
 			{
 				char buf[2];
 				sprintf(buf, "%d", i);
-				DirPaths[i] = "<xsl:value-of select="@Name" />_dir_" + (string)buf;
+				DirPaths[i] = DirPrefix + (string)buf;
 				DirDs[i] = Dirs[i].Open(DirPaths[i], S_IRWXU);
 				if ( DirDs[i] == -1 )
 				{
@@ -158,7 +188,7 @@ public:
 				{
 					char buf[2];
 					sprintf(buf, "%d", i);
-					DirFilePaths[i] = DirPaths[i] + "/file_" + (string)buf;
+					DirFilePaths[i] = DirPaths[i] + "/" + FilePrefix + (string)buf;
 					DirFDs[i] = DirFiles[i].Open(DirFilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
 					if ( DirFDs[i] == -1 )
 					{
@@ -185,7 +215,7 @@ public:
 			{
 				char buf[2];
 				sprintf(buf, "%d", i);
-				FilePaths[i] = "<xsl:value-of select="@Name" />_file_" + (string)buf;
+				FilePaths[i] = FilePrefix + (string)buf;
 				FDs[i] = Files[i].Open(FilePaths[i], FileMode, FileFlags);
 				if ( FDs[i] == -1 )
 				{
@@ -208,15 +238,22 @@ public:
 	}
 	</xsl:for-each>
 protected:
+	vector&lt;string> _tests_to_run;
+	vector&lt;string> _tests_to_exclude;
+	string _name;
 	bool _fsim_enabled;
 	string _fsim_point;
 	string _fsim_expression;
-	const unsigned int _testCount;
-	const unsigned int _fsim_testCount;
-	int (<xsl:value-of select="@Name" />Tests::*_tests[<xsl:value-of select="count(Test)"/>])(vector&lt;string>);
-	int (<xsl:value-of select="@Name" />Tests::*_fsim_tests[<xsl:value-of select="count(Test)"/>])(vector&lt;string>);
+	//const unsigned int _testCount;
+	//const unsigned int _fsim_testCount;
+	TestMap _tests;
+	TestMap _fsim_tests;
+	//int (<xsl:value-of select="@Name" />Tests::*_tests[<xsl:value-of select="count(Test)"/>])(vector&lt;string>);
+	//int (<xsl:value-of select="@Name" />Tests::*_fsim_tests[<xsl:value-of select="count(Test)"/>])(vector&lt;string>);
 	vector&lt;FSimInfo> _fsim_info_vec;
 	<xsl:value-of select="/TestSet/Internal"/>
+	const string DirPrefix;
+	const string FilePrefix;
 };
 
 <xsl:value-of select="GlobalFooter"/>
