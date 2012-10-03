@@ -74,4 +74,5 @@
 	<TestSet Name="unlinkat"/>
 	<TestSet Name="utime"/>
 	<TestSet Name="xattr"/>	
+	<TestSet Name="name_to_handle"/>
 </Module>
