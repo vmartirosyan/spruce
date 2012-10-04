@@ -133,7 +133,7 @@ int main(int argc, char ** argv)
 			cerr << "Cannot parse the configuration file. Aborting" << endl;
 			return FAULT;
 		}
-				
+
 		// Get the filesystem names to be tested
 		vector<string> FileSystems;
 		if ( configValues.find("fs") != configValues.end() )
@@ -183,9 +183,6 @@ int main(int argc, char ** argv)
 		}
 		
 		
-		// Find out the partition to be tested on. If there is no partition provided
-		// Spruce will use the current partition. 
-		// By default tests will be executed in the /tmp folder
 		string partition = "current";
 		string MountAt = "/tmp/spruce_test";
 		string MountOpts;
@@ -202,12 +199,8 @@ int main(int argc, char ** argv)
 		}
 		else
 		{
-			cerr << "Warning. No partition name provided. Using /tmp folder." << endl;
-			if ( chdir("/tmp") )
-			{
-				cerr << "Cannot change to /tmp folder. Aborting." << endl;
-				return FAULT;
-			}
+			cerr << "Error. No partition name provided." << endl;
+			return FAULT;
 		}
 			
 		// Where the output must be stored?
@@ -255,6 +248,29 @@ int main(int argc, char ** argv)
 			return FAULT;
 		}
 		delete copy;
+		
+		// It is not allowed to provide exclude_tests and run_tests config values at once
+		if ( configValues.find("exclude_tests") != configValues.end() &&
+			 configValues.find("run_tests") != configValues.end())
+		{
+			cerr << "Please provice either exclude_tests or run_tests values, not both." << endl;
+			return FAULT;
+		}
+		
+		// Get the test names to be excluded
+		vector<string> TestsToExclude;		
+		if ( configValues.find("exclude_tests") != configValues.end() )
+		{			
+			TestsToExclude = SplitString(configValues["exclude_tests"], ';', vector<string>());
+		}
+		
+		// Get the test names to run
+		vector<string> TestsToRun;		
+		if ( configValues.find("run_tests") != configValues.end() )
+		{
+			TestsToRun = SplitString(configValues["run_tests"], ';', vector<string>());
+		}
+		
 			
 		// Create the mount point	
 		if ( mkdir(MountAt.c_str(), S_IRUSR | S_IWUSR ) == -1 && errno != EEXIST )
@@ -340,6 +356,43 @@ int main(int argc, char ** argv)
 					module_args.push_back(FileName);
 					//XMLFilesToProcess.push_back(FileName);
 					MountOptions.push_back(pm.GetCurrentMountOptions());
+					// Find out which tests should be excluded in current module
+					vector<string> ExcludeModuleTests;					
+					for ( vector<string>::iterator it = TestsToExclude.begin(); it != TestsToExclude.end(); ++it )
+					{
+						string prefix = *fs + "." + pm.GetCurrentMountOptions() + "." + *module;
+						if ( (*it).find(prefix) != string::npos )
+						{
+							ExcludeModuleTests.push_back(it->substr(prefix.size() + 1, it->size() - prefix.size()));
+						}
+					}
+					
+					if ( ExcludeModuleTests.size() > 0 )
+					{
+						module_args.push_back("-exclude");
+						for ( vector<string>::iterator it = ExcludeModuleTests.begin(); it != ExcludeModuleTests.end(); ++it)
+							module_args.push_back(*it);
+					}
+					
+					// Find out which tests should run in current module
+					vector<string> RunModuleTests;					
+					for ( vector<string>::iterator it = TestsToRun.begin(); it != TestsToRun.end(); ++it )
+					{
+						string prefix = *fs + "." + pm.GetCurrentMountOptions() + "." + *module;
+						if ( (*it).find(prefix) != string::npos )
+						{
+							RunModuleTests.push_back(it->substr(prefix.size() + 1, it->size() - prefix.size()));							
+						}
+					}
+					
+					if ( RunModuleTests.size() > 0 )
+					{
+						module_args.push_back("-run");
+						for ( vector<string>::iterator it = RunModuleTests.begin(); it != RunModuleTests.end(); ++it)
+						{							
+							module_args.push_back(*it);
+						}
+					}
 					
 					ProcessResult * result = command->Execute(module_args);
 					delete command;
@@ -349,6 +402,8 @@ int main(int argc, char ** argv)
 					of << "</FS></SpruceLog>";
 					
 					of.close();
+					
+					//cerr << "Module output: " << result->GetOutput() << endl;
 					
 					// Generate the HTML log file
 					UnixCommand xslt("xsltproc");

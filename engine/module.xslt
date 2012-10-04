@@ -115,8 +115,45 @@ int main(int argc, char ** argv)
 	TestResultCollection Results;
 	try
 	{
+			bool SkipTestset;
 		<xsl:for-each select="TestSet">
 			<xsl:value-of select="@Name" />Tests <xsl:value-of select="@Name" />_tests;
+			SkipTestset = false;
+			// Check if there are certain tests to run or be excluded
+			if ( argc > 2 )
+			{				
+				if ( !strcmp(argv[2], "-run") )
+				{
+					SkipTestset = true;
+					// Set the tests to run
+					for ( int i = 3; i &lt; argc; ++i )
+					{						
+						if ( strstr(argv[i], "<xsl:value-of select="@Name" />") != NULL )
+						{
+							SkipTestset = false;
+							string test_name = argv[i] + strlen("<xsl:value-of select="@Name" />") + 1;							
+							<xsl:value-of select="@Name" />_tests.RunTest(test_name);
+						}
+					}					
+				}
+				if ( !strcmp(argv[2], "-exclude") )
+				{
+					SkipTestset = false;
+					// Set the tests to run
+					for ( int i = 3; i &lt; argc; ++i )
+					{
+						string argvi = argv[i];
+						string TestSetNameToExclude = argvi.substr(0, argvi.find('.'));
+						
+						if ( TestSetNameToExclude != "<xsl:value-of select="@Name" />" )
+							continue;
+						string test_name = argv[i] + strlen("<xsl:value-of select="@Name" />") + 1;
+						<xsl:value-of select="@Name" />_tests.ExcludeTest(test_name);						
+					}
+				}
+			}
+			if ( !SkipTestset )
+			{
 			<xsl:choose>
 				<xsl:when test="@RunTests">
 					Results.Merge(<xsl:value-of select="@Name" />_tests.Run<xsl:value-of select="@RunTests"/>Tests());
@@ -125,15 +162,16 @@ int main(int argc, char ** argv)
 					Results.Merge(<xsl:value-of select="@Name" />_tests.RunNormalTests());
 				</xsl:otherwise>
 			</xsl:choose>
+			}
 		</xsl:for-each>
 		
-		ofstream of(argv[1], ios_base::app);
-		
-		of &lt;&lt; "&lt;Module Name=\"<xsl:value-of select="@Name"/>\">\n" &lt;&lt; Results.ToXML() &lt;&lt; "&lt;/Module>";
-		
-		of.close();
-		
-		return Results.GetStatus();
+			ofstream of(argv[1], ios_base::app);
+			
+			of &lt;&lt; "&lt;Module Name=\"<xsl:value-of select="@Name"/>\">\n" &lt;&lt; Results.ToXML() &lt;&lt; "&lt;/Module>";
+			
+			of.close();
+			
+			return Results.GetStatus();
 	}
 	catch (Exception ex)
 	{
