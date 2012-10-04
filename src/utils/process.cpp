@@ -37,6 +37,7 @@ char * StatusMessages[] = {
 	(char * )"Timeout",
 	(char * )"Signaled",
 	(char * )"Unsupported",
+	(char * )"Skipped",
 	(char * )"Unknown"
 	};
 	

@@ -33,6 +33,14 @@
 			{
 				color:Gray;
 			}
+			.Signalled
+			{
+				color:DarkRed;
+			}
+			.Skipped
+			{
+				color:DarkGrey;
+			}
 			.Timeout
 			{
 				color:Blue;
