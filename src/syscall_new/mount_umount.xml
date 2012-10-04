@@ -352,7 +352,7 @@
 			ErrorTest(umount( "/" ), -1, EBUSY);
 		</Code>
 	</Test>
-	<!--Test Name="MountNoAccess">
+	<Test Name="MountNoAccess">
 		<Description>Mount: A component of a path was not searchable.</Description>
 		<Dir count="1"/>
 		<Code>
@@ -362,7 +362,7 @@
 			Error("Need to be implemented.", Unsupported);
 			//ErrorTest(mount( DeviceName, DirPaths[0].c_str(), FileSystem, 0, 0 ), -1, EBUSY);
 		</Code>
-	</Test-->
+	</Test>
 	<Test Name="MountFault">
 		<Description>Mount: One of the pointer arguments points outside the user address space.</Description>
 		<Code>
@@ -403,10 +403,9 @@
 	<Test Name="MountInval1">
 		<Description>Mount: a  remount  (MS_REMOUNT) was  attempted,  but  source  was not already mounted on target.</Description>
 		<Code>
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			Unres(! strcmp(DeviceName, ""), "No device name is provided.");		
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			
-			ErrorTest(mount( "dummy", MountPoint, FileSystem, MS_REMOUNT, 0 ), -1, EINVAL);
+			ErrorTest(mount( DeviceName, "/tmp", FileSystem, MS_REMOUNT, 0 ), -1, EINVAL);
 		</Code>
 	</Test>
 	<Test Name="MountInval2">
