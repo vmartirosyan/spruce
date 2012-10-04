@@ -117,6 +117,7 @@ struct FSimInfo
 	Unres( symlink(FilePaths[0].c_str(), Link) == -1, "Cannot create symlink on old file.");\
 	Unres( unlink(FilePaths[0].c_str()) == -1, "Cannot remove old_file. ");\
 	Unres( symlink(Link, FilePaths[0].c_str()) == -1, "Cannot create symlink on new_file.");\
+	errno = 0;\
 	int res = func_call;\
 	unlink(Link);\
 	if ( res !=  error_val || errno != ELOOP )\
@@ -139,12 +140,7 @@ struct FSimInfo
 	Unres (symlink (link2.c_str(), link1.c_str()) != 0, "symlink() can't create symlink.");\
 	Unres (chdir("..") == -1, "Cannot change back to parent directory");\
 	const char *path = (dirPath + link1).c_str();\
-	int res = func_call;\
-	if ( res !=  error_val || errno != ELOOP )\
-	{\
-		Error("Function should return '" + (string)strerror(ELOOP) +  "' error code but it did not.", Fail);\
-	}\
-	return Success;\
+	ErrorTest(func_call, error_val, ELOOP);\
 }\
 
 #define ENameTooLongTest(func_call, error_val)\
@@ -152,21 +148,13 @@ struct FSimInfo
 	char path[PATH_MAX+1];\
 	for ( int i = 0; i < PATH_MAX + 1; ++i )\
 		path[i] = 'a';\
-	if ( func_call != error_val || errno != ENAMETOOLONG )\
-	{\
-		Error("Function should return '" + (string)strerror(ENAMETOOLONG) +  "'error  but it did not.", Fail);\
-	}\
-	return Success;\
+	ErrorTest(func_call, error_val, ENAMETOOLONG);\
 }\
 
 #define ENotDirTest(func_call, error_val)\
 {\
 	char * path = (char*)(FilePaths[0] + "/some_file").c_str();\
-	if ( func_call != error_val || errno != ENOTDIR )\
-	{\
-		Error("Function should return '" + (string)strerror(ENOTDIR) +  "' error but it did not.", Fail);\
-	}\
-	return Success;\
+	ErrorTest(func_call, error_val, ENOTDIR);\
 }\
 
 #define ENoAccessTest(func_call, error_val)\
@@ -222,6 +210,7 @@ struct FSimInfo
 			Unres(true, "Cannot create file " + (string)buf);\
 		}\
 	}\
+	errno = 0;\
 	int ret_val = func_call;\
 	for ( int i = FirstFileDesc; i < max_files_open - 1; ++i )\
 		close(i);\
@@ -235,18 +224,16 @@ struct FSimInfo
 
 #define ErrorTest(func_call, error_val, error_code)\
 {\
+	errno = 0;\
+	if ( func_call != error_val )\
+	{\
+		Error("Function should fail but it did not.", Fail);\
+	}\
 	if (error_code != 0)\
 	{\
-		if ( func_call != error_val || errno != error_code )\
+		if (  errno != error_code )\
 		{\
 			Error("Function should return '" + (string)strerror(error_code) +  "' error but it did not.", Fail);\
-		}\
-	}\
-	else\
-	{\
-		if ( func_call != error_val )\
-		{\
-			Error("Function should fail but it did not.", Fail);\
 		}\
 	}\
 	return Success;\
