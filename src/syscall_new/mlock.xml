@@ -1,0 +1,247 @@
+<!--     mlock.cpp
+//      
+//		Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//      	Ruzanna Karakozova <r.karakozova@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="mlock">
+	<Requires>sys/mman.h</Requires>
+	<Requires>sys/time.h</Requires>
+	<Requires>sys/resource.h</Requires>
+	<Requires>linux/version.h</Requires>
+	<Test Name="MlockNormal">
+		<Description>lock memory</Description>
+		<File count="1"/>
+		<Code>
+		int prot = PROT_READ;
+		int flags = MAP_PRIVATE;
+		off_t offset = 0;	
+		char * buff = (char *)"abc";
+		size_t length = strlen(buff);		
+		if(write(FDs[0], buff, length) == -1)
+		{
+			Error("write failed", Unresolved);
+		}
+		void * addr = mmap(0, length, prot, flags, FDs[0], offset);
+		if(addr == MAP_FAILED)
+		{
+			Error("System call mmap failed", Unresolved);	
+		}
+		
+		if(mlock(addr, length) == -1)
+		{
+			Error("System call mlock failed", Fail);
+		}
+		</Code>
+		<Footer>return Success;</Footer>
+	</Test>
+	<Test Name="MlockErrInval">
+		<Description>the result of the addition start+len was less than start</Description>
+		<File count="1"/>
+		<Code>
+			size_t length = 3;
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE;
+			off_t offset = 0;
+		
+			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);
+			}
+			ErrorTest(mlock(addr, -1), -1, EINVAL);
+		</Code>
+		<Footer>return Success;</Footer>
+	</Test>
+	<Test Name="MlockErrNomem">
+		<Description>some of the specified address range does not correspond to mapped pages in the address space of the process</Description>
+		<File count="1"/>
+		<Header>
+			int status = Success;
+			if(mlock(0, 3) != -1 || errno != ENOMEM)
+			{
+				Error("ENOMEM error expected: address range doesn't correspond to mapped pages");
+				status = Fail;
+			}
+			
+			#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,9)
+		</Header>
+		<Code>
+			struct rlimit rlim;
+			if(getrlimit(RLIMIT_MEMLOCK, &rlim) == -1)
+			{
+				Error("System call getrlimit failed");
+				status = Unresolved;
+			}
+			
+			struct rlimit rlimOld = rlim; 
+			
+			rlim.rlim_cur = 1;
+			if(setrlimit(RLIMIT_MEMLOCK, &rlim) == -1)
+			{
+				Error("System call setrlimit failed");
+				status = Unresolved;
+			}
+			
+			size_t length = 3;
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE;
+			off_t offset = 0;
+			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed");
+				status = Unresolved;	
+			}
+			if(mlock(addr, 5) != -1 || errno != ENOMEM)
+			{
+				Error("ENOMEM error expected: RLIMIT_MEMLOCK is set");
+				status = Fail;
+			}	 
+
+			if(setrlimit(RLIMIT_MEMLOCK, &rlimOld) == -1)
+			{
+				Error("System call setrlimit failed");
+				status = Unresolved;		
+			}
+		</Code>
+		<Footer>
+			#endif
+			return status;
+		</Footer>
+	</Test>
+	<Test Name="MunlockNormal">
+		<Description>unlock memory</Description>
+		<File count="1"/>
+		<Code>
+		size_t length = 3;
+		int prot = PROT_READ;
+		int flags = MAP_PRIVATE;
+		off_t offset = 0;
+	
+		void * addr = mmap(0, length, prot, flags, FDs[0], offset);
+		if(addr == MAP_FAILED)
+		{
+			Error("System call mmap failed", Unresolved);
+		}
+		
+		if(munlock(addr, length) == -1)
+		{
+			Error("System call munlock failed", Fail);
+		}
+		</Code>
+		<Footer>return Success;</Footer>
+	</Test>
+	<Test Name="MunlockErrInval">
+		<Description>The result of the addition start+len was less than start</Description>
+		<File count="1"/>
+		<Code>
+			size_t length = 3;
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE;
+			off_t offset = 0;
+		
+			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);
+			}
+			
+			ErrorTest(munlock(addr, -1), -1, EINVAL);
+		</Code>
+		<Footer>return Success;</Footer>
+	</Test>
+	<Test Name="MunlockErrNomem">
+		<Description>some of the specified address range does not correspond to mapped pages in the address space of the process</Description>
+		<Code>
+			ErrorTest(munlock(0, 3), -1, ENOMEM);
+		</Code>
+		<Footer>return Success;</Footer>
+	</Test>
+	<Test Name="MlockallNormal">
+		<Description>lock all of the calling process's virtual address space</Description>
+		<File count="1"/>
+		<Code>
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE ;
+			off_t offset = 0;	
+			char * buff = (char *)"abc";
+			size_t length = strlen(buff);		
+			
+			if(write(FDs[0], buff, length) == -1)
+			{
+				Error("write failed", Unresolved);
+			}
+			
+			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);	
+			}
+			
+			if(mlockall(MCL_FUTURE) == -1)
+			{
+				Error("System call mlockall failed", Fail);
+			}
+		</Code>
+		<Footer>return Success;</Footer>
+	</Test>
+	<Test Name="MlockallErrInval">
+		<Description>The result of the addition start+len was less than start</Description>
+		<File count="1"/>
+		<Code>
+			size_t length = 3;
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE;
+			off_t offset = 0;
+		
+			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);	
+			}
+			
+			ErrorTest(mlockall(MCL_FUTURE & MCL_CURRENT), -1, EINVAL);
+		</Code>
+		<Footer>return Success;</Footer>
+	</Test>
+	<Test Name="MunlockallNormal">
+		<Description>unlock all of the calling process's virtual address space</Description>
+		<File count="1"/>
+		<Code>
+			size_t length = 3;
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE;
+			off_t offset = 0;
+		
+			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);
+			}
+			
+			if(munlockall() == -1)
+			{
+				Error("System call munlockall failed", Fail);
+			}
+		</Code>
+		<Footer>return Success;</Footer>
+	</Test>
+</TestSet>
