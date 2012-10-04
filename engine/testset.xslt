@@ -80,8 +80,23 @@ public:
 		<xsl:value-of select="CleanUp"/>
 	}
 	string GetName() { return _name; }
-	void ExcludeTest(string test) { _tests_to_exclude.push_back(test); }
-	void RunTest(string test) { _tests_to_run.push_back(test); }
+	void ExcludeTest(string test)
+	{
+		if ( _tests[test] != NULL )
+		{
+			cerr &lt;&lt; "\n\t Test should be excluded: " &lt;&lt; test &lt;&lt; endl;
+			_tests_to_exclude.push_back(test);
+		}
+		else
+			throw Exception("Unknown test " + test);
+	}
+	void RunTest(string test)
+	{
+		if ( _tests[test] != NULL )
+			_tests_to_run.push_back(test);
+		else
+			throw Exception("Unknown test " + test);
+	}
 	
 	bool IsTestExcluded(string test)
 	{
@@ -96,12 +111,18 @@ public:
 		{
 			for ( TestMap::iterator it = _tests.begin(); it != _tests.end(); ++it )
 			{
+				<xsl:value-of select="$ModuleName"/>TestResult * tr = NULL;
 				// Check if the test is set to be excluded
 				if ( IsTestExcluded(it->first) )
-					continue;
-				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
-				<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
-				delete pr;
+				{
+					tr = new <xsl:value-of select="$ModuleName"/>TestResult(new ProcessResult(Skipped, "Test was excluded"), "<xsl:value-of select="$TestSetName" />", it->first);
+				}
+				else
+				{
+					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
+					tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
+					delete pr;
+				}
 				res.AddResult( tr );
 			}
 		}

@@ -54,6 +54,7 @@ enum Status
 	Timeout,
 	Signaled,
 	Unsupported,
+	Skipped,
 	Unknown
 };
 
@@ -255,11 +256,13 @@ struct FSimInfo
 class test_set_name##Tests : public Process\
 {\
 public:\
+	void RunTest(string s) {}\
+	void ExcludeTest(string s) {}\
 	virtual TestResultCollection RunNormalTests()\
 	{\
 		cerr << "EmptyTestSet" << endl;\
 		TestResultCollection res;\
-		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name);\
+		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name, "None");\
 		res.AddResult(tr);\
 		return res;\
 	}\
@@ -267,7 +270,7 @@ public:\
 	{\
 		cerr << "EmptyTestSet" << endl;\
 		TestResultCollection res;\
-		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name);\
+		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name, "None");\
 		res.AddResult(tr);\
 		return res;\
 	}\
