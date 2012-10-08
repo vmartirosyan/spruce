@@ -4,6 +4,26 @@ INCLUDE (CheckIncludeFiles)
 
 project (Spruce)
 
+IF( UNIX )
+    EXECUTE_PROCESS( 
+      COMMAND uname -a
+      OUTPUT_VARIABLE OS_ARCH 
+      )
+	Message("OS arch : ${OS_ARCH}")
+	
+	IF( OS_ARCH MATCHES ".*Linux.*" )
+      IF( OS_ARCH MATCHES ".*x86_64.*" )
+	SET( OS_32_BITS 0 )
+      ELSEIF( OS_ARCH MATCHES ".*ia64.*" )
+	SET( OS_32_BITS 0 )
+      ELSEIF( OS_ARCH MATCHES ".*i686.*" )
+	SET( OS_32_BITS 1 )
+      ENDIF( OS_ARCH MATCHES ".*x86_64.*" )
+    ENDIF( OS_ARCH MATCHES ".*Linux.*" )
+    
+    Message("Is 32 bit: ${OS_32_BITS}")
+ENDIF ( UNIX )
+
 IF (NOT XSLTPROC_PATH)
 	SET( XSLTPROC_PATH "/usr/bin/xsltproc")
 ENDIF (NOT XSLTPROC_PATH)
@@ -94,4 +114,3 @@ configure_file(
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
     
-

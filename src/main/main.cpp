@@ -163,12 +163,15 @@ int main(int argc, char ** argv)
 		bool PerformLeakCheck = false;
 		bool PerformFaultSimulation = false;
 		vector<string>::iterator it = Modules.end();
-		/*if ( (it = find(Modules.begin(), Modules.end(), "fs-spec")) != Modules.end() )
+#if OS_32_BITS==0
+		if ( (it = find(Modules.begin(), Modules.end(), "fs-spec")) != Modules.end() )
 		{
 			cerr << "FS-specific module is enabled" << endl;
-			PerformFS_SpecificTests = true;
-			*it = *fs;
-		}*/
+			Modules.erase(it);
+			Modules.push_back("fs-spec_32");
+			Modules.push_back("fs-spec_64");
+		}
+#endif
 		if ( (it = find(Modules.begin(), Modules.end(), "leak-check")) != Modules.end() )
 		{
 			cerr << "Leak checker module is enabled" << endl;
@@ -181,6 +184,16 @@ int main(int argc, char ** argv)
 			PerformFaultSimulation = true;
 			*it = "fault_sim";
 		}
+#if OS_32_BITS==0
+		if ( (it = find(Modules.begin(), Modules.end(), "syscall")) != Modules.end() )
+		{
+			cerr << "Replacing syscall module with pair of <syscall_32, syscall_64> modules" << endl;
+			Modules.erase(it);
+			Modules.push_back("syscall_32");
+			Modules.push_back("syscall_64");
+		}
+#endif
+
 		
 		
 		string partition = "current";
@@ -339,7 +352,7 @@ int main(int argc, char ** argv)
 						continue;
 					}
 						
-					string ModuleBin = (*module == "fs-spec" ? *fs : *module);
+					string ModuleBin = (module->find("fs-spec") == string::npos ? *module : (*fs + module->substr(7, module->size())));
 					if ( *module == "fault-sim" )
 						ModuleBin = "fault_sim";
 					UnixCommand * command = new UnixCommand(( (string)(INSTALL_PREFIX"/bin/" + ModuleBin).c_str()));
