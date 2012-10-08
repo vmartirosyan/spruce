@@ -54,6 +54,20 @@
 			return Success;
 		</Code>
 	</Test>
+	<Test Name="FsyncDir" FaultSimulationReady="true">
+		<Description>Synchronize a directory's in-core state with storage device.</Description>
+		<Dir count="1" />
+		<Code>
+			int  ret = fsync (DirDs[0]);
+			
+			if (ret != 0)
+			{
+				Error("fsync failed.", Fail);
+			}
+			
+			return Shallow;
+		</Code>
+	</Test>
 	<Test Name="FsyncErrBadFD">
 		<Description>fd is not a valid file descriptor open for writing.</Description>
 		<Code>
