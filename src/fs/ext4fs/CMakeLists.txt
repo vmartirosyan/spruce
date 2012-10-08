@@ -2,38 +2,51 @@ cmake_minimum_required(VERSION 2.6)
 project (Spruce)
 message("Configuring EXT4 specific sources.")
 
-#include (CheckIncludeFiles)
-
-#message("Checking for libcapability.")
-#check_include_files(sys/capability.h capability_exists)
-#if ( NOT capability_exists EQUAL "1" )
-	#message(FATAL_ERROR "The library libcapability is required for the Ext4FS checker subsystem.")
-#endif()
-
-#include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ext4fs.cpp ${CMAKE_CURRENT_BINARY_DIR}/ext4fs.cpp)
-
-#add_executable( ext4 ${CMAKE_CURRENT_SOURCE_DIR}/ext4fs.cpp ioctl_test.cpp ioctl_test.hpp ${CMAKE_SOURCE_DIR}/include/config.hpp)
-#target_link_libraries(ext4 utils)
-
-#install (	FILES "${CMAKE_BINARY_DIR}/bin/ext4"
-#			DESTINATION bin
-#			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
-
 ADD_CUSTOM_COMMAND(
    OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp
    COMMAND ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/engine
    DEPENDS ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_SOURCE_DIR}/engine/module.xslt ${CMAKE_SOURCE_DIR}/engine/testset.xslt ${CMAKE_CURRENT_SOURCE_DIR}/module.xml Ioctl.xml Mount.xml
    )
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-
+IF ( ${OS_32_BITS})	
 ADD_EXECUTABLE(ext4 ${CMAKE_CURRENT_BINARY_DIR}/module.cpp )
-target_link_libraries(ext4 utils)
-						
+
+					
+TARGET_LINK_LIBRARIES(ext4 utils)
+TARGET_LINK_LIBRARIES(ext4 rt)
+
 install (	FILES "${CMAKE_BINARY_DIR}/bin/ext4"
 			DESTINATION bin
 			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
+ELSE ( ${OS_32_BITS})
+	ADD_EXECUTABLE(ext4_64 ${CMAKE_CURRENT_BINARY_DIR}/module.cpp)
+				
+	TARGET_LINK_LIBRARIES(ext4_64 utils)
+	TARGET_LINK_LIBRARIES(ext4_64 rt)
 
+	install (	FILES "${CMAKE_BINARY_DIR}/bin/ext4_64"
+			DESTINATION bin
+			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
+
+ENDIF ( ${OS_32_BITS})	
+
+IF (NOT ${OS_32_BITS})	
+	ADD_CUSTOM_COMMAND(
+   OUTPUT  module_32.cpp
+   COMMAND cp module.cpp module_32.cpp
+   DEPENDS module.cpp
+   )
+	set_source_files_properties(module_32.cpp PROPERTIES COMPILE_FLAGS "-m32")
+	
+	
+	ADD_EXECUTABLE(ext4_32 module_32.cpp)
+	TARGET_LINK_LIBRARIES(ext4_32 utils_32)
+	TARGET_LINK_LIBRARIES(ext4_32 rt)
+	
+	set_target_properties(ext4_32 PROPERTIES LINK_FLAGS "-m32") 
+	
+	install (	FILES "${CMAKE_BINARY_DIR}/bin/ext4_32"
+			DESTINATION bin
+			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
+	
+ENDIF (NOT ${OS_32_BITS})
