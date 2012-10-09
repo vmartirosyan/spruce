@@ -1,0 +1,175 @@
+<!--    read_write.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+// 			Tigran Piloyan <tigran.piloyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="read_write">	
+	<Requires>sys/timerfd.h</Requires>
+	<Test Name="ReadWriteNormal" FaultSimulationReady="true">
+		<Description>Read from or write to a file descriptor.</Description>
+		<File count="1"/>
+		<Code>
+			const char * WriteBuf = "012345";
+			char ReadBuf[10];
+			
+			if ( write(FDs[0], WriteBuf, strlen(WriteBuf)) != (int)strlen(WriteBuf) )
+			{
+				Error("Cannot write to file.", Fail);
+			}
+			
+			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
+			
+			if ( read(FDs[0], ReadBuf, 1) != 1 )
+			{
+				Error("Cannot read from file.", Fail);
+			}
+			
+			if ( ReadBuf[0] != WriteBuf[0] )
+			{
+				Error("Different values were written and read.", Fail);
+			}
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
+		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
+		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
+		<Code>
+			const char * WriteBuf = "012345";
+			char ReadBuf[10];
+			
+			if ( write(FDs[0], WriteBuf, strlen(WriteBuf)) != (int)strlen(WriteBuf) )
+			{
+				Error("Cannot write to file.", Fail);
+			}
+			
+			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
+			
+			if ( read(FDs[0], ReadBuf, 1) != 1 )
+			{
+				Error("Cannot read from file.", Fail);
+			}
+			
+			if ( ReadBuf[0] != WriteBuf[0] )
+			{
+				Error("Different values were written and read.", Fail);
+			}
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="ReadBadFile1">
+		<Description>read: Bad file descriptor.</Description>
+		<Code>
+			char buf[10];
+			ErrorTest(read(-1, buf, 10), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="WriteBadFile1">
+		<Description>write: Bad file descriptor.</Description>
+		<Code>
+			char buf[10];
+			ErrorTest(write(-1, buf, 10), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="ReadBadFile2">
+		<Description>read: File is not open for reading.</Description>
+		<File count="1" flags="O_CREAT | O_WRONLY"/>
+		<Code>
+			char buf[10];
+			ErrorTest(read(FDs[0], buf, 10), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="WriteBadFile2">
+		<Description>write: File is not open for writing.</Description>
+		<File count="1" flags="O_CREAT | O_RDONLY"/>
+		<Code>
+			char buf[10];
+			ErrorTest(write(FDs[0], buf, 10), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="ReadInval">
+		<Description>read: fd  was  created  via  a call to timerfd_create(2) and the wrong size buffer was given to read().</Description>
+		<Code>
+			int fd = timerfd_create(CLOCK_REALTIME, 0);
+			Unres (fd == -1, "Cannot create timer file desciptor");
+					   
+			struct timespec now;
+			clock_gettime(CLOCK_REALTIME, &now);
+			   
+			struct itimerspec new_value;
+			new_value.it_value.tv_sec = now.tv_sec;
+			new_value.it_value.tv_nsec = now.tv_nsec;
+			
+			Unres (timerfd_settime(fd, TFD_TIMER_ABSTIME, &new_value, NULL) == -1, "Cannot set time.");			
+			char buf[1024];
+			
+			ErrorTest(read(fd, buf, 0), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="ReadIsDir">
+		<Description>read: fd refers to a directory.</Description>
+		<Dir count="1"/>
+		<Code>
+			char buf[10];
+			ErrorTest(read(DirDs[0], buf, 0), -1, EISDIR);
+		</Code>
+	</Test>
+	<Test Name="ReadFault">
+		<Description>read: buf is outside your accessible address space.</Description>
+		<Code>
+			ErrorTest(read(0, (void*)-1, 0), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="ReadErrAgain">
+		<Description>read: The  file descriptor fd refers to a file other than a socket and has been marked nonblocking (O_NONBLOCK),  and  the  read  would block.</Description>
+		<Code>
+			int fds[2];
+			Unres(pipe2(fds, O_NONBLOCK) == -1, "Cannot create pipe.");
+			char buf[10];
+			ErrorTest(read(fds[0], buf, 10), -1, EAGAIN);
+		</Code>
+	</Test>
+	<Test Name="WriteFault">
+		<Description>write: buf is outside your accessible address space.</Description>
+		<Code>
+			ErrorTest(write(1, (void*)-1, 0), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="WriteErrAgain">
+		<Description>write: The  file descriptor fd refers to a file other than a socket and has been marked nonblocking (O_NONBLOCK),  and  the  write  would block.</Description>
+		<Code>
+#define M_PIPE_SIZE 64*1024
+			int fds[2];
+			Unres(pipe2(fds, O_NONBLOCK) == -1, "Cannot create pipe.");
+			int bytes = M_PIPE_SIZE ;//64 * 1024;
+	
+			char buf[M_PIPE_SIZE];
+			memset(buf, '0', bytes);
+				
+			Unres ( write(fds[1], buf, bytes) != bytes, "Cannot write initial data to pipe.");		
+			
+			ErrorTest(write(fds[1], buf, 10), -1, EAGAIN);
+		</Code>
+	</Test>
+</TestSet>
