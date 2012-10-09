@@ -68,10 +68,21 @@
 			arg.fm_length = 1;
 			
 			Fail( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1, "FIEMAP operation failed." );			
-			
 			return Shallow;
 		</Code>
 	</Test>
+	
+	<Test Name="IoctlFIBMAP" FaultSimulationReady="true">
+		<Description>Ioctl FIEMAP.</Description>
+		<File count="1"/>
+		<Code>
+			char arg[2];
+			
+			Fail( ioctl(FDs[0], FIBMAP, &arg) == -1, "FIBMAP operation failed." );			
+			return Shallow;
+		</Code>
+	</Test>
+	
 	<Test Name="IoctlFIFREEZE" FaultSimulationReady="true">
 		<Description>Ioctl FIFREEZE and FITHAW.</Description>
 		<File count="1"/>
