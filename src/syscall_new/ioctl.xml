@@ -51,10 +51,13 @@
 		</Code>
 	</Test>
 	<Test Name="IoctlFITRIM" FaultSimulationReady="true">
-		<Description>Ioctl FIFREEZE and FITHAW.</Description>
+		<Description>Ioctl FITRIM.</Description>
 		<File count="1"/>
 		<Code>
-			Fail( ioctl(FDs[0], FITRIM, 0) == -1, "FITRIM operation failed." );
+			struct fstrim_range arg;
+			arg.start = 0;
+			arg.len = 10;
+			Fail( ioctl(FDs[0], FITRIM, &arg) == -1, "FITRIM operation failed." );
 			
 			return Shallow;
 		</Code>
