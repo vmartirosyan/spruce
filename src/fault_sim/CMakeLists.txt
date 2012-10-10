@@ -6,8 +6,7 @@ PROJECT (Spruce)
 ADD_CUSTOM_COMMAND(
    OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp
    COMMAND ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/engine
-   DEPENDS ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_SOURCE_DIR}/engine/module.xslt ${CMAKE_CURRENT_SOURCE_DIR}/module.xml 
-   ${CMAKE_BINARY_DIR}/src/syscall_new/module.cpp ${CMAKE_BINARY_DIR}/src/fs/ext4fs/module.cpp ${CMAKE_BINARY_DIR}/src/fs/xfs/module.cpp ${CMAKE_BINARY_DIR}/src/fs/jfs/module.cpp ${CMAKE_BINARY_DIR}/src/fs/btrfs/module.cpp
+   DEPENDS ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_SOURCE_DIR}/engine/module.xslt ${CMAKE_SOURCE_DIR}/engine/testset.xslt ${CMAKE_CURRENT_SOURCE_DIR}/module.xml ${CMAKE_SOURCE_DIR}/src/syscall_new/*.xml ${CMAKE_SOURCE_DIR}/src/fs/ext4fs/*.xml ${CMAKE_SOURCE_DIR}/src/fs/xfs/*.xml ${CMAKE_SOURCE_DIR}/src/fs/jfs/*.xml ${CMAKE_SOURCE_DIR}/src/fs/btrfs/*.xml
    )
 
 include_directories("${CMAKE_BINARY_DIR}/src/syscall_new")

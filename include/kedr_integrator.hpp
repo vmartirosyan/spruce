@@ -118,6 +118,18 @@ public:
 			return false;
 		}
 	}
+	//added
+	static int GetTimes( string point )
+	{
+		string _time_file = DebugFSPath + "/kedr_fault_simulation/points/"+ point + "/times";
+		char buffer[257];
+		int _time_val;
+		ifstream str( _time_file.c_str(), ifstream::in );
+		str >> buffer;
+		_time_val = atoi(buffer);
+		
+		return _time_val;
+	}
 	
 	bool LoadKEDR()
 	{
@@ -126,7 +138,7 @@ public:
 		
 		//MountDebugFS();
 		
-		UnixCommand kedr(KEDR_ROOT_DIR"/kedr");
+		UnixCommand kedr(/*KEDR_ROOT_DIR"/*/"kedr");
 		vector<string> args;
 		args.push_back("start");
 		args.push_back(TargetModule);
@@ -228,7 +240,7 @@ protected:
 	}
 	bool IsKEDRInstalled()
 	{		
-		return (access(KEDR_ROOT_DIR"/kedr", F_OK) == 0);
+		return (access(/*KEDR_ROOT_DIR"/*/"kedr", F_OK) == 0);
 	}
 	
 	void DoesModuleExist(string module)

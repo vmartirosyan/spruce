@@ -1,4 +1,3 @@
 <Module Name="btrfs">
-	<TestSet Name="Ioctl" />
-	<TestSet Name="Mount" />
+	<TestSet Name="Ioctl" />	
 </Module>

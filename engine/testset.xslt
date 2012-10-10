@@ -30,6 +30,7 @@
 
 <xsl:template match="/TestSet">
 		<xsl:param name="ModuleName" />
+		<xsl:param name="TestClassName" />
 	<xsl:value-of select="GlobalHeader"/>
 	<xsl:for-each select="Requires">
 #include &lt;<xsl:value-of select="." />>
@@ -41,31 +42,35 @@
 using std::map;
 	<xsl:variable name="TestSetName" select="@Name" />
 	
-class <xsl:value-of select="@Name" />Tests : public Process
+class <xsl:value-of select="$TestClassName" /> : public Process
 {
-	typedef map&lt;string, int (<xsl:value-of select="@Name" />Tests::*)(vector&lt;string>)> TestMap;
+	typedef map&lt;string, int (<xsl:value-of select="$TestClassName" />::*)(vector&lt;string>)> TestMap;
 public:
-	<xsl:value-of select="@Name" />Tests():
-		_name("<xsl:value-of select="@Name" />"),
+	<xsl:value-of select="$TestClassName" />():
+		_name("<xsl:value-of select="$TestClassName" />"),
 		_fsim_enabled(false),
-		DirPrefix("<xsl:value-of select="@Name" />_dir_"),
-		FilePrefix("<xsl:value-of select="@Name" />_file_")
+		_fault_count(0),
+		DirPrefix("<xsl:value-of select="$TestClassName" />_dir_"),
+		FilePrefix("<xsl:value-of select="$TestClassName" />_file_")		
 		//_testCount(<xsl:value-of select="count(Test)"/>),
 		//_fsim_testCount(<xsl:value-of select="count(Test[@FaultSimulationReady='true'])"/>)		
 	{	
 		Process::EnableAlarm = true;
 	<xsl:value-of select="StartUp"/>
 	<xsl:for-each select="Test">
-		_tests["<xsl:value-of select="@Name"/>"] = &amp;<xsl:value-of select="$TestSetName" />Tests::<xsl:value-of select="@Name" />Func;
+		_tests["<xsl:value-of select="@Name"/>"] = &amp;<xsl:value-of select="$TestClassName" />::<xsl:value-of select="@Name" />Func;
 	</xsl:for-each>
 	<xsl:for-each select="Test[@FaultSimulationReady='true']">
-		_fsim_tests["<xsl:value-of select="@Name"/>"] = &amp;<xsl:value-of select="$TestSetName" />Tests::<xsl:value-of select="@Name" />Func;
+		_fsim_tests["<xsl:value-of select="@Name"/>"] = &amp;<xsl:value-of select="$TestClassName" />::<xsl:value-of select="@Name" />Func;
 	</xsl:for-each>
-		
+	
+	//modified	
 	struct FSimInfo info;
+	info.Point = "kmalloc";
 	<xsl:for-each select="FaultSimulation/Simulate">
-	info.Count = 1;
+	<xsl:if test="@point">
 	info.Point = "<xsl:value-of select="@point" />";
+	</xsl:if>
 	<xsl:if test="@count">
 	info.Count = <xsl:value-of select="@count" />;
 	</xsl:if>
@@ -75,7 +80,7 @@ public:
 	_fsim_info_vec.push_back(info);
 	</xsl:for-each>
 	}
-	~<xsl:value-of select="@Name" />Tests()
+	~<xsl:value-of select="$TestClassName" />()
 	{
 		<xsl:value-of select="CleanUp"/>
 	}
@@ -140,20 +145,44 @@ public:
 	}
 	virtual TestResultCollection RunFaultyTests()
 	{
+		cerr &lt;&lt; "Running faulty tests: " &lt;&lt; _fsim_info_vec.size() &lt;&lt; endl;
 		_fsim_enabled = true;
 		TestResultCollection res;
+		//added
+		for ( unsigned int i = 0; i &lt; _fsim_info_vec.size(); ++i )
+		{
+			_fsim_point = _fsim_info_vec[i].Point;
+			_fsim_expression = "0";
+				
+			 TestMap::iterator it = _fsim_tests.begin();
+				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
+				if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
+						pr->SetStatus(Success);
+					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
+					delete pr;
+					res.AddResult( tr );
+					
+					if ( tr->GetStatus() == Signaled )
+					{
+						return res;
+					}
+			cerr &lt;&lt; "Fault count: " &lt;&lt; _fault_count &lt;&lt; endl;
+			_fsim_info_vec[i].Count = _fault_count;
+		}
+		
 		for ( unsigned int i = 0; i &lt; _fsim_info_vec.size(); ++i )
 		{
 			_fsim_point = _fsim_info_vec[i].Point;			
-			for ( unsigned int j = 0; j &lt; _fsim_info_vec[i].Count; ++j )
+			for ( unsigned int j = 1; j &lt; _fsim_info_vec[i].Count+1; ++j ) //modified ( j starts from 1 )
 			{
 				if ( _fsim_info_vec[i].Expression != "" )
 					_fsim_expression = _fsim_info_vec[i].Expression;
 				else
 				{
 					char buf[3];
-					sprintf(buf, "%d", i);
+					sprintf(buf, "%d", j); // modified (i to j) 
 					_fsim_expression = "(times%" + (string)buf + " = 0)";
+					//_fsim_expression = "times="+(string)buf;
 				}
 				//for ( unsigned int k = 0; k &lt; _fsim_testCount; ++k)
 				for ( TestMap::iterator it = _fsim_tests.begin(); it != _fsim_tests.end(); ++it )
@@ -269,6 +298,7 @@ protected:
 	//const unsigned int _fsim_testCount;
 	TestMap _tests;
 	TestMap _fsim_tests;
+	int _fault_count;
 	//int (<xsl:value-of select="@Name" />Tests::*_tests[<xsl:value-of select="count(Test)"/>])(vector&lt;string>);
 	//int (<xsl:value-of select="@Name" />Tests::*_fsim_tests[<xsl:value-of select="count(Test)"/>])(vector&lt;string>);
 	vector&lt;FSimInfo> _fsim_info_vec;

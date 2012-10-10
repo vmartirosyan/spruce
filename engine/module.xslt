@@ -44,7 +44,7 @@
 
 using namespace std;
 
-		<xsl:variable name="ModuleName" select="@Name" />
+		<xsl:variable name="ModuleName" select="@Name" />		
 class <xsl:value-of select="$ModuleName"/>TestResult : public TestResult 
 {
 	public:
@@ -76,11 +76,13 @@ map&lt;string, int> FileSystemTypesMap;
 
 		
 		<xsl:for-each select="TestSet">
+			<xsl:variable name="TestClassName"><xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />Tests</xsl:variable>
 			<xsl:variable name="TestSetFile"><xsl:value-of select="$XmlFolder"/>/<xsl:value-of select="@Name"/>.xml</xsl:variable>
 			<xsl:variable name="HeaderFile"><xsl:value-of select="$XmlFolder"/>/<xsl:value-of select="@Name"/>.hpp</xsl:variable>
 			<exsl:document href="{$HeaderFile}" method="text">
 				<xsl:apply-templates select="document($TestSetFile)" >
 					<xsl:with-param name="ModuleName" select="$ModuleName"/>
+					<xsl:with-param name="TestClassName" select="$TestClassName"/>
 				</xsl:apply-templates>
 			</exsl:document>
 #include "<xsl:value-of select="$HeaderFile"/>"
@@ -117,7 +119,8 @@ int main(int argc, char ** argv)
 	{
 			bool SkipTestset;
 		<xsl:for-each select="TestSet">
-			<xsl:value-of select="@Name" />Tests <xsl:value-of select="@Name" />_tests;
+			<xsl:variable name="TestClassName"><xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />Tests</xsl:variable>
+			<xsl:value-of select="$TestClassName"/><xsl:text> </xsl:text><xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests;
 			SkipTestset = false;
 			// Check if there are certain tests to run or be excluded
 			if ( argc > 2 )
@@ -132,7 +135,7 @@ int main(int argc, char ** argv)
 						{
 							SkipTestset = false;
 							string test_name = argv[i] + strlen("<xsl:value-of select="@Name" />") + 1;							
-							<xsl:value-of select="@Name" />_tests.RunTest(test_name);
+							<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.RunTest(test_name);
 						}
 					}					
 				}
@@ -148,7 +151,7 @@ int main(int argc, char ** argv)
 						if ( TestSetNameToExclude != "<xsl:value-of select="@Name" />" )
 							continue;
 						string test_name = argv[i] + strlen("<xsl:value-of select="@Name" />") + 1;
-						<xsl:value-of select="@Name" />_tests.ExcludeTest(test_name);						
+						<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.ExcludeTest(test_name);						
 					}
 				}
 			}
@@ -156,10 +159,10 @@ int main(int argc, char ** argv)
 			{
 			<xsl:choose>
 				<xsl:when test="@RunTests">
-					Results.Merge(<xsl:value-of select="@Name" />_tests.Run<xsl:value-of select="@RunTests"/>Tests());
+					Results.Merge(<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.Run<xsl:value-of select="@RunTests"/>Tests());
 				</xsl:when>
 				<xsl:otherwise>
-					Results.Merge(<xsl:value-of select="@Name" />_tests.RunNormalTests());
+					Results.Merge(<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.RunNormalTests());
 				</xsl:otherwise>
 			</xsl:choose>
 			}
@@ -212,8 +215,8 @@ class <xsl:value-of select="$ModuleName"/>TestResult : public TestResult
 {
 	public:
 		
-		<xsl:value-of select="$ModuleName"/>TestResult(ProcessResult* pr, string spec) :	
-		TestResult(ProcessResult(*pr), "", ""), _spec(spec)
+		<xsl:value-of select="$ModuleName"/>TestResult(ProcessResult* pr, string spec, string oper) :	
+		TestResult(ProcessResult(*pr), "", ""), _spec(spec), _operation(oper)
 		{						
 		}
 		virtual string ToXML()
@@ -222,46 +225,18 @@ class <xsl:value-of select="$ModuleName"/>TestResult : public TestResult
 			stringstream str;
 			str &lt;&lt; rand();
 			
-			return "&lt;Item Name=\"" + _spec + "\" Id=\"" + str.str() + " \">" + "\n\t&lt;Operation>" + "Unknown" + "&lt;/Operation>\n\t&lt;Status>" + StatusToString() + "&lt;/Status>\n\t&lt;Output>" +	_output +  "&lt;/Output>\n\t&lt;Arguments>" + "" + "&lt;/Arguments>" + "\n\t" +  "&lt;/Item>";
+			return "&lt;Item Name=\"" + _spec + "\" Id=\"" + str.str() + " \">" + "\n\t&lt;Operation>" + _operation + "&lt;/Operation>\n\t&lt;Status>" + StatusToString() + "&lt;/Status>\n\t&lt;Output>" +	_output +  "&lt;/Output>\n\t&lt;Arguments>" + "" + "&lt;/Arguments>" + "\n\t" +  "&lt;/Item>";
 		}
 	protected:
 		string _spec;
+		string _operation;
 };
 
-class <xsl:value-of select="$ModuleName"/>Test : public Test
-{
-	public:		
-		<xsl:value-of select="$ModuleName"/>Test(Mode mode, int operation, string arguments, string spec) : 
-		Test(mode, operation, arguments), _spec(spec) 
-		{
-		}
-		
-		<xsl:value-of select="$ModuleName"/>Test(Mode mode, string operation, string arguments, string spec) : 
-		Test(mode, operation, arguments), _spec(spec) 
-		{
-		}														
-		
-		string GetSpec() const 
-		{
-			return _spec;
-		}
-		
-		virtual <xsl:value-of select="$ModuleName"/>TestResult* Execute(vector&lt;string> args)
-		{
-			TestResult* tr = (TestResult*)Test::Execute(args);						
-			<xsl:value-of select="$ModuleName"/>TestResult* ModuleTestResult = new <xsl:value-of select="$ModuleName"/>TestResult(tr, _spec);			
-			delete tr;
-			return ModuleTestResult;			
-		}
-		
-	protected:
-		string _spec;
-};
-			
 			<xsl:variable name="ModuleFile">../src/<xsl:value-of select="@Path"/>/module.xml</xsl:variable>
+			<xsl:variable name="Path">../<xsl:value-of select="@Path"/></xsl:variable>
 			// Processing Module <xsl:value-of select="@Name"/> from <xsl:value-of select="@Path"/>
 			<xsl:for-each select="document($ModuleFile)/Module/TestSet">
-				<xsl:variable name="HeaderFile"><xsl:value-of select="@Name"/>.hpp</xsl:variable>				
+				<xsl:variable name="HeaderFile"><xsl:value-of select="$Path"/>/<xsl:value-of select="@Name"/>.hpp</xsl:variable>				
 #include &lt;<xsl:value-of select="$HeaderFile"/>>
 			</xsl:for-each>
 		</xsl:for-each>
@@ -290,16 +265,18 @@ int main(int argc, char ** argv)
 	TestResultCollection Results;
 	try
 	{
-		<xsl:for-each select="Module">			
+		<xsl:for-each select="Module">
+			<xsl:variable name="ModuleName" select="@Name" />
 			<xsl:variable name="ModuleFile">../src/<xsl:value-of select="@Path"/>/module.xml</xsl:variable>			
 			<xsl:for-each select="document($ModuleFile)/Module/TestSet">
-				<xsl:value-of select="@Name" />Tests <xsl:value-of select="@Name" />_tests;
+				<xsl:variable name="TestClassName"><xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />Tests</xsl:variable>
+				<xsl:value-of select="$TestClassName" /><xsl:text> </xsl:text><xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests;
 				<xsl:choose>
 					<xsl:when test="$RunTests!=''">
-						Results.Merge(<xsl:value-of select="@Name" />_tests.Run<xsl:value-of select="$RunTests"/>Tests());
+						Results.Merge(<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.Run<xsl:value-of select="$RunTests"/>Tests());
 					</xsl:when>
 					<xsl:otherwise>
-						Results.Merge(<xsl:value-of select="@Name" />_tests.RunNormalTests());
+						Results.Merge(<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.RunNormalTests());
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:for-each>

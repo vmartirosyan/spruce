@@ -43,12 +43,13 @@
 			PermissionsToTest.push_back(S_IXOTH);
 			
 			PermissionsToTest.push_back(S_ISUID);
-			
+			EnableFaultSim();
 			int status = Success;
 			for ( unsigned int i = 0; i < PermissionsToTest.size() && !status; ++i )
 			{
 				status |= PermissionsTest(PermissionsToTest[i]);
 			}
+			DisableFaultSim();
 			
 			return status;
 		</Code>	
