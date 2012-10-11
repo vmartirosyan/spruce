@@ -444,11 +444,11 @@ int main(int argc, char ** argv)
 					cerr << "Module " << *module << " exits with status " << result->GetStatus() << endl;
 				}
 				
-				if ( !pm.ReleasePartition() )
+				/*if ( !pm.ReleasePartition() )
 				{
 					cerr << "Cannot release the partition: " << strerror(errno) << endl;
 					break;
-				}
+				}*/
 			}
 			
 			// Process the memory leak checker output
@@ -471,8 +471,7 @@ int main(int argc, char ** argv)
 				
 				of.close();
 			}
-			int a;
-			cin >> a;
+
 			// Unload the KEDR framework
 			try
 			{
