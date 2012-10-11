@@ -416,7 +416,7 @@ int main(int argc, char ** argv)
 					
 					of.close();
 					
-					//cerr << "Module output: " << result->GetOutput() << endl;
+					cerr << "Module output: " << result->GetOutput() << endl;
 					
 					// Generate the HTML log file
 					UnixCommand xslt("xsltproc");
@@ -471,7 +471,8 @@ int main(int argc, char ** argv)
 				
 				of.close();
 			}
-		
+			int a;
+			cin >> a;
 			// Unload the KEDR framework
 			try
 			{

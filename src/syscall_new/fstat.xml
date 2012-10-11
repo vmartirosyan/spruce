@@ -32,7 +32,7 @@
 			Unres ( fd == -1, "Cannot obtain file descriptor.");
 			
 			struct stat buf;
-			
+			EnableFaultSim();
 			if ( fstat(fd, &buf) != 0 )
 			{
 				Error("fstat failed.", Fail);

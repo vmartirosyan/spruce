@@ -1,13 +1,14 @@
 <TestSet Name="posix_fadvise">
 	<Requires>fcntl.h</Requires>
 	<Requires>unistd.h</Requires>
-	<Test Name="Posix_fadviseNormal">
+	<Test Name="Posix_fadviseNormal" FaultSimulationReady="true">
 		<File count="1"/>
 		<Header>
 			int status = Success;
 			int errNum = 0;
 		</Header>
 		<Code>
+			EnableFaultSim();
 			if((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_NORMAL)) != 0)
 			{
 				cerr << "posix_fadvise with POSIX_FADV_NORMAL advise failed" << strerror(errNum);

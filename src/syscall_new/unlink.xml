@@ -35,7 +35,7 @@
 			
 			EnableFaultSim();
 			ret_unlink = unlink ( pathname );
-			DisableFaultSim();
+			
 			
 			Fail ( ret_unlink == -1, "Error occured during unlinking normal file.");
 			
@@ -100,10 +100,6 @@
 		</Code>
 	</Test> 
 	<FaultSimulation>
-		<Simulate point="kmalloc" count="1" />
-		<Simulate point="kmem_cache_zalloc" count="3"/>
-		<Simulate point="kfree" count="1" />
-		<Simulate point="kmem_cache_free" count="2" />
-		<!-- ... -->
+		<Simulate point="kmalloc" />
 	</FaultSimulation>
 </TestSet>

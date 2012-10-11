@@ -28,6 +28,7 @@
 		<File count="1" mode="S_IRUSR" flags="O_CREAT | O_RDONLY"/>
 		<Code>
 			struct stat st;
+			EnableFaultSim();
 			Fail(stat(FilePaths[0].c_str(), &st) == -1, "Failed to get file status.");
 			
 			Fail(st.st_uid != getuid(), "User IDs do not match.");

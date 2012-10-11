@@ -34,7 +34,7 @@
 			}
 			
 			struct statfs buf;
-			
+			EnableFaultSim();
 			Fail ( statfs(MountPoint, &buf) != 0 , "statfs failed.");
 			
 			Fail ( buf.f_type != FileSystemTypesMap[FileSystem] , "statfs returned wrong FS type.");

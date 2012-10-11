@@ -32,7 +32,7 @@
 			char ReadBuf[10];
 			off_t Offset = 2;
 			Unres( write(FDs[0], WriteBuf, strlen(WriteBuf)) != (int)strlen(WriteBuf), "Cannot write initial data to file." );
-			
+			EnableFaultSim();
 			if ( pwrite(FDs[0], WriteBuf, strlen(WriteBuf), Offset) != (int)strlen(WriteBuf) )
 			{
 				Error("Cannot write to file using pwrite().", Fail);

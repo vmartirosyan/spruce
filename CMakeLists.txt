@@ -1,15 +1,16 @@
 cmake_minimum_required(VERSION 2.8)
 include (ExternalProject)
 INCLUDE (CheckIncludeFiles)
+INCLUDE (CheckTypeSize)
 
 project (Spruce)
+
 
 IF( UNIX )
     EXECUTE_PROCESS( 
       COMMAND uname -a
       OUTPUT_VARIABLE OS_ARCH 
-      )
-	Message("OS arch : ${OS_ARCH}")
+      )	
 	
 	IF( OS_ARCH MATCHES ".*Linux.*" )
       IF( OS_ARCH MATCHES ".*x86_64.*" )
@@ -23,6 +24,11 @@ IF( UNIX )
     
     Message("Is 32 bit: ${OS_32_BITS}")
 ENDIF ( UNIX )
+
+SET( CMAKE_REQUIRED_DEFINITIONS "-D _GNU_SOURCE")
+SET(CMAKE_EXTRA_INCLUDE_FILES "fcntl.h")
+CHECK_TYPE_SIZE("struct file_handle" STRUCT_FILE_HANDLE)
+SET(CMAKE_EXTRA_INCLUDE_FILES)
 
 IF (NOT XSLTPROC_PATH)
 	SET( XSLTPROC_PATH "/usr/bin/xsltproc")

@@ -39,7 +39,7 @@
 		int prot = PROT_READ;
 		int flags = MAP_PRIVATE;
 		off_t offset = 0;
-	
+		EnableFaultSim();
 		void * addr = mmap(0, length, prot, flags, FDs[0], offset);
 		if(addr == MAP_FAILED)
 		{

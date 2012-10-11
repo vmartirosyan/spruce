@@ -30,7 +30,7 @@
 		<Code>
 			const char * WriteBuf = "012345";
 			char ReadBuf[10];
-			
+			EnableFaultSim();
 			if ( write(FDs[0], WriteBuf, strlen(WriteBuf)) != (int)strlen(WriteBuf) )
 			{
 				Error("Cannot write to file.", Fail);
@@ -57,7 +57,7 @@
 		<Code>
 			const char * WriteBuf = "012345";
 			char ReadBuf[10];
-			
+			EnableFaultSim();
 			if ( write(FDs[0], WriteBuf, strlen(WriteBuf)) != (int)strlen(WriteBuf) )
 			{
 				Error("Cannot write to file.", Fail);

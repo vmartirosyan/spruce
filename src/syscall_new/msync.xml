@@ -22,7 +22,7 @@
 -->
 <TestSet Name="msync">
 	<Requires>sys/mman.h</Requires>
-	<Test Name="MsyncNormal">
+	<Test Name="MsyncNormal" FaultSimulationReady="true">
 		<Description>set protection on a region of memory</Description>
 		<File count="1"/>
 		<Header>int status = Success;</Header>
@@ -38,7 +38,7 @@
 			{
 				Error("System call mmap failed", Unresolved);
 			}
-			
+			EnableFaultSim();
 			if(msync(addr, strlen(buff), MS_INVALIDATE | MS_SYNC) == -1)
 			{
 				Error("System call msync failed");

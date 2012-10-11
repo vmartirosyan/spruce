@@ -31,7 +31,7 @@
 			int length_after_truncate = 5;
 			
 			Unres ( write(FDs[0], buf, length) != length, "Cannot write  to the file.");
-						
+			EnableFaultSim();
 			Fail ( truncate(FilePaths[0].c_str(), length_after_truncate) != 0, "truncate failed");
 			
 			struct stat stat_buf;
@@ -56,7 +56,7 @@
 			int length_after_truncate = 1;
 			
 			Unres ( write(FDs[0], buf, length) != length, "Cannot write  to the file.");
-						
+			EnableFaultSim();
 			Fail ( truncate(FilePaths[0].c_str(), length_after_truncate) != 0, "truncate failed");
 			
 			struct stat stat_buf;

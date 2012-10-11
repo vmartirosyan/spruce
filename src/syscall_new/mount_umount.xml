@@ -33,7 +33,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
-			
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -57,7 +57,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
-			
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -86,6 +86,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, MS_NOATIME, 0) == -1)
 			{
 				Error("Mount with MS_NOATIME flag attempted failed");
@@ -110,6 +111,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, MS_NODEV, 0) == -1)
 			{
 				Error("Mount with MS_NODEV flag attempted failed");
@@ -133,6 +135,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, MS_NODIRATIME, 0) == -1)
 			{
 				Error("Mount with MS_NODIRATIME flag attempted failed");
@@ -156,7 +159,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
-			
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, MS_NOEXEC, 0) == -1)
 			{
 				Error("Mount with MS_NOEXEC flag attempted failed");
@@ -180,7 +183,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
-			
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, MS_NOSUID, 0) == -1)
 			{
 				Error("Mount with MS_NOSUID flag attempted failed");
@@ -230,6 +233,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, MS_RELATIME, 0) == -1)
 			{
 				Error("Mount with MS_RELATIME flag attempted failed");
@@ -254,6 +258,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, MS_SILENT, 0) == -1)
 			{
 				Error("Mount with MS_SILENT flag attempted failed");
@@ -278,6 +283,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, MS_STRICTATIME, 0) == -1)
 			{
 				Error("Mount with MS_STRICTATIME flag attempted failed");
@@ -301,6 +307,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, MS_SYNCHRONOUS, 0) == -1)
 			{
 				Error("Mount with MS_SYNCHRONOUS flag attempted failed");

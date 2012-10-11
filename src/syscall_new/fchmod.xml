@@ -79,6 +79,7 @@
 			
 			PermissionsToTest.push_back(S_ISUID);
 			
+			EnableFaultSim();
 			int status = Success;
 			for ( unsigned int i = 0; i < PermissionsToTest.size() && !status; ++i )
 			{

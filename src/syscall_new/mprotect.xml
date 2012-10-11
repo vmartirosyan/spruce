@@ -22,7 +22,7 @@
 -->
 <TestSet Name="mprotect">
 	<Requires>sys/mman.h</Requires>
-	<Test Name="MprotectNormal">
+	<Test Name="MprotectNormal" FaultSimulationReady="true">
 		<Description>set protection on a region of memory</Description>
 		<File count="1"/>
 		<Code>
@@ -42,7 +42,7 @@
 			{
 				Error("System call mmap failed", Unresolved);
 			}
-			
+			EnableFaultSim();
 			//memory can not be accessed
 			if(mprotect(addr, length, PROT_NONE) == -1)
 			{

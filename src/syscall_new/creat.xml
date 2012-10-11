@@ -27,6 +27,7 @@
 		<Description>Open and possibly create a file or device.</Description>			
 		<Code>
 			const char * filename = "creatNormal.txt";	
+			EnableFaultSim();
 			int ret_val = creat(filename, S_IRWXU);
 			if(ret_val == -1)
 			{

@@ -28,7 +28,7 @@
 		<Code>
 			Directory dir("chrootTestDirectory", 0777);		
 			File file("chrootTestDirectory/chrootTestFile.txt");
-			
+			EnableFaultSim();
 			if( chroot("chrootTestDirectory") != 0 )
 			{
 				Error("Chroot can not change the root directory.", Fail);

@@ -34,6 +34,7 @@
 			
 			Unres( stat (FilePaths[0].c_str(), &stat_buf_old) == -1, "Cannot get file stat before data sync.");
 			
+			EnableFaultSim();
 			int  ret = fsync (FDs[0]);
 			
 			if (ret != 0)

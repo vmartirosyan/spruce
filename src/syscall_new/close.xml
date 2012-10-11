@@ -27,7 +27,8 @@
 	<Test Name="CloseCorrectDescriptorTest" FaultSimulationReady="true">
 		<Description>close()  closes  a  file descriptor, so that it no longer refers to any file and may be reused.</Description>			
 		<File count="1" />
-		<Code>			
+		<Code>
+			EnableFaultSim();
 			if ( close(FDs[0]) != 0 )
 			{
 				Error("Cannot close file.", Fail);

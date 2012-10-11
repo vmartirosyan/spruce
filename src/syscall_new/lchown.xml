@@ -41,10 +41,11 @@
 			user_uid = nobody->pw_uid;
 			user_gid = nobody->pw_gid;
 
+			EnableFaultSim();
 			//changing owner  from root to nobody 
 			ret_chown = lchown(FilePaths[0].c_str(), user_uid,user_gid);
 			
-			Unres(ret_chown == -1, "Lchown failed: Aborting test.");
+			Fail(ret_chown == -1, "Lchown failed.");
 				
 				
 			ret = stat(FilePaths[0].c_str(), &mode);

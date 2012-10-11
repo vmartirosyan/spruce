@@ -52,8 +52,9 @@
 				Error("Directory change error.", Fail);
 			}
 			delete cwd;
-			
+			EnableFaultSim();
 			ret_chdir = chdir("..");
+			
 			if(ret_chdir != 0)
 			{
 				Error("chdir does not change the working directory.", Fail);

@@ -26,7 +26,7 @@
 	<Requires>sys/time.h</Requires>
 	<Requires>sys/resource.h</Requires>
 	<Requires>linux/version.h</Requires>
-	<Test Name="MlockNormal">
+	<Test Name="MlockNormal" FaultSimulationReady="true">
 		<Description>lock memory</Description>
 		<File count="1"/>
 		<Code>
@@ -44,7 +44,7 @@
 		{
 			Error("System call mmap failed", Unresolved);	
 		}
-		
+		EnableFaultSim();
 		if(mlock(addr, length) == -1)
 		{
 			Error("System call mlock failed", Fail);
