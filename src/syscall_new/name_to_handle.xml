@@ -27,7 +27,7 @@
 #if !defined(__NR_name_to_handle_at) || !defined(__NR_open_by_handle_at)
 	EmptyTestSet(syscall, name_to_handle, Unsupported, "name_to_handle_at or/and open_by_handle_at is/are not supported.")
 #else
-#if HAVE_STRUCT_FILE_HANDLE==0
+#if HAVE_STRUCT_FILE_HANDLE!=1
 		struct file_handle {
 				 __u32 handle_bytes;
 				 int handle_type;
