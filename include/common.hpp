@@ -244,7 +244,7 @@ struct FSimInfo
 }\
 
 #define EmptyTestSet(module_name, test_set_name, status, message)\
-class test_set_name##Tests : public Process\
+class module_name##test_set_name##Tests : public Process\
 {\
 public:\
 	void RunTest(string s) {}\
