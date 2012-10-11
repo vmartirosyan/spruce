@@ -1,0 +1,65 @@
+<!--    fstatfs.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="fstatfs">
+	<Test Name="FstatfsNormal" FaultSimulationReady="true">
+		<Description>Get file system statistics.</Description>
+		<File count="1"/>
+		<Code>
+			Unres ( ! strcmp(FileSystem,""), "FileSystem env variable is not defined");
+			
+			if ( FileSystemTypesMap[FileSystem] == -1 )
+			{
+				Error("fstatfs is not supported by " + (string)FileSystem, Unsupported);
+			}
+						
+			struct statfs buf;
+			EnableFaultSim();
+			if ( fstatfs(FDs[0], &buf) != 0 )
+			{
+				Error("fstatfs failed.", Fail);
+			}
+			
+			if ( buf.f_type != FileSystemTypesMap[FileSystem] )
+			{
+				Error("fstatfs returned wrong FS type: " + buf.f_type, Fail);
+			}
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="FstatfsBadFile">
+		<Description>fd is bad.</Description>
+		<File count="1"/>
+		<Code>
+			struct statfs st;
+			ErrorTest(fstatfs(-1, &st), -1, EBADF);
+		</Code>
+	</Test>
+	<FaultSimulation>
+		<Simulate function="kmalloc" condition="" />
+		<Simulate function="copy_to_user" condition="" />
+		<!-- ... -->
+	</FaultSimulation>
+</TestSet>
+
+
