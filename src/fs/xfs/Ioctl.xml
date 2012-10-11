@@ -11,7 +11,11 @@
 	<Requires>fcntl.h</Requires>
 	<Requires>linux/fs.h</Requires>
 	<Requires>xfs/xfs.h</Requires>	
-	<Header>char buf[2];</Header>
+	<Requires>xfs/xfs_fs.h</Requires>	
+	<Header>
+		char buf[2];
+		if(buf[0] == 0);
+	</Header>
 	<Test Name="SetFlagsNotOwner">
 		<Description>Change flag by not the file owner.</Description>
 		<File count="1"/>
@@ -240,8 +244,15 @@
 	<Test Name="XFS_IOC_FD_TO_HANDLE">
 		<Description>XFS_IOC_FD_TO_HANDLE</Description>
 		<File count="1"/>
-		<Code>			
-			ioctl(FDs[0], XFS_IOC_FD_TO_HANDLE, buf);
+		<Code>	
+			xfs_fsop_handlereq_t arg;
+			xfs_handle_t handle;
+			arg.fd = FDs[0];
+			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
+			int size = XFS_HSIZE(handle);
+			arg.ohandle = malloc(size);
+			int rv = ioctl(FDs[0], XFS_IOC_FD_TO_HANDLE, &arg);
+			Fail(rv == -1, "Ioctl failed");
 			return Shallow;
 		</Code>
 	</Test>
@@ -249,7 +260,14 @@
 		<Description>XFS_IOC_PATH_TO_HANDLE</Description>
 		<File count="1"/>
 		<Code>			
-			ioctl(FDs[0], XFS_IOC_PATH_TO_HANDLE, buf);
+			xfs_fsop_handlereq_t arg;
+			xfs_handle_t handle;
+			arg.path = (void *)FilePaths[0].c_str();
+			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
+			int size = XFS_HSIZE(handle);
+			arg.ohandle = malloc(size);
+			int rv = ioctl(FDs[0], XFS_IOC_PATH_TO_HANDLE, &arg);
+			Fail(rv == -1, "Ioctl failed");
 			return Shallow;
 		</Code>
 	</Test>
@@ -257,7 +275,14 @@
 		<Description>XFS_IOC_PATH_TO_FSHANDLE</Description>
 		<File count="1"/>
 		<Code>			
-			ioctl(FDs[0], XFS_IOC_PATH_TO_FSHANDLE, buf);
+			xfs_fsop_handlereq_t arg;
+			xfs_handle_t handle;
+			arg.path = (void *)FilePaths[0].c_str();
+			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
+			int size = XFS_HSIZE(handle);
+			arg.ohandle = malloc(size);
+			int rv = ioctl(FDs[0], XFS_IOC_PATH_TO_FSHANDLE, &arg);
+			Fail(rv == -1, "Ioctl failed");
 			return Shallow;
 		</Code>
 	</Test>
