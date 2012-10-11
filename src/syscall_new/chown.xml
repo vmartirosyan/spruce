@@ -40,7 +40,8 @@
 			//getting user  and group id for nobody user.
 			user_uid = nobody->pw_uid;
 			user_gid = nobody->pw_gid;
-
+		
+			EnableFaultSim();
 			//changing owner  from root to nobody 
 			ret_chown = chown(FilePaths[0].c_str(), user_uid,user_gid);
 			

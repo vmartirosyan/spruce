@@ -31,7 +31,7 @@
 			int length_after_truncate = 5;
 			
 			Unres ( write(FDs[0], buf, length) != length, "Cannot write to the file.");
-			
+			EnableFaultSim();
 			if ( ftruncate(FDs[0], length_after_truncate) != 0 )
 			{
 				Error("ftruncate failed.", Fail);
@@ -66,7 +66,7 @@
 			int length_after_truncate = 1;
 			
 			Unres ( write(FDs[0], buf, length) != length, "Cannot writeto the file.");
-			
+			EnableFaultSim();
 			if ( ftruncate(FDs[0], length_after_truncate) != 0 )
 			{
 				Error("ftruncate failed.", Fail);

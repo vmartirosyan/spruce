@@ -34,8 +34,7 @@
 			{
 				Error("Mknod failed.", Fail);
 			}
-			DisableFaultSim();
-			
+						
 			Unres ( stat( node_name, &st_buf ) == -1, "Error in stat system call");
 			
 			if ( st_buf.st_uid != getuid() )
@@ -87,7 +86,7 @@
 					status = Fail;
 					continue;
 				}
-				DisableFaultSim();
+				
 				
 				Unres ( stat( node_name, &st ) == -1, "For " + Test[i].msg + " stat failed with error.");
 				
@@ -174,8 +173,6 @@
 		</Code>
 	</Test>
 	<FaultSimulation>
-		<Simulate point="kmem_cache_zalloc" count="3" />
-		<Simulate point="kmem_cache_free" count="2" />
-		<Simulate point="kmem_cache_alloc" count="1" />
+		<Simulate point="kmalloc" />		
 	</FaultSimulation>	
 </TestSet>

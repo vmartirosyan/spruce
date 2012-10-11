@@ -34,7 +34,7 @@
 			}
 						
 			struct statfs buf;
-			
+			EnableFaultSim();
 			if ( fstatfs(FDs[0], &buf) != 0 )
 			{
 				Error("fstatfs failed.", Fail);

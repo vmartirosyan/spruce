@@ -36,6 +36,8 @@
 			
 			const struct iovec WriteVec[BufCount] = { {WriteBuf1, strlen(WriteBuf1)}, {WriteBuf2, strlen(WriteBuf2)}};
 			struct iovec ReadVec[BufCount] = { {ReadBuf1, strlen(WriteBuf1)}, {ReadBuf2, strlen(WriteBuf2)}};
+			
+			EnableFaultSim();
 			if ( writev(FDs[0], WriteVec, BufCount) != (int)(WriteVec[0].iov_len + WriteVec[1].iov_len) )
 			{
 				Error("Cannot write to file.", Fail);

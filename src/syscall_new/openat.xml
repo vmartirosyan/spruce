@@ -28,6 +28,7 @@
 		<Dir count="1"/>
 		<Code>
 			const char * filename = "openNormal.txt";
+			EnableFaultSim();
 			int ret_val = openat(DirDs[0], filename, O_CREAT, S_IRUSR);
 			if(ret_val == -1)
 			{

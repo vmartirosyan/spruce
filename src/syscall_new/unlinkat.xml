@@ -30,7 +30,7 @@
 		</Dir>
 		<Code>
 			string FileNameOnly = DirFilePaths[0].substr(DirPaths[0].length() + 1, DirFilePaths[0].length());
-			
+			EnableFaultSim();
 			Fail(unlinkat(DirDs[0], FileNameOnly.c_str(), 0) == -1, "Cannot remove file.");
 			 // Check if file exists
 			Fail ( access( DirFilePaths[0].c_str(), F_OK ) == 0, "Error: unlinked file still exists.");
@@ -42,7 +42,7 @@
 		<Description>Remove a directory entry relative to a directory file descriptor. If the pathname given in pathname is relative and dirfd is the  special value  AT_FDCWD,  then  pathname is interpreted relative to the current working directory of the calling process.</Description>
 		<File count="1"/>
 		<Code>
-			
+			EnableFaultSim();
 			Fail( unlinkat(AT_FDCWD, FilePaths[0].c_str(), 0) == -1, "Cannot remove file.");
 			 // Check if file exists
 			Fail ( access( FilePaths[0].c_str(), F_OK ) == 0, "Error: unlinked file still exists.");
@@ -55,6 +55,7 @@
 		<Dir count="1"/>
 		<Code>
 			Directory Dir(".");
+			EnableFaultSim();
 			Fail(unlinkat(Dir.GetDirectoryDescriptor(), DirPaths[0].c_str(), AT_REMOVEDIR) == -1, "Cannot remove directory.");
 			 // Check if file exists
 			Fail ( access( DirPaths[0].c_str(), F_OK ) == 0, "Error: unlinked directory still exists.");

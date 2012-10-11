@@ -40,6 +40,7 @@
 			
 			// Write to pipe, so that the read descriptor becomes ready
 			Unres(write(pfd[1], "asdf", 4) != 4, "Cannot write to pipe.");
+			EnableFaultSim();
 			int ready = select( pfd[1] + 1, &rfds, NULL, NULL, &tv );
 						
 			Fail ( ready != 1, "Select failed.");

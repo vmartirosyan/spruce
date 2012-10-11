@@ -39,7 +39,7 @@
 			const char * ValueSet = "asdf";		
 			const int ValueLen = strlen(ValueSet);
 			char * ValueGot = new char[strlen(ValueSet)];
-						
+			
 			if ( removexattr(FilePaths[0].c_str(), AttrName) == -1 && errno != ENOATTR )
 			{
 				if ( errno == ENOTSUP )
@@ -48,7 +48,7 @@
 				}
 				Unres(true, "Cannot remove xattr.");
 			}
-			
+			EnableFaultSim();
 			Fail ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
 			
 			Fail ( getxattr(FilePaths[0].c_str(), AttrName, (void*)ValueGot, ValueLen ) != ValueLen, "Cannot get xattr.");
@@ -75,9 +75,10 @@
 				Unres(true, "Cannot remove xattr.");
 			}
 			
-			Fail ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			Unres ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
 			
 			char ValueGot[1000];
+			EnableFaultSim();
 			Fail ( listxattr(FilePaths[0].c_str(), ValueGot, 30 ) < 1, "Cannot list xattrs.");
 			
 			string XattrList = ValueGot;			

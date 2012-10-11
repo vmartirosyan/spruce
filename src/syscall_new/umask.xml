@@ -32,7 +32,7 @@
 			unsigned mode;
 			mode_t retMask;
 			bool firstCallSkiped = false;
-			
+			EnableFaultSim();
 			for(umask(setMask); setMask < 01000; retMask = umask(++setMask))
 			{
 				if(firstCallSkiped)

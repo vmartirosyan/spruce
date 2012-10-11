@@ -28,6 +28,7 @@
 		<File count="1"/>
 		<Code>
 			const int NewSize = 10;
+			EnableFaultSim();
 			Fail( fallocate( FDs[0], 0, 0, NewSize ) == -1, "Cannot allocate space in file." );
 			
 			struct stat st;

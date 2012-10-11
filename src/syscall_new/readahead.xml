@@ -1,11 +1,12 @@
 <TestSet Name="readahead">
 	<Requires>fcntl.h</Requires>
 	<Requires>unistd.h</Requires>
-	<Test Name="ReadaheadNormal">
+	<Test Name="ReadaheadNormal" FaultSimulationReady="true">
 		<Description>perform file readahead into page cache</Description>
 		<File count="1"/>
 		<Header></Header>
 		<Code>
+			EnableFaultSim();
 			if(readahead(FDs[0], 0, getpagesize()) == -1)
 			{
 				Error("readahead failed", Fail);

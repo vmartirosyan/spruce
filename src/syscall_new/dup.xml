@@ -130,11 +130,12 @@
 			return true;
 		}	
 	</Internal>
-	<Test Name="DupNormal">
+	<Test Name="DupNormal" FaultSimulationReady="true">
 		<Description>dup() duplicates a file descriptor</Description>
 		<File count="1"/>
 		<Code>
 			int status = Success;
+			EnableFaultSim();
 			int newFd = dup(FDs[0]);
 					
 			if (newFd == -1)

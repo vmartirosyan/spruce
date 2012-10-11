@@ -33,7 +33,7 @@
 			struct stat stat_buf;
 			
 			time_t time_before = time(NULL);
-			
+			EnableFaultSim();
 			sync ();
 			
 			time_t time_after = time(NULL);
@@ -44,12 +44,7 @@
 			
 			return Success;
 		</Code>
-	</Test>
-	<FaultSimulation>
-		<Simulate function="kmalloc" condition="" />
-		<Simulate function="copy_to_user" condition="" />
-		<!-- ... -->
-	</FaultSimulation>
+	</Test>	
 </TestSet>
 
 

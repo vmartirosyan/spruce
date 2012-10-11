@@ -27,7 +27,7 @@
 		<Description>Create and remove a directory.</Description>
 		<Code>
 			const char * path = "MkdirRmdirNormal_dir";
-			
+			EnableFaultSim();
 			if ( mkdir(path, 0777) == -1 )
 			{
 				Error("Failed to create directory", Fail);

@@ -52,7 +52,8 @@
 	</Header>
 	<Test Name="QuotactlQuotaOnOff" FaultSimulationReady="true">
 		<Description>Turn on and off quotas for a file system.</Description>		
-		<Code>						
+		<Code>
+			EnableFaultSim();
 			Fail( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
 			
 			Fail( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot disable quotas V0." );
@@ -74,7 +75,7 @@
 			
 			quota_data.dqb_bhardlimit = 1000;
 			quota_data.dqb_valid = QIF_BLIMITS;
-			
+			EnableFaultSim();
 			Fail( quotactl(cmd_set_quota, DeviceName, 0, (caddr_t)&quota_data ) == -1, "Cannot set quota." );
 			
 			Fail( quotactl(cmd_get_quota, DeviceName, 0, (caddr_t)&quota_data2 ) == -1, "Cannot get quota." );
@@ -101,7 +102,7 @@
 			
 			quota_info.dqi_bgrace = 100;
 			quota_info.dqi_valid = IIF_BGRACE;
-			
+			EnableFaultSim();
 			Fail( quotactl(cmd_set_info, DeviceName, 0, (caddr_t)&quota_info ) == -1, "Cannot set info." );
 			
 			Fail( quotactl(cmd_get_info, DeviceName, 0, (caddr_t)&quota_info2 ) == -1, "Cannot get info." );
@@ -121,7 +122,7 @@
 			int format;
 			
 			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
-			
+			EnableFaultSim();
 			Fail( quotactl(cmd_get_format, DeviceName, 0, (caddr_t)&format ) == -1, "Cannot get format." );
 			
 			Fail( format != QFMT_VFS_V0, "Format value is not correct" );
@@ -136,7 +137,7 @@
 		<Description>Update the on-disk copy of quota usages for a file system.</Description>		
 		<Code>
 			int cmd_sync = QCMD(Q_SYNC, USRQUOTA);
-			
+			EnableFaultSim();
 			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
 			
 			Fail( quotactl(cmd_sync, DeviceName, 0, 0 ) == -1, "Cannot sync." );

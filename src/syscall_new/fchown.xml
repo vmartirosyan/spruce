@@ -42,10 +42,11 @@
 			user_uid = nobody->pw_uid;
 			user_gid = nobody->pw_gid;
 
+			EnableFaultSim();
 			//changing owner  from root to nobody 
 			ret_fchown = fchown(FDs[0], user_uid,user_gid);
 			
-			Unres(ret_fchown == -1, "Chown failed: Aborting test.");
+			Fail(ret_fchown == -1, "Chown failed.");
 								
 			ret = fstat(FDs[0], &mode);
 			Unres( ret == -1, "stat failed: Aborting test.");

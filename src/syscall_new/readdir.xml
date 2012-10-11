@@ -45,8 +45,7 @@ struct old_linux_dirent {
 			if (syscall(SYS_readdir, DirDs[0], &dir, 0) == -1)
 			{
 				Error("Readdir failed.", Fail);
-			}
-			DisableFaultSim();
+			}			
 			
 			if ( strstr(dir.d_name, ".") != dir.d_name )
 			{
@@ -106,11 +105,8 @@ struct old_linux_dirent {
 #endif
 	</Footer>
 	<FaultSimulation>
-		<Simulate point="kzalloc" count="1" />
-		<Simulate point="kfree" count="1" />
-		<Simulate point="copy_to_user" count="1" />
-		<Simulate point="__get_free_pages" count="1" />
-		<Simulate point="__free_pages" count="1" />
+		<Simulate point="kmalloc" count="1" />
+		<Simulate point="copy_to_user" count="1" />		
 	</FaultSimulation>
 
 </TestSet>

@@ -27,6 +27,7 @@
 		<Description>Open and possibly create a file or device.</Description>
 		<Code>
 			const char * filename = "openNormal.txt";
+			EnableFaultSim();
 			int ret_val = open(filename, O_CREAT, S_IRUSR);
 			if(ret_val == -1)
 			{
@@ -42,6 +43,7 @@
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
 		<Code>
 			const char * filename = "openDirect.txt";
+			EnableFaultSim();
 			int ret_val = open(filename, O_CREAT | O_DIRECT, S_IRUSR);
 			if(ret_val == -1)
 			{

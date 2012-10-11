@@ -32,7 +32,7 @@
 			const int SeekCount = 2;
 			
 			Unres(write(FDs[0], write_buf, strlen(write_buf)) == -1, "Cannot write to file.");
-			
+			EnableFaultSim();
 			if ( lseek64(FDs[0], SeekCount, SEEK_SET) == -1 )
 			{
 				Error("Cannot seek.", Fail);
@@ -58,7 +58,7 @@
 			const int AdditionalSeekCount = 2;
 			
 			Unres(write(FDs[0], write_buf, strlen(write_buf)) == -1, "Cannot write to file.");
-			
+			EnableFaultSim();
 			if ( lseek64(FDs[0], InitialSeekCount, SEEK_SET) == -1 )
 			{
 				Error("Cannot make initial seek.", Fail);
@@ -88,7 +88,7 @@
 			const int SeekCount = 2;
 			
 			Unres(write(FDs[0], write_buf, strlen(write_buf)) == -1, "Cannot write to file.");
-			
+			EnableFaultSim();
 			if ( lseek64(FDs[0], SeekCount, SEEK_END) == -1 )
 			{
 				Error("Cannot seek.", Fail);

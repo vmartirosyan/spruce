@@ -36,6 +36,7 @@
 			
 			Unres( write(FDs[0], buf, strlen(buf)) != (ssize_t)strlen(buf), "Error writing to file.");
 			
+			EnableFaultSim();
 			Fail ( splice(FDs[0], &src_len, pipe_fds[1], NULL, strlen(buf), 0) == -1, "Cannot splice.");
 			
 			Unres( read(pipe_fds[0], (void*)buf2, strlen(buf)) != (ssize_t)strlen(buf), "Cannot read from pipe." );

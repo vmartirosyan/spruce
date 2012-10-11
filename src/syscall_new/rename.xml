@@ -28,6 +28,7 @@
 		<File count="1"/>
 		<Code>
 			const char * NewFileName = "RenameNormal1_new";
+			EnableFaultSim();
 			if ( rename(FilePaths[0].c_str(), NewFileName) == -1 )
 			{
 				Error("Rename failed.", Fail);
@@ -51,7 +52,8 @@
 	<Test Name="RenameNormal2" FaultSimulationReady="true">
 		<Description>If newpath already exists it will be atomically replaced.</Description>
 		<File count="2"/>
-		<Code>			
+		<Code>
+			EnableFaultSim();
 			if ( rename(FilePaths[0].c_str(), FilePaths[1].c_str()) == -1 )
 			{
 				Error("Rename failed.", Fail);
@@ -78,6 +80,7 @@
 			Unres(link(FilePaths[0].c_str(), Link1) == -1, "Cannot create the first hard link.");
 			Unres(link(FilePaths[0].c_str(), Link2) == -1, "Cannot create the second hard link.");
 			
+			EnableFaultSim();
 			if ( rename(Link1, Link2) == -1 )
 			{
 				unlink(Link1);
@@ -97,6 +100,7 @@
 			const char * NewLink = "RenameNormalSoftLink1_link_new";
 			Unres(symlink(FilePaths[0].c_str(), Link) == -1, "Cannot create the link.");
 			
+			EnableFaultSim();
 			if ( rename(Link, NewLink) == -1 )
 			{
 				unlink(Link);
@@ -126,6 +130,7 @@
 			
 			Unres(symlink(FilePaths[0].c_str(), Link) == -1, "Cannot create the link.");
 			
+			EnableFaultSim();
 			if ( rename(FilePaths[0].c_str(), Link) == -1 )
 			{
 				Error("Rename failed.", Fail);

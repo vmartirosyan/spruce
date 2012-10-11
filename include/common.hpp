@@ -86,6 +86,10 @@ struct FSimInfo
 		cerr << "Fault simulation is disabled for module " << FileSystem << "(" << _fsim_point << ", " << _fsim_expression << ")" << endl;\
 	}\
 }
+//added
+#define SetFaultCount() \
+	_fault_count = KedrIntegrator::GetTimes( _fsim_point); 
+	
 #define ERROR_3_ARGS(message, add_msg, status)\
 	cerr << message << add_msg;\
 	if ( errno ) cerr << "\nError: " << strerror(errno) << endl;\
