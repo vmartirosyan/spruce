@@ -201,7 +201,7 @@ struct FSimInfo
 	FirstFileDesc = open(path, O_CREAT | O_RDONLY, 0777);\
 	Unres(FirstFileDesc == -1, "Cannot create the first file.");\
 	\
-	for (int file_index = FirstFileDesc + 1; file_index < max_files_open - 2; ++file_index)\
+	for (int file_index = FirstFileDesc + 1; file_index < max_files_open; ++file_index)\
 	{\
 		int ret_val = open(path, O_RDONLY, 0777);\
 		if ( ret_val == error_val )\
