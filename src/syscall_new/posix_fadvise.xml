@@ -11,37 +11,37 @@
 			EnableFaultSim();
 			if((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_NORMAL)) != 0)
 			{
-				cerr << "posix_fadvise with POSIX_FADV_NORMAL advise failed" << strerror(errNum);
+				Error("posix_fadvise with POSIX_FADV_NORMAL advise failed.");
 				status = Fail;
 			}
 			
 			if((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_SEQUENTIAL)) != 0)
 			{
-				cerr << "posix_fadvise with POSIX_FADV_SEQUENTIAL advise failed" << strerror(errNum);
+				Error("posix_fadvise with POSIX_FADV_SEQUENTIAL advise failed.");
 				status = Fail;
 			}
 			
 			if((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_RANDOM)) != 0)
 			{
-				cerr << "posix_fadvise with POSIX_FADV_RANDOM advise failed" << strerror(errNum);
+				Error("posix_fadvise with POSIX_FADV_RANDOM advise failed.");
 				status = Fail;
 			}
 			
 			if((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_NOREUSE)) != 0)
 			{
-				cerr << "posix_fadvise with POSIX_FADV_NOREUSE advise failed" << strerror(errNum);
+				Error("posix_fadvise with POSIX_FADV_NOREUSE advise failed.");
 				status = Fail;
 			}
 			
 			if((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_WILLNEED)) != 0)
 			{
-				cerr << "posix_fadvise with POSIX_FADV_WILLNEED advise failed" << strerror(errNum);
+				Error("posix_fadvise with POSIX_FADV_WILLNEED advise failed.");
 				status = Fail;
 			}		
 			
 			if((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_DONTNEED)) != 0)
 			{
-				cerr << "posix_fadvise with POSIX_FADV_DONTNEED advise failed" << strerror(errNum);
+				Error("posix_fadvise with POSIX_FADV_DONTNEED advise failed.");
 				status = Fail;
 			}		
 		</Code>
@@ -104,16 +104,18 @@
 			int fds[2];
 			if(pipe(fds) != 0)
 			{
-				cerr << "pipe failed: " << strerror(errno) << endl;
+				Error("pipe failed.");
 				status = Unresolved;
 			}
 			else
-				if(posix_fadvise(fds[0], 0, getpagesize(), POSIX_FADV_NORMAL) != EINVAL)
+			{
+				int errNum = posix_fadvise(fds[0], 0, getpagesize(), POSIX_FADV_NORMAL);
+				if(errNum != EINVAL && errNum != ESPIPE)
 				{
 					Error("EINVAL error expected: fd is a pipe refers to a pipe");
 					status = Fail;
 				}
-			
+			}
 			if(posix_fadvise(FDs[0], 0, getpagesize(), -1) != EINVAL)
 			{
 				Error("EINVAL error expected: advise is not a valid value");
