@@ -21,6 +21,11 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
+#include <sstream>
+#include <stdint.h>
+#include <inttypes.h>
+using namespace std;
+
 enum FileSystems
 {
 	FS_COMMON,
@@ -220,24 +225,21 @@ class PartitionManager
 		}
 		bool CreateFilesystem(string fs, string partition)
 		{
-			// First get the block device size (in bytes)
-			UnixCommand * blockdev = new UnixCommand("blockdev");
-			vector<string> blkdev_args;
-			blkdev_args.push_back("--getsize64");
-			blkdev_args.push_back(partition);
-			ProcessResult * blkdev_res = blockdev->Execute(blkdev_args);
-			delete blockdev;
-			if ( blkdev_res == NULL )
+			int fd = open(partition.c_str(), O_RDONLY);
+			if (fd == -1)
 			{
-				cerr << "Cannot get device size." << endl;
+				cerr << "fd error " << strerror(errno) << endl;
+				return false;
+			}			
+			uint64_t DeviceSize;
+			if ( ioctl( fd, BLKGETSIZE64, &DeviceSize ) == -1)			
+			{
+				close(fd);
+				cerr << "error in ioctl" << endl;
 				return false;
 			}
-			if ( blkdev_res->GetStatus() != Success )
-			{
-				cerr << "Error getting device size: " << blkdev_res->GetOutput() << endl;
-				return false;
-			}
-			long DeviceSize = atoll(blkdev_res->GetOutput().c_str());
+			close(fd);
+			cerr << "Size: " << DeviceSize << endl;
 			
 			UnixCommand * mkfs = new UnixCommand("mkfs." + fs);
 			vector<string> args;		
@@ -248,16 +250,24 @@ class PartitionManager
 				args.push_back("-F");
 			// Block and partition size
 			// Reserve empty space on device for later resize tests.
+			stringstream s1;
 			int BlockSize = 4096;
-			char buf[10];
-			sprintf(buf, "%ld", DeviceSize / BlockSize - 10);
-			char buf2[10];
-			sprintf(buf2, "%d", BlockSize);
+			string strBlockSize;			
+			s1 << BlockSize;
+			strBlockSize = s1.str();
+			
+			stringstream s2;
+			string PartitionSize;
+			s2 << ((DeviceSize / BlockSize) - 10);
+			PartitionSize = s2.str();
+			cerr << "Partition blocks: " << (DeviceSize / BlockSize) - 10 << endl;			
+			cerr << "Partition blocks: " << PartitionSize << endl;
+			
 			if ( fs == "ext4" )
 			{	
 				args.push_back("-b");
-				args.push_back(buf2);
-				args.push_back(buf);
+				args.push_back(strBlockSize);
+				args.push_back(PartitionSize);
 			}
 			if ( fs == "xfs" )
 			{	
@@ -265,14 +275,16 @@ class PartitionManager
 			}
 			if ( fs == "jfs" )
 			{	
-				args.push_back(buf);
+				args.push_back(PartitionSize);
 			}
 			if ( fs == "btrfs" )
 			{
-				char buf3[10];
-				sprintf(buf3, "%ld", DeviceSize - 10*4096);
+				stringstream s3;
+				s3 << (DeviceSize - 10*4096);
+				string SizeInBlocks = s3.str();
+				
 				args.push_back("-b");
-				args.push_back(buf3);
+				args.push_back(SizeInBlocks);
 			}
 			
 			ProcessResult * res;
