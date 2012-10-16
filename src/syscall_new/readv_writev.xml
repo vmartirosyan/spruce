@@ -238,27 +238,24 @@
 		<Description>readv: The  vector  count  iovcnt is greater than the permitted maximum.</Description>
 		<File count="1"/>
 		<Code>
-			Error("Makes the process to uninterraptable sleep... Needs to be refactored.", Unsupported);
-			const int BufCount = 2;
+			const int BufCount = IOV_MAX + 1;
 			char ReadBuf1[10];
 			char ReadBuf2[10];
 			
 			struct iovec ReadVec[BufCount] = { {ReadBuf1, 10}, {ReadBuf2, 10}};
-			ErrorTest(readv(FDs[0], ReadVec, IOV_MAX + 1), -1, EINVAL);
+			ErrorTest(readv(FDs[0], ReadVec, BufCount), -1, EINVAL);
 		</Code>
 	</Test>
 	<Test Name="WritevInval3">
 		<Description>writev: The  vector  count  iovcnt is greater than the permitted maximum.</Description>
 		<File count="1"/>
 		<Code>
-			Error("Makes the process to uninterraptable sleep... Needs to be refactored.", Unsupported);
-			const int BufCount = 2;
+			const int BufCount = IOV_MAX + 1;
 			char WriteBuf1[10];
 			char WriteBuf2[10];
 			
 			const struct iovec WriteVec[BufCount] = { {WriteBuf1, 10}, {WriteBuf2, 10}};
-			
-			ErrorTest(writev(FDs[0], WriteVec, IOV_MAX + 1), -1, EINVAL);
+			ErrorTest(writev(FDs[0], WriteVec, BufCount), -1, EINVAL);
 		</Code>
 	</Test>
 	

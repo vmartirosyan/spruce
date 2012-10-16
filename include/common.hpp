@@ -93,7 +93,7 @@ struct FSimInfo
 #define ERROR_3_ARGS(message, add_msg, status)\
 	cerr << message << add_msg;\
 	if ( errno ) cerr << "\nError: " << strerror(errno) << endl;\
-	if( errno == ENOTSUP && status != -1) return Unsupported;\
+	if( (errno == ENOTSUP) && (status != -1)) return Unsupported;\
 	if (status != -1) return status;
 
 #define ERROR_2_ARGS(message, status)\
