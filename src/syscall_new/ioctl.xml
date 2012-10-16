@@ -50,25 +50,26 @@
 			return Success;
 		</Code>
 	</Test>
-	<Test Name="IoctlFITRIM" FaultSimulationReady="true">
+<Test Name="IoctlFITRIM" FaultSimulationReady="true">
 		<Description>Ioctl FITRIM.</Description>
 		<File count="1"/>
 		<Header>
-#ifndef FITRIM
-		Error("FITRIM is not supported.", Unsupported);
-#else
+		#ifdef FITRIM
 		</Header>
-		<Code>
+		<Code>				
 			struct fstrim_range arg;
 			arg.start = 0;
 			arg.len = 10;
 			EnableFaultSim();
 			Fail( ioctl(FDs[0], FITRIM, &arg) == -1, "FITRIM operation failed." );
-			
 			return Shallow;
 		</Code>
 		<Footer>
-#endif 
+		#else
+		Error("FITRIM is not supported", Unsupported);
+		#endif
+		</Footer>
+	</Test>
 		</Footer>
 	</Test>
 	<Test Name="IoctlFIEMAP" FaultSimulationReady="true">
