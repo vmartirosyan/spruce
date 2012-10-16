@@ -30,6 +30,7 @@
 #include <pwd.h>
 #include <linux/limits.h>
 #include <limits.h>
+#include <dirent.h>
 using std::string;
 using std::cout;
 using std::cerr;
@@ -197,28 +198,39 @@ struct FSimInfo
 #define EMaxFilesOpenTest(func_call, error_val)\
 {\
 	long max_files_open=sysconf(_SC_OPEN_MAX);\
-	int FirstFileDesc = -1;\
-	const char * path = "max_files_test";\
-	FirstFileDesc = open(path, O_CREAT | O_RDONLY, 0777);\
-	Unres(FirstFileDesc == -1, "Cannot create the first file.");\
-	\
-	for (int file_index = FirstFileDesc + 1; file_index < max_files_open; ++file_index)\
+	char * path = "max_files_test";\
+	int firstFd = open(path, O_CREAT | O_RDONLY, 0777);\
+	if(firstFd == -1)\
 	{\
+		Unres(true, "Failed to open first file");\
+	}\
+	DIR * fdDir = opendir("/proc/self/fd");\
+	Unres(fdDir == NULL, "Opendir /proc/self/fd failed");\
+	dirent * dirEntry = NULL;\
+	int busyFdCount = 0;\
+	while((dirEntry = readdir(fdDir)) != NULL)\
+	{\
+			busyFdCount++;\
+	}\
+	closedir(fdDir);\
+	for (int file_index = 0; file_index < max_files_open - busyFdCount; ++file_index)\
+	{\
+		sprintf(path, "max_files_test%d", file_index + firstFd);\
 		int ret_val = open(path, O_RDONLY, 0777);\
-		if ( ret_val == error_val )\
+		if ( ret_val == -1 )\
 		{\
-			for ( int i = FirstFileDesc; i <= file_index; ++i )\
-				close(i);\
+			for ( int i = 0; i <= file_index; ++i )\
+				close(i + firstFd);\
 			unlink(path);\
 			char buf[3];\
-			sprintf(buf, "%d", file_index);\
-			Unres(true, "Cannot create file " + (string)buf);\
+			sprintf(buf, "%d-th", file_index);\
+			Unres(true, "Cannot create the " + (string)buf + "file");\
 		}\
 	}\
 	errno = 0;\
 	int ret_val = func_call;\
-	for ( int i = FirstFileDesc; i < max_files_open - 1; ++i )\
-		close(i);\
+	for ( int i = firstFd; i < max_files_open - busyFdCount; ++i )\
+		close(i + firstFd);\
 	unlink(path);\
 	if ( ret_val != error_val || errno != EMFILE )\
 	{\
