@@ -70,8 +70,6 @@
 		#endif
 		</Footer>
 	</Test>
-		</Footer>
-	</Test>
 	<Test Name="IoctlFIEMAP" FaultSimulationReady="true">
 		<Description>Ioctl FIEMAP.</Description>
 		<File count="1"/>
