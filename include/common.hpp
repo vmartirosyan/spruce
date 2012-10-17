@@ -198,7 +198,8 @@ struct FSimInfo
 #define EMaxFilesOpenTest(func_call, error_val)\
 {\
 	long max_files_open=sysconf(_SC_OPEN_MAX);\
-	char * path = "max_files_test";\
+	char path[50];\
+	sprintf(path, "%s", "max_files_test");\
 	int firstFd = open(path, O_CREAT | O_RDONLY, 0777);\
 	if(firstFd == -1)\
 	{\
@@ -210,17 +211,15 @@ struct FSimInfo
 	int busyFdCount = 0;\
 	while((dirEntry = readdir(fdDir)) != NULL)\
 	{\
-			busyFdCount++;\
+		busyFdCount++;\
 	}\
-	closedir(fdDir);\
+	busyFdCount -= 2;\
 	for (int file_index = 0; file_index < max_files_open - busyFdCount; ++file_index)\
 	{\
-		sprintf(path, "max_files_test%d", file_index + firstFd);\
-		int ret_val = open(path, O_RDONLY, 0777);\
+		sprintf(path, "max_files_test%d", file_index);\
+		int ret_val = open(path, O_CREAT | O_RDONLY, 0777);\
 		if ( ret_val == -1 )\
 		{\
-			for ( int i = 0; i <= file_index; ++i )\
-				close(i + firstFd);\
 			unlink(path);\
 			char buf[3];\
 			sprintf(buf, "%d-th", file_index);\
@@ -229,13 +228,13 @@ struct FSimInfo
 	}\
 	errno = 0;\
 	int ret_val = func_call;\
-	for ( int i = firstFd; i < max_files_open - busyFdCount; ++i )\
-		close(i + firstFd);\
 	unlink(path);\
 	if ( ret_val != error_val || errno != EMFILE )\
 	{\
+		cerr << ret_val << endl;\
 		Error("Function should return '" + (string)strerror(EMFILE) +  "' error but it did not.", Fail);\
 	}\
+	closedir(fdDir);\
 	return Success;\
 }\
 
