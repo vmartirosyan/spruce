@@ -225,21 +225,35 @@ class PartitionManager
 		}
 		bool CreateFilesystem(string fs, string partition)
 		{
-			int fd = open(partition.c_str(), O_RDONLY);
-			if (fd == -1)
-			{
-				cerr << "fd error " << strerror(errno) << endl;
-				return false;
-			}			
 			uint64_t DeviceSize;
-			if ( ioctl( fd, BLKGETSIZE64, &DeviceSize ) == -1)			
+			struct stat st;
+			if ( stat(partition.c_str(), &st) == -1)
 			{
-				close(fd);
-				cerr << "error in ioctl" << endl;
+				cerr << "Cannot get file stats. " << strerror(errno) << endl;
 				return false;
 			}
-			close(fd);
-			cerr << "Size: " << DeviceSize << endl;
+			if (S_ISREG(st.st_mode))
+			{
+				cout << "Loop device on regular file." << endl;
+				DeviceSize = st.st_size;
+			}
+			else
+			{
+				int fd = open(partition.c_str(), O_RDONLY);
+				if (fd == -1)
+				{
+					cerr << "Cannot open partition " << strerror(errno) << endl;
+					return false;
+				}
+				
+				if ( ioctl( fd, BLKGETSIZE64, &DeviceSize ) == -1)			
+				{
+					close(fd);
+					cerr << "Cannot get partition size." << strerror(errno) << endl;
+					return false;
+				}
+				close(fd);
+			}
 			
 			UnixCommand * mkfs = new UnixCommand("mkfs." + fs);
 			vector<string> args;		
@@ -260,8 +274,6 @@ class PartitionManager
 			string PartitionSize;
 			s2 << ((DeviceSize / BlockSize) - 10);
 			PartitionSize = s2.str();
-			cerr << "Partition blocks: " << (DeviceSize / BlockSize) - 10 << endl;			
-			cerr << "Partition blocks: " << PartitionSize << endl;
 			
 			if ( fs == "ext4" )
 			{	
