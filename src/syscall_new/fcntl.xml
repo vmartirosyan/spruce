@@ -597,7 +597,7 @@
 			return Success;
 		</Code>
 	</Test>
-	<Test Name="FcntlFDNoLock">
+	<!--Test Name="FcntlFDNoLock">
 		<Description>Too many segment locks open.</Description>
 		<File count="1"/>
 		<Code>
@@ -632,7 +632,7 @@
 			
 			return Success;
 		</Code>
-	</Test>
+	</Test-->
 	<Test Name="FcntlFDCapAboveLimit">
 		<Description></Description>
 		<File count="1"/>
