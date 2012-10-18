@@ -1,0 +1,143 @@
+<!--    open.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Gurgen Torozyan <gurgen.torozyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="open">	
+	<Test Name="OpenNormal" FaultSimulationReady="true">
+		<Description>Open and possibly create a file or device.</Description>
+		<Code>
+			const char * filename = "openNormal.txt";
+			EnableFaultSim();
+			int ret_val = open(filename, O_CREAT, S_IRUSR);
+			if(ret_val == -1)
+			{
+				Error("open returned error in case of noraml filename.", Fail);
+			}
+			close(ret_val);
+			unlink(filename);
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="OpenDirect" FaultSimulationReady="true">
+		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
+		<Code>
+			const char * filename = "openDirect.txt";
+			EnableFaultSim();
+			int ret_val = open(filename, O_CREAT | O_DIRECT, S_IRUSR);
+			if(ret_val == -1)
+			{
+				Error("open returned error in case of noraml filename.", Fail);
+			}
+			close(ret_val);
+			unlink(filename);
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="OpenNameTooLong">
+		<Description>File name is too long.</Description>
+		<File count="1"/>
+		<Code>
+			ENameTooLongTest(open(path, O_RDONLY), -1);
+		</Code>
+	</Test>
+	<Test Name="OpenNotDir">
+		<Description>A component of path is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+			ENotDirTest(open( path, O_RDONLY ), -1);
+		</Code>
+	</Test>
+	<Test Name="OpenFault">
+		<Description>Path points outside the user address space.</Description>
+		<Code>
+			ErrorTest(open( (char*)-1, O_RDONLY ), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="OpenLoop">
+		<Description>Too  many  links  encountered during pathname resolution.</Description>
+		<File count="1"/>
+		<Code>
+			ELoopTest(open( FilePaths[0].c_str(), O_RDONLY ), -1);
+		</Code>
+	</Test>
+	<Test Name="OpenNoAccess">
+		<Description>Access is denied.</Description>
+		<File count="1"/>
+		<Code>
+			ENoAccessTest(open( FilePaths[0].c_str(), O_CREAT | O_RDONLY, 0777 ), -1);
+		</Code>
+	</Test>
+	<Test Name="OpenNoEnt">
+		<Description>Pathname has a nonexistent component.</Description>
+		<Code>
+			ErrorTest(open( "non_existing_path", O_RDONLY ), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="OpenExist">
+		<Description>Pathname already exists.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(open( FilePaths[0].c_str(), O_CREAT | O_EXCL, 0777 ), -1, EEXIST);
+		</Code>
+	</Test>
+	<Test Name="OpenIsDir">
+		<Description>Pathname is a directory.</Description>
+		<Code>
+			ErrorTest(open( "/", O_WRONLY ), -1, EISDIR);
+		</Code>
+	</Test>
+	<Test Name="OpenMaxFiles">
+		<Description>The process already has the maximum number of files open.</Description>
+		<Code>
+			EMaxFilesOpenTest(open( path, O_RDONLY ), -1);
+		</Code>
+	</Test>
+	<Test Name="OpenENXIO1">
+		<Description> O_NONBLOCK | O_WRONLY is set, the named file is a  FIFO  and  no process has the file open for reading.</Description>
+		<Code>
+			const char * FileName = "OpenNoDev_FIFO";
+			Unres( mkfifo(FileName, 0666) == -1, "Cannot create FIFO.");
+			
+			ErrorTest(open( FileName, O_WRONLY | O_NONBLOCK ), -1, ENXIO);
+		</Code>
+	</Test>
+	<Test Name="OpenENXIO2">
+		<Description>pathname  refers  to  a device special file and no corresponding device exists.</Description>
+		<Code>
+			const char * FileName = "OpenNoDev_Nod";
+			Unres( mknod(FileName, S_IFCHR, 0666) == -1, "Cannot create device file.");
+			
+			ErrorTest(open( FileName, O_WRONLY ), -1, ENXIO);
+		</Code>
+	</Test>
+	<Test Name="OpenTxtBusy">
+		<Description>pathname refers to an executable image which is currently being executed and write access was requested.</Description>
+		<Code>
+			const char * FileName = INSTALL_PREFIX"/bin/spruce";
+			
+			ErrorTest(open( FileName, O_WRONLY ), -1, ETXTBSY);
+		</Code>
+	</Test>
+</TestSet>
