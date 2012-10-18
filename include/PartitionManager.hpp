@@ -86,7 +86,10 @@ class PartitionManager
 			}
 				
 			if ( !CreateFilesystem(_FileSystem, _DeviceName) )
-				return PS_Skip;
+			{
+				_Index = 0;
+				return PS_Done;
+			}
 			cout << "File system is created successfully." << endl;
 			
 			UnixCommand * mnt = new UnixCommand("mount");
