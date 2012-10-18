@@ -106,7 +106,7 @@
 				<th>Operation</th>
 				<th>Output</th>
 			</tr>
-		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Teimout']" >				
+		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Timeout']" >				
 			<tr>
 				<td><xsl:value-of select="@Name" /></td>
 				<td><xsl:value-of select="Operation" /></td>
