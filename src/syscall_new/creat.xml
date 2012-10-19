@@ -92,11 +92,6 @@
 			ErrorTest(creat(DirPaths[0].c_str(), S_IWUSR), -1, EISDIR);
 		</Code>
 	</Test>
-	<FaultSimulation>
-		<Simulate function="kmalloc" condition="" />
-		<Simulate function="copy_to_user" condition="" />
-		<!-- ... -->
-	</FaultSimulation>
 </TestSet>
 
 
