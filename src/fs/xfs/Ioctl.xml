@@ -15,6 +15,9 @@
 	<Header>
 		char buf[2];
 		if(buf[0] == 0);
+		#ifndef BMV_IF_DELALLOC
+		#define BMV_IF_DELALLOC		0x8
+		#endif 	
 	</Header>
 	<Test Name="SetFlagsNotOwner">
 		<Description>Change flag by not the file owner.</Description>
@@ -32,7 +35,7 @@
 		</Code>
 	</Test>
 	
-	<!-- Shallow tests -->
+	
 	<Test Name="XFS_IOC_ALLOCSP">
 		<Description>XFS_IOC_ALLOCSP</Description>
 		<File count="1"/>
@@ -148,16 +151,18 @@
 	<Test Name="XFS_IOC_FSGEOMETRY_V1">
 		<Description>XFS_IOC_FSGEOMETRY_V1</Description>
 		<File count="1"/>
-		<Code>			
-			ioctl(FDs[0], XFS_IOC_FSGEOMETRY_V1, buf);
+		<Code>
+			xfs_fsop_geom_t arg;
+			ioctl(FDs[0], XFS_IOC_FSGEOMETRY_V1, &arg);
 			return Shallow;
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_FSGEOMETRY">
 		<Description>XFS_IOC_FSGEOMETRY</Description>
 		<File count="1"/>
-		<Code>			
-			ioctl(FDs[0], XFS_IOC_FSGEOMETRY, buf);
+		<Code>
+			xfs_fsop_geom_t arg;
+			ioctl(FDs[0], XFS_IOC_FSGEOMETRY, &arg);
 			return Shallow;
 		</Code>
 	</Test>
@@ -220,8 +225,16 @@
 	<Test Name="XFS_IOC_GETBMAP">
 		<Description>XFS_IOC_GETBMAP</Description>
 		<File count="1"/>
-		<Code>			
-			ioctl(FDs[0], XFS_IOC_GETBMAP, buf);
+		<Code>	
+			Unres (fallocate(FDs[0], 0, 0, 1024) == -1, "Cannot allocate space in file.");
+			const int BlockCount = 10;
+			struct getbmapx bmx[BlockCount];
+			bmx[0].bmv_count = BlockCount; 
+			bmx[0].bmv_length = -1;
+			bmx[0].bmv_offset = 0;
+			
+			int rv = ioctl(FDs[0], XFS_IOC_GETBMAP, &bmx);
+			Fail(rv == -1, "getbmap failed");
 			return Shallow;
 		</Code>
 	</Test>
@@ -229,15 +242,32 @@
 		<Description>XFS_IOC_GETBMAPA</Description>
 		<File count="1"/>
 		<Code>			
-			ioctl(FDs[0], XFS_IOC_GETBMAPA, buf);
+			Unres (fallocate(FDs[0], 0, 0, 1024) == -1, "Cannot allocate space in file.");
+			const int BlockCount = 10;
+			struct getbmapx bmx[BlockCount];
+			bmx[0].bmv_count = BlockCount; 
+			bmx[0].bmv_length = -1;
+			bmx[0].bmv_offset = 0;
+			
+			int rv = ioctl(FDs[0], XFS_IOC_GETBMAPA, &bmx);
+			Fail(rv == -1, "getbmapa failed");
 			return Shallow;
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_GETBMAPX">
 		<Description>XFS_IOC_GETBMAPX</Description>
 		<File count="1"/>
-		<Code>			
-			ioctl(FDs[0], XFS_IOC_GETBMAPX, buf);
+		<Code>
+			Unres (fallocate(FDs[0], 0, 0, 1024) == -1, "Cannot allocate space in file.");
+			const int BlockCount = 10;
+			struct getbmapx bmx[BlockCount];
+			bmx[0].bmv_count = BlockCount; 
+			bmx[0].bmv_length = -1;
+			bmx[0].bmv_iflags = BMV_IF_DELALLOC;	
+			bmx[0].bmv_offset = 0;
+					
+			int rv = ioctl(FDs[0], XFS_IOC_GETBMAPX, bmx);
+			Fail(rv == -1, "getbmapx failed");
 			return Shallow;
 		</Code>
 	</Test>
@@ -287,26 +317,46 @@
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_OPEN_BY_HANDLE">
-		<Description>XFS_IOC_OPEN_BY_HANDLE</Description>
+		<Description>XFS_IOC_OPEN_BY_HANDLE</Description>	
 		<Dir count="1"/>
-		<File count="1"/>
-		<Code>	
+		<Code>
+			/*xfs_fsop_handlereq_t arg;
+			xfs_handle_t handle;
+			arg.fd = AT_FDCWD;
+			
+			handle.ha_fid.fid_len = sizeof(handle.ha_fid) - sizeof(handle.ha_fid.fid_len);
+			int size = XFS_HSIZE(handle);
+			
+			arg.ohandle = malloc(size);
+			Unres(arg.ohandle == 0, "Malloc error");
+			
+			int rv = ioctl(AT_FDCWD, XFS_IOC_FD_TO_HANDLE, &arg);
+			Unres(rv != 0, "Ioctl XFS_IOC_FD_TO_HANDLE failed");
+			arg.ihandle = arg.ohandle;			
+			arg.ihandlen = *(arg.ohandlen);
+			rv = ioctl(AT_FDCWD, XFS_IOC_OPEN_BY_HANDLE, &arg);			
+			Fail(rv < 0, "Ioctl open by handle failed");
+			return Shallow;*/
+			
+			
+			
 			xfs_fsop_handlereq_t arg;
 			xfs_handle_t handle;
-			arg.fd = DirDs[0];
-			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
+			arg.path = (void *)MountPoint;
+			handle.ha_fid.fid_len = sizeof(handle.ha_fid) - sizeof(handle.ha_fid.fid_len);
 			int size = XFS_HSIZE(handle);
 			arg.ohandle = malloc(size);
-			int rv = ioctl(DirDs[0], XFS_IOC_FD_TO_HANDLE, &arg);
-			Unres(rv == -1, "Ioctl fd to handle failed");
-			arg.ihandle = (void*)arg.ohandle;
+			int rv = ioctl(DirDs[0], XFS_IOC_PATH_TO_HANDLE, &arg);
+			Unres(rv != 0, "Ioctl XFS_IOC_PATH_TO_HANDLE failed");
+			
+			arg.ihandle = arg.ohandle;			
 			arg.ihandlen = *(arg.ohandlen);
-			rv = ioctl(DirDs[0], XFS_IOC_OPEN_BY_HANDLE, &arg);
-			Fail(rv == -1, "Ioctl open by handle failed");
+			rv = ioctl(DirDs[0], XFS_IOC_OPEN_BY_HANDLE, &arg);			
+			Fail(rv < 0, "Ioctl open by handle failed");
 			return Shallow;
 		</Code>
 	</Test>
-	<Test Name="XFS_IOC_FSSETDM_BY_HANDLE">
+	<!--Test Name="XFS_IOC_FSSETDM_BY_HANDLE">
 		<Description>XFS_IOC_FSSETDM_BY_HANDLE</Description>
 		<File count="1"/>
 		<Code>			
@@ -321,15 +371,48 @@
 			ioctl(FDs[0], XFS_IOC_READLINK_BY_HANDLE, buf);
 			return Shallow;
 		</Code>
-	</Test>
-	<Test Name="XFS_IOC_ATTRLIST_BY_HANDLE">
+	</Test-->
+	<!--Test Name="XFS_IOC_ATTRLIST_BY_HANDLE">
 		<Description>XFS_IOC_ATTRLIST_BY_HANDLE</Description>
-		<File count="1"/>
+		<Dir count="1"/>
 		<Code>			
-			ioctl(FDs[0], XFS_IOC_ATTRLIST_BY_HANDLE, buf);
+			/*xfs_fsop_handlereq_t arg;
+			xfs_handle_t handle;
+			arg.fd = DirDs[0];
+			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
+			int size = XFS_HSIZE(handle);
+			arg.ohandle = malloc(size);
+			int rv = ioctl(DirDs[0], XFS_IOC_FD_TO_HANDLE, &arg);
+			Unres(rv == -1, "Ioctl fd to handle failed");
+			
+			arg.ihandle = (void*)arg.ohandle;
+			arg.ihandlen = *(arg.ohandlen);
+			
+			xfs_fsop_attrlist_handlereq_t alhreq;
+			
+			alhreq.hreq.fd       = 0;
+			alhreq.hreq.path     = NULL;
+			alhreq.hreq.oflags   = O_LARGEFILE;
+			alhreq.hreq.ihandle  = arg;
+			alhreq.hreq.ihandlen = hlen;
+			alhreq.hreq.ohandle  = NULL;
+			alhreq.hreq.ohandlen = NULL;
+			*/
+			/*
+			//memset(&attrlist_arg, 0, sizeof(attrlist_arg));
+			attrlist_arg.hreq = arg;
+			attrlist_arg.buflen = attrlist_arg.flags = 0;
+			attrlist_arg.pos.opaque[0] = 0;
+			attrlist_arg.pos.opaque[1] = 0;
+			attrlist_arg.pos.opaque[3] = 0;
+			//memset(&(attrlist_arg.pos), 0, sizeof(attrlist_arg.pos));
+			*/
+			
+			rv = ioctl(DirDs[0], XFS_IOC_ATTRLIST_BY_HANDLE, &attrlist_arg);
+			Fail(rv == -1, "Ioctl atrrlist by handle failed");
 			return Shallow;
 		</Code>
-	</Test>
+	</Test-->
 	<Test Name="XFS_IOC_ATTRMULTI_BY_HANDLE">
 		<Description>XFS_IOC_ATTRMULTI_BY_HANDLE</Description>
 		<File count="1"/>
