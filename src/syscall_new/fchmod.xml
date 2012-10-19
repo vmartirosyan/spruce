@@ -1,0 +1,105 @@
+<!--    fchmod.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Gurgen Torozyan <gurgen.torozyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="fchmod">
+	<Internal>
+	Status PermissionsTest(mode_t open_mode)
+	{
+		const char *path="FchmodTest.txt";
+		int ret_fchmod;
+		struct stat mode;
+		int fd;
+			
+		try
+		{
+			File file(path, open_mode);
+
+			fd = file.GetFileDescriptor();
+			
+			ret_fchmod = fchmod(fd, open_mode);
+			
+			Unres(ret_fchmod == -1, "Fchmod  failed: Aborting test.");
+			
+			int ret = stat(path, &mode);
+			
+			Unres(ret == -1, "stat failed: Aborting test.");
+			
+			if((mode.st_mode & 4095) !=  open_mode)
+			{
+				Error("Chmod failed.", Fail);
+			}
+			return Success;
+		}
+		catch (Exception ex)
+		{
+			Fail(true, ex.GetMessage());
+		}
+	}
+	</Internal>
+	<Test Name="FchmodNormal" FaultSimulationReady="true">
+		<Description>access()  checks  whether the calling process can access the file pathname.</Description>
+		<File count="1" />
+		<Code>
+			vector<mode_t> PermissionsToTest;
+			PermissionsToTest.push_back(S_IRWXU);
+			PermissionsToTest.push_back(S_IRUSR);
+			PermissionsToTest.push_back(S_IWUSR);
+			PermissionsToTest.push_back(S_IXUSR);
+			
+			PermissionsToTest.push_back(S_IRWXG);
+			PermissionsToTest.push_back(S_IRGRP);
+			PermissionsToTest.push_back(S_IWGRP);
+			PermissionsToTest.push_back(S_IXGRP);
+			
+			PermissionsToTest.push_back(S_IRWXO);
+			PermissionsToTest.push_back(S_IROTH);
+			PermissionsToTest.push_back(S_IWOTH);
+			PermissionsToTest.push_back(S_IXOTH);
+			
+			PermissionsToTest.push_back(S_ISUID);
+			
+			EnableFaultSim();
+			int status = Success;
+			for ( unsigned int i = 0; i < PermissionsToTest.size() && !status; ++i )
+			{
+				status |= PermissionsTest(PermissionsToTest[i]);
+			}
+			
+			return status;
+		</Code>
+	</Test>
+	<Test Name="FchmodBadFileDesc">
+		<Description>The file descriptor fd is not valid.</Description>
+		<Code>
+			ErrorTest(fchmod(-1, 0), -1, EBADF);
+		</Code>
+	</Test>
+	<FaultSimulation>
+		<Simulate function="kmalloc" condition="" />
+		<Simulate function="copy_to_user" condition="" />
+		<!-- ... -->
+	</FaultSimulation>
+</TestSet>
+
+

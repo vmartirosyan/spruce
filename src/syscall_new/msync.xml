@@ -1,0 +1,118 @@
+<!--     msync.cpp
+//      
+//		Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//      	Ruzanna Karakozova <r.karakozova@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+<TestSet Name="msync">
+	<Requires>sys/mman.h</Requires>
+	<Test Name="MsyncNormal" FaultSimulationReady="true">
+		<Description>set protection on a region of memory</Description>
+		<File count="1"/>
+		<Header>int status = Success;</Header>
+		<Code>
+			char * buff = (char *)"abc";
+			if(write(FDs[0], buff, strlen(buff)) == -1)
+			{
+				Error("System call write failed", Unresolved);
+			}
+				
+			void * addr = mmap(0, strlen(buff), PROT_READ, MAP_PRIVATE, FDs[0], 0);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);
+			}
+			EnableFaultSim();
+			if(msync(addr, strlen(buff), MS_INVALIDATE | MS_SYNC) == -1)
+			{
+				Error("System call msync failed");
+				status = Fail;
+			}
+			
+			char * readBuff = 0;
+			if(read(FDs[0], readBuff, strlen(buff)) == -1)
+			{
+				Error("System call read failed");
+				status = Unresolved;
+			}
+			else if(!strncmp(buff, (char *)readBuff, strlen(buff)))
+			{
+				Error("System call msync failed: file was not synchronized");
+				status = Fail;
+			}
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MsyncErrInval">
+		<Description>addr is not a multiple of PAGESIZE; or any bit other than MS_ASYNC | MS_INVALIDATE | MS_SYNC is set in flags; or both MS_SYNC and MS_ASYNC are set in flags</Description>
+		<File count="1"/>
+		<Header>int status = Success;</Header>
+		<Code>
+			char * buff = (char *)"abc";
+			if(write(FDs[0], buff, strlen(buff)) == -1)
+			{
+				Error("System call write failed", Unresolved);
+			}
+				
+			void * addr = mmap(0, strlen(buff), PROT_READ, MAP_PRIVATE, FDs[0], 0);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);
+			}
+			
+			if(msync(addr, strlen(buff), MS_ASYNC | MS_INVALIDATE | MS_SYNC) != -1 || errno != EINVAL)
+			{
+				Error("EINVAL error expected: flags contain invalid value");
+				status = Fail;
+			}
+			
+			if(msync(addr, strlen(buff), MS_ASYNC | MS_SYNC) != -1 || errno != EINVAL)
+			{
+				Error("EINVAL error expected: flags contain invalid value");
+				status = Fail;
+			}
+			
+			if(msync((void *)~PAGE_MASK, strlen(buff), MS_INVALIDATE | MS_SYNC) != -1 || errno != EINVAL)
+			{
+				Error("EINVAL error expected: address contains invalid value");
+				status = Fail;			
+			}
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="MsyncErrNomem">
+		<Description>The indicated memory (or part of it) was not mapped</Description>
+		<File count="1"/>
+		<Code>
+			int length = 3;	
+			void * addr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);	
+			}
+			
+			if(munmap(addr, length) == -1)
+			{
+				Error("System call munmap failed", Unresolved);
+			}
+			ErrorTest(msync(addr, length, MS_SYNC | MS_INVALIDATE), -1, ENOMEM);
+		</Code>
+		<Footer>return Success;</Footer>
+	</Test>
+</TestSet>
