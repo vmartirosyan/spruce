@@ -355,6 +355,22 @@ int main(int argc, char ** argv)
 					string ModuleBin = (module->find("fs-spec") == string::npos ? *module : (*fs + module->substr(7, module->size())));
 					if ( *module == "fault-sim" )
 						ModuleBin = "fault_sim";
+						
+					// Check if the module should be executed on this FS with these mount options.
+					bool ModuleShouldNotRun = (TestsToRun.size() > 0);
+					for ( vector<string>::iterator it = TestsToRun.begin(); it != TestsToRun.end(); ++it )
+					{
+						string prefix = *fs + "." + pm.GetCurrentMountOptions() + "." + *module;
+						if ( (*it).find(prefix) != string::npos )
+						{							
+							ModuleShouldNotRun = false;
+						}
+					}
+					if ( ModuleShouldNotRun )
+					{
+						cerr << "Skipping module: " << *module << " (accoring to key run_tests in configuration file)."	<< endl;
+						continue;
+					}
 					UnixCommand * command = new UnixCommand(( (string)(INSTALL_PREFIX"/bin/" + ModuleBin).c_str()));
 					
 					string FileName = logfolder + "/" + *fs + "_" + *module + "_" + pm.GetCurrentMountOptions() + "_log.xml";
@@ -392,8 +408,10 @@ int main(int argc, char ** argv)
 					for ( vector<string>::iterator it = TestsToRun.begin(); it != TestsToRun.end(); ++it )
 					{
 						string prefix = *fs + "." + pm.GetCurrentMountOptions() + "." + *module;
+						
 						if ( (*it).find(prefix) != string::npos )
 						{
+							
 							RunModuleTests.push_back(it->substr(prefix.size() + 1, it->size() - prefix.size()));							
 						}
 					}
