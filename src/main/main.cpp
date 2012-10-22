@@ -357,7 +357,7 @@ int main(int argc, char ** argv)
 						ModuleBin = "fault_sim";
 						
 					// Check if the module should be executed on this FS with these mount options.
-					bool ModuleShouldNotRun = true;
+					bool ModuleShouldNotRun = (TestsToRun.size() > 0);
 					for ( vector<string>::iterator it = TestsToRun.begin(); it != TestsToRun.end(); ++it )
 					{
 						string prefix = *fs + "." + pm.GetCurrentMountOptions() + "." + *module;
