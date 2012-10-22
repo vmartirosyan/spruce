@@ -143,7 +143,11 @@
 	<Test Name="ReadvFault">
 		<Description>readv: Argument is outside your accessible address space.</Description>
 		<Code>
-			ErrorTest(readv(0, (const struct iovec*)-1, 1), -1, EFAULT);
+			struct iovec ReadVec;
+			ReadVec.iov_base = (void*)-1;	    /* Starting address */
+            ReadVec.iov_len = 5; 	    	   /* Number of bytes to transfer */
+           
+           	ErrorTest(readv(0, &ReadVec, 1), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="ReadvErrAgain">
@@ -237,24 +241,24 @@
 		<Description>readv: The  vector  count  iovcnt is greater than the permitted maximum.</Description>
 		<File count="1"/>
 		<Code>
-			const int BufCount = IOV_MAX + 1;
+			const int BufCount = 2;
 			char ReadBuf1[10];
 			char ReadBuf2[10];
 			
 			struct iovec ReadVec[BufCount] = { {ReadBuf1, 10}, {ReadBuf2, 10}};
-			ErrorTest(readv(FDs[0], ReadVec, BufCount), -1, EINVAL);
+			ErrorTest(readv(FDs[0], ReadVec, IOV_MAX + 1), -1, EINVAL);
 		</Code>
 	</Test>
 	<Test Name="WritevInval3">
 		<Description>writev: The  vector  count  iovcnt is greater than the permitted maximum.</Description>
 		<File count="1"/>
 		<Code>
-			const int BufCount = IOV_MAX + 1;
+			const int BufCount = 2;
 			char WriteBuf1[10];
 			char WriteBuf2[10];
 			
 			const struct iovec WriteVec[BufCount] = { {WriteBuf1, 10}, {WriteBuf2, 10}};
-			ErrorTest(writev(FDs[0], WriteVec, BufCount), -1, EINVAL);
+			ErrorTest(writev(FDs[0], WriteVec, IOV_MAX + 1), -1, EINVAL);
 		</Code>
 	</Test>
 	
