@@ -129,14 +129,16 @@
 		<Description>pread: buf is outside your accessible address space.</Description>
 		<File count="1"/>
 		<Code>
-			ErrorTest(pread(FDs[0], (void*)-1, 0, 0), -1, EFAULT);
+			const char * WriteBuf = "012345";
+			Unres( write(FDs[0], WriteBuf, strlen(WriteBuf)) != (int)strlen(WriteBuf), "Cannot write initial data to file." );
+			ErrorTest(pread(FDs[0], (void*)-1, 1, 1), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="PwriteFault">
 		<Description>pwrite: buf is outside your accessible address space.</Description>
 		<File count="1"/>
 		<Code>
-			ErrorTest(pwrite(FDs[0], (void*)-1, 0, 0), -1, EFAULT);
+			ErrorTest(pwrite(FDs[0], (void*)-1, 1, 1), -1, EFAULT);
 		</Code>
 	</Test>
 </TestSet>
