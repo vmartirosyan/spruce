@@ -56,12 +56,12 @@
 		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
 		<Code>
 			const int BlockSize = 512;
-			char WriteBuf[3*BlockSize];
+			char* WriteBuf = new char[3*BlockSize];
 			// Align to block size
 			char * WriteStart = (char*)((((long)WriteBuf / BlockSize) + 1) * BlockSize);
 			WriteStart[0] = 'A';
 			
-			char ReadBuf[2*BlockSize];
+			char* ReadBuf = new char[2*BlockSize];
 			char * ReadStart = (char*)((((long)ReadBuf / BlockSize) + 1) * BlockSize);
 			
 			EnableFaultSim();
