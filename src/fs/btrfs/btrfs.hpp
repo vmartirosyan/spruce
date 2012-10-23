@@ -246,7 +246,8 @@ struct btrfs_ioctl_space_info {
 struct btrfs_ioctl_space_args {
 	__u64 space_slots;
 	__u64 total_spaces;
-	struct btrfs_ioctl_space_info spaces[0];
+	//unused part, which gives warning.
+	//struct btrfs_ioctl_space_info spaces[0];
 };
 
 struct btrfs_data_container {
@@ -254,7 +255,8 @@ struct btrfs_data_container {
 	__u32	bytes_missing;	/* out -- additional bytes needed for result */
 	__u32	elem_cnt;	/* out */
 	__u32	elem_missed;	/* out */
-	__u64	val[0];		/* out */
+	//unused part, which gives warning.
+	//__u64	val[0];		/* out */
 };
 
 struct btrfs_ioctl_ino_path_args {
