@@ -120,7 +120,8 @@
 		<Description>XFS_IOC_DIOINFO</Description>
 		<File count="1"/>
 		<Code>			
-			ioctl(FDs[0], XFS_IOC_DIOINFO, buf);
+			struct dioattr arg;
+			Fail(ioctl(FDs[0], XFS_IOC_DIOINFO, &arg) != 0, "dioinfo failed");
 			return Shallow;
 		</Code>
 	</Test>
