@@ -26,6 +26,10 @@
 	<Requires>sys/time.h</Requires>
 	<Requires>sys/resource.h</Requires>
 	<Requires>linux/version.h</Requires>
+	<Header>
+#undef MAP_FAILED
+#define MAP_FAILED reinterpret_cast<void*>(-1)
+	</Header>
 	<Test Name="MlockNormal" FaultSimulationReady="true">
 		<Description>lock memory</Description>
 		<File count="1"/>
@@ -33,9 +37,9 @@
 		int prot = PROT_READ;
 		int flags = MAP_PRIVATE;
 		off_t offset = 0;	
-		char * buff = (char *)"abc";
-		size_t length = strlen(buff);		
-		if(write(FDs[0], buff, length) == -1)
+		const string buff = "abc";
+		size_t length = buff.size();		
+		if(write(FDs[0], buff.c_str(), length) == -1)
 		{
 			Error("write failed", Unresolved);
 		}
@@ -182,10 +186,10 @@
 			int prot = PROT_READ;
 			int flags = MAP_PRIVATE ;
 			off_t offset = 0;	
-			char * buff = (char *)"abc";
-			size_t length = strlen(buff);		
+			const string buff = "abc";
+			size_t length = buff.size();		
 			
-			if(write(FDs[0], buff, length) == -1)
+			if(write(FDs[0], buff.c_str(), length) == -1)
 			{
 				Error("write failed", Unresolved);
 			}

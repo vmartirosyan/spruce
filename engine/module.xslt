@@ -67,9 +67,9 @@ class <xsl:value-of select="$ModuleName"/>TestResult : public TestResult
 };
 
 
-char * DeviceName = (char*)"";
-char * MountPoint = (char*)"";
-char * FileSystem = (char*)"";
+char * DeviceName = NULL;
+char * MountPoint = NULL;
+char * FileSystem = NULL;
 map&lt;string, int> FileSystemTypesMap;
 
 
@@ -200,9 +200,9 @@ using namespace std;
 		<xsl:variable name="MetaModuleName" select="@Name" />
 
 
-char * DeviceName = (char*)"";
-char * MountPoint = (char*)"";
-char * FileSystem = (char*)"";
+char * DeviceName = NULL;
+char * MountPoint = NULL;
+char * FileSystem = NULL;
 map&lt;string, int> FileSystemTypesMap;
 
 

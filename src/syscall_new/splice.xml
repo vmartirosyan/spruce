@@ -27,22 +27,22 @@
 		<Description>splice()  moves  data  between  two  file  descriptors  without copying between kernel address space and user address space. File -> Pipe </Description>
 		<File count="1"/>
 		<Code>
-			const char * buf = (char*)"1234";
+			const string buf = "1234";
 			char buf2[10];
 			loff_t src_len = 0;
 			int pipe_fds[2];
 			
 			Unres( pipe(pipe_fds) == -1, "Cannot create pipe." );
 			
-			Unres( write(FDs[0], buf, strlen(buf)) != (ssize_t)strlen(buf), "Error writing to file.");
+			Unres( write(FDs[0], buf.c_str(), buf.size()) == -1, "Error writing to file.");
 			
 			EnableFaultSim();
-			Fail ( splice(FDs[0], &src_len, pipe_fds[1], NULL, strlen(buf), 0) == -1, "Cannot splice.");
+			Fail ( splice(FDs[0], &src_len, pipe_fds[1], NULL, buf.size(), 0) == -1, "Cannot splice.");
 			
-			Unres( read(pipe_fds[0], (void*)buf2, strlen(buf)) != (ssize_t)strlen(buf), "Cannot read from pipe." );
-			buf2[strlen(buf)] = 0;
+			Unres( read(pipe_fds[0], static_cast<void*>(buf2), buf.size()) == -1, "Cannot read from pipe." );
+			buf2[buf.size()] = 0;
 			
-			Fail ( strncmp(buf, buf2, strlen(buf)) != 0, "Data corruption" );
+			Fail ( strncmp(buf.c_str(), buf2, buf.size()) != 0, "Data corruption" );
 			
 			return Success;
 		</Code>
@@ -51,21 +51,21 @@
 		<Description>splice()  moves  data  between  two  file  descriptors  without copying between kernel address space and user address space. Pipe -> File </Description>			
 		<File count="1"/>
 		<Code>
-			const char * buf = (char*)"1234";
+			const string buf = "1234";
 			char buf2[10];
 			loff_t dest_len = 0;
 			int pipe_fds[2];
 			
 			Unres( pipe(pipe_fds) == -1, "Cannot create pipe." );
 			
-			Unres( write(pipe_fds[1], buf, strlen(buf)) != (ssize_t)strlen(buf), "Error writing to pipe.");
+			Unres( write(pipe_fds[1], buf.c_str(), buf.size()) == -1, "Error writing to pipe.");
 			
-			Fail ( splice(pipe_fds[0], NULL, FDs[0], &dest_len, strlen(buf), 0) == -1, "Cannot splice.");
+			Fail ( splice(pipe_fds[0], NULL, FDs[0], &dest_len, buf.size(), 0) == -1, "Cannot splice.");
 			
-			Unres( read(FDs[0], (void*)buf2, strlen(buf)) != (ssize_t)strlen(buf), "Cannot read from file." );
-			buf2[strlen(buf)] = 0;
+			Unres( read(FDs[0], static_cast<void*>(buf2), buf.size()) == -1, "Cannot read from file." );
+			buf2[buf.size()] = 0;
 			
-			Fail ( strncmp(buf, buf2, strlen(buf)) != 0, "Data corruption" );
+			Fail ( strncmp(buf.c_str(), buf2, buf.size()) != 0, "Data corruption" );
 			
 			return Success;
 		</Code>
@@ -74,21 +74,21 @@
 		<Description>Attempt to move pages instead of copying.</Description>			
 		<File count="1"/>
 		<Code>
-			const char * buf = (char*)"1234";
+			const string buf = "1234";
 			char buf2[10];
 			loff_t src_len = 0;
 			int pipe_fds[2];
 			
 			Unres( pipe(pipe_fds) == -1, "Cannot create pipe." );
 			
-			Unres( write(FDs[0], buf, strlen(buf)) != (ssize_t)strlen(buf), "Error writing to file.");
+			Unres( write(FDs[0], buf.c_str(), buf.size()) == -1, "Error writing to file.");
 			
-			Fail ( splice(FDs[0], &src_len, pipe_fds[1],NULL, strlen(buf), SPLICE_F_MOVE) == -1, "Cannot splice.");
+			Fail ( splice(FDs[0], &src_len, pipe_fds[1],NULL, buf.size(), SPLICE_F_MOVE) == -1, "Cannot splice.");
 			
-			Unres( read(pipe_fds[0], (void*)buf2, strlen(buf)) != (ssize_t)strlen(buf), "Cannot read from second file." );
-			buf2[strlen(buf)] = 0;
+			Unres( read(pipe_fds[0], static_cast<void*>(buf2), buf.size()) == -1, "Cannot read from second file." );
+			buf2[buf.size()] = 0;
 			
-			Fail ( strncmp(buf, buf2, strlen(buf)) != 0, "Data corruption" );
+			Fail ( strncmp(buf.c_str(), buf2, buf.size()) != 0, "Data corruption" );
 			
 			return Success;
 		</Code>

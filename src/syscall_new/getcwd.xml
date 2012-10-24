@@ -36,7 +36,7 @@
 				Error("Cannot get current working directory", Fail);
 			}
 			
-			if ( dir != (string)buf )
+			if ( dir != static_cast<string>(buf) )
 			{
 				Error("getcwd returned wrong directory.", Fail);
 			}
@@ -62,7 +62,7 @@
 	<Test Name="GetcwdErrFault">
 		<Description>buf points to a bad address.</Description>
 		<Code>			
-			ErrorTest(getcwd((char*)-1, 100), NULL, EFAULT);
+			ErrorTest(getcwd(reinterpret_cast<char*>(-1), 100), NULL, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="GetcwdErrInval">
@@ -80,7 +80,7 @@
 			
 			Unres(chdir(path) != 0, "Can not change the working directory.");
 			
-			Unres (rmdir(("../" + (string)path).c_str()) != 0, "Can not delete the working directory.");
+			Unres (rmdir(("../" + static_cast<string>(path)).c_str()) != 0, "Can not delete the working directory.");
 			
 			char buf[100];
 			

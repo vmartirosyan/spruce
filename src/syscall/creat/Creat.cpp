@@ -154,7 +154,7 @@ Status CreatTest::CreatOutside()
 	int ret_val =0;		
 	
     //(char*)-1 is outside of our accessible address space
-	ret_val = creat((char*)-1, S_IRWXU );
+	ret_val = creat(static_cast<char*>(-1), S_IRWXU );
 	if(ret_val != -1)
 	{
 			cerr << "Creat returned normal file decriptor when the pathname is outside of your acessible address space";

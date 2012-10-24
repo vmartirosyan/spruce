@@ -50,7 +50,7 @@ ProcessResult * Test::Execute(vector<string> args)
 	sa.sa_handler = SignalHandler;
 	if ( sigaction(SIGALRM, &sa, NULL) == -1 )
 	{	
-		return new ProcessResult(Unresolved, "Cannot set signal handler. " + (string)strerror(errno));
+		return new ProcessResult(Unresolved, "Cannot set signal handler. " + static_cast<string>(strerror(errno)));
 	}
 	
 	alarm(TEST_TIMEOUT);
@@ -94,7 +94,7 @@ TestResultCollection TestCollection::Run()
 		
 	for ( unsigned int index = 0 ; index < _tests.size(); ++index)
 	{
-		TestResult * res = (TestResult *)_tests[index]->Execute();
+		TestResult * res = static_cast<TestResult *>(_tests[index]->Execute());
 		Results.AddResult( res );
 		
 

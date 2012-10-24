@@ -155,7 +155,7 @@ int MprotectMemoryTest:: MprotectErrEINVALTest(vector<string> args)
 			status = Fail;
 		}
 		
-		if(mprotect((void *)(-1), 3, PROT_NONE) != -1 || errno != EINVAL)
+		if(mprotect(static_cast<void*>(-1), 3, PROT_NONE) != -1 || errno != EINVAL)
 		{
 			cerr << "EINVAL error expected: addr is not a valid pointer";
 			status = Fail;

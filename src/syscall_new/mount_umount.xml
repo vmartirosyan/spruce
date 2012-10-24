@@ -362,19 +362,19 @@
 	<Test Name="MountFault">
 		<Description>Mount: One of the pointer arguments points outside the user address space.</Description>
 		<Code>
-			ErrorTest(mount( (char*)-1, (char*)-1, (char*)-1, 0, 0 ), -1, EFAULT);
+			ErrorTest(mount( reinterpret_cast<char*>(-1), reinterpret_cast<char*>(-1), reinterpret_cast<char*>(-1), 0, 0 ), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="UmountFault">
 		<Description>Umount: target points outside the user address space.</Description>
 		<Code>
-			ErrorTest(umount( (char*)-1 ), -1, EFAULT);
+			ErrorTest(umount( reinterpret_cast<char*>(-1) ), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="MountLoop">
 		<Description>Mount: target points outside the user address space.</Description>
 		<Code>
-			ErrorTest(umount( (char*)-1 ), -1, EFAULT);
+			ErrorTest(umount( reinterpret_cast<char*>(-1) ), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="MountLoop1">

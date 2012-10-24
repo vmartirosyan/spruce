@@ -53,7 +53,7 @@
 	<Test Name="CreatOutside">
 		<Description>Pathname points outside your accessible address space.</Description>			
 		<Code>
-			ErrorTest(creat((const char *)-1, S_IRUSR), -1, EFAULT);
+			ErrorTest(creat(reinterpret_cast<const char *>(-1), S_IRUSR), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="CreatPathIsNotDir">

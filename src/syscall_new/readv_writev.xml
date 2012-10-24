@@ -29,28 +29,28 @@
 		<File count="1"/>
 		<Code>
 			const int BufCount = 2;
-			char * WriteBuf1 = (char*)"012345";
-			char * WriteBuf2 = (char*)"abcd";
+			const string WriteBuf1 = "012345";
+			const string WriteBuf2 = "abcd";
 			char ReadBuf1[10];
 			char ReadBuf2[10];
 			
-			const struct iovec WriteVec[BufCount] = { {WriteBuf1, strlen(WriteBuf1)}, {WriteBuf2, strlen(WriteBuf2)}};
-			struct iovec ReadVec[BufCount] = { {ReadBuf1, strlen(WriteBuf1)}, {ReadBuf2, strlen(WriteBuf2)}};
+			const struct iovec WriteVec[BufCount] = { {static_cast<void*>(const_cast<char*>(WriteBuf1.c_str())), WriteBuf1.size()}, {static_cast<void*>(const_cast<char*>(WriteBuf2.c_str())), WriteBuf2.size()}};
+			struct iovec ReadVec[BufCount] = { {ReadBuf1, WriteBuf1.size()}, {ReadBuf2, WriteBuf2.size()}};
 			
 			EnableFaultSim();
-			if ( writev(FDs[0], WriteVec, BufCount) != (int)(WriteVec[0].iov_len + WriteVec[1].iov_len) )
+			if ( writev(FDs[0], WriteVec, BufCount) != static_cast<int>((WriteVec[0].iov_len + WriteVec[1].iov_len)) )
 			{
 				Error("Cannot write to file.", Fail);
 			}
 			
 			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
 			
-			if ( readv(FDs[0], ReadVec, BufCount) != (int)(WriteVec[0].iov_len + WriteVec[1].iov_len) )
+			if ( readv(FDs[0], ReadVec, BufCount) != static_cast<int>((WriteVec[0].iov_len + WriteVec[1].iov_len)) )
 			{
 				Error("Cannot read from file.", Fail);
 			}
 			
-			if ( strncmp(ReadBuf1, WriteBuf1, strlen(WriteBuf1)) || strncmp(ReadBuf2, WriteBuf2, strlen(WriteBuf2)) )
+			if ( strncmp(ReadBuf1, WriteBuf1.c_str(), WriteBuf1.size()) || strncmp(ReadBuf2, WriteBuf2.c_str(), WriteBuf2.size()) )
 			{
 				Error("Different values were written and read.", Fail);
 			}
@@ -73,10 +73,10 @@
 		<Description>writev: Bad file descriptor.</Description>
 		<Code>
 			const int BufCount = 2;
-			char * WriteBuf1 = (char*)"012345";
-			char * WriteBuf2 = (char*)"abcd";
+			const string WriteBuf1 = "012345";
+			const string WriteBuf2 = "abcd";
 			
-			const struct iovec WriteVec[BufCount] = { {WriteBuf1, strlen(WriteBuf1)}, {WriteBuf2, strlen(WriteBuf2)}};
+			const struct iovec WriteVec[BufCount] = { {static_cast<void*>(const_cast<char*>(WriteBuf1.c_str())), WriteBuf1.size()}, {static_cast<void*>(const_cast<char*>(WriteBuf2.c_str())), WriteBuf2.size()}};
 			
 			ErrorTest(writev(-1, WriteVec, BufCount), -1, EBADF);
 		</Code>
@@ -98,10 +98,10 @@
 		<File count="1" flags="O_CREAT | O_RDONLY"/>
 		<Code>
 			const int BufCount = 2;
-			char * WriteBuf1 = (char*)"012345";
-			char * WriteBuf2 = (char*)"abcd";
+			const string WriteBuf1 = "012345";
+			const string WriteBuf2 = "abcd";
 			
-			const struct iovec WriteVec[BufCount] = { {WriteBuf1, strlen(WriteBuf1)}, {WriteBuf2, strlen(WriteBuf2)}};
+			const struct iovec WriteVec[BufCount] = { {static_cast<void*>(const_cast<char*>(WriteBuf1.c_str())), WriteBuf1.size()}, {static_cast<void*>(const_cast<char*>(WriteBuf2.c_str())), WriteBuf2.size()}};
 			
 			ErrorTest(writev(FDs[0], WriteVec, BufCount), -1, EBADF);
 		</Code>
@@ -145,13 +145,14 @@
 		<File count="1"/>
 		<Code>
 			const int BufCount = 2;
-			char * WriteBuf1 = (char*)"12345";
-			char * WriteBuf2 = (char*)"abcde";
-			const struct iovec WriteVec[BufCount] = { {WriteBuf1, 5}, {WriteBuf2, 5}};
+			const string WriteBuf1 = "012345";
+			const string WriteBuf2 = "abcd";
+			
+			const struct iovec WriteVec[BufCount] = { {static_cast<void*>(const_cast<char*>(WriteBuf1.c_str())), WriteBuf1.size()}, {static_cast<void*>(const_cast<char*>(WriteBuf2.c_str())), WriteBuf2.size()}};
 					
 			Unres(writev(FDs[0], WriteVec, BufCount) == -1, "Cannot write to file.");
 			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
-			ErrorTest(readv(FDs[0], (const struct iovec*)-1, 1), -1, EFAULT);
+			ErrorTest(readv(FDs[0], reinterpret_cast<const struct iovec*>(-1), 1), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="ReadvErrAgain">
@@ -172,7 +173,7 @@
 	<Test Name="WritevFault">
 		<Description>writev: argument is outside your accessible address space.</Description>
 		<Code>
-			ErrorTest(write(1, (const struct iovec*)-1, 1), -1, EFAULT);
+			ErrorTest(write(1, reinterpret_cast<const struct iovec*>(-1), 1), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="ReadvInval1">

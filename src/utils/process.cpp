@@ -28,25 +28,25 @@ using namespace std;
 
 string KedrIntegrator::DebugFSPath = "/sys/kernel/debug";
 
-char * StatusMessages[] = {
-	(char * )"Success",
-	(char * )"Shallow",
-	(char * )"Failed",
-	(char * )"Unresolved",
-	(char * )"Fatal",
-	(char * )"Timeout",
-	(char * )"Signaled",
-	(char * )"Unsupported",
-	(char * )"Skipped",
-	(char * )"Unknown"
-	};
+string StatusMessages[] = {
+	"Success",
+	"Shallow",
+	"Failed",
+	"Unresolved",
+	"Fatal",
+	"Timeout",
+	"Signaled",
+	"Unsupported",
+	"Skipped",
+	"Unknown"	
+};
 	
 string ProcessResult::StatusToString()
 { 
 	if ( _status >= Success && _status <= Unknown )
-		return (string)StatusMessages[_status];
+		return static_cast<string>(StatusMessages[_status]);
 	else
-		return (string)StatusMessages[Unknown];
+		return static_cast<string>(StatusMessages[Unknown]);
 }
 
 int Process::Level = 0;
@@ -83,7 +83,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	int fds[2];
 	if ( pipe(fds) == -1 )
 	{
-		return new ProcessResult(Unresolved, "Cannot create pipe. " + (string)strerror(errno));		
+		return new ProcessResult(Unresolved, "Cannot create pipe. " + static_cast<string>(strerror(errno)));
 	}
 	char * MountPoint = NULL;
 	if ( getenv("MountAt") )
@@ -97,7 +97,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	
 	if ( ChildId == -1 )
 	{
-		return new ProcessResult(Unresolved, "Cannot create child process. " + (string)strerror(errno));		
+		return new ProcessResult(Unresolved, "Cannot create child process. " + static_cast<string>(strerror(errno)));
 	}
 	
 	if ( ChildId == 0 ) // Child process. Run the Main method
@@ -150,7 +150,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 		sa.sa_handler = ProcessSignalHandler;
 		if ( sigaction(SIGALRM, &sa, NULL) == -1 )
 		{	
-			return new ProcessResult(Unresolved, "Cannot set signal handler. " + (string)strerror(errno));
+			return new ProcessResult(Unresolved, "Cannot set signal handler. " + static_cast<string>(strerror(errno)));
 		}
 	
 		alarm(TEST_TIMEOUT);
@@ -188,7 +188,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 				break;
 			buf[bytes] = 0;
 		
-			Output += (string)buf;
+			Output += static_cast<string>(buf);
 			
 			if (bytes < 999)
 				break;
@@ -199,7 +199,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	
 	
 	close(fds[0]);
-	return new ProcessResult(WEXITSTATUS(status), Output);
+	return new ProcessResult(MY_WEXITSTATUS(status), Output);
 }
 
 ProcessResult * BackgroundProcess::Execute(vector<string> args)
@@ -209,7 +209,7 @@ ProcessResult * BackgroundProcess::Execute(vector<string> args)
 	
 	if ( ChildId == -1 )
 	{
-		return new ProcessResult(Unresolved, "Cannot create child process. " + (string)strerror(errno));		
+		return new ProcessResult(Unresolved, "Cannot create child process. " + static_cast<string>(strerror(errno)));
 	}
 	
 	if ( ChildId == 0 ) // Child process. Run the Main method
@@ -233,5 +233,5 @@ ProcessResult * BackgroundProcess::Execute(vector<string> args)
 	int status = 0;
 	
 	// This is a background process. No need to wait for the child :)
-	return new ProcessResult(WEXITSTATUS(status), "Child process is executed.");
+	return new ProcessResult(MY_WEXITSTATUS(status), "Child process is executed.");
 }

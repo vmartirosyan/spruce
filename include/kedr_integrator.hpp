@@ -38,11 +38,19 @@ class KedrIntegrator
 {
 public:
 	KedrIntegrator():
+		TargetModule(""),
+		MemLeakCheckEnabled(false),
+		FaultSimulationEnabled(false),
+		KEDRProfiles(),		
 		_IsRunning(false)
 	{
 		
 	}
 	KedrIntegrator(string module):
+		TargetModule(""),
+		MemLeakCheckEnabled(false),
+		FaultSimulationEnabled(false),
+		KEDRProfiles(),
 		_IsRunning(false)
 	{
 		if ( !IsKEDRInstalled() )
@@ -253,9 +261,9 @@ protected:
 	{
 		struct utsname buf;
 		if (uname(&buf) == -1)
-			throw (Exception("Cannot get kernel version. " + (string)strerror(errno)));
+			throw (Exception("Cannot get kernel version. " + static_cast<string>(strerror(errno))));
 			
-		string ModulesDir = "/lib/modules/" + (string)buf.release + "/kernel";
+		string ModulesDir = "/lib/modules/" + static_cast<string>(buf.release) + "/kernel";
 		UnixCommand find("find");
 		vector<string> args;
 		args.push_back(ModulesDir);
@@ -314,9 +322,9 @@ protected:
 	{
 		struct utsname buf;
 		if (uname(&buf) == -1)
-			throw (Exception("Cannot get kernel version. " + (string)strerror(errno)));
+			throw (Exception("Cannot get kernel version. " + static_cast<string>(strerror(errno))));
 			
-		string ModulesDir = "/usr/local/lib/modules/" + (string)buf.release + "/misc/";
+		string ModulesDir = "/usr/local/lib/modules/" + static_cast<string>(buf.release) + "/misc/";
 		
 		vector<string> indicators;
 		indicators.push_back(ModulesDir + "kedr_fsim_indicator_common.ko");

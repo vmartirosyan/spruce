@@ -558,7 +558,7 @@
 	<Test Name="FcntlFDBadAdress">
 		<Description>Lock is outside your accessible address space.</Description>
 		<Code>
-			ErrorTest(fcntl(1, F_SETLK, (struct flocks *)-1), -1, EFAULT);
+			ErrorTest(fcntl(1, F_SETLK, reinterpret_cast<struct flocks *>(-1)), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="FcntlFDResTempUnavailable">

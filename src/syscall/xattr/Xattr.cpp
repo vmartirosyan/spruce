@@ -72,7 +72,7 @@ Status Xattr::XattrGetSet()
 			return Fail;
 		}
 		
-		if ( getxattr(FileName, AttrName, (void*)ValueGot, ValueLen ) != ValueLen )
+		if ( getxattr(FileName, AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen )
 		{
 			cerr << "Cannot get xattr" << endl;
 			return Fail;

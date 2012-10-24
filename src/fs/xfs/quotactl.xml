@@ -49,7 +49,7 @@
 			int cmd_on = QCMD(Q_XQUOTAON, USRQUOTA);			
 			int flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
 			// In case if there is nothing to do, quotactl returns EEXIST error code on XFS.
-			Fail( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (caddr_t)&flag) == -1 && errno != EEXIST, "Cannot enable quotas V0." );
+			Fail( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot enable quotas V0." );
 			
 			return Success;
 		</Code>
@@ -69,9 +69,9 @@
 			quota.d_blk_hardlimit = 1024;
 			quota.d_fieldmask = FS_DQ_LIMIT_MASK;
 			
-			Fail( quotactl(cmd_xset_qlim, DeviceName, 0, (caddr_t)&quota) == -1, "Cannot get quota." );
+			Fail( quotactl(cmd_xset_qlim, DeviceName, 0, reinterpret_cast<caddr_t>( &quota )) == -1, "Cannot get quota." );
 			
-			Fail( quotactl(cmd_xget_quota, DeviceName, 0, (caddr_t)&quota2) == -1, "Cannot get quota." );
+			Fail( quotactl(cmd_xget_quota, DeviceName, 0, reinterpret_cast<caddr_t>( &quota2 )) == -1, "Cannot get quota." );
 			
 			cerr << "quota2.d_blk_hardlimit=" << quota2.d_blk_hardlimit << endl;
 			Fail ( quota.d_blk_hardlimit != quota2.d_blk_hardlimit, "Different values after set-get operations." );
@@ -88,7 +88,7 @@
 			
 			memset(&quota_stat, 0, sizeof(quota_stat));
 			
-			Fail( quotactl(cmd_xqstat, DeviceName, 0, (caddr_t)&quota_stat) == -1, "Cannot get quota stat." );
+			Fail( quotactl(cmd_xqstat, DeviceName, 0, reinterpret_cast<caddr_t>( &quota_stat )) == -1, "Cannot get quota stat." );
 			
 			return Shallow;
 		</Code>
@@ -99,7 +99,7 @@
 			int flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
 			int cmd_off = QCMD(Q_XQUOTAOFF, USRQUOTA);
 			
-			Fail( quotactl(cmd_off, DeviceName, 0, (caddr_t)&flag) == -1 && errno != EEXIST, "Cannot disable quota." );
+			Fail( quotactl(cmd_off, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot disable quota." );
 			
 			return Success;
 		</Code>
@@ -111,7 +111,7 @@
 			int flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
 			int cmd_rm = QCMD(Q_XQUOTARM, USRQUOTA);
 			
-			Fail( quotactl(cmd_rm, DeviceName, 0, (caddr_t)&flag) == -1, "Cannot remove quotas." );
+			Fail( quotactl(cmd_rm, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1, "Cannot remove quotas." );
 			
 			return Success;
 		</Code>

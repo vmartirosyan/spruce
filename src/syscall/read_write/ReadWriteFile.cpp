@@ -200,7 +200,7 @@ Status ReadWriteFileTest::ReadEfaultErrorTest()
 
 		size_t fd = open("testfile.txt", O_RDONLY);
 
-		ssize_t status = read(fd, (void *)-1, count);
+		ssize_t status = read(fd, static_cast<void*>(-1), count);
 				
 		if (errno != EFAULT || status != -1)
 		{
@@ -296,7 +296,7 @@ Status ReadWriteFileTest::WriteEfaultErrorTest()
 
 		size_t fd = open("testfile.txt", O_WRONLY);
 
-		ssize_t status = write(fd, (void *)-1, count);
+		ssize_t status = write(fd, static_cast<void*>(-1), count);
 		
 		if (errno != EFAULT || status != -1)
 		{

@@ -42,7 +42,7 @@
 			size = pathconf(".", _PC_PATH_MAX);
 			Unres ((cwd = new char[size]) == NULL, "Can not allocate memmory.");
 			
-			cwd = getcwd(cwd, (size_t)size);
+			cwd = getcwd(cwd, static_cast<size_t>(size));
 			
 			Unres (cwd == NULL, "Can not read changed working directory.");
 			
@@ -65,7 +65,7 @@
 	<Test Name="ChdirErrFault">
 		<Description>path points outside your accessible address space.</Description>
 		<Code>
-			ErrorTest(chdir((char *)-1), -1, EFAULT);		
+			ErrorTest(chdir(reinterpret_cast<char *>(-1)), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="ChdirErrIsNotDirectory">

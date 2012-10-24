@@ -152,14 +152,14 @@
 	<Test Name="RenameFault1">
 		<Description>oldpath points outside your accessible address space.</Description>
 		<Code>
-			ErrorTest(rename((char*)-1, "some_file"), -1, EFAULT);
+			ErrorTest(rename(reinterpret_cast<char*>(-1), "some_file"), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="RenameFault2">
 		<Description>newpath points outside your accessible address space.</Description>
 		<File count="1"/>
 		<Code>
-			ErrorTest(rename(FilePaths[0].c_str(),(char*)-1), -1, EFAULT);
+			ErrorTest(rename(FilePaths[0].c_str(),reinterpret_cast<char*>(-1)), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="RenameFault3">

@@ -26,11 +26,11 @@
 		<Description></Description>
 		<File count="1"/>
 		<Code>
-			char * buf = (char*)"1234";
-			const int length = strlen(buf);
+			const string buf = "1234";
+			const int length = buf.size();
 			int length_after_truncate = 5;
 			
-			Unres ( write(FDs[0], buf, length) != length, "Cannot write to the file.");
+			Unres ( write(FDs[0], buf.c_str(), length) != length, "Cannot write to the file.");
 			EnableFaultSim();
 			if ( ftruncate(FDs[0], length_after_truncate) != 0 )
 			{
@@ -61,11 +61,11 @@
 		<Description></Description>
 		<File count="1"/>
 		<Code>
-			char * buf = (char*)"1234";
-			const int length = strlen(buf);
+			const string buf = "1234";
+			const int length = buf.size();
 			int length_after_truncate = 1;
 			
-			Unres ( write(FDs[0], buf, length) != length, "Cannot writeto the file.");
+			Unres ( write(FDs[0], buf.c_str(), length) != length, "Cannot writeto the file.");
 			EnableFaultSim();
 			if ( ftruncate(FDs[0], length_after_truncate) != 0 )
 			{
