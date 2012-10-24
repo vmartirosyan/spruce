@@ -36,7 +36,7 @@ enum FileSystems
 	FS_UNSUPPORTED
 };
 
-const char * FSNames[] = {
+const string FSNames[] = {
 	"common",
 	"ext4",
 	"xfs",
@@ -61,6 +61,7 @@ class PartitionManager
 			_MountPoint(MountPoint),
 			_FileSystem(FileSystem),
 			_MountOpts(MountOpts),
+			_CurrentMountOptions(""),
 			_Index(0),
 			_FSIndex(FS_UNSUPPORTED)
 			{
@@ -320,7 +321,7 @@ class PartitionManager
 		{
 			for ( int i = 0; i < FS_UNSUPPORTED; ++i )
 				if ( FSName == FSNames[i] )
-					return (FileSystems)i;
+					return static_cast<FileSystems>(i);
 			return FS_UNSUPPORTED;
 		}
 };

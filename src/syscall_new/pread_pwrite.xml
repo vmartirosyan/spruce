@@ -31,9 +31,9 @@
 			const char * WriteBuf = "012345";
 			char ReadBuf[10];
 			off_t Offset = 2;
-			Unres( write(FDs[0], WriteBuf, strlen(WriteBuf)) != (int)strlen(WriteBuf), "Cannot write initial data to file." );
+			Unres( write(FDs[0], WriteBuf, strlen(WriteBuf)) != static_cast<int>(strlen(WriteBuf)), "Cannot write initial data to file." );
 			EnableFaultSim();
-			if ( pwrite(FDs[0], WriteBuf, strlen(WriteBuf), Offset) != (int)strlen(WriteBuf) )
+			if ( pwrite(FDs[0], WriteBuf, strlen(WriteBuf), Offset) != static_cast<int>(strlen(WriteBuf)) )
 			{
 				Error("Cannot write to file using pwrite().", Fail);
 			}
@@ -130,15 +130,15 @@
 		<File count="1"/>
 		<Code>
 			const char * WriteBuf = "012345";
-			Unres( write(FDs[0], WriteBuf, strlen(WriteBuf)) != (int)strlen(WriteBuf), "Cannot write initial data to file." );
-			ErrorTest(pread(FDs[0], (void*)-1, 1, 1), -1, EFAULT);
+			Unres( write(FDs[0], WriteBuf, strlen(WriteBuf)) != static_cast<int>(strlen(WriteBuf)), "Cannot write initial data to file." );
+			ErrorTest(pread(FDs[0], reinterpret_cast<void*>(-1), 1, 1), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="PwriteFault">
 		<Description>pwrite: buf is outside your accessible address space.</Description>
 		<File count="1"/>
 		<Code>
-			ErrorTest(pwrite(FDs[0], (void*)-1, 1, 1), -1, EFAULT);
+			ErrorTest(pwrite(FDs[0], reinterpret_cast<void*>(-1), 1, 1), -1, EFAULT);
 		</Code>
 	</Test>
 </TestSet>

@@ -60,7 +60,7 @@
 		<Description>Path points outside the user address space.</Description>
 		<Code>
 			Directory d(".");
-			ErrorTest(openat( d.GetDirectoryDescriptor(), (char*)-1, O_RDONLY ), -1, EFAULT);
+			ErrorTest(openat( d.GetDirectoryDescriptor(), reinterpret_cast<char*>(-1), O_RDONLY ), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="OpenAtLoop">

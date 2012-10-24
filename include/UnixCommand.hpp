@@ -56,15 +56,15 @@ protected:
 	
 	int Main(vector<string> args) 
 	{
-		char** argv = new char*[args.size() + 2];
-		argv[0] = (char*)_name.c_str();
+		char** argv = new char* [args.size() + 2];
+		argv[0] = const_cast<char*>(_name.c_str());
 		
 		for (unsigned int i = 0; i < args.size(); i++)
 		{
-			argv[i + 1] = (char*)args[i].c_str();
+			argv[i + 1] = const_cast<char*>(args[i].c_str());
 		}
 		
-		argv[args.size() + 1] = (char*)0;
+		argv[args.size() + 1] = static_cast<char*>(0);
 		
 		execvp(argv[0], argv);
 		cerr << "Cannot execute unix command: " << argv[0] << " Error: " << strerror(errno);

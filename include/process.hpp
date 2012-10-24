@@ -100,7 +100,7 @@ public:
 protected:
 	bool EnableAlarm;
 	static int Level;
-	virtual int Main(vector<string> args) { cerr << "Main not imeplemented."; return Unsupported; }
+	virtual int Main(vector<string>) { cerr << "Main not imeplemented."; return Unsupported; }
 };
 
 class BackgroundProcess : public Process

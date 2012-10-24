@@ -49,7 +49,7 @@ IF (NOT CMAKE_INSTALL_PREFIX)
 ENDIF (NOT CMAKE_INSTALL_PREFIX)
 
 IF (NOT CMAKE_CXX_FLAGS)
-	SET( CMAKE_CXX_FLAGS "-Wall -pedantic -Wno-variadic-macros")
+	SET( CMAKE_CXX_FLAGS "-Wall -pedantic -Wno-variadic-macros -Wextra -Weffc++ -fcheck-new -ffor-scope -Wabi -Wstrict-null-sentinel")
 ENDIF (NOT CMAKE_CXX_FLAGS)
 
 IF (NOT TEST_TIMEOUT)

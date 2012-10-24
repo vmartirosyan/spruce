@@ -48,7 +48,7 @@ int SplitLargeFile::Main(vector<string>)
 
 Status SplitLargeFile::SplitLargeFileFunc()
 {
-	int fd = open((this->filename).c_str(), O_RDONLY);
+	/*int fd = open((this->filename).c_str(), O_RDONLY);
 	
 	if (fd < 0) {
 		cerr << "An error occured during opening file";
@@ -70,7 +70,7 @@ Status SplitLargeFile::SplitLargeFileFunc()
 			ss << i;
 			int fds = open(("results/" + smallFiles + ss.str()).c_str(), O_WRONLY | O_CREAT); 
 			
-			if (read(fd, (void*)buffer.c_str(), filesSize) != -1) {
+			if (read(fd, static_cast<void*>(buffer.c_str()), filesSize) != -1) {
 				if(write(fds, (void*)buffer.c_str(), filesSize) == -1) {
 					cerr << "An error occured during writing " << i;
 					return Unres;
@@ -85,7 +85,7 @@ Status SplitLargeFile::SplitLargeFileFunc()
 			
 		}
 		close (fd);
-	}
+	}*/
     
     return (Status)Success;
 }

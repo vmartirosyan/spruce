@@ -173,7 +173,7 @@ Status Getcwd::GetcwdFault()
 {
 	//(char*)-1 is outside of our accessible address space
 	long size = pathconf(".", _PC_PATH_MAX); 
-	if(getcwd((char*)-1, (size_t)size) != NULL)
+	if(getcwd(static_cast<char*>(-1), (size_t)size) != NULL)
 	{
 		cerr << "Getcwd return not NULL pointer but it should return NULL when the buf points to a bad address. "<<strerror(errno);
 		return Fail;

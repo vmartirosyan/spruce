@@ -96,7 +96,7 @@
 	<Test Name="UnlinkNegativeAddress">
 		<Description>Path has a negative address.</Description>
 		<Code>
-			ErrorTest(unlink((char*)-1), -1, EFAULT);
+			ErrorTest(unlink(reinterpret_cast<char*>(-1)), -1, EFAULT);
 		</Code>
 	</Test> 
 	<FaultSimulation>
