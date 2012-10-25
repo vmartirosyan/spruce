@@ -44,6 +44,7 @@
 			return Success;
 		</Code>
 	</Test>
+<!--
 	<Test Name="GetcwdErrAccess">
 		<Description>Permission to read or search a component of the filename was denied.</Description>		
 		<Code>
@@ -59,6 +60,7 @@
 			ENoAccessTest(getcwd(cwd, 100), NULL);
 		</Code>
 	</Test>
+-->
 	<Test Name="GetcwdErrFault">
 		<Description>buf points to a bad address.</Description>
 		<Code>			
