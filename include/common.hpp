@@ -75,6 +75,7 @@ struct FSimInfo
 
 #define EnableFaultSim() \
 {\
+	errno = 0;/* Reset the errno variable.*/\
 	if (_fsim_enabled)\
 	{\
 		KedrIntegrator::SetIndicator(_fsim_point, "common", _fsim_expression);\
@@ -96,7 +97,7 @@ struct FSimInfo
 	
 #define ERROR_3_ARGS(message, add_msg, status)\
 	cerr << message << add_msg;\
-	if ( errno ) cerr << "\nError: " << strerror(errno) << endl;\
+	if ( errno && status != Unsupported) cerr << "\nError: " << strerror(errno) << endl;\
 	if( (errno == ENOTSUP) && (status != -1)) return Unsupported;\
 	if (status != -1) return status;
 
