@@ -22,36 +22,40 @@
 -->
 <TestSet Name="msync">
 	<Requires>sys/mman.h</Requires>
+	<Header>
+#undef MAP_FAILED
+#define MAP_FAILED reinterpret_cast<void*>(-1)
+	</Header>
 	<Test Name="MsyncNormal" FaultSimulationReady="true">
 		<Description>set protection on a region of memory</Description>
 		<File count="1"/>
 		<Header>int status = Success;</Header>
 		<Code>
-			char * buff = (char *)"abc";
-			if(write(FDs[0], buff, strlen(buff)) == -1)
+			const string buff = "abc";
+			if(write(FDs[0], buff.c_str(), buff.size()) == -1)
 			{
 				Error("System call write failed", Unresolved);
 			}
 				
-			void * addr = mmap(0, strlen(buff), PROT_READ, MAP_PRIVATE, FDs[0], 0);
+			void * addr = mmap(0, buff.size(), PROT_READ, MAP_PRIVATE, FDs[0], 0);
 			if(addr == MAP_FAILED)
 			{
 				Error("System call mmap failed", Unresolved);
 			}
 			EnableFaultSim();
-			if(msync(addr, strlen(buff), MS_INVALIDATE | MS_SYNC) == -1)
+			if(msync(addr, buff.size(), MS_INVALIDATE | MS_SYNC) == -1)
 			{
 				Error("System call msync failed");
 				status = Fail;
 			}
 			
 			char * readBuff = 0;
-			if(read(FDs[0], readBuff, strlen(buff)) == -1)
+			if(read(FDs[0], readBuff, buff.size()) == -1)
 			{
 				Error("System call read failed");
 				status = Unresolved;
 			}
-			else if(!strncmp(buff, (char *)readBuff, strlen(buff)))
+			else if(!strncmp(buff.c_str(), readBuff, buff.size()))
 			{
 				Error("System call msync failed: file was not synchronized");
 				status = Fail;
@@ -64,31 +68,31 @@
 		<File count="1"/>
 		<Header>int status = Success;</Header>
 		<Code>
-			char * buff = (char *)"abc";
-			if(write(FDs[0], buff, strlen(buff)) == -1)
+			const string buff = "abc";
+			if(write(FDs[0], buff.c_str(), buff.size()) == -1)
 			{
 				Error("System call write failed", Unresolved);
 			}
 				
-			void * addr = mmap(0, strlen(buff), PROT_READ, MAP_PRIVATE, FDs[0], 0);
+			void * addr = mmap(0, buff.size(), PROT_READ, MAP_PRIVATE, FDs[0], 0);
 			if(addr == MAP_FAILED)
 			{
 				Error("System call mmap failed", Unresolved);
 			}
 			
-			if(msync(addr, strlen(buff), MS_ASYNC | MS_INVALIDATE | MS_SYNC) != -1 || errno != EINVAL)
+			if(msync(addr, buff.size(), MS_ASYNC | MS_INVALIDATE | MS_SYNC) != -1 || errno != EINVAL)
 			{
 				Error("EINVAL error expected: flags contain invalid value");
 				status = Fail;
 			}
 			
-			if(msync(addr, strlen(buff), MS_ASYNC | MS_SYNC) != -1 || errno != EINVAL)
+			if(msync(addr, buff.size(), MS_ASYNC | MS_SYNC) != -1 || errno != EINVAL)
 			{
 				Error("EINVAL error expected: flags contain invalid value");
 				status = Fail;
 			}
 			
-			if(msync((void *)~PAGE_MASK, strlen(buff), MS_INVALIDATE | MS_SYNC) != -1 || errno != EINVAL)
+			if(msync(reinterpret_cast<void*>(~PAGE_MASK), buff.size(), MS_INVALIDATE | MS_SYNC) != -1 || errno != EINVAL)
 			{
 				Error("EINVAL error expected: address contains invalid value");
 				status = Fail;			

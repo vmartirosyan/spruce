@@ -72,7 +72,7 @@
 	<Test Name="OpenFault">
 		<Description>Path points outside the user address space.</Description>
 		<Code>
-			ErrorTest(open( (char*)-1, O_RDONLY ), -1, EFAULT);
+			ErrorTest(open(reinterpret_cast<char*>(-1), O_RDONLY ), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="OpenLoop">

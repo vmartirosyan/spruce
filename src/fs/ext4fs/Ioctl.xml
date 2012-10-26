@@ -99,7 +99,7 @@
 		<File count="1"/>
 		<Code>
 			struct stat st;
-			Unres ( fstat (FDs[0], &st ) == -1, "Cannot stat file " + (string)MountPoint);
+			Unres ( fstat (FDs[0], &st ) == -1, "Cannot stat file " + static_cast<string>(MountPoint));
 		
 			cerr << "Shallow test";
 			int NewPartitionSizeInBlocks = 210000;

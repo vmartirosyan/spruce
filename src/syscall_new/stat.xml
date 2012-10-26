@@ -52,7 +52,7 @@
 	<Test Name="StatFault">
 		<Description>Bad address.</Description>
 		<Code>
-			ErrorTest( stat( ".", (struct stat*)-1 ), -1, EFAULT );
+			ErrorTest( stat( ".", reinterpret_cast<struct stat*>(-1) ), -1, EFAULT );
 		</Code>
 	</Test>
 	<Test Name="StatLoop">

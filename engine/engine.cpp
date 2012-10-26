@@ -154,13 +154,13 @@ int main(int argc, char ** argv)
 	vector<string> xslt_args;
 	
 	xslt_args.push_back("-o");
-	xslt_args.push_back(((string)argv[2]) + "/module.cpp");
+	xslt_args.push_back(static_cast<string>(argv[2]) + "/module.cpp");
 	xslt_args.push_back("-novalid");
 	xslt_args.push_back("--stringparam");
 	xslt_args.push_back("XmlFolder");
 	xslt_args.push_back(argv[2]);
-	xslt_args.push_back(((string)argv[3]) + "/module.xslt");
-	xslt_args.push_back(((string)argv[2]) + "/module.xml");
+	xslt_args.push_back(static_cast<string>(argv[3]) + "/module.xslt");
+	xslt_args.push_back(static_cast<string>(argv[2]) + "/module.xml");
 	
 	res = xslt.Execute(xslt_args);
 	

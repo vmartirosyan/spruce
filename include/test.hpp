@@ -43,16 +43,19 @@ public:
 		_stroperation(OperationToString()),
 		_arguments(args) {}
 	TestResult(Status s, string output, int op, string args):
-		ProcessResult((int)s, output),
+		ProcessResult(static_cast<int>(s), output),
 		_operation(op),
 		_stroperation(OperationToString()),
 		_arguments(args) {}
 	TestResult(ProcessResult pr, string op, string args):
 		ProcessResult(pr),
-		_stroperation(op),
-		_arguments(args) {}
+		_operation(0),
+		_stroperation(op),		
+		_arguments(args)
+		 {}
 	TestResult(Status s, string output, string op, string args):
-		ProcessResult((int)s, output),
+		ProcessResult(static_cast<int>(s), output),
+		_operation(0),
 		_stroperation(op),
 		_arguments(args) {}
 	TestResult(TestResult const & tr) : 
@@ -77,6 +80,9 @@ protected:
 class TestResultCollection 
 {
 public:
+	TestResultCollection():
+		_results()
+		{}
 	void AddResult(Status s, string output, int op, string args)
 	{
 		TestResult * tmp = new TestResult(s,output,op,args);
@@ -132,9 +138,11 @@ public:
 	Test(Mode m, int op, string a):
 		_mode(m),
 		_operation(op),
+		_stroperation("Unknown"),
 		_args(a) {}
 	Test(Mode m, string op, string a):
 		_mode(m),
+		_operation(0),
 		_stroperation(op),
 		_args(a) {}
 	Test(const Test & t):

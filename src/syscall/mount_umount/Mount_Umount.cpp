@@ -273,7 +273,7 @@ Status Mount_Umount::MountErrEFaultFunc ()
 	int ret_mount;		
 	
     //(char*)-1 is outside of accessible address space
-	ret_mount = mount (DeviceName, (char*)-1, FileSystemType, 0, 0);
+	ret_mount = mount (DeviceName, static_cast<char*>(-1), FileSystemType, 0, 0);
 	if(ret_mount != -1)
 	{
 			cerr << "Mount didn't return Fail in case of non accessible address. ";
@@ -296,7 +296,7 @@ Status Mount_Umount::UmountErrEFaultFunc ()
 	int ret_umount;		
 	
     //(char*)-1 is outside of accessible address space
-	ret_umount = umount ((char*)-1);
+	ret_umount = umount (static_cast<char*>(-1));
 	if(ret_umount != -1)
 	{
 			cerr << "Umount didn't return Fail in case of non accessible address. ";

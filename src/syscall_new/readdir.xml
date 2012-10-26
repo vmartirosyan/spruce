@@ -49,7 +49,7 @@ struct old_linux_dirent {
 			
 			if ( strstr(dir.d_name, ".") != dir.d_name )
 			{
-				Error("Wrong data is returned by readdir: " + (string)dir.d_name, Fail);
+				Error("Wrong data is returned by readdir: " + static_cast<string>(dir.d_name), Fail);
 			}
 			
 			return Success;

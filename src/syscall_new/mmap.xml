@@ -25,17 +25,21 @@
 	<Requires>sys/mman.h</Requires>
 	<Requires>sys/user.h</Requires>
 	<Requires>linux/version.h</Requires>
+	<Header>
+#undef MAP_FAILED
+#define MAP_FAILED reinterpret_cast<void*>(-1)
+	</Header>
 	<Test Name="MmapNormal" FaultSimulationReady="true">
 		<Description>map files or devices into memory</Description>
 		<File count="1"/>
 		<Code>
-		char * buff = (char *)"abc";
-		if(write(FDs[0], buff, strlen(buff)) == -1)
+		const string buff = "abc";
+		if(write(FDs[0], buff.c_str(), buff.size()) == -1)
 		{
 			Error("write failed", Unresolved);
  		}
 		
-		size_t length = strlen(buff);
+		size_t length = buff.size();
 		int prot = PROT_READ;
 		int flags = MAP_PRIVATE;
 		off_t offset = 0;
@@ -45,7 +49,7 @@
 		{
 			Error("System call mmap failed", Fail);
 		}
-		if(strncmp(buff, (char *)addr, strlen(buff)))
+		if(strncmp(buff.c_str(), static_cast<char *>(addr), length))
 		{
 			munmap(addr, length);
 			Error("System call mmap failed: mapped content differs from file content", Fail);
@@ -58,28 +62,28 @@
 		<Description>Try to read and write to memory mapped file.</Description>
 		<File count="1"/>
 		<Code>			
-			const char * buff = (char *)"abc";
+			const string buff = "abc";
 			char buff2[3];
 			
 			// Allocate space for memory-mapped write
-			lseek (FDs[0], strlen(buff) + 1, SEEK_SET);
+			lseek (FDs[0], buff.size() + 1, SEEK_SET);
 			write (FDs[0], "", 1); 
 			lseek (FDs[0], 0, SEEK_SET);
 			
-			size_t length = strlen(buff);			
+			size_t length = buff.size();			
 			int prot = PROT_WRITE;
 			int flags = MAP_SHARED;
 			off_t offset = 0;
 		
-			char * addr = (char*)mmap(0, length, prot, flags, FDs[0], offset);
+			char * addr = static_cast<char*>(mmap(0, length, prot, flags, FDs[0], offset));
 			Fail( addr == MAP_FAILED, "System call mmap failed");
 						
-			sprintf(addr, "%s", buff);
+			sprintf(addr, "%s", buff.c_str());
 			munmap(addr, length);
 			
-			Unres( read(FDs[0], buff2, strlen(buff)) == -1, "Cannot read from file." );			
+			Unres( read(FDs[0], buff2, length) == -1, "Cannot read from file." );			
 						
-			Fail ( strncmp(buff, buff2, strlen(buff)), "System call mmap failed: mapped content differs from file content");
+			Fail ( strncmp(buff.c_str(), buff2, length), "System call mmap failed: mapped content differs from file content");
 			
 			return Success;
 		</Code>
@@ -228,14 +232,10 @@
 		<Description>remap a virtual memory address</Description>
 		<File count="1"/>
 		<Code>
-			char * buff = (char *)"abc";
-			if(write(FDs[0], buff, strlen(buff)) == -1)
-			{
-				cerr << "write failed: " << strerror(errno);
-				return Unresolved;
-			}
+			const string buff = "abc";
+			Unres(write(FDs[0], buff.c_str(), buff.size()) == -1, "write failed.");
 			
-			size_t length = strlen(buff);
+			size_t length = buff.size();
 			int prot = PROT_READ;
 			int flags = MAP_PRIVATE;
 			off_t offset = 0;
@@ -252,7 +252,7 @@
 				Error("System call mremap failed", Fail);
 			}
 			
-			if(strncmp((char *)oldAddr, (char *)newAddr, strlen((char *)oldAddr)))
+			if(strncmp(static_cast<char *>(oldAddr), static_cast<char *>(newAddr), strlen(static_cast<char *>(oldAddr))))
 			{
 				Error("System call mmap failed: mapped content differs from initial content", Fail);
 			}
@@ -311,13 +311,13 @@
 		<Description>the mmap2() system call operates in exactly the same way as mmap, except that the final argument specifies the offset into the file in 4096-byte units</Description>
 		<File count = "1"/>
 		<Code>
-			char * buff = (char *)"abc";
-			if(write(FDs[0], buff, strlen(buff)) == -1)
+			const string buff = "abc";
+			if(write(FDs[0], buff.c_str(), buff.size()) == -1)
 			{
 				Error("write failed", Unresolved);
 			}
 			
-			size_t length = strlen(buff);
+			size_t length = buff.size();
 			int prot = PROT_READ;
 			int flags = MAP_PRIVATE;
 			off64_t offset = 0;
@@ -328,7 +328,7 @@
 				Error("System call mmap failed", Fail);
 			}
 			
-			if(strncmp(buff, (char *)addr, strlen(buff)))
+			if(strncmp(buff.c_str(), static_cast<char *>(addr), buff.size()))
 			{
 				Error("System call mmap failed: mapped content differs from file content", Fail);
 			}

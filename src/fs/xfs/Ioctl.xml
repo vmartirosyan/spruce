@@ -14,7 +14,9 @@
 	<Requires>xfs/xfs_fs.h</Requires>	
 	<Header>
 		char buf[2];
-		if(buf[0] == 0);
+		if(buf[0] == 0)
+		{
+		}
 		#ifndef BMV_IF_DELALLOC
 		#define BMV_IF_DELALLOC		0x8
 		#endif 	
@@ -293,7 +295,7 @@
 		<Code>			
 			xfs_fsop_handlereq_t arg;
 			xfs_handle_t handle;
-			arg.path = (void *)FilePaths[0].c_str();
+			arg.path = static_cast<void*>(const_cast<char*>(FilePaths[0].c_str()));
 			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
 			int size = XFS_HSIZE(handle);
 			arg.ohandle = malloc(size);
@@ -308,7 +310,7 @@
 		<Code>			
 			xfs_fsop_handlereq_t arg;
 			xfs_handle_t handle;
-			arg.path = (void *)FilePaths[0].c_str();
+			arg.path = static_cast<void*>(const_cast<char*>(FilePaths[0].c_str()));
 			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
 			int size = XFS_HSIZE(handle);
 			arg.ohandle = malloc(size);
@@ -343,7 +345,7 @@
 			
 			xfs_fsop_handlereq_t arg;
 			xfs_handle_t handle;
-			arg.path = (void *)MountPoint;
+			arg.path = static_cast<void*>(MountPoint);
 			handle.ha_fid.fid_len = sizeof(handle.ha_fid) - sizeof(handle.ha_fid.fid_len);
 			int size = XFS_HSIZE(handle);
 			arg.ohandle = malloc(size);
@@ -386,7 +388,7 @@
 			int rv = ioctl(DirDs[0], XFS_IOC_FD_TO_HANDLE, &arg);
 			Unres(rv == -1, "Ioctl fd to handle failed");
 			
-			arg.ihandle = (void*)arg.ohandle;
+			arg.ihandle = static_cast<void*>(arg.ohandle);
 			arg.ihandlen = *(arg.ohandlen);
 			
 			xfs_fsop_attrlist_handlereq_t alhreq;

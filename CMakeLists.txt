@@ -49,7 +49,7 @@ IF (NOT CMAKE_INSTALL_PREFIX)
 ENDIF (NOT CMAKE_INSTALL_PREFIX)
 
 IF (NOT CMAKE_CXX_FLAGS)
-	SET( CMAKE_CXX_FLAGS "-Wall -pedantic -Wno-variadic-macros")
+	SET( CMAKE_CXX_FLAGS "-Wall -pedantic -Wno-variadic-macros -Wextra -Weffc++ -fcheck-new -ffor-scope -Wabi -Wstrict-null-sentinel")
 ENDIF (NOT CMAKE_CXX_FLAGS)
 
 IF (NOT TEST_TIMEOUT)
@@ -78,9 +78,15 @@ ELSE (EXISTS ${QUOTACHECK_PATH})
 	Message("-- Please install the package quota(-tools) and/or provide the correct QUOTACHECK_PATH.")
 ENDIF (EXISTS ${QUOTACHECK_PATH})
 
-#SET(HAVE_XATTR_H 0)
 CHECK_INCLUDE_FILES ("sys/types.h;attr/xattr.h" HAVE_XATTR_H)
+IF (NOT HAVE_XATTR_H)
+	SET(HAVE_XATTR_H 0)
+ENDIF (NOT HAVE_XATTR_H)
+
 CHECK_INCLUDE_FILES ("xfs/xfs.h" HAVE_XFS_H)
+IF (NOT HAVE_XFS_H)
+	SET(HAVE_XFS_H 0)
+ENDIF (NOT HAVE_XFS_H)
 
 SET (LIBRARY_OUTPUT_PATH
  ${PROJECT_BINARY_DIR}/lib

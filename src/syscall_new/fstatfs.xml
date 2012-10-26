@@ -30,7 +30,7 @@
 			
 			if ( FileSystemTypesMap[FileSystem] == -1 )
 			{
-				Error("fstatfs is not supported by " + (string)FileSystem, Unsupported);
+				Error("fstatfs is not supported by " + static_cast<string>(FileSystem), Unsupported);
 			}
 						
 			struct statfs buf;
