@@ -24,19 +24,23 @@
 
 <TestSet Name="name_to_handle">
 	<GlobalHeader>
-#if !defined(__NR_name_to_handle_at) || !defined(__NR_open_by_handle_at)
+#if  LINUX_VERSION_CODE<KERNEL_VERSION(2,6,39)
 	EmptyTestSet(syscall, name_to_handle, Unsupported, "name_to_handle_at or/and open_by_handle_at is/are not supported.")
 #else
-#if HAVE_STRUCT_FILE_HANDLE!=1
-#pragma GCC diagnostic ignored "-pedantic" 
-		struct file_handle {
-				 __u32 handle_bytes;
-				 int handle_type;
-				 /* file identifier */
-				 unsigned char f_handle[0];
-				 //unsigned char f_handle[1];
-			};
-#pragma GCC diagnostic warning "-pedantic" 
+	#if !defined(__NR_name_to_handle_at) || !defined(__NR_open_by_handle_at)
+		EmptyTestSet(syscall, name_to_handle, Unsupported, "name_to_handle_at or/and open_by_handle_at is/are not supported.")
+	#else
+	#if HAVE_STRUCT_FILE_HANDLE!=1
+	#pragma GCC diagnostic ignored "-pedantic" 
+			struct file_handle {
+					 __u32 handle_bytes;
+					 int handle_type;
+					 /* file identifier */
+					 unsigned char f_handle[0];
+					 //unsigned char f_handle[1];
+				};
+	#pragma GCC diagnostic warning "-pedantic" 
+	#endif
 #endif
 	</GlobalHeader>
 	<Requires>unistd.h</Requires>
