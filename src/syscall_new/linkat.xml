@@ -1,0 +1,91 @@
+<!--    linkat.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Suren Gishyan <gsuren@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="linkat">	
+	<Test Name="LinkatNormal" FaultSimulationReady="true">
+		<Description>Create a file link relative to directory file descriptors.</Description>
+		<Dir count="1">
+			<File count="1" />
+		</Dir>
+		<Code>
+			const char * NewFilePath = "new_file";
+			const char * OrigBuf = "asdf";
+			char NewBuf[10];
+			string FileNameOnly = DirFilePaths[0].substr(DirPaths[0].length() + 1, DirFilePaths[0].length());
+			EnableFaultSim();
+			Unres( linkat(DirDs[0], FileNameOnly.c_str(), DirDs[0], NewFilePath, 0) == -1, "Cannot create link.");
+			
+			Unres( write(DirFDs[0], OrigBuf, strlen(OrigBuf)) != static_cast<int>(strlen(OrigBuf)), "Error in writing to original file." );
+			
+			File new_file(DirPaths[0] + "/" + NewFilePath, 0777, O_RDONLY);
+			
+			Unres( read(new_file.GetFileDescriptor(), NewBuf, strlen(OrigBuf) ) != static_cast<int>(strlen(OrigBuf)), "Error reading data from new file." );
+			
+			if ( strncmp(OrigBuf, NewBuf, strlen(OrigBuf)) != 0 )
+			{
+				Error("Different data was retrieved from the new file.", Fail);
+			}
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="LinkatBadFile">
+		<Description></Description>
+		<Code>
+			ErrorTest(linkat(-1, "some_file", -1, "some_link", 0), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="LinkatNameTooLong">
+		<Description>Oldpath or newpath was too long.</Description>
+		<Dir count="1"/>
+		<Code>
+			ENameTooLongTest(linkat(DirDs[0], "/", DirDs[0], path, 0), -1);
+		</Code>
+	</Test>
+	<Test Name="LinkatNewPathAlreadyExist">
+		<Description>Newpath already exists.</Description>
+		<Dir count="1"/>
+		<Code>
+			ErrorTest(linkat(DirDs[0], "/", DirDs[0], "/", 0), -1, EEXIST);
+		</Code>
+	</Test>
+	<Test Name="LinkatOldPathIsDirectory">
+		<Description>Oldpath is a directory.</Description>
+		<Dir count="1"/>
+		<Code>
+			ErrorTest(linkat(DirDs[0], ".", DirDs[0], "some_link", 0), -1, EPERM);
+		</Code>
+	</Test>
+	<Test Name="LinkatIsNotDirectory">
+		<Description>A component used as a directory in oldpath or newpath is not, in fact, a directory.</Description>
+		<Dir count="1">
+			<File count="1"/>
+		</Dir>
+		<Code>
+			string FileNameOnly = DirFilePaths[0].substr(DirPaths[0].length() + 1, DirFilePaths[0].length());
+			string FilePaths[1] = {FileNameOnly};
+			ENotDirTest(linkat(DirDs[0], FileNameOnly.c_str(), DirDs[0], path, 0), -1);
+		</Code>
+	</Test>
+</TestSet>
