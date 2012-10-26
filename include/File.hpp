@@ -46,9 +46,15 @@ using std::endl;
 class File
 {	
 	public:
-		File() {}
-		explicit File(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_RDWR | O_CREAT) : 
+		File():
+			_pathname(""),
+			_fd(-1),
+			_mode(0),
+			_flags(0)			
+			{}
+		explicit File(string pathname, mode_t mode = static_cast<mode_t>(S_IRUSR | S_IWUSR), int flags = O_RDWR | O_CREAT) : 
 		_pathname(pathname),
+		_fd(-1),
 		_mode(mode),
 		_flags(flags)
 		{
@@ -56,7 +62,7 @@ class File
 			Open(pathname, mode, flags);		
 			
 		}
-		int Open(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_RDWR | O_CREAT)
+		int Open(string pathname, mode_t mode = static_cast<mode_t>(S_IRUSR | S_IWUSR), int flags = O_RDWR | O_CREAT)
 		{
 			_pathname = pathname;
 			_mode = mode;
@@ -81,7 +87,7 @@ class File
 			
 			if (_fd == -1)
 			{								
-				throw Exception("Cannot create file " + _pathname + ". Error : " + (string)strerror(errno) + (string)"\n");
+				throw Exception("Cannot create file " + _pathname + ". Error : " + static_cast<string>(strerror(errno)) + "\n");
 			}
 			return _fd;
 		}
@@ -93,7 +99,7 @@ class File
 				
 				if ( (_flags & O_CREAT) &&  (unlink(_pathname.c_str()) != 0) )
 				{
-					throw Exception("Cannot delete file " + _pathname + ". Error : " + (string)strerror(errno) + (string)"\n");
+					throw Exception("Cannot delete file " + _pathname + ". Error : " + static_cast<string>(strerror(errno)) + "\n");
 				}
 				
 			}

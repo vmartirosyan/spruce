@@ -45,15 +45,22 @@ using std::string;
 class Directory
 {	
 	public:
-		Directory() {}
-		Directory(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_DIRECTORY ) : 
+		Directory():
+		_pathname(""),
+		_fd(-1),
+		_mode(0),
+		_flags(0)
+		 {}
+		Directory(string pathname, mode_t mode = static_cast<mode_t>(S_IRUSR | S_IWUSR), int flags = O_DIRECTORY ) : 
 		_pathname(pathname),
+		_fd(-1),
 		_mode(mode),
 		_flags(flags)
 		{
 			Open(pathname, mode, flags);
 		}
-		int Open(string pathname, mode_t mode = (mode_t)(S_IRUSR | S_IWUSR), int flags = O_DIRECTORY )
+		
+		int Open(string pathname, mode_t mode = static_cast<mode_t>(S_IRUSR | S_IWUSR), int flags = O_DIRECTORY )
 		{
 			_pathname = pathname;
 			_mode = mode;

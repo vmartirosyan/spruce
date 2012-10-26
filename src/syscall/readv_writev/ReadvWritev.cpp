@@ -254,9 +254,9 @@ Status ReadvWritev::ReadvEfaultErrorFunc()
 		
 	struct iovec iovAr[BUF_COUNT];
 	
-	iovAr[0].iov_base = (void *)(-1);
+	iovAr[0].iov_base = static_cast<void*>(-1);
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = (void *)(-1);
+	iovAr[1].iov_base = static_cast<void*>(-1);
 	iovAr[1].iov_len = BYTES_COUNT;
 	
 	try
@@ -546,7 +546,7 @@ Status ReadvWritev::WritevEfaultErrorFunc()
 	
 	iovAr[0].iov_base = buf1;
 	iovAr[0].iov_len = BYTES_COUNT;
-	iovAr[1].iov_base = (void *)(-1);
+	iovAr[1].iov_base = static_cast<void*>(-1);
 	iovAr[1].iov_len = BYTES_COUNT;
 	
 	try

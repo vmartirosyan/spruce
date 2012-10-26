@@ -30,7 +30,7 @@
 			
 			if ( FileSystemTypesMap[FileSystem] == -1 )
 			{
-				Error("statfs is not supported by " + (string)FileSystem, Unsupported);
+				Error("statfs is not supported by " + static_cast<string>(FileSystem), Unsupported);
 			}
 			
 			struct statfs buf;
@@ -57,7 +57,7 @@
 	<Test Name="StatfsFault">
 		<Description>Bad address.</Description>
 		<Code>
-			ErrorTest( statfs( ".", (struct statfs*)-1 ), -1, EFAULT );
+			ErrorTest( statfs( ".", reinterpret_cast<struct statfs*>(-1) ), -1, EFAULT );
 		</Code>
 	</Test>
 	<Test Name="StatfsLoop">

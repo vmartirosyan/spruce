@@ -30,6 +30,7 @@ class Exception
 public:
 	Exception(string message) : _message(message) {}
 	Exception(Exception const & other) : _message(other._message) {}
+	virtual ~Exception() {}
 		
 	virtual string GetMessage() const 
 	{

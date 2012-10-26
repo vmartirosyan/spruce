@@ -134,7 +134,7 @@ Status Openat::openatOutside()
 	}
 	
     dir_fd = dirfd(d);
-    ret_val = openat( dir_fd,(char*)-1, O_CREAT, O_RDONLY);
+    ret_val = openat( dir_fd,static_cast<char*>(-1), O_CREAT, O_RDONLY);
    
 	if(ret_val != -1)
 	{

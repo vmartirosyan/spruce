@@ -26,11 +26,11 @@
 		<Description>Truncate a file to a specified length. If the file previously was shorter, it is extended, and the extended part reads as null bytes ('\0').</Description>
 		<File count="1"/>
 		<Code>
-			char * buf = (char*)"1234";
-			const int length = strlen(buf);
+			const string buf = "1234";
+			const int length = buf.size();
 			int length_after_truncate = 5;
 			
-			Unres ( write(FDs[0], buf, length) != length, "Cannot write  to the file.");
+			Unres ( write(FDs[0], buf.c_str(), length) != length, "Cannot write  to the file.");
 			EnableFaultSim();
 			Fail ( truncate(FilePaths[0].c_str(), length_after_truncate) != 0, "truncate failed");
 			
@@ -51,11 +51,11 @@
 		<Description>Truncate a file to a specified length. If the file previously was larger than this size,  the  extra  data  is lost.</Description>
 		<File count="1"/>
 		<Code>
-			char * buf = (char*)"1234";
-			const int length = strlen(buf);
+			const string buf = "1234";
+			const int length = buf.size();
 			int length_after_truncate = 1;
 			
-			Unres ( write(FDs[0], buf, length) != length, "Cannot write  to the file.");
+			Unres ( write(FDs[0], buf.c_str(), length) != length, "Cannot write  to the file.");
 			EnableFaultSim();
 			Fail ( truncate(FilePaths[0].c_str(), length_after_truncate) != 0, "truncate failed");
 			
@@ -79,7 +79,7 @@
 	<Test Name="TruncateFault">
 		<Description>Path points outside the process's allocated address space.</Description>
 		<Code>
-			ErrorTest(truncate((char*)-1, 1), -1, EFAULT);
+			ErrorTest(truncate(reinterpret_cast<char*>(-1), 1), -1, EFAULT);
 		</Code>
 	</Test>
 	<!--Test Name="TruncateInval1">

@@ -99,7 +99,7 @@
 		<Description>Path has a negative address.</Description>
 		<Dir count="1"/>
 		<Code>
-			ErrorTest(unlinkat(DirDs[0], (char*)-1, 0), -1, EFAULT);
+			ErrorTest(unlinkat(DirDs[0], reinterpret_cast<char*>(-1), 0), -1, EFAULT);
 		</Code>
 	</Test>
 	<FaultSimulation>

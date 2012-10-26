@@ -27,11 +27,11 @@
 		<Description>SEEK_SET - The offset is set to offset bytes.</Description>
 		<File count="1"/>
 		<Code>
-			const char * write_buf = (char*)"012345";
+			const string write_buf = "012345";
 			char buf[10];
 			const int SeekCount = 2;
 			
-			Unres(write(FDs[0], write_buf, strlen(write_buf)) == -1, "Cannot write to file.");
+			Unres(write(FDs[0], write_buf.c_str(), write_buf.size()) == -1, "Cannot write to file.");
 			EnableFaultSim();
 			if ( lseek64(FDs[0], SeekCount, SEEK_SET) == -1 )
 			{
@@ -52,12 +52,12 @@
 		<Description>SEEK_CUR - The offset is set to its current location plus offset bytes.</Description>
 		<File count="1"/>
 		<Code>
-			const char * write_buf = (char*)"012345";
+			const string write_buf = "012345";
 			char buf[10];
 			const int InitialSeekCount = 2;
 			const int AdditionalSeekCount = 2;
 			
-			Unres(write(FDs[0], write_buf, strlen(write_buf)) == -1, "Cannot write to file.");
+			Unres(write(FDs[0], write_buf.c_str(), write_buf.size()) == -1, "Cannot write to file.");
 			EnableFaultSim();
 			if ( lseek64(FDs[0], InitialSeekCount, SEEK_SET) == -1 )
 			{
@@ -83,11 +83,11 @@
 		<Description>SEEK_END - The offset is set to the size of the file plus offset bytes.</Description>
 		<File count="1"/>
 		<Code>
-			const char * write_buf = (char*)"012345";
+			const string write_buf = "012345";
 			char buf[10];
 			const int SeekCount = 2;
 			
-			Unres(write(FDs[0], write_buf, strlen(write_buf)) == -1, "Cannot write to file.");
+			Unres(write(FDs[0], write_buf.c_str(), write_buf.size()) == -1, "Cannot write to file.");
 			EnableFaultSim();
 			if ( lseek64(FDs[0], SeekCount, SEEK_END) == -1 )
 			{

@@ -54,9 +54,9 @@
 		<Description>Turn on and off quotas for a file system.</Description>		
 		<Code>
 			EnableFaultSim();
-			Fail( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
+			Fail( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );
 			
-			Fail( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot disable quotas V0." );
+			Fail( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot disable quotas V0." );
 			
 			return Success;
 		</Code>
@@ -67,7 +67,7 @@
 			int cmd_get_quota = QCMD(Q_GETQUOTA, USRQUOTA);
 			int cmd_set_quota = QCMD(Q_SETQUOTA, USRQUOTA);
 			
-			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
+			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );
 			
 			struct dqblk quota_data, quota_data2;
 			memset(&quota_data, 0, sizeof(quota_data));
@@ -76,13 +76,13 @@
 			quota_data.dqb_bhardlimit = 1000;
 			quota_data.dqb_valid = QIF_BLIMITS;
 			EnableFaultSim();
-			Fail( quotactl(cmd_set_quota, DeviceName, 0, (caddr_t)&quota_data ) == -1, "Cannot set quota." );
+			Fail( quotactl(cmd_set_quota, DeviceName, 0, reinterpret_cast<caddr_t>(&quota_data) ) == -1, "Cannot set quota." );
 			
-			Fail( quotactl(cmd_get_quota, DeviceName, 0, (caddr_t)&quota_data2 ) == -1, "Cannot get quota." );
+			Fail( quotactl(cmd_get_quota, DeviceName, 0, reinterpret_cast<caddr_t>(&quota_data2) ) == -1, "Cannot get quota." );
 			
 			Fail( quota_data.dqb_bhardlimit != quota_data2.dqb_bhardlimit, "Different values after set-get operation." );
 			
-			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1)
+			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1)
 				cerr << "Cannot disable quotas V0.";
 			
 			return Success;
@@ -94,7 +94,7 @@
 			int cmd_get_info = QCMD(Q_GETINFO, USRQUOTA);
 			int cmd_set_info = QCMD(Q_SETINFO, USRQUOTA);
 			
-			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
+			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );
 			
 			struct dqinfo quota_info, quota_info2;
 			memset(&quota_info, 0, sizeof(quota_info));
@@ -103,13 +103,13 @@
 			quota_info.dqi_bgrace = 100;
 			quota_info.dqi_valid = IIF_BGRACE;
 			EnableFaultSim();
-			Fail( quotactl(cmd_set_info, DeviceName, 0, (caddr_t)&quota_info ) == -1, "Cannot set info." );
+			Fail( quotactl(cmd_set_info, DeviceName, 0, reinterpret_cast<caddr_t>(&quota_info) ) == -1, "Cannot set info." );
 			
-			Fail( quotactl(cmd_get_info, DeviceName, 0, (caddr_t)&quota_info2 ) == -1, "Cannot get info." );
+			Fail( quotactl(cmd_get_info, DeviceName, 0, reinterpret_cast<caddr_t>(&quota_info2) ) == -1, "Cannot get info." );
 			
 			Fail( quota_info.dqi_bgrace != quota_info2.dqi_bgrace, "Different values after set-get operation." );
 			
-			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1)
+			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1)
 				cerr << "Cannot disable quotas V0.";
 			
 			return Success;
@@ -121,13 +121,13 @@
 			int cmd_get_format = QCMD(Q_GETFMT, USRQUOTA);
 			int format;
 			
-			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
+			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );
 			EnableFaultSim();
-			Fail( quotactl(cmd_get_format, DeviceName, 0, (caddr_t)&format ) == -1, "Cannot get format." );
+			Fail( quotactl(cmd_get_format, DeviceName, 0, reinterpret_cast<caddr_t>(&format) ) == -1, "Cannot get format." );
 			
 			Fail( format != QFMT_VFS_V0, "Format value is not correct" );
 			
-			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1)
+			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1)
 				cerr << "Cannot disable quotas V0.";
 			
 			return Success;
@@ -138,11 +138,11 @@
 		<Code>
 			int cmd_sync = QCMD(Q_SYNC, USRQUOTA);
 			EnableFaultSim();
-			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1, "Cannot enable quotas V0." );
+			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );
 			
 			Fail( quotactl(cmd_sync, DeviceName, 0, 0 ) == -1, "Cannot sync." );
 			
-			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, (char*)QuotaFile.c_str()) == -1)
+			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1)
 				cerr << "Cannot disable quotas V0.";
 			
 			return Shallow;

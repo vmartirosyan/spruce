@@ -70,8 +70,12 @@ struct FSimInfo
 	string Expression;
 };
 
+#define MY_WEXITSTATUS(stat) (((*(static_cast<int *>( &(stat)))) >> 8) & 0xff)
+
+
 #define EnableFaultSim() \
 {\
+	errno = 0;/* Reset the errno variable.*/\
 	if (_fsim_enabled)\
 	{\
 		KedrIntegrator::SetIndicator(_fsim_point, "common", _fsim_expression);\
@@ -93,7 +97,7 @@ struct FSimInfo
 	
 #define ERROR_3_ARGS(message, add_msg, status)\
 	cerr << message << add_msg;\
-	if ( errno ) cerr << "\nError: " << strerror(errno) << endl;\
+	if ( errno && status != Unsupported) cerr << "\nError: " << strerror(errno) << endl;\
 	if( (errno == ENOTSUP) && (status != -1)) return Unsupported;\
 	if (status != -1) return status;
 
@@ -128,7 +132,7 @@ struct FSimInfo
 	unlink(Link);\
 	if ( res !=  error_val || errno != ELOOP )\
 	{\
-		Error("Function should return '" + (string)strerror(ELOOP) +  "' error code but it did not.", Fail);\
+		Error("Function should return '" + static_cast<string>(strerror(ELOOP)) +  "' error code but it did not.", Fail);\
 	}\
 	return Success;\
 }\
@@ -159,7 +163,7 @@ struct FSimInfo
 
 #define ENotDirTest(func_call, error_val)\
 {\
-	char * path = (char*)(FilePaths[0] + "/some_file").c_str();\
+	const char * path = (FilePaths[0] + "/some_file").c_str();\
 	ErrorTest(func_call, error_val, ENOTDIR);\
 }\
 
@@ -183,7 +187,7 @@ struct FSimInfo
 		}\
 		errno = 0;\
 		if (func_call != error_val || ( ( errno != EACCES ) && ( errno != EPERM ) )) {\
-			cerr << "Function should return '" + (string)strerror(EACCES) +  "' or '" + (string)strerror(EPERM) +  "' when permission was denied but it did not.";\
+			cerr << "Function should return '" + static_cast<string>(strerror(EACCES)) +  "' or '" + static_cast<string>(strerror(EPERM)) +  "' when permission was denied but it did not.";\
 			if ( errno )\
 				cerr << "Error: " << strerror(errno) << endl;\
 			_exit( Fail );\
@@ -192,7 +196,7 @@ struct FSimInfo
 	}\
 	int status;\
 	wait(&status);\
-	return WEXITSTATUS(status);\
+	return MY_WEXITSTATUS(status);\
 }\
 
 #define EMaxFilesOpenTest(func_call, error_val)\
@@ -223,7 +227,7 @@ struct FSimInfo
 			unlink(path);\
 			char buf[3];\
 			sprintf(buf, "%d-th", file_index);\
-			Unres(true, "Cannot create the " + (string)buf + "file");\
+			Unres(true, "Cannot create the " + static_cast<string>(buf) + "file");\
 		}\
 	}\
 	errno = 0;\
@@ -232,7 +236,7 @@ struct FSimInfo
 	if ( ret_val != error_val || errno != EMFILE )\
 	{\
 		cerr << ret_val << endl;\
-		Error("Function should return '" + (string)strerror(EMFILE) +  "' error but it did not.", Fail);\
+		Error("Function should return '" + static_cast<string>(strerror(EMFILE)) +  "' error but it did not.", Fail);\
 	}\
 	closedir(fdDir);\
 	return Success;\
@@ -249,7 +253,7 @@ struct FSimInfo
 	{\
 		if (  errno != error_code )\
 		{\
-			Error("Function should return '" + (string)strerror(error_code) +  "' error but it did not.", Fail);\
+			Error("Function should return '" + static_cast<string>(strerror(error_code)) +  "' error but it did not.", Fail);\
 		}\
 	}\
 	return Success;\
@@ -259,8 +263,8 @@ struct FSimInfo
 class module_name##test_set_name##Tests : public Process\
 {\
 public:\
-	void RunTest(string s) {}\
-	void ExcludeTest(string s) {}\
+	void RunTest(string) {}\
+	void ExcludeTest(string) {}\
 	virtual TestResultCollection RunNormalTests()\
 	{\
 		cerr << "EmptyTestSet" << endl;\

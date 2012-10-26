@@ -107,7 +107,7 @@ Status Open::openOutside()
 	int ret_val =0;		
 	
     //(char*)-1 is outside of our accessible address space
-	ret_val = open((char*)-1, O_CREAT , S_IRUSR);
+	ret_val = open(static_cast<char*>(-1), O_CREAT , S_IRUSR);
 	if(ret_val != -1)
 	{
 			cerr << "Open returned normal file decriptor when the pathname is outside of your acessible address space";

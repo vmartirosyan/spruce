@@ -32,6 +32,7 @@ class LeakChecker
 {
 public:
 	LeakChecker(string log_file = ""):
+		DebugFSPath(""),
 		LogFilePath(log_file)
 	{
 		MountDebugFS();
@@ -58,8 +59,8 @@ public:
 					cerr << "Line: " << line << endl;	
 					getline(in_file, line);
 					// Process the line to make it valid XML...
-					int pos = 0;
-					while ( ( pos = line.find("<", pos ) ) != (int)string::npos )
+					size_t pos = 0;
+					while ( ( pos = line.find("<", pos ) ) != string::npos )
 					{
 						line = line.replace(pos, 1, "&lt;");
 					}
@@ -89,8 +90,8 @@ public:
 					cerr << "Line: " << line << endl;	
 					getline(in_file, line);
 					// Process the line to make it valid XML...
-					int pos = 0;
-					while ( ( pos = line.find("<", pos ) ) != (int)string::npos )
+					size_t pos = 0;
+					while ( ( pos = line.find("<", pos ) ) != string::npos )
 					{
 						line = line.replace(pos, 1, "&lt;");
 					}

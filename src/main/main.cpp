@@ -371,7 +371,7 @@ int main(int argc, char ** argv)
 						cerr << "Skipping module: " << *module << " (accoring to key run_tests in configuration file)."	<< endl;
 						continue;
 					}
-					UnixCommand * command = new UnixCommand(( (string)(INSTALL_PREFIX"/bin/" + ModuleBin).c_str()));
+					UnixCommand * command = new UnixCommand((INSTALL_PREFIX"/bin/" + ModuleBin).c_str());
 					
 					string FileName = logfolder + "/" + *fs + "_" + *module + "_" + pm.GetCurrentMountOptions() + "_log.xml";
 					
@@ -589,7 +589,7 @@ void OpenDashboard(string browser, string logfolder, string fs)
 		
 		cout << "Switching to user `" << UserName << "`" << endl;
 		
-		setenv("HOME", ((string)"/home/" + UserName).c_str(), 1);
+		setenv("HOME", (static_cast<string>("/home/") + UserName).c_str(), 1);
 		
 		struct passwd * nobody = getpwnam(UserName);
 		if ( nobody == NULL )
@@ -677,7 +677,7 @@ void OpenLogFiles(string browser, string logfolder, vector<string> XMLFilesToPro
 		
 		cout << "Switching to user `" << UserName << "`" << endl;
 		
-		setenv("HOME", ((string)"/home/" + UserName).c_str(), 1);
+		setenv("HOME", (static_cast<string>("/home/") + UserName).c_str(), 1);
 		
 		struct passwd * nobody = getpwnam(UserName);
 		if ( nobody == NULL )
@@ -746,7 +746,7 @@ ConfigValues ParseOptions(int argc, char ** argv)
 		if ( opt != -1 )
 		{
 			string optname;
-			optname.insert(0, 1, (char)opt);
+			optname.insert(0, 1, static_cast<char>(opt));
 			vals[optname] = optarg ? optarg : "";
 		}
 	} 

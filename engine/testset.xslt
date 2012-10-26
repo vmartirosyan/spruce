@@ -47,9 +47,16 @@ class <xsl:value-of select="$TestClassName" /> : public Process
 	typedef map&lt;string, int (<xsl:value-of select="$TestClassName" />::*)(vector&lt;string>)> TestMap;
 public:
 	<xsl:value-of select="$TestClassName" />():
+		_tests_to_run(),
+		_tests_to_exclude(),
 		_name("<xsl:value-of select="$TestClassName" />"),
 		_fsim_enabled(false),
+		_fsim_point("kmalloc"),		
+		_fsim_expression("0"),		
+		_tests(),
+		_fsim_tests(),
 		_fault_count(0),
+		_fsim_info_vec(),
 		DirPrefix("<xsl:value-of select="$TestClassName" />_dir_"),
 		FilePrefix("<xsl:value-of select="$TestClassName" />_file_")		
 		//_testCount(<xsl:value-of select="count(Test)"/>),
@@ -124,7 +131,7 @@ public:
 				}
 				else
 				{
-					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
+					ProcessResult * pr = Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(it->second));
 					tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
 					delete pr;
 				}
@@ -135,7 +142,7 @@ public:
 		{
 			for ( unsigned int i = 0; i &lt; _tests_to_run.size(); ++i )
 			{				
-				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))_tests[_tests_to_run[i]]);
+				ProcessResult * pr = Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(_tests[_tests_to_run[i]]));
 				<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", _tests_to_run[i]);
 				delete pr;
 				res.AddResult( tr );
@@ -155,7 +162,7 @@ public:
 			_fsim_expression = "0";
 				
 			 TestMap::iterator it = _fsim_tests.begin();
-				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
+				ProcessResult * pr = Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(it->second));
 				if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
 						pr->SetStatus(Success);
 					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
@@ -183,13 +190,13 @@ public:
 				{
 					char buf[3];
 					sprintf(buf, "%d", j); // modified (i to j) 
-					_fsim_expression = "(times%" + (string)buf + " = 0)";
-					//_fsim_expression = "times="+(string)buf;
+					_fsim_expression = "(times%" + static_cast&lt;string>(buf) + " = 0)";
+					//_fsim_expression = "times="+static_cast&lt;string>(buf);
 				}
 				//for ( unsigned int k = 0; k &lt; _fsim_testCount; ++k)
 				for ( TestMap::iterator it = _fsim_tests.begin(); it != _fsim_tests.end(); ++it )
 				{
-					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
+					ProcessResult * pr = Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(it->second));
 					if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
 						pr->SetStatus(Success);
 					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
@@ -230,7 +237,7 @@ public:
 			{
 				char buf[2];
 				sprintf(buf, "%d", i);
-				DirPaths[i] = DirPrefix + (string)buf;
+				DirPaths[i] = DirPrefix + buf;
 				DirDs[i] = Dirs[i].Open(DirPaths[i], S_IRWXU);
 				if ( DirDs[i] == -1 )
 				{
@@ -241,7 +248,7 @@ public:
 				{
 					char buf[2];
 					sprintf(buf, "%d", i);
-					DirFilePaths[i] = DirPaths[i] + "/" + FilePrefix + (string)buf;
+					DirFilePaths[i] = DirPaths[i] + "/" + FilePrefix + buf;
 					DirFDs[i] = DirFiles[i].Open(DirFilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
 					if ( DirFDs[i] == -1 )
 					{
@@ -268,7 +275,7 @@ public:
 			{
 				char buf[2];
 				sprintf(buf, "%d", i);
-				FilePaths[i] = FilePrefix + (string)buf;
+				FilePaths[i] = FilePrefix + buf;
 				FDs[i] = Files[i].Open(FilePaths[i], FileMode, FileFlags);
 				if ( FDs[i] == -1 )
 				{

@@ -77,11 +77,11 @@ Status TruncateTest::NormalIncreaseSize()
 			return Unres;
 		}	
 		
-		char * buf = (char*)"1234";
-		const int length = strlen(buf);
+		const string buf = "1234";
+		const int length = buf.size();
 		int length_after_truncate = 5;
 		
-		if ( write(fd, buf, length) != length )
+		if ( write(fd, buf.c_str(), length) != length )
 		{
 			cerr << "Cannot write " << length << " bytes to the file. Error: " << strerror(errno);
 			return Unres;
@@ -144,11 +144,11 @@ Status TruncateTest::NormalDecreaseSize()
 			return Unres;
 		}	
 		
-		char * buf = (char*)"1234";
-		const int length = strlen(buf);
+		const string buf = "1234";
+		const int length = buf.size();
 		int length_after_truncate = 1;
 		
-		if ( write(fd, buf, length) != length )
+		if ( write(fd, buf.c_str(), length) != length )
 		{
 			cerr << "Cannot write " << length << " bytes to the file. Error: " << strerror(errno);
 			return Unres;

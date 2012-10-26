@@ -31,7 +31,7 @@
 			const char * WriteBuf = "012345";
 			char ReadBuf[10];
 			EnableFaultSim();
-			if ( write(FDs[0], WriteBuf, strlen(WriteBuf)) != (int)strlen(WriteBuf) )
+			if ( write(FDs[0], WriteBuf, strlen(WriteBuf)) != static_cast<int>(strlen(WriteBuf)) )
 			{
 				Error("Cannot write to file.", Fail);
 			}
@@ -58,11 +58,11 @@
 			const int BlockSize = 512;
 			char* WriteBuf = new char[3*BlockSize];
 			// Align to block size
-			char * WriteStart = (char*)((((long)WriteBuf / BlockSize) + 1) * BlockSize);
+			char * WriteStart = reinterpret_cast<char*>(((reinterpret_cast<long>(WriteBuf) / BlockSize) + 1) * BlockSize);
 			WriteStart[0] = 'A';
 			
 			char* ReadBuf = new char[2*BlockSize];
-			char * ReadStart = (char*)((((long)ReadBuf / BlockSize) + 1) * BlockSize);
+			char * ReadStart = reinterpret_cast<char*>(((reinterpret_cast<long>(ReadBuf) / BlockSize) + 1) * BlockSize);
 			
 			EnableFaultSim();
 			if ( write(FDs[0], WriteStart, 2*BlockSize) == -1 )
@@ -149,7 +149,7 @@
 			const char * WriteBuf = "012345";
 			Unres(write(FDs[0], WriteBuf, strlen(WriteBuf)) == -1,"Cannot write to file.");
 			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
-			ErrorTest(read(FDs[0], (void*)-1, 2), -1, EFAULT);
+			ErrorTest(read(FDs[0], reinterpret_cast<void*>(-1), 2), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="ReadErrAgain">
@@ -164,7 +164,7 @@
 	<Test Name="WriteFault">
 		<Description>write: buf is outside your accessible address space.</Description>
 		<Code>
-			ErrorTest(write(1, (void*)-1, 2), -1, EFAULT);
+			ErrorTest(write(1, reinterpret_cast<void*>(-1), 2), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="WriteErrAgain">
