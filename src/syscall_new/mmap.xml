@@ -289,14 +289,14 @@
 				Error("EINVAL error expected: new size is set to zero");
 				status = Fail;
 			}
-			
+			/* //invalid value of newsize is unknown 
 			newAddr = mremap(oldAddr, length, -1, MREMAP_MAYMOVE);
 			if(newAddr != MAP_FAILED || errno != EINVAL)
 			{
 				Error("EINVAL error expected: new size contains invalid value");
 				status = Fail;
 			}
-			
+			*/
 			newAddr = mremap(oldAddr, length, length + 3, MREMAP_FIXED);
 			if(newAddr != MAP_FAILED || errno != EINVAL)
 			{
