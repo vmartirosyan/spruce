@@ -450,10 +450,10 @@
 		<Description>F_SETPIPE_SZ and F_GETPIPE_SZ (since Linux 2.6.35). Changing the capacity of a pipe.</Description>
 		<Header>
 #if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
-	Unres(true, "Kernel version doesn't support this operation.");
+	Error("Kernel version doesn't support this operation.", Unsupported);
 #endif
 #ifndef F_SETPIPE_SZ
-	Unres(true, "Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined.");
+	Error("Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined.", Unsupported);
 #else
 		</Header>
 		<Code>
@@ -638,10 +638,10 @@
 		<File count="1"/>
 		<Header>
 #if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
-	Unres(true, "Kernel version doesn't support this operation.");
+	Error("Kernel version doesn't support this operation.", Unsupported);
 #endif
 #ifndef F_SETPIPE_SZ
-	Unres(true, "Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined.");
+	Error("Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined.", Unsupported);
 #else
 		</Header>
 		<Code>
