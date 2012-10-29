@@ -125,8 +125,10 @@
 			clock_gettime(CLOCK_REALTIME, &now);
 			   
 			struct itimerspec new_value;
-			new_value.it_value.tv_sec = now.tv_sec;
+			new_value.it_value.tv_sec = now.tv_nsec;
 			new_value.it_value.tv_nsec = now.tv_nsec;
+			new_value.it_interval.tv_sec = 0;
+			new_value.it_interval.tv_nsec = 0;
 			
 			Unres (timerfd_settime(fd, TFD_TIMER_ABSTIME, &new_value, NULL) == -1, "Cannot set time.");			
 			char buf[1024];
