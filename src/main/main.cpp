@@ -49,6 +49,7 @@
 #include <kedr_integrator.hpp>
 #include <leak_checker.hpp>
 #include <PartitionManager.hpp>
+//#include <ShmAllocator.hpp>
 
 using std::ifstream;
 using std::ofstream;
@@ -337,15 +338,30 @@ int main(int argc, char ** argv)
 					
 				}
 			}
-			PartitionManager pm(INSTALL_PREFIX"/share/spruce/config/PartitionManager.cfg", partition, MountAt, *fs, MountOpts);
+			//PartitionManager * pm = ShmAllocator<PartitionManager>::GetInstance();
+			PartitionManager * pm = new PartitionManager();
+			if ( pm == NULL )
+			{
+				cerr << "Cannot create the partition manager object." << endl;
+				return FAULT;
+			}
 			
+			pm->Initialize(INSTALL_PREFIX"/share/spruce/config/PartitionManager.cfg", partition, MountAt, *fs, MountOpts);			
+			cerr << "INitialize: config file: " << pm->_ConfigFile << endl;
 			for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
 			{
 				cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
 								
 				PartitionStatus PS = PS_Done;
-				while ( (PS = pm.PreparePartition()) != PS_Done )
+				do
 				{
+					PS = pm->PreparePartition();
+					cerr << "INitialize: config file: " << pm->_ConfigFile << endl;
+					if ( PS == PS_Fatal  )
+					{
+						cerr << "Fatal error raised while preparing partition." << endl;
+						return FAULT;
+					}
 					if ( PS == PS_Skip )
 					{
 						cerr << "\t\tSkipping case." << endl;
@@ -360,7 +376,7 @@ int main(int argc, char ** argv)
 					bool ModuleShouldNotRun = (TestsToRun.size() > 0);
 					for ( vector<string>::iterator it = TestsToRun.begin(); it != TestsToRun.end(); ++it )
 					{
-						string prefix = *fs + "." + pm.GetCurrentMountOptions() + "." + *module;
+						string prefix = *fs + "." + pm->GetCurrentMountOptions() + "." + *module;
 						if ( (*it).find(prefix) != string::npos )
 						{							
 							ModuleShouldNotRun = false;
@@ -373,23 +389,26 @@ int main(int argc, char ** argv)
 					}
 					UnixCommand * command = new UnixCommand((INSTALL_PREFIX"/bin/" + ModuleBin).c_str());
 					
-					string FileName = logfolder + "/" + *fs + "_" + *module + "_" + pm.GetCurrentMountOptions() + "_log.xml";
+					string FileName = logfolder + "/" + *fs + "_" + *module + "_" + pm->GetCurrentMountOptions() + "_log.xml";
+					
+					// Ensure the file is removed.
+					unlink(FileName.c_str());
 					
 					vector<string> module_args;
 					ofstream of(FileName.c_str());
 				
-					of << "<SpruceLog><FS Name=\"" << *fs << "\" MountOptions=\"" << pm.GetCurrentMountOptions() << "\">\n";
+					of << "<SpruceLog><FS Name=\"" << *fs << "\" MountOptions=\"" << pm->GetCurrentMountOptions() << "\">\n";
 					
 					of.close();
 					
 					module_args.push_back(FileName);
 					//XMLFilesToProcess.push_back(FileName);
-					MountOptions.push_back(pm.GetCurrentMountOptions());
+					MountOptions.push_back(pm->GetCurrentMountOptions());
 					// Find out which tests should be excluded in current module
 					vector<string> ExcludeModuleTests;					
 					for ( vector<string>::iterator it = TestsToExclude.begin(); it != TestsToExclude.end(); ++it )
 					{
-						string prefix = *fs + "." + pm.GetCurrentMountOptions() + "." + *module;
+						string prefix = *fs + "." + pm->GetCurrentMountOptions() + "." + *module;
 						if ( (*it).find(prefix) != string::npos )
 						{
 							ExcludeModuleTests.push_back(it->substr(prefix.size() + 1, it->size() - prefix.size()));
@@ -407,7 +426,7 @@ int main(int argc, char ** argv)
 					vector<string> RunModuleTests;					
 					for ( vector<string>::iterator it = TestsToRun.begin(); it != TestsToRun.end(); ++it )
 					{
-						string prefix = *fs + "." + pm.GetCurrentMountOptions() + "." + *module;
+						string prefix = *fs + "." + pm->GetCurrentMountOptions() + "." + *module;
 						
 						if ( (*it).find(prefix) != string::npos )
 						{
@@ -461,12 +480,15 @@ int main(int argc, char ** argv)
 					Status |= result->GetStatus();
 					cerr << "Module " << *module << " exits with status " << result->GetStatus() << endl;
 				}
+				while ( PS != PS_Done );
 				
-				/*if ( !pm.ReleasePartition() )
+				/*if ( !pm->ReleasePartition() )
 				{
 					cerr << "Cannot release the partition: " << strerror(errno) << endl;
 					break;
 				}*/
+				delete pm;
+				//ShmAllocator<PartitionManager>::Free(pm);
 			}
 			
 			// Process the memory leak checker output
