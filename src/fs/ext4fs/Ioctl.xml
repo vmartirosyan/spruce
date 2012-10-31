@@ -4,6 +4,8 @@
 	<Requires>fcntl.h</Requires>
 	<Requires>ext2fs/ext2_fs.h</Requires>	
 	<Requires>pwd.h</Requires>
+	<Requires>linux/version.h</Requires>
+	<Requires>inttypes.h</Requires>
 	<Test Name="SetFlagsGetFlags" FaultSimulationReady="true">		
 		<Description>Try to set and get some flag values.</Description>
 		<File count="1"/>
@@ -41,7 +43,7 @@
 			int non_permitted_flags = old_flags & ~EXT4_EXTENTS_FL; // We may NOT clear the extents flag... but we shall try!
 			
 			// Try to set the non-permitted flag
-			Fail( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &non_permitted_flags ) == -1, "It was permitted to set non-permitted flag!.");
+			Fail( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &non_permitted_flags ) == 0, "It was permitted to set non-permitted flag!.");
 			
 			return Success;						
 		</Code>
@@ -83,6 +85,9 @@
 	<!-- This commang is removed in newer kernels... -->
 	<Test Name="WaitForReadonly" FaultSimulationReady="true">
 		<Header>
+#if  LINUX_VERSION_CODE > KERNEL_VERSION(3,1,0)
+		Error("Wait for read only operation is unsupported in Linux 3.1+ versions.", Unsupported);
+#else
 #ifndef EXT4_IOC_WAIT_FOR_READONLY
 #define EXT4_IOC_WAIT_FOR_READONLY	_IOR('f', 99, long)
 #endif
@@ -93,6 +98,9 @@
 			Fail ( ioctl(FDs[0], EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1, "Error waiting for readonly.");
 			return Shallow;
 		</Code>
+		<Footer>
+#endif
+		</Footer>
 	</Test>
 	<Test Name="GroupExtend" FaultSimulationReady="true">
 		<Description>Group extend.</Description>
@@ -124,21 +132,43 @@
 	</Test>
 	<Test Name="ResizeFS" FaultSimulationReady="true">
 		<Header>
-#ifdef EXT4_IOC_RESIZE_FS
+#if  LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
+		Error("Resize FS operation is unsupported in earlier versions than Linux 3.3.", Unsupported);
+#else
+#ifndef EXT4_IOC_RESIZE_FS
+#	define EXT4_IOC_RESIZE_FS              _IOW('f', 16, __u64)
+#endif
 		</Header>
 		<Description>Resize FS.</Description>
 		<File count="1"/>
 		<Code>
-			__u64 BlockCount = 30000;
+			uint64_t DeviceSize;
+			struct stat st;
+			Unres ( stat(DeviceName, &st) == -1, "Cannot get file stats.");
+				
+			if (S_ISREG(st.st_mode))
+			{
+				cout << "Loop device on regular file." << endl;
+				DeviceSize = st.st_size;
+			}
+			else
+			{
+				int fd = open(DeviceName, O_RDONLY);
+				Unres (fd == -1, "Cannot open partition");
+				
+				Unres ( ioctl( fd, BLKGETSIZE64, &DeviceSize ) == -1, "Cannot get partition size.");
+
+				close(fd);
+			}
+			
+			__u64 BlockCount = DeviceSize / 4096;
 			Fail(ioctl(FDs[0], EXT4_IOC_RESIZE_FS, &BlockCount) == -1, "Resize FS failed");
 			
 			return Shallow;
 		</Code>
 		<Footer>
-#else
-			Error("The XFS_IOC_ZERO_RANGE value is not defined.", Unsupported);
 #endif
-	</Footer>
+		</Footer>
 	</Test>
 	<Test Name="MoveExtent" FaultSimulationReady="true">
 		<Header>
@@ -205,9 +235,14 @@ struct ext4_new_group_data {
 			return Shallow;		
 		</Code>
 	</Test>
-	<!--Test Name="Migrate" FaultSimulationReady="true">
+	<Test Name="Migrate" FaultSimulationReady="true">
+		<Description>Migrate an Ext3 partition to Ext4</Description>
 		<Header>
-			Status result = Unknown;
+#ifndef EXT4_IOC_MIGRATE
+#	define EXT4_IOC_MIGRATE		_IO('f', 9)
+#endif
+			Status result = Fail;
+			int _file = -1;
 		</Header>
 		<Code>
 			Unres ( chdir ("/") == -1 , "Cannot change directory.");
@@ -215,40 +250,38 @@ struct ext4_new_group_data {
 			//if ( umount2( MountPoint, MNT_FORCE ) == -1 )	
 			Unres ( umount( MountPoint ) == -1, "Cannot unmount " + (string)MountPoint);
 			
-			//cerr << ("mkfs.ext2 " + _DeviceName).c_str() << endl;
-			
 			UnixCommand mkfs("mkfs.ext3");
-			vector<string> args;			
-			//args.push_back("-O");
-			//args.push_back("extents");
+			vector<string> args;
+			args.push_back("-t");
+			args.push_back("ext3");
+			args.push_back("-O");
+			args.push_back("extents");
 			args.push_back(DeviceName);
 			
 			ProcessResult * res;
 			res = mkfs.Execute(args);
 			Unres ( res == NULL || res->GetStatus() != Success, "Cannot create ext3 filesystem on device " + (string)DeviceName);
 			
-			Unres ( mount( DeviceName, MountPoint, "ext3", 0, 0) == -1, "Cannot mount ext3 FS " + (string)DeviceName + " to " + (string)MountPoint);
+			Unres ( mount( DeviceName, MountPoint, "ext4", 0, 0) == -1, "Cannot mount ext3 FS " + (string)DeviceName + " to " + (string)MountPoint);
 			
-			Directory mountFile(MountPoint, O_DIRECTORY | O_RDONLY);
-			int _file = mountFile.GetDirectoryDescriptor();
+			_file = open(MountPoint, O_DIRECTORY | O_RDONLY);
 		
 			if ( _file == -1 )
 			{
-				cerr << "Cannot open folder: " << MountPoint << ". Error : " << strerror(errno);
+				Error("Cannot open mount folder.");
 				result = Unresolved;
 				goto finally;
 			}
 			
-			
+			cerr << "Calling Ioctl!!!" << endl;
 			if ( ioctl(_file, EXT4_IOC_MIGRATE, 0) == -1 )
 			{
-				cerr << "Error migrating. " << strerror(errno) << endl;
+				Error("Error migrating.");
 				result = Fail;
 				goto finally;
 			}
 			else
 			{
-				cerr << "Migration was successful. " << endl;
 				result = Success;
 				goto finally;
 			}
@@ -256,30 +289,20 @@ struct ext4_new_group_data {
 		</Code>
 		<Footer>
 			finally:
-			if ( umount( MountPoint ) == -1 )
+			if (_file != -1)
+				close(_file);
+				
+			/*PartitionManager * pm = ShmAllocator<PartitionManager>::GetInstance();
+			if ( pm == NULL )
 			{
-				Error("Cannot unmount " + (string)MountPoint, Fatal);
+				cerr << "Cannot get the partition manager object." << endl;
 			}
-			
-			UnixCommand mkfs2("mkfs.ext4");
-			vector<string> args2;		
-			args2.push_back(DeviceName);
-			
-			ProcessResult * res2;
-			res2 = mkfs2.Execute(args2);
-			if ( res2->GetStatus() != Success )
-			{
-				Error("Cannot create ext4 filesystem on device " + (string)DeviceName + " Error: " + res2->GetOutput(), Fatal);
-			}
-			
-			//system(("mkfs.ext2 " + _DeviceName).c_str());
-			if ( mount( MountPoint, DeviceName, "ext4", 0, 0) == -1)
-			{
-				Error("Cannot mount " + (string)DeviceName + " back to " + MountPoint, Fatal);
-			}
+			pm->RestorePartition();
+			ShmAllocator<PartitionManager>::Free(pm);*/
+
 			return result;
 		</Footer>
-	</Test-->
+	</Test>
 	<Test Name="AllocDABlocks" FaultSimulationReady="true">
 		<Header>
 #ifndef EXT4_IOC_ALLOC_DA_BLKS

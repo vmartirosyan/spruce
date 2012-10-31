@@ -1,14 +1,13 @@
-cmake_minimum_required(VERSION 2.4)
-
 message("Configuring main module.")
 
-project (Spruce)
-
-#CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${CMAKE_CURRENT_BINARY_DIR}/main.cpp)
+if(COMMAND cmake_policy)
+	cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
 
 ADD_EXECUTABLE(spruce 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp ${CMAKE_SOURCE_DIR}/include/kedr_integrator.hpp ${CMAKE_SOURCE_DIR}/include/leak_checker.hpp )
 
 TARGET_LINK_LIBRARIES(spruce utils)
+TARGET_LINK_LIBRARIES(spruce rt)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/spruce"
 			DESTINATION bin

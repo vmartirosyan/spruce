@@ -24,6 +24,7 @@
 #include <sstream>
 #include <stdint.h>
 #include <inttypes.h>
+#include <sys/shm.h>
 using namespace std;
 
 enum FileSystems
@@ -49,12 +50,25 @@ enum PartitionStatus
 {
 	PS_Success,
 	PS_Done,
-	PS_Skip
+	PS_Skip,
+	PS_Fatal
 };
 
 class PartitionManager
 {
 	public:
+		PartitionManager():
+			_ConfigFile(""),
+			_DeviceName(""),
+			_MountPoint(""),
+			_FileSystem(""),
+			_MountOpts(""),
+			_CurrentMountOptions(""),
+			_Index(0),
+			_FSIndex(FS_UNSUPPORTED)
+			{
+				
+			}		
 		PartitionManager(string ConfigFile, string DeviceName, string MountPoint, string FileSystem, string MountOpts):
 			_ConfigFile(ConfigFile),
 			_DeviceName(DeviceName),
@@ -64,30 +78,54 @@ class PartitionManager
 			_CurrentMountOptions(""),
 			_Index(0),
 			_FSIndex(FS_UNSUPPORTED)
-			{
-				if ( _MountOpts != "" && _MountOpts[_MountOpts.size() - 1] != ',' )
-					_MountOpts += ',';
-				LoadConfiguration();
-				_FSIndex = GetFSNumber(_FileSystem);
+			{				
+				Initialize(ConfigFile, DeviceName, MountPoint, FileSystem, MountOpts);
 			}
+		virtual ~PartitionManager() {}
+		
+		PartitionManager & operator = (const PartitionManager & pm)
+		{			
+			_ConfigFile = pm._ConfigFile;
+			_DeviceName = pm._DeviceName;
+			_MountPoint = pm._MountPoint;
+			_FileSystem = pm._FileSystem;
+			_MountOpts = pm._MountOpts;
+			_CurrentMountOptions = pm._CurrentMountOptions;
+			_Index = pm._Index;
+			_FSIndex = pm._FSIndex;
+			cerr << "\033[1;31mOperator =\033[0m\n" << endl;
+			return *this;
+		}
+		
+		void Initialize(string ConfigFile, string DeviceName, string MountPoint, string FileSystem, string MountOpts)
+		{			
+			_ConfigFile = ConfigFile;
+			_DeviceName = DeviceName;
+			_MountPoint = MountPoint;
+			_FileSystem = FileSystem;
+			_MountOpts = MountOpts;
+			_CurrentMountOptions = "";
+			_Index = 0;
+			_FSIndex = FS_UNSUPPORTED;
+			if ( _MountOpts != "" && _MountOpts[_MountOpts.size() - 1] != ',' )
+				_MountOpts += ',';
+			LoadConfiguration();
+			_FSIndex = GetFSNumber(_FileSystem);
+			cerr << "INitialize: config file: " << _ConfigFile << endl;
+		}
 
 		PartitionStatus PreparePartition()
 		{
+			cout << "Preparing partition " + _DeviceName << endl;
+			cout << "Preparing partition: Index: " << _Index << endl;
 			if ( !ReleasePartition() )
 			{
-				return PS_Skip;
+				return PS_Fatal;
 			}
 			
-			cout << "Preparing partition " + _DeviceName << endl;
-			
-			if ( _Index == _AdditionalMountOptions[_FSIndex].size() )
-			{
-				_Index = 0;
-				return PS_Done;
-			}
-				
 			if ( !CreateFilesystem(_FileSystem, _DeviceName) )
 			{
+				cerr << "\033[1;31mCreate failed. Reseting index.\033[0m\n" << endl;
 				_Index = 0;
 				return PS_Done;
 			}
@@ -106,7 +144,7 @@ class PartitionManager
 				cout << "Mounting with additional option: " << _CurrentMountOptions << endl;
 			}
 			_Index++;
-									
+			cout << "Preparing partition: Index: " << _Index << endl;
 			ProcessResult * res = mnt->Execute(mnt_args);
 			delete mnt;
 			if ( res->GetStatus() != Success )
@@ -126,8 +164,27 @@ class PartitionManager
 				return PS_Skip;
 			}
 			cout << "Changed dir" << endl;
+			if ( _Index == _AdditionalMountOptions[_FSIndex].size() )
+			{
+				cerr << "\033[1;31mEnd of options.\033[0m\n" << endl;
+				//_Index = 0;
+				return PS_Done;
+			}
 			return PS_Success;
 		}
+		
+		// Try to re-create the file system and mount it with the precious mount options.		
+		PartitionStatus RestorePartition()
+		{
+			//cerr << "\034[1;31mPartitionManager: restoring partition. \033[0m" << _Index << endl;
+			_Index--;
+			PartitionStatus ret = PreparePartition();
+			//_Index++;
+			//return ret;*/
+			return ret;
+		}
+		
+		
 		bool ReleasePartition()
 		{
 			cout << "Unmounting partition " << _DeviceName << endl;
@@ -152,7 +209,7 @@ class PartitionManager
 		{
 			return _CurrentMountOptions;
 		}
-	private:
+	public:
 		string _ConfigFile;
 		string _DeviceName;
 		string _MountPoint;
@@ -276,7 +333,7 @@ class PartitionManager
 			
 			stringstream s2;
 			string PartitionSize;
-			s2 << ((DeviceSize / BlockSize) - 10);
+			s2 << ((DeviceSize / BlockSize) - 1000);
 			PartitionSize = s2.str();
 			
 			if ( fs == "ext4" )
@@ -296,7 +353,7 @@ class PartitionManager
 			if ( fs == "btrfs" )
 			{
 				stringstream s3;
-				s3 << (DeviceSize - 10*4096);
+				s3 << (DeviceSize - 1000*4096);
 				string SizeInBlocks = s3.str();
 				
 				args.push_back("-b");

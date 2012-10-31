@@ -136,6 +136,9 @@ public:
 					delete pr;
 				}
 				res.AddResult( tr );
+				// If Fatal error has rised quit!
+				if ( tr->GetStatus() == Fatal )
+					break;
 			}
 		}
 		else
@@ -151,8 +154,7 @@ public:
 		return res;
 	}
 	virtual TestResultCollection RunFaultyTests()
-	{
-		cerr &lt;&lt; "Running faulty tests: " &lt;&lt; _fsim_info_vec.size() &lt;&lt; endl;
+	{		
 		_fsim_enabled = true;
 		TestResultCollection res;
 		//added
@@ -216,7 +218,7 @@ public:
 	}
 	<xsl:for-each select="Test">
 	int <xsl:value-of select="@Name" />Func(vector&lt;string>)
-	{
+	{		
 		<xsl:value-of select="/TestSet/Header" />
 		<xsl:value-of select="Header" />
 		cerr &lt;&lt; "Description: " &lt;&lt; "<xsl:value-of select="Description" />" &lt;&lt; endl;
