@@ -11,22 +11,23 @@
 	
 	<span class="Success">Total tests passed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Success'])" /></span> <br/>
 	<span class="Shallow">Total shallow tests: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Shallow'])" /></span> <br/>
-	<span class="Failed">Total tests failed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Failed'])" /></span>
+	<span class="Failed">Total tests failed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Failed'])" /></span> <br />
+	<span class="Fatal">Total tests fatal: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Fatal'])" /></span>
 	<a href="#" style="text-decoration:none">
 		<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Module" />TestsFailed')</xsl:attribute> +</a>
 	<div style="border: solid 1px black; padding: 5px; display:none;" class="Failed">
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsFailed</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th>Name</th>
-				<th>Operation</th>
-				<th>Output</th>
+				<th width="20%">Name</th>
+				<th width="20%">Operation</th>
+				<th width="60%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Failed']" >				
 			<tr>
-				<td><xsl:value-of select="@Name" /></td>
-				<td><xsl:value-of select="Operation" /></td>
-				<td><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="20%"><xsl:value-of select="@Name" /></td>
+				<td width="20%"><xsl:value-of select="Operation" /></td>
+				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -39,15 +40,15 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsUnresolved</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th>Name</th>
-				<th>Operation</th>
-				<th>Output</th>
+				<th width="20%">Name</th>
+				<th width="20%">Operation</th>
+				<th width="60%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Unresolved']" >				
 			<tr>
-				<td><xsl:value-of select="@Name" /></td>
-				<td><xsl:value-of select="Operation" /></td>
-				<td><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="20%"><xsl:value-of select="@Name" /></td>
+				<td width="20%"><xsl:value-of select="Operation" /></td>
+				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -60,15 +61,15 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsUnsupported</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th>Name</th>
-				<th>Operation</th>
-				<th>Output</th>
+				<th width="20%">Name</th>
+				<th width="20%">Operation</th>
+				<th width="60%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Unsupported']" >				
 			<tr>
-				<td><xsl:value-of select="@Name" /></td>
-				<td><xsl:value-of select="Operation" /></td>
-				<td><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="20%"><xsl:value-of select="@Name" /></td>
+				<td width="20%"><xsl:value-of select="Operation" /></td>
+				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -81,15 +82,15 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsSkipped</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th>Name</th>
-				<th>Operation</th>
-				<th>Output</th>
+				<th width="20%">Name</th>
+				<th width="20%">Operation</th>
+				<th width="60%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Skipped']" >				
 			<tr>
-				<td><xsl:value-of select="@Name" /></td>
-				<td><xsl:value-of select="Operation" /></td>
-				<td><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="20%"><xsl:value-of select="@Name" /></td>
+				<td width="20%"><xsl:value-of select="Operation" /></td>
+				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -102,15 +103,36 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsTimedOut</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th>Name</th>
-				<th>Operation</th>
-				<th>Output</th>
+				<th width="20%">Name</th>
+				<th width="20%">Operation</th>
+				<th width="60%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Timeout']" >				
 			<tr>
-				<td><xsl:value-of select="@Name" /></td>
-				<td><xsl:value-of select="Operation" /></td>
-				<td><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="20%"><xsl:value-of select="@Name" /></td>
+				<td width="20%"><xsl:value-of select="Operation" /></td>
+				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+			</tr>
+		</xsl:for-each>
+		</table>
+	</div>	
+	<br />
+	<span class="Fatal">Total tests fatal: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Fatal'])" /></span>
+	<a href="#" style="text-decoration:none">
+		<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Module" />TestsFatal')</xsl:attribute> +</a>
+	<div style="border: solid 1px black; padding: 5px; display:none;" class="Fatal">
+		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsFatal</xsl:attribute>
+		<table width="100%">
+			<tr>
+				<th width="20%">Name</th>
+				<th width="20%">Operation</th>
+				<th width="60%">Output</th>
+			</tr>
+		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Fatal']" >				
+			<tr>
+				<td width="20%"><xsl:value-of select="@Name" /></td>
+				<td width="20%"><xsl:value-of select="Operation" /></td>
+				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -141,6 +163,9 @@
 			<xsl:if test="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Failed'])">
 				<xsl:attribute name="class">Failed</xsl:attribute>
 			</xsl:if>
+			<xsl:if test="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Fatal'])">
+				<xsl:attribute name="class">Fatal</xsl:attribute>
+			</xsl:if>
 			<xsl:choose>
 				<xsl:when test="$TestsTotal != $TestsPassed">
 					<a href="#" style="text-decoration:none">
@@ -155,39 +180,34 @@
 		<br />
 		<div style="border: solid 1px black; padding: 5px; display:none;">	
 			<xsl:attribute name="id"><xsl:value-of select="$Module" />_<xsl:value-of select="$Item" /></xsl:attribute>
-			<xsl:for-each select="//Module[@Name=$Module]/Item[@Name=$Item]">
-				<xsl:if test="Status!='Success' and Status!='Shallow'">
-					<div>
-						<xsl:attribute name="class"><xsl:value-of select="Status" /></xsl:attribute>
-						<table width="100%">
-							<tr>
-								<th>Name</th>
-								<th>Operation</th>
-								<th>Output</th>
-							</tr>
-							
-							<tr>
-								<td><xsl:value-of select="@Name" /></td>
-								<td><xsl:value-of select="Operation" /></td>
-								<td><pre><xsl:value-of select="Output" /></pre></td>
-							</tr>
-						</table>
-					</div>
-				</xsl:if>
-			</xsl:for-each>
-			<hr />
 			Total Tests: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item])" /><br />
 			<span class="Success">Tests passed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Success'])" /></span> <br/>
 			<span class="Shallow">Shallow tests: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Shallow'])" /></span> <br/>
 			<span class="Failed">Tests failed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Failed'])" /></span> <br/>
 			<span class="Unresolved">Tests unresolved: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Unresolved'])" /></span> <br/>
 			<span class="Unsupported">Tests unsupported: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Unsupported'])" /></span> <br/>
+			<span class="Timeout">Tests timed out: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Timeout'])" /></span> <br/>
+			<span class="Fatal">Tests fatal: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Fatal'])" /></span> <br/>
+			<hr />
+			<table width="100%">
+				<tr>
+					<th width="20%">Name</th>
+					<th width="20%">Operation</th>
+					<th width="60%">Output</th>
+				</tr>
+				<xsl:for-each select="//Module[@Name=$Module]/Item[@Name=$Item]">
+					<xsl:if test="Status!='Success' and Status!='Shallow'">
+						<tr>
+							<xsl:attribute name="class"><xsl:value-of select="Status" /></xsl:attribute>
+							<td width="20%"><xsl:value-of select="@Name" /></td>
+							<td width="20%"><xsl:value-of select="Operation" /></td>
+							<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+						</tr>
+					</xsl:if>
+				</xsl:for-each>
+			</table>
 		</div>
 	</xsl:for-each>	
-	
-	<hr />
-	
-	
 </div>
 </xsl:template>
 
