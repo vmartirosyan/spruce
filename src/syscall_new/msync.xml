@@ -49,7 +49,7 @@
 				status = Fail;
 			}
 			
-			char * readBuff = 0;
+			char readBuff[10];
 			if(read(FDs[0], readBuff, buff.size()) == -1)
 			{
 				Error("System call read failed");
