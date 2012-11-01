@@ -30,13 +30,33 @@
 		<Description>Set and get version.</Description>
 		<File count="1"/>
 		<Code>
-			int set_version = 15; 
-			int get_version = 0;
 			int old_version = 0;
+			if ( ioctl(FDs[0], FS_IOC_GETVERSION, &old_version ) == -1 )
+			{
+				if ( errno == ENOTTY )
+				{
+					Error("Get/set verion is not supported.", Unsupported);
+				}
+				else
+				{
+					Error("Error backing up old values.", Unresolved);
+				}
+			}		
+			int set_version = 15; 
+			int get_version = 0;			
 			
-			Unres (ioctl(FDs[0], FS_IOC_GETVERSION, &old_version) == -1, "Error backing up old values.");
 			EnableFaultSim();
-			Fail (ioctl(FDs[0], FS_IOC_SETVERSION, &set_version) == -1, "Error setting version.");
+			if ( ioctl(FDs[0], FS_IOC_SETVERSION, &set_version ) == -1)
+			{
+				if ( errno == ENOTTY )
+				{
+					Error("Set verion is not supported.", Unsupported);
+				}
+				else
+				{
+					Error("Error setting version.", Fail);
+				}
+			}
 			
 			Fail (ioctl(FDs[0], FS_IOC_GETVERSION, &get_version) == -1, "Error getting newly set version.");
 			
@@ -61,7 +81,17 @@
 			arg.start = 0;
 			arg.len = 10;
 			EnableFaultSim();
-			Fail( ioctl(FDs[0], FITRIM, &arg) == -1, "FITRIM operation failed." );
+			if ( ioctl(FDs[0], FITRIM, &arg) == -1 )
+			{
+				if ( errno == ENOTTY )
+				{
+					Error("FITRIM is not supported.", Unsupported);
+				}
+				else
+				{
+					Error("FITRIM operation failed.", Fail);
+				}
+			}
 			return Shallow;
 		</Code>
 		<Footer>
@@ -84,12 +114,12 @@
 	</Test>
 	
 	<Test Name="IoctlFIBMAP" FaultSimulationReady="true">
-		<Description>Ioctl FIEMAP.</Description>
+		<Description>Ioctl FIBMAP.</Description>
 		<File count="1"/>
 		<Code>
-			char arg[2];
+			int Block = 1;
 			EnableFaultSim();
-			Fail( ioctl(FDs[0], FIBMAP, &arg) == -1, "FIBMAP operation failed." );			
+			Fail( ioctl(FDs[0], FIBMAP, &Block) == -1, "FIBMAP operation failed." );			
 			return Shallow;
 		</Code>
 	</Test>
@@ -112,17 +142,18 @@
 			ErrorTest(ioctl(-1, 0, NULL), -1, EBADF);
 		</Code>
 	</Test>
-	<Test Name="IoctlFault">
+	<!-- There is no operation supported by all the filesystems to be able to check the EFAULT case -->
+	<!--Test Name="IoctlFault">
 		<Description>argp references an inaccessible memory area.</Description>
 		<File count="1"/>
 		<Code>
-			ErrorTest(ioctl(FDs[0], FS_IOC_SETVERSION, -1), -1, EFAULT);
+			ErrorTest(ioctl(FDs[0], FS_IOC_GETVERSION, -1), -1, EFAULT);
 		</Code>
-	</Test>
+	</Test-->
 	<Test Name="IoctlNoTTY">
-		<Description>d is not associated with a character special device.</Description>
+		<Description>File descriptor is not associated with a character special device.</Description>
 		<Code>
-			ErrorTest(ioctl(0, FS_IOC_SETVERSION, NULL), -1, EINVAL);
+			ErrorTest(ioctl(0, FS_IOC_GETVERSION, NULL), -1, EINVAL);
 		</Code>
 	</Test>
 </TestSet>
