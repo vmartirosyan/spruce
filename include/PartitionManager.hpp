@@ -92,8 +92,7 @@ class PartitionManager
 			_MountOpts = pm._MountOpts;
 			_CurrentMountOptions = pm._CurrentMountOptions;
 			_Index = pm._Index;
-			_FSIndex = pm._FSIndex;
-			cerr << "\033[1;31mOperator =\033[0m\n" << endl;
+			_FSIndex = pm._FSIndex;			
 			return *this;
 		}
 		
@@ -110,22 +109,19 @@ class PartitionManager
 			if ( _MountOpts != "" && _MountOpts[_MountOpts.size() - 1] != ',' )
 				_MountOpts += ',';
 			LoadConfiguration();
-			_FSIndex = GetFSNumber(_FileSystem);
-			cerr << "INitialize: config file: " << _ConfigFile << endl;
+			_FSIndex = GetFSNumber(_FileSystem);			
 		}
 
 		PartitionStatus PreparePartition()
 		{
-			cout << "Preparing partition " + _DeviceName << endl;
-			cout << "Preparing partition: Index: " << _Index << endl;
+			cerr << "Preparing partition " << _DeviceName << endl;			
 			if ( !ReleasePartition() )
 			{
 				return PS_Fatal;
 			}
 			
 			if ( !CreateFilesystem(_FileSystem, _DeviceName) )
-			{
-				cerr << "\033[1;31mCreate failed. Reseting index.\033[0m\n" << endl;
+			{				
 				_Index = 0;
 				return PS_Done;
 			}
@@ -144,7 +140,8 @@ class PartitionManager
 				cout << "Mounting with additional option: " << _CurrentMountOptions << endl;
 			}
 			_Index++;
-			cout << "Preparing partition: Index: " << _Index << endl;
+			cerr << "Index: " << _Index << endl;
+			
 			ProcessResult * res = mnt->Execute(mnt_args);
 			delete mnt;
 			if ( res->GetStatus() != Success )
@@ -154,7 +151,7 @@ class PartitionManager
 				return PS_Skip;
 			}
 			
-			cout << "Device " << _DeviceName << " was mounted on folder " << _MountPoint << "(opts=" << _MountOpts << endl;
+			cout << "Device " << _DeviceName << " was mounted on folder " << _MountPoint << "(opts=" << _MountOpts << ")" << endl;
 			
 			// Now change current dir to the newly mounted partition folder
 			if ( chdir(_MountPoint.c_str()) != 0 )
@@ -166,8 +163,7 @@ class PartitionManager
 			cout << "Changed dir" << endl;
 			if ( _Index == _AdditionalMountOptions[_FSIndex].size() )
 			{
-				cerr << "\033[1;31mEnd of options.\033[0m\n" << endl;
-				//_Index = 0;
+				_Index = 0;
 				return PS_Done;
 			}
 			return PS_Success;
