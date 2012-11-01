@@ -293,7 +293,7 @@ int main(int argc, char ** argv)
 			cerr << "Error: " << strerror(errno) << endl;
 			return errno;
 		}
-		
+		bool ShowOutput = false;
 		// Go through the modules, execute them
 		// and collect the output
 		cerr << "Executing modules." << endl;
@@ -359,7 +359,12 @@ int main(int argc, char ** argv)
 						cerr << "\t\tSkipping case." << endl;
 						continue;
 					}
-						
+					if ( PS == PS_Done  )
+					{
+						cout << "End of mount options" << endl;
+						break;
+					}
+					ShowOutput = true;
 					string ModuleBin = (module->find("fs-spec") == string::npos ? *module : (*fs + module->substr(7, module->size())));
 					if ( *module == "fault-sim" )
 						ModuleBin = "fault_sim";
@@ -471,7 +476,6 @@ int main(int argc, char ** argv)
 					
 					Status |= result->GetStatus();
 					cerr << "Module " << *module << " exits with status " << result->GetStatus() << endl;
-					cerr << PS << " " << PS_Done << endl;
 				}
 				while ( PS != PS_Done );
 				
@@ -519,7 +523,11 @@ int main(int argc, char ** argv)
 			{
 				cerr << "Error unloading KEDR. " << e.GetMessage() << endl;
 			}
-			
+			if ( !ShowOutput )
+			{
+				cerr << "\033[1;31mNo log file is generated for " << *fs << ".\033[0m" << endl;
+				continue;
+			}
 			// Produce the <FS>.xml to pass to the dashboard generator
 			// The file contains information about mount options and modules
 			ofstream fs_xml((logfolder + "/" + *fs + ".xml").c_str());
