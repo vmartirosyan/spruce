@@ -25,7 +25,7 @@
 	<GlobalHeader>
 #if QUOTA_ENABLED != 1
 	EmptyTestSet(syscall, quotactl, Unsupported, "quota-tools are not installed.")
-#else
+#else	
 	</GlobalHeader>
 	<Requires>sys/quota.h</Requires>	
 	<Header>
@@ -33,9 +33,24 @@
 // because quotactl is defined in different ways in those files...
 #ifndef QFMT_VFS_V0
 #define QFMT_VFS_V0 2
-#endif
+#endif	
+			char * opts = NULL;
+			if ( (opts = getenv("MountOpts")) != NULL )
+			{
+				string strOpts = opts;
+				if ( strOpts.find("quota") == string::npos )
+					Error("quota mount option is not provided.", Unsupported);
+			}
+			else
+				Error("quota mount option is not provided.", Unsupported);
+				
+			Unres( strcmp(FileSystem, "") == 0, "No file system name is provided." );
+			if ( ! strcmp(FileSystem, "xfs") )
+				Error("Quota tests for XFS are implemented in XFS-specifiec module.", Unsupported);
+			
 			Unres( strcmp(DeviceName, "") == 0, "No device name is provided." );
 			Unres( strcmp(MountPoint, "") == 0, "No mount point is provided." );
+			
 			int cmd_on = QCMD(Q_QUOTAON, USRQUOTA);
 			int cmd_off = QCMD(Q_QUOTAOFF, USRQUOTA);
 			// Create the quota file
