@@ -347,6 +347,10 @@
 		<File count="1"/>
 		<Code>
 			btrfs_ioctl_space_args arg;
+			memset(&arg, 0, sizeof(arg));
+			//arg.space_slots = 1;
+			//arg.total_spaces = 2;
+			
 			ioctl( FDs[0], BTRFS_IOC_SPACE_INFO, &arg);
 			return Shallow;
 		</Code>
