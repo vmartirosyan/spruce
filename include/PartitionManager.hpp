@@ -132,16 +132,22 @@ class PartitionManager
 			mnt_args.push_back(_DeviceName);
 			mnt_args.push_back(_MountPoint);
 			
-			if ( _MountOpts != "" || _Index > 1)
+			if ( (_MountOpts != "" || _Index > 1) && _Index < _AdditionalMountOptions[_FSIndex].size() )
 			{
 				_CurrentMountOptions = _MountOpts + _AdditionalMountOptions[_FSIndex][_Index];
+				
 				mnt_args.push_back("-o");
 				mnt_args.push_back(_CurrentMountOptions);
-				cout << "Mounting with additional option: " << _CurrentMountOptions << endl;
+				setenv("MountOpts", _CurrentMountOptions.c_str(), 1);
+				cerr << "Mounting with additional option: " << _CurrentMountOptions << endl;
+			}
+			if ( _Index == _AdditionalMountOptions[_FSIndex].size() )
+			{
+				_Index = 0;
+				return PS_Done;
 			}
 			_Index++;
-			cerr << "Index: " << _Index << endl;
-			
+						
 			ProcessResult * res = mnt->Execute(mnt_args);
 			delete mnt;
 			if ( res->GetStatus() != Success )
@@ -161,11 +167,7 @@ class PartitionManager
 				return PS_Skip;
 			}
 			cout << "Changed dir" << endl;
-			if ( _Index == _AdditionalMountOptions[_FSIndex].size() )
-			{
-				_Index = 0;
-				return PS_Done;
-			}
+			
 			return PS_Success;
 		}
 		
