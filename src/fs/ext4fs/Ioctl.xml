@@ -227,12 +227,12 @@ struct ext4_new_group_data {
 		<Description>Group add.</Description>
 		<File count="1"/>
 		<Code>
-			struct ext4_new_group_data input;
-			//memset(&input, 0, sizeof(input));		
-			
+			struct ext4_new_group_input input;
+			memset(&input, 0, sizeof(input));			
+						
 			ioctl(FDs[0], EXT4_IOC_GROUP_ADD, &input);
 			
-			return Shallow;		
+			return Shallow;
 		</Code>
 	</Test>
 	<Test Name="Migrate" FaultSimulationReady="true">

@@ -49,12 +49,13 @@
 			ENoAccessTest( stat( DirFilePaths[0].c_str(), &st ), -1 );
 		</Code>
 	</Test>
+	<!-- Removed as it is not clear about the bad addresses in man page. Depends on the realization of the libc
 	<Test Name="StatFault">
 		<Description>Bad address.</Description>
 		<Code>
 			ErrorTest( stat( ".", reinterpret_cast<struct stat*>(-1) ), -1, EFAULT );
 		</Code>
-	</Test>
+	</Test -->
 	<Test Name="StatLoop">
 		<Description>Too many symbolic links encountered while traversing the path.</Description>
 		<File count="1"/>
