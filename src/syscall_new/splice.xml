@@ -1,0 +1,103 @@
+<!--    splice.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author://      	
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="splice">
+	<Requires>fcntl.h</Requires>
+	<Test Name="SpliceNormal1" FaultSimulationReady="true">
+		<Description>splice()  moves  data  between  two  file  descriptors  without copying between kernel address space and user address space. File -> Pipe </Description>
+		<File count="1"/>
+		<Code>
+			const string buf = "1234";
+			char buf2[10];
+			loff_t src_len = 0;
+			int pipe_fds[2];
+			
+			Unres( pipe(pipe_fds) == -1, "Cannot create pipe." );
+			
+			Unres( write(FDs[0], buf.c_str(), buf.size()) == -1, "Error writing to file.");
+			
+			EnableFaultSim();
+			Fail ( splice(FDs[0], &src_len, pipe_fds[1], NULL, buf.size(), 0) == -1, "Cannot splice.");
+			
+			Unres( read(pipe_fds[0], static_cast<void*>(buf2), buf.size()) == -1, "Cannot read from pipe." );
+			buf2[buf.size()] = 0;
+			
+			Fail ( strncmp(buf.c_str(), buf2, buf.size()) != 0, "Data corruption" );
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="SpliceNormal2" FaultSimulationReady="true">
+		<Description>splice()  moves  data  between  two  file  descriptors  without copying between kernel address space and user address space. Pipe -> File </Description>			
+		<File count="1"/>
+		<Code>
+			const string buf = "1234";
+			char buf2[10];
+			loff_t dest_len = 0;
+			int pipe_fds[2];
+			
+			Unres( pipe(pipe_fds) == -1, "Cannot create pipe." );
+			
+			Unres( write(pipe_fds[1], buf.c_str(), buf.size()) == -1, "Error writing to pipe.");
+			
+			Fail ( splice(pipe_fds[0], NULL, FDs[0], &dest_len, buf.size(), 0) == -1, "Cannot splice.");
+			
+			Unres( read(FDs[0], static_cast<void*>(buf2), buf.size()) == -1, "Cannot read from file." );
+			buf2[buf.size()] = 0;
+			
+			Fail ( strncmp(buf.c_str(), buf2, buf.size()) != 0, "Data corruption" );
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="SpliceMove" FaultSimulationReady="true">
+		<Description>Attempt to move pages instead of copying.</Description>			
+		<File count="1"/>
+		<Code>
+			const string buf = "1234";
+			char buf2[10];
+			loff_t src_len = 0;
+			int pipe_fds[2];
+			
+			Unres( pipe(pipe_fds) == -1, "Cannot create pipe." );
+			
+			Unres( write(FDs[0], buf.c_str(), buf.size()) == -1, "Error writing to file.");
+			
+			Fail ( splice(FDs[0], &src_len, pipe_fds[1],NULL, buf.size(), SPLICE_F_MOVE) == -1, "Cannot splice.");
+			
+			Unres( read(pipe_fds[0], static_cast<void*>(buf2), buf.size()) == -1, "Cannot read from second file." );
+			buf2[buf.size()] = 0;
+			
+			Fail ( strncmp(buf.c_str(), buf2, buf.size()) != 0, "Data corruption" );
+			
+			return Success;
+		</Code>
+	</Test>
+	<FaultSimulation>
+		<Simulate function="kmalloc" condition="" />
+		<Simulate function="copy_to_user" condition="" />
+		<!-- ... -->
+	</FaultSimulation>
+</TestSet>
+
+
