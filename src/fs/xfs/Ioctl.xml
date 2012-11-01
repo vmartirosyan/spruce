@@ -436,7 +436,8 @@
 		<Description>XFS_IOC_FSCOUNTS</Description>
 		<File count="1"/>
 		<Code>
-			ioctl(FDs[0], XFS_IOC_FSCOUNTS, buf);
+			xfs_fsop_counts_t arg;
+			ioctl(FDs[0], XFS_IOC_FSCOUNTS, &arg);
 			return Shallow;
 		</Code>
 	</Test>
