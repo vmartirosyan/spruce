@@ -217,7 +217,15 @@
 			<File count="1"/>
 		</Dir>		
 		<Code>
-			ErrorTest(rename(DirPaths[1].c_str(), DirPaths[0].c_str()), -1, ENOTEMPTY);
+			if(rename(DirPaths[1].c_str(), DirPaths[0].c_str()) != -1)
+			{
+				Error("Function should fail, but it did not.", Fail);
+			}
+			if((errno != ENOTEMPTY) && (errno != EEXIST) )
+			{
+				Error("Function should return EEXIST or ENOTEMPTY errors but it did not.", Fail);	
+			}
+			return Success;
 		</Code>
 	</Test>
 	<Test Name="RenameXDev">
