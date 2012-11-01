@@ -49,6 +49,10 @@
 			{
 				color:Purple;
 			}
+			.Signaled
+			{
+				color:DarkRed;
+			}
 		</style>
 		<title>Spruce log for filesystem <xsl:value-of select="//FS/@Name" /></title>
 	</head>

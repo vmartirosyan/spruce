@@ -8,11 +8,52 @@
 	
 	<xsl:variable name="Module" select="@Name" />
 	<H2>Module: <xsl:value-of select="@Name" /></H2>
-	
+	<span>Total tests: <xsl:value-of select="count(//Module[@Name=$Module]/Item)" /></span> <br/>
 	<span class="Success">Total tests passed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Success'])" /></span> <br/>
 	<span class="Shallow">Total shallow tests: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Shallow'])" /></span> <br/>
-	<span class="Failed">Total tests failed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Failed'])" /></span> <br />
-	<span class="Fatal">Total tests fatal: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Fatal'])" /></span>
+	<span class="Fatal">Total tests fatal: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Fatal'])" /></span>	
+	<a href="#" style="text-decoration:none">
+		<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Module" />TestsFatal')</xsl:attribute> +</a>
+	<div style="border: solid 1px black; padding: 5px; display:none;" class="Fatal">
+		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsFatal</xsl:attribute>
+		<table width="100%">
+			<tr>
+				<th width="20%">Name</th>
+				<th width="20%">Operation</th>
+				<th width="60%">Output</th>
+			</tr>
+		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Fatal']" >				
+			<tr>
+				<td width="20%"><xsl:value-of select="@Name" /></td>
+				<td width="20%"><xsl:value-of select="Operation" /></td>
+				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+			</tr>
+		</xsl:for-each>
+		</table>
+	</div>
+	<br />
+	<span class="Signaled">Total tests signalled: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Signaled'])" /></span>	
+	<a href="#" style="text-decoration:none">
+		<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Module" />TestsSignaled')</xsl:attribute> +</a>
+	<div style="border: solid 1px black; padding: 5px; display:none;" class="Signaled">
+		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsSignaled</xsl:attribute>
+		<table width="100%">
+			<tr>
+				<th width="20%">Name</th>
+				<th width="20%">Operation</th>
+				<th width="60%">Output</th>
+			</tr>
+		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Signaled']" >				
+			<tr>
+				<td width="20%"><xsl:value-of select="@Name" /></td>
+				<td width="20%"><xsl:value-of select="Operation" /></td>
+				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+			</tr>
+		</xsl:for-each>
+		</table>
+	</div>
+	<br />
+	<span class="Failed">Total tests failed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Failed'])" /></span>
 	<a href="#" style="text-decoration:none">
 		<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Module" />TestsFailed')</xsl:attribute> +</a>
 	<div style="border: solid 1px black; padding: 5px; display:none;" class="Failed">
@@ -115,28 +156,7 @@
 			</tr>
 		</xsl:for-each>
 		</table>
-	</div>	
-	<br />
-	<span class="Fatal">Total tests fatal: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Fatal'])" /></span>
-	<a href="#" style="text-decoration:none">
-		<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Module" />TestsFatal')</xsl:attribute> +</a>
-	<div style="border: solid 1px black; padding: 5px; display:none;" class="Fatal">
-		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsFatal</xsl:attribute>
-		<table width="100%">
-			<tr>
-				<th width="20%">Name</th>
-				<th width="20%">Operation</th>
-				<th width="60%">Output</th>
-			</tr>
-		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Fatal']" >				
-			<tr>
-				<td width="20%"><xsl:value-of select="@Name" /></td>
-				<td width="20%"><xsl:value-of select="Operation" /></td>
-				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
-			</tr>
-		</xsl:for-each>
-		</table>
-	</div>
+	</div>			
 	<br /><br />
 	
 	<h2>Details</h2>
