@@ -284,6 +284,7 @@
 			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
 			int size = XFS_HSIZE(handle);
 			arg.ohandle = malloc(size);
+			arg.ohandlen = (uint32_t *)malloc(sizeof(uint32_t));
 			int rv = ioctl(FDs[0], XFS_IOC_FD_TO_HANDLE, &arg);
 			Fail(rv == -1, "Ioctl failed");
 			return Shallow;
@@ -299,6 +300,7 @@
 			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
 			int size = XFS_HSIZE(handle);
 			arg.ohandle = malloc(size);
+			arg.ohandlen = (uint32_t *)malloc(sizeof(uint32_t));
 			int rv = ioctl(FDs[0], XFS_IOC_PATH_TO_HANDLE, &arg);
 			Fail(rv == -1, "Ioctl failed");
 			return Shallow;
@@ -314,6 +316,7 @@
 			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
 			int size = XFS_HSIZE(handle);
 			arg.ohandle = malloc(size);
+			arg.ohandlen = (uint32_t *)malloc(sizeof(uint32_t));
 			int rv = ioctl(FDs[0], XFS_IOC_PATH_TO_FSHANDLE, &arg);
 			Fail(rv == -1, "Ioctl failed");
 			return Shallow;
@@ -349,6 +352,7 @@
 			handle.ha_fid.fid_len = sizeof(handle.ha_fid) - sizeof(handle.ha_fid.fid_len);
 			int size = XFS_HSIZE(handle);
 			arg.ohandle = malloc(size);
+			arg.ohandlen = (uint32_t *)malloc(sizeof(uint32_t));
 			int rv = ioctl(DirDs[0], XFS_IOC_PATH_TO_HANDLE, &arg);
 			Unres(rv != 0, "Ioctl XFS_IOC_PATH_TO_HANDLE failed");
 			
