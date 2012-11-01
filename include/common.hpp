@@ -111,7 +111,7 @@ struct FSimInfo
 #define ERROR_MACRO_CHOOSER(...) \
     GET_4TH_ARG(__VA_ARGS__, ERROR_3_ARGS, ERROR_2_ARGS, ERROR_1_ARGS, )
 
-#define Error(...) ERROR_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
+#define Error(...) { ERROR_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__) }
 
 #define Fail(cond, message)\
 	if ( (cond) )\
