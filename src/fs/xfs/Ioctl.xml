@@ -25,7 +25,7 @@
 		<Description>Change flag by not the file owner.</Description>
 		<File count="1"/>
 		<Code>
-			int flags = 1;			
+			int flags;			
 			ENoAccessTest(ioctl(FDs[0], XFS_IOC_SETXFLAGS, &flags ), -1);
 		</Code>
 	</Test>
@@ -284,7 +284,8 @@
 			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
 			int size = XFS_HSIZE(handle);
 			arg.ohandle = malloc(size);
-			arg.ohandlen = (uint32_t *)malloc(sizeof(uint32_t));
+			uint32_t olen;
+			arg.ohandlen = &olen;
 			int rv = ioctl(FDs[0], XFS_IOC_FD_TO_HANDLE, &arg);
 			Fail(rv == -1, "Ioctl failed");
 			return Shallow;
@@ -300,7 +301,8 @@
 			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
 			int size = XFS_HSIZE(handle);
 			arg.ohandle = malloc(size);
-			arg.ohandlen = (uint32_t *)malloc(sizeof(uint32_t));
+			uint32_t olen;
+			arg.ohandlen = &olen;
 			int rv = ioctl(FDs[0], XFS_IOC_PATH_TO_HANDLE, &arg);
 			Fail(rv == -1, "Ioctl failed");
 			return Shallow;
@@ -316,7 +318,8 @@
 			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
 			int size = XFS_HSIZE(handle);
 			arg.ohandle = malloc(size);
-			arg.ohandlen = (uint32_t *)malloc(sizeof(uint32_t));
+			uint32_t olen;
+			arg.ohandlen = &olen;
 			int rv = ioctl(FDs[0], XFS_IOC_PATH_TO_FSHANDLE, &arg);
 			Fail(rv == -1, "Ioctl failed");
 			return Shallow;
@@ -325,39 +328,21 @@
 	<Test Name="XFS_IOC_OPEN_BY_HANDLE">
 		<Description>XFS_IOC_OPEN_BY_HANDLE</Description>	
 		<Dir count="1"/>
-		<Code>
-			/*xfs_fsop_handlereq_t arg;
-			xfs_handle_t handle;
-			arg.fd = AT_FDCWD;
-			
-			handle.ha_fid.fid_len = sizeof(handle.ha_fid) - sizeof(handle.ha_fid.fid_len);
-			int size = XFS_HSIZE(handle);
-			
-			arg.ohandle = malloc(size);
-			Unres(arg.ohandle == 0, "Malloc error");
-			
-			int rv = ioctl(AT_FDCWD, XFS_IOC_FD_TO_HANDLE, &arg);
-			Unres(rv != 0, "Ioctl XFS_IOC_FD_TO_HANDLE failed");
-			arg.ihandle = arg.ohandle;			
-			arg.ihandlen = *(arg.ohandlen);
-			rv = ioctl(AT_FDCWD, XFS_IOC_OPEN_BY_HANDLE, &arg);			
-			Fail(rv < 0, "Ioctl open by handle failed");
-			return Shallow;*/
-			
-			
-			
+		<File count="1"/>
+		<Code>			
 			xfs_fsop_handlereq_t arg;
 			xfs_handle_t handle;
-			arg.path = static_cast<void*>(MountPoint);
-			handle.ha_fid.fid_len = sizeof(handle.ha_fid) - sizeof(handle.ha_fid.fid_len);
+			arg.fd = FDs[0];
+			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
 			int size = XFS_HSIZE(handle);
 			arg.ohandle = malloc(size);
-			arg.ohandlen = (uint32_t *)malloc(sizeof(uint32_t));
-			int rv = ioctl(DirDs[0], XFS_IOC_PATH_TO_HANDLE, &arg);
-			Unres(rv != 0, "Ioctl XFS_IOC_PATH_TO_HANDLE failed");
+			uint32_t olen;
+			arg.ohandlen = &olen;
+			int rv = ioctl(FDs[0], XFS_IOC_FD_TO_HANDLE, &arg);
+			Unres(rv != 0, "Ioctl XFS_IOC_FD_TO_HANDLE failed");
 			
 			arg.ihandle = arg.ohandle;			
-			arg.ihandlen = *(arg.ohandlen);
+			arg.ihandlen = olen;
 			rv = ioctl(DirDs[0], XFS_IOC_OPEN_BY_HANDLE, &arg);			
 			Fail(rv < 0, "Ioctl open by handle failed");
 			return Shallow;
