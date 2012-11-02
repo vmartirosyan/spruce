@@ -71,9 +71,7 @@ public:
 		_fsim_tests["<xsl:value-of select="@Name"/>"] = &amp;<xsl:value-of select="$TestClassName" />::<xsl:value-of select="@Name" />Func;
 	</xsl:for-each>
 	
-	//modified	
 	struct FSimInfo info;
-	info.Point = "kmalloc";
 	<xsl:for-each select="FaultSimulation/Simulate">
 	<xsl:if test="@point">
 	info.Point = "<xsl:value-of select="@point" />";
@@ -86,6 +84,11 @@ public:
 	</xsl:if>
 	_fsim_info_vec.push_back(info);
 	</xsl:for-each>
+	if( _fsim_info_vec.empty() &amp;&amp;  !_fsim_tests.empty() )
+	{
+		info.Point = "kmalloc";
+		_fsim_info_vec.push_back(info);
+	}
 	}
 	~<xsl:value-of select="$TestClassName" />()
 	{
@@ -153,18 +156,19 @@ public:
 		}
 		return res;
 	}
-	virtual TestResultCollection RunFaultyTests()
-	{		
+		virtual TestResultCollection RunFaultyTests()
+	{
+		cerr &lt;&lt; "Running faulty tests:  <xsl:value-of select="$TestSetName" />: " &lt;&lt; _fsim_info_vec.size() &lt;&lt; endl;
 		_fsim_enabled = true;
 		TestResultCollection res;
-		//added
+	
 		for ( unsigned int i = 0; i &lt; _fsim_info_vec.size(); ++i )
 		{
 			_fsim_point = _fsim_info_vec[i].Point;
 			_fsim_expression = "0";
-				
+			//KedrIntegrator::SetIndicator(_fsim_point, "common", _fsim_expression);	
 			 TestMap::iterator it = _fsim_tests.begin();
-				ProcessResult * pr = Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(it->second));
+				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
 				if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
 						pr->SetStatus(Success);
 					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
@@ -176,29 +180,34 @@ public:
 						DisableFaultSim();
 						return res;
 					}
-			_fsim_info_vec[i].Count = KedrIntegrator::GetTimes(_fsim_info_vec[i].Point);
+			
+			_fsim_info_vec[i].Count = KedrIntegrator::GetTimes(_fsim_point);
+			KedrIntegrator:: ResetTimes(_fsim_point);
+			//DisableFaultSim();
 			cerr &lt;&lt; "<xsl:value-of select="$TestSetName" />: Fault count: " &lt;&lt; _fsim_info_vec[i].Count &lt;&lt; endl;
 		}
 		
+		
+		for ( TestMap::iterator it = _fsim_tests.begin(); it != _fsim_tests.end(); ++it )
 		for ( unsigned int i = 0; i &lt; _fsim_info_vec.size(); ++i )
 		{
 			cerr &lt;&lt; "<xsl:value-of select="$TestSetName" />: Fault count: " &lt;&lt; _fsim_info_vec[i].Count &lt;&lt; endl;
 			_fsim_point = _fsim_info_vec[i].Point;			
-			for ( unsigned int j = 1; j &lt; _fsim_info_vec[i].Count+1; ++j ) //modified ( j starts from 1 )
+			for ( unsigned int j = 1; j &lt; _fsim_info_vec[i].Count+1; ++j ) 
 			{
 				if ( _fsim_info_vec[i].Expression != "" )
 					_fsim_expression = _fsim_info_vec[i].Expression;
 				else
 				{
 					char buf[3];
-					sprintf(buf, "%d", j); // modified (i to j) 
-					_fsim_expression = "(times%" + static_cast&lt;string>(buf) + " = 0)";
-					//_fsim_expression = "times="+static_cast&lt;string>(buf);
+					sprintf(buf, "%d", j);  
+					//_fsim_expression = "(times%" + (string)buf + " = 0)";
+					_fsim_expression = "times="+(string)buf;
+					//_fsim_expression = "times=2";
 				}
 				//for ( unsigned int k = 0; k &lt; _fsim_testCount; ++k)
-				for ( TestMap::iterator it = _fsim_tests.begin(); it != _fsim_tests.end(); ++it )
-				{
-					ProcessResult * pr = Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(it->second));
+				
+					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
 					if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
 						pr->SetStatus(Success);
 					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
@@ -210,9 +219,12 @@ public:
 						DisableFaultSim();
 						return res;
 					}
-				}
+				
+				//DisableFaultSim();
 			}
+			//DisableFaultSim();	
 		}
+		
 		DisableFaultSim();
 		return res;
 	}

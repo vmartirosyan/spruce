@@ -76,6 +76,7 @@ struct FSimInfo
 #define EnableFaultSim() \
 {\
 	errno = 0;/* Reset the errno variable.*/\
+	KedrIntegrator::ResetTimes( _fsim_point );\
 	if (_fsim_enabled)\
 	{\
 		KedrIntegrator::SetIndicator(_fsim_point, "common", _fsim_expression);\
@@ -91,7 +92,7 @@ struct FSimInfo
 		cerr << "Fault simulation is disabled for module " << FileSystem << "(" << _fsim_point << ", " << _fsim_expression << ")" << endl;\
 	}\
 }
-//added
+
 #define SetFaultCount() \
 	_fault_count = KedrIntegrator::GetTimes( _fsim_point); 
 	

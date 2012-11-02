@@ -35,6 +35,7 @@
 			Unres(chdir("/") == -1, "Cannot change surrent folder");\
 			const char * path = "/tmp/Ext4Mount_dir";\
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );\
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, #mount_opt) == -1)\
 			{\
 				Error("Mount failed");\

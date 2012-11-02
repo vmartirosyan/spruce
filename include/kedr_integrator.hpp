@@ -126,25 +126,29 @@ public:
 			return false;
 		}
 	}
-	//added
+	
 	static int GetTimes( string point )
 	{
 		string _time_file = DebugFSPath + "/kedr_fault_simulation/points/"+ point + "/times";
+		cerr << "time file path: "<<_time_file.c_str() << endl;
 		char buffer[257];
 		int _time_val;
 		ifstream str( _time_file.c_str(), ifstream::in );
+		cerr << "Error in GetTimes(): "<<strerror(errno) << endl;
 		str >> buffer;
 		_time_val = atoi(buffer);
 		str.close();
-		
-		// Reset the times variable
-		ofstream of(_time_file.c_str());
-		of << "0";
-		of.close();
+	
 		
 		return _time_val;
 	}
-	
+	static void  ResetTimes( string point )
+	{
+		string _time_file = DebugFSPath + "/kedr_fault_simulation/points/"+ point + "/times";
+		ofstream of(_time_file.c_str());
+		of << "0";
+		of.close();
+	} 
 	bool LoadKEDR()
 	{
 		// Try to unload KEDR first
@@ -176,8 +180,8 @@ public:
 		if ( res == NULL || res->GetStatus() != Success )
 			throw(Exception("Error getting KEDR status. " + (res ? res->GetOutput() : "")));
 		
-		// No need to load the indicators directly. KEDR loads them itself.
-		// LoadIndicators();
+		
+		 LoadIndicators();
 		_IsRunning = true;
 		return true;
 	}

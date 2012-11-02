@@ -31,6 +31,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -59,6 +60,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -87,6 +89,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, "subvol=/tmp/MountNormal_dir") == -1)
 			{
 				Error("Mount failed");
@@ -110,6 +113,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -138,6 +142,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -166,6 +171,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -194,6 +200,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -222,6 +229,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -250,6 +258,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -276,6 +285,7 @@
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			EnableFaultSim();
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
@@ -306,6 +316,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -334,6 +345,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -362,6 +374,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -390,6 +403,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -418,6 +432,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -446,6 +461,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -474,6 +490,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -502,6 +519,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -530,6 +548,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -558,6 +577,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -586,6 +606,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -614,6 +635,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -642,6 +664,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -670,6 +693,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -698,6 +722,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -726,6 +751,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -754,6 +780,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -782,6 +809,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -810,6 +838,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -838,6 +867,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -866,6 +896,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -894,6 +925,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -922,6 +954,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			const char * path = "/tmp/MountNormal_dir";
 			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			EnableFaultSim();
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");

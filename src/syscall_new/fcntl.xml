@@ -749,8 +749,8 @@
 		<Code></Code>
 	</Test-->
 	<FaultSimulation>
-		<Simulate function="kmalloc" condition="" />
-		<Simulate function="copy_to_user" condition="" />
+		<Simulate point="kmalloc" />
+		<Simulate point="copy_to_user"/>
 		<!-- ... -->
 	</FaultSimulation>
 </TestSet>
