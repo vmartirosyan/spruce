@@ -1,0 +1,270 @@
+<!--    readv_writev.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+// 			Tigran Piloyan <tigran.piloyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="readv_writev">	
+	<Requires>sys/uio.h</Requires>
+	<Test Name="ReadvWritevNormal" FaultSimulationReady="true">
+		<Description>Read or write data into multiple buffers.</Description>
+		<File count="1"/>
+		<Code>
+			const int BufCount = 2;
+			const string WriteBuf1 = "012345";
+			const string WriteBuf2 = "abcd";
+			char ReadBuf1[10];
+			char ReadBuf2[10];
+			
+			const struct iovec WriteVec[BufCount] = { {static_cast<void*>(const_cast<char*>(WriteBuf1.c_str())), WriteBuf1.size()}, {static_cast<void*>(const_cast<char*>(WriteBuf2.c_str())), WriteBuf2.size()}};
+			struct iovec ReadVec[BufCount] = { {ReadBuf1, WriteBuf1.size()}, {ReadBuf2, WriteBuf2.size()}};
+			
+			EnableFaultSim();
+			if ( writev(FDs[0], WriteVec, BufCount) != static_cast<int>((WriteVec[0].iov_len + WriteVec[1].iov_len)) )
+			{
+				Error("Cannot write to file.", Fail);
+			}
+			
+			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
+			
+			if ( readv(FDs[0], ReadVec, BufCount) != static_cast<int>((WriteVec[0].iov_len + WriteVec[1].iov_len)) )
+			{
+				Error("Cannot read from file.", Fail);
+			}
+			
+			if ( strncmp(ReadBuf1, WriteBuf1.c_str(), WriteBuf1.size()) || strncmp(ReadBuf2, WriteBuf2.c_str(), WriteBuf2.size()) )
+			{
+				Error("Different values were written and read.", Fail);
+			}
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="ReadvBadFile1">
+		<Description>readv: Bad file descriptor.</Description>
+		<Code>
+			const int BufCount = 2;
+			char ReadBuf1[10];
+			char ReadBuf2[10];
+			
+			struct iovec ReadVec[BufCount] = { {ReadBuf1, 10}, {ReadBuf2, 10}};
+			ErrorTest(readv(-1, ReadVec, BufCount), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="WritevBadFile1">
+		<Description>writev: Bad file descriptor.</Description>
+		<Code>
+			const int BufCount = 2;
+			const string WriteBuf1 = "012345";
+			const string WriteBuf2 = "abcd";
+			
+			const struct iovec WriteVec[BufCount] = { {static_cast<void*>(const_cast<char*>(WriteBuf1.c_str())), WriteBuf1.size()}, {static_cast<void*>(const_cast<char*>(WriteBuf2.c_str())), WriteBuf2.size()}};
+			
+			ErrorTest(writev(-1, WriteVec, BufCount), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="ReadvBadFile2">
+		<Description>readv: File is not open for reading.</Description>
+		<File count="1" flags="O_CREAT | O_WRONLY"/>
+		<Code>
+			const int BufCount = 2;
+			char ReadBuf1[10];
+			char ReadBuf2[10];
+			
+			struct iovec ReadVec[BufCount] = { {ReadBuf1, 10}, {ReadBuf2, 10}};
+			ErrorTest(readv(FDs[0], ReadVec, BufCount), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="WritevBadFile2">
+		<Description>writev: File is not open for writing.</Description>
+		<File count="1" flags="O_CREAT | O_RDONLY"/>
+		<Code>
+			const int BufCount = 2;
+			const string WriteBuf1 = "012345";
+			const string WriteBuf2 = "abcd";
+			
+			const struct iovec WriteVec[BufCount] = { {static_cast<void*>(const_cast<char*>(WriteBuf1.c_str())), WriteBuf1.size()}, {static_cast<void*>(const_cast<char*>(WriteBuf2.c_str())), WriteBuf2.size()}};
+			
+			ErrorTest(writev(FDs[0], WriteVec, BufCount), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="ReadvInval">
+		<Description>readv: fd  was  created  via  a call to timerfd_create(2) and the wrong size buffer was given to readv().</Description>
+		<Code>
+			const int BufCount = 2;
+			char ReadBuf1[10];
+			char ReadBuf2[10];
+			
+			struct iovec ReadVec[BufCount] = { {ReadBuf1, 6}, {ReadBuf2, 10}};
+			int fd = timerfd_create(CLOCK_REALTIME, 0);
+			Unres (fd == -1, "Cannot create timer file desciptor");
+					   
+			struct timespec now;
+			clock_gettime(CLOCK_REALTIME, &now);
+			   
+			struct itimerspec new_value;
+			new_value.it_value.tv_sec = now.tv_sec;
+			new_value.it_value.tv_nsec = now.tv_nsec;
+			
+			Unres (timerfd_settime(fd, TFD_TIMER_ABSTIME, &new_value, NULL) == -1, "Cannot set time.");			
+			ErrorTest(readv(fd, ReadVec, BufCount), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="ReadvIsDir">
+		<Description>readv: fd refers to a directory.</Description>
+		<Dir count="1"/>
+		<Code>
+			const int BufCount = 2;
+			char ReadBuf1[10];
+			char ReadBuf2[10];
+			
+			struct iovec ReadVec[BufCount] = { {ReadBuf1, 10}, {ReadBuf2, 10}};
+			ErrorTest(readv(DirDs[0], ReadVec, BufCount), -1, EISDIR);
+		</Code>
+	</Test>
+	<Test Name="ReadvFault">
+		<Description>readv: Argument is outside your accessible address space.</Description>
+		<File count="1"/>
+		<Code>
+			const int BufCount = 2;
+			const string WriteBuf1 = "012345";
+			const string WriteBuf2 = "abcd";
+			
+			const struct iovec WriteVec[BufCount] = { {static_cast<void*>(const_cast<char*>(WriteBuf1.c_str())), WriteBuf1.size()}, {static_cast<void*>(const_cast<char*>(WriteBuf2.c_str())), WriteBuf2.size()}};
+					
+			Unres(writev(FDs[0], WriteVec, BufCount) == -1, "Cannot write to file.");
+			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
+			ErrorTest(readv(FDs[0], reinterpret_cast<const struct iovec*>(-1), 1), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="ReadvErrAgain">
+		<Description>readv: The  file descriptor fd refers to a file other than a socket and has been marked nonblocking (O_NONBLOCK),  and  the  readv  would block.</Description>
+		<Code>
+			const int BufCount = 2;
+			char ReadBuf1[10];
+			char ReadBuf2[10];
+			
+			struct iovec ReadVec[BufCount] = { {ReadBuf1, 10}, {ReadBuf2, 10}};
+			
+			int fds[2];
+			Unres(pipe2(fds, O_NONBLOCK) == -1, "Cannot create pipe.");
+			
+			ErrorTest(readv(fds[0], ReadVec, BufCount), -1, EAGAIN);
+		</Code>
+	</Test>
+	<Test Name="WritevFault">
+		<Description>writev: argument is outside your accessible address space.</Description>
+		<Code>
+			ErrorTest(write(1, reinterpret_cast<const struct iovec*>(-1), 1), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="ReadvInval1">
+		<Description>readv: The sum of the iov_len values overflows an ssize_t value.</Description>
+		<File count="1"/>
+		<Header>
+#if __WORDSIZE==64	
+	Error("EINVAL error cannot be simulated on x86-64 architecture.", Unsupported);	
+#else
+		</Header>
+		<Code>
+			const int BufCount = 2;
+			char * ReadBuf1 = new char[10];
+			char * ReadBuf2 = new char[10];
+			
+			struct iovec ReadVec[BufCount] = { {ReadBuf1, SSIZE_MAX / 2 + 1}, {ReadBuf2, SSIZE_MAX / 2 + 1}};
+			ErrorTest(readv(FDs[0], ReadVec, BufCount), -1, EINVAL);
+		</Code>
+		<Footer>
+#endif
+		</Footer>
+	</Test>
+	<Test Name="WritevInval1">
+		<Description>writev: The sum of the iov_len values overflows an ssize_t value.</Description>
+		<File count="1"/>
+		<Header>
+#if __WORDSIZE==64	
+	Error("EINVAL error cannot be simulated on x86-64 architecture.", Unsupported);	
+#else
+		</Header>
+		<Code>
+			const int BufCount = 2;
+			char * WriteBuf1 = new char[10];
+			char * WriteBuf2 = new char[10];
+			
+			const struct iovec WriteVec[BufCount] = { {WriteBuf1, SSIZE_MAX / 2 + 1}, {WriteBuf2, SSIZE_MAX / 2 + 1}};
+			
+			ErrorTest(writev(FDs[0], WriteVec, BufCount), -1, EINVAL);
+		</Code>
+		<Footer>
+#endif
+		</Footer>
+	</Test>
+	<Test Name="ReadvInval2">
+		<Description>readv: The  vector  count  iovcnt is less than zero.</Description>
+		<File count="1"/>
+		<Code>
+			const int BufCount = 2;
+			char ReadBuf1[10];
+			char ReadBuf2[10];
+			
+			struct iovec ReadVec[BufCount] = { {ReadBuf1, 10}, {ReadBuf2, 10}};
+			ErrorTest(readv(FDs[0], ReadVec, -1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="WritevInval2">
+		<Description>writev: The  vector  count  iovcnt is less than zero.</Description>
+		<File count="1"/>
+		<Code>
+			const int BufCount = 2;
+			char WriteBuf1[10];
+			char WriteBuf2[10];
+			
+			const struct iovec WriteVec[BufCount] = { {WriteBuf1, 10}, {WriteBuf2, 10}};
+			
+			ErrorTest(writev(FDs[0], WriteVec, -1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="ReadvInval3">
+		<Description>readv: The  vector  count  iovcnt is greater than the permitted maximum.</Description>
+		<File count="1"/>
+		<Code>
+			const int BufCount = 2;
+			char ReadBuf1[10];
+			char ReadBuf2[10];
+			
+			struct iovec ReadVec[BufCount] = { {ReadBuf1, 10}, {ReadBuf2, 10}};
+			ErrorTest(readv(FDs[0], ReadVec, IOV_MAX + 1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="WritevInval3">
+		<Description>writev: The  vector  count  iovcnt is greater than the permitted maximum.</Description>
+		<File count="1"/>
+		<Code>
+			const int BufCount = 2;
+			char WriteBuf1[10];
+			char WriteBuf2[10];
+			
+			const struct iovec WriteVec[BufCount] = { {WriteBuf1, 10}, {WriteBuf2, 10}};
+			ErrorTest(writev(FDs[0], WriteVec, IOV_MAX + 1), -1, EINVAL);
+		</Code>
+	</Test>
+	
+</TestSet>
