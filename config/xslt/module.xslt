@@ -204,6 +204,7 @@
 			<span class="Success">Tests passed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Success'])" /></span> <br/>
 			<span class="Shallow">Shallow tests: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Shallow'])" /></span> <br/>
 			<span class="Failed">Tests failed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Failed'])" /></span> <br/>
+			<span class="Signaled">Tests signaled: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Signaled'])" /></span> <br/>
 			<span class="Unresolved">Tests unresolved: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Unresolved'])" /></span> <br/>
 			<span class="Unsupported">Tests unsupported: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Unsupported'])" /></span> <br/>
 			<span class="Timeout">Tests timed out: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Timeout'])" /></span> <br/>

@@ -40,6 +40,16 @@
 #ifndef QFMT_VFS_V0
 #define QFMT_VFS_V0 2
 #endif
+			char * opts = NULL;
+			if ( (opts = getenv("MountOpts")) != NULL )
+			{
+				string strOpts = opts;
+				if ( strOpts.find("quota") == string::npos )
+					Error("quota mount option is not provided.", Unsupported);
+			}
+			else
+				Error("quota mount option is not provided.", Unsupported);
+				
 			Unres( strcmp(DeviceName, "") == 0, "No device name is provided." );
 			Unres( strcmp(MountPoint, "") == 0, "No mount point is provided." );			
 	</Header>
