@@ -204,6 +204,7 @@ retry:
 			}
 			if ( errno == EBUSY ) // Well, try again...
 			{
+				sleep(1);
 				if ( RetryCount++ < 10 )
 				{
 					cerr << "Device was busy.. retrying... " << endl;
