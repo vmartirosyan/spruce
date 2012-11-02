@@ -26,8 +26,6 @@
 #include <fstream>
 using namespace std;
 
-string KedrIntegrator::DebugFSPath = "/sys/kernel/debug";
-
 string StatusMessages[] = {
 	"Success",
 	"Shallow",

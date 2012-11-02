@@ -27,6 +27,7 @@
 		<Description>umask()  sets  the calling process's file mode creation mask (umask) to mask and 0777 (i.e., only the file permission bits of mask are used), and returns the previous value of the mask.</Description>
 		<File count="1"/>
 		<Code>
+			Unres(1, "Needs to be refactored");
 			struct stat statbuf;
 			mode_t setMask = 0077;
 			unsigned mode;

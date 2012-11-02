@@ -68,12 +68,7 @@
 		<Code>
 			ErrorTest(fchown(-1, 0, 0), -1, EBADF);
 		</Code>
-	</Test>
-	<FaultSimulation>
-		<Simulate function="kmalloc" condition="" />
-		<Simulate function="copy_to_user" condition="" />
-		<!-- ... -->
-	</FaultSimulation>
+	</Test>	
 </TestSet>
 
 

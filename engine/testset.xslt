@@ -167,10 +167,13 @@ public:
 			_fsim_point = _fsim_info_vec[i].Point;
 			_fsim_expression = "0";
 			//KedrIntegrator::SetIndicator(_fsim_point, "common", _fsim_expression);	
+			
 			 TestMap::iterator it = _fsim_tests.begin();
+			 cerr &lt;&lt; "\033[1;31mCalling: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
 				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
 				if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
 						pr->SetStatus(Success);
+					cerr &lt;&lt; "\033[1;31mCalled: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
 					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
 					delete pr;
 					res.AddResult( tr );
@@ -199,7 +202,7 @@ public:
 					_fsim_expression = _fsim_info_vec[i].Expression;
 				else
 				{
-					char buf[3];
+					char buf[10];
 					sprintf(buf, "%d", j);  
 					//_fsim_expression = "(times%" + (string)buf + " = 0)";
 					_fsim_expression = "times="+(string)buf;

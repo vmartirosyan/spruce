@@ -33,11 +33,13 @@
 
 using namespace std;
 
+const string DebugFSPath = "/sys/kernel/debug";
+
 // A class which encapsulates access to the KEDR framework
 class KedrIntegrator
 {
 public:
-	KedrIntegrator():
+	KedrIntegrator():		
 		TargetModule(""),
 		MemLeakCheckEnabled(false),
 		FaultSimulationEnabled(false),
@@ -46,7 +48,7 @@ public:
 	{
 		
 	}
-	KedrIntegrator(string module):
+	KedrIntegrator(string module):		
 		TargetModule(""),
 		MemLeakCheckEnabled(false),
 		FaultSimulationEnabled(false),
@@ -154,7 +156,7 @@ public:
 		// Try to unload KEDR first
 		UnloadKEDR();
 		
-		//MountDebugFS();
+		MountDebugFS();
 		
 		UnixCommand kedr(/*KEDR_ROOT_DIR"/*/"kedr");
 		vector<string> args;
@@ -181,7 +183,8 @@ public:
 			throw(Exception("Error getting KEDR status. " + (res ? res->GetOutput() : "")));
 		
 		
-		 LoadIndicators();
+		 // Indicators are loaded by the KEDR framework automatically.
+		 // LoadIndicators();
 		_IsRunning = true;
 		return true;
 	}
@@ -217,8 +220,7 @@ public:
 		return _IsRunning;
 	}
 	
-protected:
-	static string DebugFSPath;
+protected:	
 	string TargetModule;
 	bool MemLeakCheckEnabled;
 	bool FaultSimulationEnabled;
@@ -229,29 +231,13 @@ protected:
 		// Is DebugFS already mounted?
 		UnixCommand mount("mount");
 		vector<string> args;
+		args.push_back("none");
 		args.push_back("-t");
-		args.push_back("debugfs");
-				
-		ProcessResult * res = mount.Execute(args);
-		
-		if ( res == NULL || res->GetStatus() != Success )
-			throw Exception("Error executing mount. " + (res ? res->GetOutput() : ""));
-			
-		string Output = res->GetOutput();
-		if ( Output != "" )
-		{
-			// Read the path
-			int SpacePos = Output.find(' ', 9);
-			DebugFSPath = Output.substr(8, SpacePos - 8);
-			cout << "DebugFS path : " << DebugFSPath << endl;
-			return true;
-		}
-			
-		// Try to mount...
+		args.push_back("debugfs");		
 		args.push_back(DebugFSPath);
-		res = mount.Execute(args);
+		ProcessResult *res = mount.Execute(args);
 		
-		if ( res == NULL || res->GetStatus() != Success )
+		if ( res == NULL )
 			throw Exception("Error executing mount. " + (res ? res->GetOutput() : ""));
 			
 		return true;

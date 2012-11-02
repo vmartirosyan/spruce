@@ -65,12 +65,7 @@
 		<Code>
 			ErrorTest(fdatasync(0), -1, EINVAL);
 		</Code>
-	</Test>
-	<FaultSimulation>
-		<Simulate function="kmalloc" condition="" />
-		<Simulate function="copy_to_user" condition="" />
-		<!-- ... -->
-	</FaultSimulation>
+	</Test>	
 </TestSet>
 
 

@@ -335,7 +335,7 @@ int main(int argc, char ** argv)
 				{
 					cerr << "KEDR cannot be loaded." << endl;
 					cerr << "Exception is thrown. " << e.GetMessage() << endl;
-					
+					PerformFaultSimulation = false;
 				}
 			}
 			//PartitionManager * pm = ShmAllocator<PartitionManager>::GetInstance();
@@ -344,6 +344,14 @@ int main(int argc, char ** argv)
 			for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
 			{
 				cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
+				string ModuleBin = (module->find("fs-spec") == string::npos ? *module : (*fs + module->substr(7, module->size())));
+				if ( *module == "fault-sim" )
+					ModuleBin = "fault_sim";
+				if ( ModuleBin == "fault_sim" && !PerformFaultSimulation )
+				{
+					cerr << "KEDR was not loaded. Skipping fault simulation module." << endl;
+					continue;
+				}
 								
 				PartitionStatus PS = PS_Done;
 				do
@@ -365,10 +373,7 @@ int main(int argc, char ** argv)
 						break;
 					}
 					ShowOutput = true;
-					string ModuleBin = (module->find("fs-spec") == string::npos ? *module : (*fs + module->substr(7, module->size())));
-					if ( *module == "fault-sim" )
-						ModuleBin = "fault_sim";
-						
+					
 					// Check if the module should be executed on this FS with these mount options.
 					bool ModuleShouldNotRun = (TestsToRun.size() > 0);
 					for ( vector<string>::iterator it = TestsToRun.begin(); it != TestsToRun.end(); ++it )
@@ -440,7 +445,7 @@ int main(int argc, char ** argv)
 							module_args.push_back(*it);
 						}
 					}
-					
+					cerr << "Main module: pid=" << getpid() << endl;
 					ProcessResult * result = command->Execute(module_args);
 					delete command;
 					
