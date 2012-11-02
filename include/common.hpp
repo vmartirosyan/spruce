@@ -177,19 +177,20 @@ struct FSimInfo
 		/* Change root user to nobody */\
 		if((noBody = getpwnam("nobody")) == NULL)\
 		{\
-			cerr << "Can not get the 'nobody' user data.";\
+			Error("Can not get the 'nobody' user data.");\
 			_exit(Unresolved);\
 		}\
 		if(setuid(noBody->pw_uid) != 0)\
 		{\
-			cerr << "Can not set uid";\
+			Error("Can not set uid");\
 			_exit(Unresolved);\
 		}\
 		errno = 0;\
 		if (func_call != error_val || ( ( errno != EACCES ) && ( errno != EPERM ) )) {\
-			cerr << "Function should return '" + static_cast<string>(strerror(EACCES)) +  "' or '" + static_cast<string>(strerror(EPERM)) +  "' when permission was denied but it did not.";\
-			if ( errno )\
-				cerr << "Error: " << strerror(errno) << endl;\
+			Error("Function should return '" + static_cast<string>(strerror(EACCES)) +  "' or '" + static_cast<string>(strerror(EPERM)) +  "' when permission was denied but it did not.");\
+			if(errno == ENOTSUP || errno == ENOTTY) {\
+				_exit( Unsupported );\
+				}\
 			_exit( Fail );\
 		}\
 		_exit(Success);\
