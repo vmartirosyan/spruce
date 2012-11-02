@@ -125,14 +125,14 @@ class PartitionManager
 				_Index = 0;
 				return PS_Done;
 			}
-			cout << "File system is created successfully." << endl;
+			cout << "File system " << _FileSystem << " is created successfully." << endl;
 			
 			UnixCommand * mnt = new UnixCommand("mount");
 			vector<string> mnt_args;
 			mnt_args.push_back(_DeviceName);
 			mnt_args.push_back(_MountPoint);
 			
-			if ( (_MountOpts != "" || _Index > 1) && _Index < _AdditionalMountOptions[_FSIndex].size() )
+			if ( (_MountOpts != "" || _Index > 0) && _Index < _AdditionalMountOptions[_FSIndex].size() )
 			{
 				_CurrentMountOptions = _MountOpts + _AdditionalMountOptions[_FSIndex][_Index];
 				
@@ -157,7 +157,7 @@ class PartitionManager
 				return PS_Skip;
 			}
 			
-			cout << "Device " << _DeviceName << " was mounted on folder " << _MountPoint << "(opts=" << _MountOpts << ")" << endl;
+			cout << "Device " << _DeviceName << " was mounted on folder " << _MountPoint << "(opts=" << _CurrentMountOptions << ") " << _Index << " of " << _AdditionalMountOptions[_FSIndex].size() << endl;
 			
 			// Now change current dir to the newly mounted partition folder
 			if ( chdir(_MountPoint.c_str()) != 0 )
@@ -188,6 +188,8 @@ class PartitionManager
 			cout << "Unmounting partition " << _DeviceName << endl;
 			if ( chdir("/") == -1)				
 				return false;
+			int RetryCount = 0;
+retry:
 			int res = umount(_MountPoint.c_str());
 			// Check if partition was successfully unmounted, or it was not mounted yet!
 			if ( res == 0 ) 
@@ -200,12 +202,25 @@ class PartitionManager
 				cout << "Cannot unmount. Device was not mounted!" << endl;
 				return true;
 			}
+			if ( errno == EBUSY ) // Well, try again...
+			{
+				if ( RetryCount++ < 10 )
+				{
+					cerr << "Device was busy.. retrying... " << endl;
+					goto retry;
+				}
+			}
 			cerr << "Cannot umnount partition " << _DeviceName << ". " << strerror(errno) << endl;
 			return false;
 		}
 		string GetCurrentMountOptions() const
 		{
 			return _CurrentMountOptions;
+		}
+		void ClearCurrentMountOptions()
+		{
+			_Index = 0;
+			_CurrentMountOptions = "";
 		}
 	public:
 		string _ConfigFile;

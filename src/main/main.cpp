@@ -486,6 +486,7 @@ int main(int argc, char ** argv)
 				}*/
 				
 				//ShmAllocator<PartitionManager>::Free(pm);
+				pm.ClearCurrentMountOptions();
 			}
 			
 			
