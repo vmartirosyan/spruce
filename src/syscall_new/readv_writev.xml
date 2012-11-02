@@ -121,6 +121,7 @@
 			clock_gettime(CLOCK_REALTIME, &now);
 			   
 			struct itimerspec new_value;
+			memset(&new_value, 0, sizeof(struct itimerspec));
 			new_value.it_value.tv_sec = now.tv_sec;
 			new_value.it_value.tv_nsec = now.tv_nsec;
 			
