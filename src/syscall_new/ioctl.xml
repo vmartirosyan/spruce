@@ -108,7 +108,17 @@
 			memset(&arg, 0, sizeof(arg));
 			arg.fm_length = 1;
 			EnableFaultSim();
-			Fail( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1, "FIEMAP operation failed." );			
+			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
+			{
+				if ( errno == ENOTTY )
+				{
+					Error("FIEMAP is not supported by Btrfs.", Unsupported);
+				}
+				else
+				{
+					Error("FIEMAP operation failed.", Fail);
+				}
+			}		
 			return Shallow;
 		</Code>
 	</Test>
@@ -129,10 +139,28 @@
 		<File count="1"/>
 		<Code>
 			EnableFaultSim();
-			Fail( ioctl(FDs[0], FIFREEZE, 0) == -1, "FIFREEZE operation failed." );
-			
-			Fail( ioctl(FDs[0], FITHAW, 0) == -1, "FITHAW operation failed." );			
-			
+			if ( ioctl(FDs[0], FIFREEZE, 0) == -1 )
+			{
+				if ( errno == ENOTTY )
+				{
+					Error("FIFREEZE is not supported by Btrfs.", Unsupported);
+				}
+				else
+				{
+					Error("FIFREEZE operation failed.", Fail);
+				}
+			}
+			if ( ioctl(FDs[0], FITHAW, 0) == -1 )
+			{
+				if ( errno == ENOTTY )
+				{
+					Error("FITHAW is not supported by Btrfs.", Unsupported);
+				}
+				else
+				{
+					Error("FITHAW operation failed.", Fail);
+				}
+			}
 			return Success;
 		</Code>
 	</Test>

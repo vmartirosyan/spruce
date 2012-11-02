@@ -95,7 +95,17 @@
 		<Description>Wait for read only.</Description>
 		<File count="1"/>
 		<Code>
-			Fail ( ioctl(FDs[0], EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1, "Error waiting for readonly.");
+			if ( ioctl(FDs[0], EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1 )
+			{
+				if ( errno == ENOTTY )
+				{
+					Error("EXT4_IOC_WAIT_FOR_READONLY is not supported.", Unsupported);
+				}
+				else
+				{
+					Error("Error waiting for readonly.", Fail);
+				}
+			}
 			return Shallow;
 		</Code>
 		<Footer>
