@@ -26,7 +26,7 @@
 		<File count="1"/>
 		<Code>
 			int flags = 1;			
-			ENoAccessTest(ioctl(FDs[0], XFS_IOC_FSSETXATTR, &flags ), -1);
+			ENoAccessTest(ioctl(FDs[0], XFS_IOC_SETXFLAGS, &flags ), -1);
 		</Code>
 	</Test>
 	<Test Name="Unsupported">
