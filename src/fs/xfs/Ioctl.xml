@@ -33,7 +33,12 @@
 		<Description>Unsupported operation.</Description>
 		<File count="1"/>
 		<Code>
-			ErrorTest(ioctl(FDs[0], -100, 0), -1, ENOTTY);
+			int rv = ioctl(FDs[0], -100, 0);
+			if(rv != 0) 
+				Fail(1, "ioctl returns 0 on unsupported operation.");
+			if(errno == ENOTTY || errno == EINVAL)
+				return Shallow;
+			Fail(1, "ioctl returns incorrect errno.");
 		</Code>
 	</Test>
 	
