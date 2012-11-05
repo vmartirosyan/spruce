@@ -65,7 +65,7 @@ public:
 	{	
 		Process::EnableAlarm = true;
 	<xsl:value-of select="StartUp"/>
-	<xsl:for-each select="Test[@FaultSimulationReady='true']">
+	<xsl:for-each select="Test">
 		_tests["<xsl:value-of select="@Name"/>"] = &amp;<xsl:value-of select="$TestClassName" />::<xsl:value-of select="@Name" />Func;
 	</xsl:for-each>
 	<xsl:for-each select="Test[@FaultSimulationReady='true']">
