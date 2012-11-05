@@ -207,7 +207,7 @@ public:
 					sprintf(buf, "%d", j);  
 					//_fsim_expression = "(times%" + (string)buf + " = 0)";
 					_fsim_expression = "times="+(string)buf;
-					//_fsim_expression = "times=2";
+					
 				}
 				//for ( unsigned int k = 0; k &lt; _fsim_testCount; ++k)
 				

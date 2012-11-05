@@ -51,7 +51,7 @@
 			EnableFaultSim();
 			//Get new flag value
 			Unres ( ioctl(FDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1 , "Error getting new flag value. ");
-			DisableFaultSim();
+			
 			//Restore the initial flag value
 			Unres( ioctl(FDs[0], FS_IOC_SETFLAGS, &flags ) == -1, "Error setting initial value to flag. ");
 			

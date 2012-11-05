@@ -45,7 +45,7 @@
 			//changing owner  from root to nobody 
 			ret_chown = chown(FilePaths[0].c_str(), user_uid,user_gid);
 			
-			Unres(ret_chown == -1, "Chown failed: Aborting test.");
+			Fail(ret_chown == -1, "Chown failed: Aborting test.");
 				
 				
 			ret = stat(FilePaths[0].c_str(), &mode);

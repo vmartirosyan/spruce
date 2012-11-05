@@ -25,22 +25,22 @@
 <TestSet Name="unlink">	
 	<Test Name="UnlinkNormal1" FaultSimulationReady="true">
 		<Description>unlink()  deletes  a  name  from the file system.  If that name was the last link to a file and no processes have the file  open  the file  is deleted and the space it was using is made available for reuse.</Description>
+		<File count="1"/>
 		<Code>
-			int fd;
+			/*int fd;
 			int ret_unlink;
 			const char *pathname = "file.txt";
 			
 			Unres ( (fd = open( pathname, O_CREAT | O_RDWR, 0775 )) == -1, "Error in creating file.");
-			close(fd);
+			close(fd);*/
 			
 			EnableFaultSim();
-			ret_unlink = unlink ( pathname );
-			
+			int ret_unlink = unlink ( FilePaths[0].c_str() );
 			
 			Fail ( ret_unlink == -1, "Error occured during unlinking normal file.");
 			
 			 // Check if file exists
-			Fail ( access( pathname, F_OK ) == 0, "Error: unlinked file still exists.");
+			Fail ( access( FilePaths[0].c_str(), F_OK ) == 0, "Error: unlinked file still exists.");
 			
 			return Success;
 		</Code>
@@ -50,11 +50,12 @@
 		<File count="1"/>
 		<Code>
 			const char * symlink_name = "UnlinkNormal2_link";
+			unlink(symlink_name);
 			Unres ( symlink( FilePaths[0].c_str(), symlink_name ) == -1, "Cannot create symlink.");
 			
 			EnableFaultSim();
 			Fail ( unlink( symlink_name ) == -1, "Unlink failed.");
-			DisableFaultSim();
+			//DisableFaultSim();
 			
 			// The original file must be there
 			Fail ( access ( FilePaths[0].c_str(), F_OK ) == -1, "Unlink failed. The original file was deleted.");
