@@ -4,10 +4,10 @@
 
 
 <xsl:template match="//Module">
-<div>
-	
+<div>	
 	<xsl:variable name="Module" select="@Name" />
 	<H2>Module: <xsl:value-of select="@Name" /></H2>
+	<H3>Duration: <xsl:value-of select="//FS/Duration" />s</H3>
 	<span>Total tests: <xsl:value-of select="count(//Module[@Name=$Module]/Item)" /></span> <br/>
 	<span class="Success">Total tests passed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Success'])" /></span> <br/>
 	<span class="Shallow">Total shallow tests: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Shallow'])" /></span> <br/>
