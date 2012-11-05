@@ -25,6 +25,7 @@
 	<Requires>sys/ioctl.h</Requires>
 	<Requires>sys/types.h</Requires>
 	<Requires>linux/fs.h</Requires>
+	<Requires>linux/version.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>btrfs.hpp</Requires>
 	<Header>
@@ -81,7 +82,15 @@
 		<File count="1"/>
 		<Code>
 			int flags = FS_SECRM_FL;
-			ErrorTest( ioctl(FDs[0], FS_IOC_SETFLAGS, &flags ), -1, EOPNOTSUPP );
+			if ( ioctl(FDs[0], FS_IOC_SETFLAGS, &flags) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EOPNOTSUPP)
+				{
+					return Shallow;				
+				}
+			}
+			Error("Function should return 'Operation not supported' error but it did not.", Fail);
+			
 		</Code>
 	</Test>
 	
@@ -367,7 +376,12 @@
 
 	<Test Name="BTRFS_IOC_START_SYNC">
 		<Header>
-#ifdef BTRFS_IOC_START_SYNC
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,37)
+		Error("BTRFS_IOC_START_SYNC operation is not supported in Linux 2.6.37- versions.", Unsupported);
+#else
+#ifndef BTRFS_IOC_START_SYNC			
+#define BTRFS_IOC_START_SYNC _IOR(BTRFS_IOCTL_MAGIC, 24, __u64)
+#endif
 		</Header>
 		<Description>BTRFS_IOC_START_SYNC.</Description>
 		<File count="1"/>
@@ -376,15 +390,18 @@
 			return Shallow;
 		</Code>
 		<Footer>
-#else
-			Error("The BTRFS_IOC_START_SYNC value is not defined.", Unsupported);
 #endif
 		</Footer>
 	</Test>
 	
 		<Test Name="BTRFS_IOC_WAIT_SYNC">
 		<Header>
-#ifdef BTRFS_IOC_WAIT_SYNC
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,37)
+		Error("BTRFS_IOC_WAIT_SYNC operation is not supported in Linux 2.6.37- versions.", Unsupported);
+#else
+#ifndef BTRFS_IOC_WAIT_SYNC			
+#define BTRFS_IOC_WAIT_SYNC  _IOW(BTRFS_IOCTL_MAGIC, 22, __u64)
+#endif
 		</Header>
 		<Description>BTRFS_IOC_WAIT_SYNC.</Description>
 		<File count="1"/>
@@ -393,8 +410,6 @@
 			return Shallow;
 		</Code>
 		<Footer>
-#else
-			Error("The BTRFS_IOC_WAIT_SYNC value is not defined.", Unsupported);
 #endif
 		</Footer>
 	</Test>
@@ -475,7 +490,19 @@
 
 	<Test Name="BTRFS_IOC_GET_DEV_STATS">
 		<Header>
-#ifdef BTRFS_IOC_GET_DEV_STATS
+#if  LINUX_VERSION_CODE < KERNEL_VERSION(3,5,0)
+		Error("BTRFS_IOC_GET_DEV_STATS operation is not supported in Linux 3.5- versions.", Unsupported);
+#else
+#ifndef BTRFS_IOC_GET_DEV_STATS
+#define BTRFS_DEV_STAT_VALUES_MAX 5
+struct btrfs_ioctl_get_dev_stats {
+         __u64 devid;                           
+        __u64 nr_items;                         
+        __u64 values[BTRFS_DEV_STAT_VALUES_MAX];
+        __u64 unused[128 - 2 - BTRFS_DEV_STAT_VALUES_MAX]; 
+};
+#define BTRFS_IOC_GET_DEV_STATS	_IOWR(BTRFS_IOCTL_MAGIC, 52, struct btrfs_ioctl_get_dev_stats)
+#endif
 		</Header>
 		<Description>BTRFS_IOC_GET_DEV_STATS.</Description>
 		<File count="1"/>
@@ -484,13 +511,12 @@
 			return Shallow;
 		</Code>
 		<Footer>
-#else
-			Error("The BTRFS_IOC_GET_DEV_STATS value is not defined.", Unsupported);
 #endif
 		</Footer>
 	</Test>
-
-	<Test Name="BTRFS_IOC_GET_AND_RESET_DEV_STATS">
+	
+ <!-- Only supported for 3.5 kernel-->
+	<!--Test Name="BTRFS_IOC_GET_AND_RESET_DEV_STATS">
 		<Header>
 #ifdef BTRFS_IOC_GET_AND_RESET_DEV_STATS
 		</Header>
@@ -505,7 +531,7 @@
 			Error("The BTRFS_IOC_GET_AND_RESET_DEV_STATS value is not defined.", Unsupported);
 #endif
 		</Footer>
-	</Test>
+	</Test-->
 	<FaultSimulation>
 		<Simulate point="kmalloc"/>		
 	</FaultSimulation>
