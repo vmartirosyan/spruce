@@ -18,6 +18,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "integrity" ) == -1, "Remount-integrity failed");
 			
 			return Success;
@@ -29,6 +30,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "nointegrity" ) == -1, "Remount-nointegrity failed");
 			
 			return Success;
@@ -40,6 +42,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=utf8" ) == -1, "Remount-iocharset failed");
 			
 			return Success;
@@ -51,6 +54,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=continue" ) == -1, "Remount-errors=continue failed");
 			
 			return Success;
@@ -62,6 +66,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=remount-ro" ) == -1, "Remount-errors=remount-ro failed");
 			
 			return Success;
@@ -73,6 +78,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=panic" ) == -1, "Remount-errors=panic failed");
 			
 			return Success;
@@ -84,6 +90,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "noquota" ) == -1, "Remount-noquota failed");
 			
 			return Success;
@@ -95,6 +102,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "quota" ) == -1, "Remount-quota failed");
 			
 			return Success;
@@ -106,6 +114,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "usrquota" ) == -1, "Remount-usrquota failed");
 			
 			return Success;
@@ -117,6 +126,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "grpquota" ) == -1, "Remount-grpquota failed");
 			
 			return Success;
@@ -128,6 +138,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "uid=0" ) == -1, "Remount-uid failed");
 			
 			return Success;
@@ -139,6 +150,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "gid=0" ) == -1, "Remount-gid failed");
 			
 			return Success;
@@ -150,6 +162,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "umask=777" ) == -1, "Remount-umask failed");
 			
 			return Success;

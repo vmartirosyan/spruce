@@ -184,7 +184,7 @@ public:
 		
 		
 		 // Indicators are loaded by the KEDR framework automatically.
-		 // LoadIndicators();
+		  //LoadIndicators();
 		_IsRunning = true;
 		return true;
 	}
@@ -194,7 +194,7 @@ public:
 		try
 		{
 			// No need to unload the indicators. They are not controlled by us.
-			// UnloadIndicators();
+			 //UnloadIndicators();
 			UnloadModule(TargetModule);			
 		
 			UnixCommand kedr(KEDR_ROOT_DIR"/kedr");

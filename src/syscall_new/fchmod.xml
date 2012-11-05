@@ -39,7 +39,7 @@
 			
 			ret_fchmod = fchmod(fd, open_mode);
 			
-			Unres(ret_fchmod == -1, "Fchmod  failed: Aborting test.");
+			Fail(ret_fchmod == -1, "Fchmod  failed: Aborting test.");
 			
 			int ret = stat(path, &mode);
 			

@@ -41,7 +41,7 @@
 			Unres ( ioctl(FDs[0], EXT2_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
 			
 			int non_permitted_flags = old_flags & ~EXT4_EXTENTS_FL; // We may NOT clear the extents flag... but we shall try!
-			
+			EnableFaultSim();
 			// Try to set the non-permitted flag
 			Fail( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &non_permitted_flags ) == 0, "It was permitted to set non-permitted flag!.");
 			
@@ -95,6 +95,7 @@
 		<Description>Wait for read only.</Description>
 		<File count="1"/>
 		<Code>
+			EnableFaultSim();
 			if ( ioctl(FDs[0], EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1 )
 			{
 				if ( errno == ENOTTY )

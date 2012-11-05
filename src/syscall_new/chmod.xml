@@ -43,7 +43,7 @@
 			PermissionsToTest.push_back(S_IXOTH);
 			
 			PermissionsToTest.push_back(S_ISUID);
-			EnableFaultSim();
+			
 			int status = Success;
 			for ( unsigned int i = 0; i < PermissionsToTest.size() && !status; ++i )
 			{
@@ -84,10 +84,10 @@
 		{
 			File file(path, open_mode);
 
-
+			EnableFaultSim();
 			ret_chmod = chmod(path, open_mode);
 			
-			Unres (ret_chmod == -1, "Chmod  failed: Aborting test.");
+			Fail (ret_chmod == -1, "Chmod  failed: Aborting test.");
 			
 			int ret = stat(path, &mode);
 			

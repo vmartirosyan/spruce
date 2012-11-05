@@ -34,7 +34,7 @@
 			char NewBuf[10];
 			string FileNameOnly = DirFilePaths[0].substr(DirPaths[0].length() + 1, DirFilePaths[0].length());
 			EnableFaultSim();
-			Unres( linkat(DirDs[0], FileNameOnly.c_str(), DirDs[0], NewFilePath, 0) == -1, "Cannot create link.");
+			Fail( linkat(DirDs[0], FileNameOnly.c_str(), DirDs[0], NewFilePath, 0) == -1, "Cannot create link.");
 			
 			Unres( write(DirFDs[0], OrigBuf, strlen(OrigBuf)) != static_cast<int>(strlen(OrigBuf)), "Error in writing to original file." );
 			
