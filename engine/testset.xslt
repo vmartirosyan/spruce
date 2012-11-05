@@ -39,6 +39,7 @@
 #include &lt;map>
 #include &lt;process.hpp>
 #include &lt;kedr_integrator.hpp>
+#include &lt;PartitionManager.hpp>
 using std::map;
 	<xsl:variable name="TestSetName" select="@Name" />
 	
@@ -64,7 +65,7 @@ public:
 	{	
 		Process::EnableAlarm = true;
 	<xsl:value-of select="StartUp"/>
-	<xsl:for-each select="Test">
+	<xsl:for-each select="Test[@FaultSimulationReady='true']">
 		_tests["<xsl:value-of select="@Name"/>"] = &amp;<xsl:value-of select="$TestClassName" />::<xsl:value-of select="@Name" />Func;
 	</xsl:for-each>
 	<xsl:for-each select="Test[@FaultSimulationReady='true']">
