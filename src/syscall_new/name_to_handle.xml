@@ -34,7 +34,7 @@
 		#if HAVE_STRUCT_FILE_HANDLE!=1
 		#pragma GCC diagnostic ignored "-pedantic" 
 				struct file_handle {
-						 __u32 handle_bytes;
+					     uint32_t handle_bytes;
 						 int handle_type;
 						 /* file identifier */
 						 unsigned char f_handle[0];
