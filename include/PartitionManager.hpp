@@ -21,6 +21,9 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
+#ifndef PARTITIONMANAGER_HPP
+#define PARTITIONMANAGER_HPP
+
 #include <sstream>
 #include <stdint.h>
 #include <inttypes.h>
@@ -223,7 +226,26 @@ retry:
 			_Index = 0;
 			_CurrentMountOptions = "";
 		}
-	public:
+		
+		static bool IsOptionEnabled(string optionName)
+		{
+			char * opts = NULL;
+			if ( (opts = getenv("MountOpts")) != NULL )
+			{
+				string strOpts = opts;
+				if ( strOpts.find(optionName) == string::npos )
+				{
+					return false;
+				}
+			}
+			else
+			{				
+				return false;
+			}
+			
+			return true;
+		}
+	private:
 		string _ConfigFile;
 		string _DeviceName;
 		string _MountPoint;
@@ -397,3 +419,4 @@ retry:
 		}
 };
 
+#endif /* PARTITIONMANAGER_HPP */
