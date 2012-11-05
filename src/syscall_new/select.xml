@@ -1,0 +1,96 @@
+<!--    select.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Ani Tumanyan <ani.tumanyan92@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="select">	
+	<Test Name="SelectNormal" FaultSimulationReady="true">
+		<Description>select() allows  a  program  to  monitor  multiple  file descriptors,  waiting  until one or more of the file descriptors become `ready` for some class of I/O operation.</Description>		
+		<Code>
+			int pfd[2];
+			struct timeval tv;
+			
+			fd_set rfds;
+			Unres ( pipe( pfd ) == -1, "Error in creating pipe.");
+			FD_ZERO( &rfds );
+			FD_SET( pfd[0], &rfds );
+			
+			//setting timeval structure
+			tv.tv_sec = 0;
+			tv.tv_usec = 1;
+			
+			// Write to pipe, so that the read descriptor becomes ready
+			Unres(write(pfd[1], "asdf", 4) != 4, "Cannot write to pipe.");
+			EnableFaultSim();
+			int ready = select( pfd[1] + 1, &rfds, NULL, NULL, &tv );
+						
+			Fail ( ready != 1, "Select failed.");
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="SelectBadFile">
+		<Description>An invalid file descriptor was given in one of the sets (closed descriptor).</Description>
+		<File count="1"/>
+		<Code>
+			struct timeval tv;
+			tv.tv_sec = 0;
+			tv.tv_usec = 1;
+			
+			fd_set rfds;
+			FD_ZERO(&rfds);
+			FD_SET(FDs[0], &rfds);
+			
+			close(FDs[0]);
+			
+			ErrorTest( select(FDs[0] + 1, &rfds, NULL, NULL, &tv), -1, EBADF );
+		</Code>
+	</Test>
+	<Test Name="SelectInval1">
+		<Description>nfds is negative.</Description>
+		<Code>
+			struct timeval tv;
+			tv.tv_sec = 0;
+			tv.tv_usec = 1;
+			
+			fd_set rfds;
+			FD_ZERO(&rfds);
+			FD_SET(0, &rfds);
+			
+			ErrorTest( select(-1, &rfds, NULL, NULL, &tv), -1, EINVAL );
+		</Code>
+	</Test>
+	<Test Name="SelectInval2">
+		<Description>The value contained within timeout is invalid.</Description>
+		<Code>
+			struct timeval tv;
+			tv.tv_sec = 0;
+			tv.tv_usec = -1;
+			
+			fd_set rfds;
+			FD_ZERO(&rfds);
+			FD_SET(0, &rfds);
+			
+			ErrorTest( select(1, &rfds, NULL, NULL, &tv), -1, EINVAL );
+		</Code>
+	</Test>
+</TestSet>
