@@ -294,11 +294,13 @@ int main(int argc, char ** argv)
 			return errno;
 		}
 		bool ShowOutput = false;
+		
 		// Go through the modules, execute them
 		// and collect the output
 		cerr << "Executing modules." << endl;
 		for ( vector<string>::iterator fs = FileSystems.begin(); fs != FileSystems.end(); ++fs )
 		{
+			time_t FSStartTime = time(0);
 			cerr << "Filesystem : " << *fs << endl;
 			// Before executing the modules prepare the environment
 			setenv("MountAt", MountAt.c_str(), 1);
@@ -342,7 +344,7 @@ int main(int argc, char ** argv)
 			PartitionManager pm(INSTALL_PREFIX"/share/spruce/config/PartitionManager.cfg", partition, MountAt, *fs, MountOpts);
 			
 			for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
-			{
+			{				
 				cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
 				string ModuleBin = (module->find("fs-spec") == string::npos ? *module : (*fs + module->substr(7, module->size())));
 				if ( *module == "fault-sim" )
@@ -445,11 +447,18 @@ int main(int argc, char ** argv)
 							module_args.push_back(*it);
 						}
 					}
-					cerr << "Main module: pid=" << getpid() << endl;
+					time_t ItemStartTime = time(0);
+
 					ProcessResult * result = command->Execute(module_args);
 					delete command;
 					
+					size_t ItemDuration = time(0) - ItemStartTime;
+					stringstream str;
+					str << ItemDuration;
+					
 					of.open(FileName.c_str(), ios_base::app);
+					
+					of << "<Duration>" + str.str() + "</Duration>";
 					
 					of << "</FS></SpruceLog>";
 					
@@ -536,8 +545,14 @@ int main(int argc, char ** argv)
 			}
 			// Produce the <FS>.xml to pass to the dashboard generator
 			// The file contains information about mount options and modules
+			size_t FSDuration = time(0) - FSStartTime;
+			stringstream str;
+			str << FSDuration;
+			string strFSStartTime = ctime(&FSStartTime);
 			ofstream fs_xml((logfolder + "/" + *fs + ".xml").c_str());
 			fs_xml << "<SpruceDashboard FS=\"" + *fs + "\">\n";
+			fs_xml << "\t<Start>" + strFSStartTime + "</Start>\n";
+			fs_xml << "\t<Duration>" + str.str() + "</Duration>\n";
 			fs_xml << "\t<MountOptions>\n";
 			for ( unsigned int i = 0; i < MountOptions.size(); ++i )
 				fs_xml << "\t\t<Option>" + MountOptions[i] + "</Option>\n";
