@@ -37,7 +37,7 @@
 			
 			File new_file(NewFilePath, 0777, O_RDONLY);
 			
-			Unres( read(new_file.GetFileDescriptor(), NewBuf, strlen(OrigBuf) ) != static_cast<int>(strlen(OrigBuf)), "Error reading data from new file." );
+			Unres( read(new_file.GetFileDescriptor(), NewBuf, strlen(OrigBuf)) != static_cast<int>(strlen(OrigBuf)), "Error reading data from new file." );
 			
 			if ( strncmp(OrigBuf, NewBuf, strlen(OrigBuf)) != 0 )
 			{
@@ -62,6 +62,7 @@
 	<Test Name="LinkOldPathIsDirectory">
 		<Description>Oldpath is a directory.</Description>
 		<Code>
+			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
 			ErrorTest(link(".", "some_link"), -1, EPERM);
 		</Code>
 	</Test>
@@ -69,6 +70,7 @@
 		<Description>A component used as a directory in oldpath or newpath is not, in fact, a directory.</Description>
 		<File count="1"/>
 		<Code>
+			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
 			ENotDirTest(link(FilePaths[0].c_str(), path), -1);
 		</Code>
 	</Test>

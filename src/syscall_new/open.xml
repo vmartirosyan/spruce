@@ -26,6 +26,7 @@
 	<Test Name="OpenNormal" FaultSimulationReady="true">
 		<Description>Open and possibly create a file or device.</Description>
 		<Code>
+			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
 			const char * filename = "openNormal.txt";
 			EnableFaultSim();
 			int ret_val = open(filename, O_CREAT, S_IRUSR);
@@ -42,6 +43,7 @@
 	<Test Name="OpenDirect" FaultSimulationReady="true">
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
 		<Code>
+			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
 			const char * filename = "openDirect.txt";
 			EnableFaultSim();
 			int ret_val = open(filename, O_CREAT | O_DIRECT, S_IRUSR);

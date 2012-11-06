@@ -79,6 +79,7 @@
 	<Test Name="UnlinkNotExist">
 		<Description>File does not exist.</Description>
 		<Code>
+			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
 			ErrorTest(unlink("non_existing_file"), -1, ENOENT);
 		</Code>
 	</Test> 
