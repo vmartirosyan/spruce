@@ -52,29 +52,19 @@
 				status = Fail;
 			}
 			
-			if( PartitionManager::IsOptionEnabled("noexec") )
+			// According to (man 8 mount), "user" mount option implies "noexec" option, unless unless overridden by subsequent options, as "exec" 
+			if( PartitionManager::IsOptionEnabled("noexec") || PartitionManager::IsOptionEnabled("user"))
 			{
 				cerr <<  "noexec mount option is provided." << endl;
 				status = Unsupported;
 			}
 			else
 			{
-				struct statfs bufstat; 
-				if(statfs(FilePaths[0].c_str(), &bufstat) == -1)
+				if ( access(FilePaths[0].c_str(), X_OK) != 0 )
 				{
-					Error("statfs failed");
-					status = Unresolved;
+					Error("Execution permission is granted but access returns error. ");
+					status = Fail;
 				}
-				else if (bufstat.f_flags & 0x04)
-				{
-					cerr << "MNT_NOEXEC is set" << endl;
-					status = Unsupported;
-				}
-					else if ( access(FilePaths[0].c_str(), X_OK) != 0 )
-					{
-						Error("Execution permission is granted but access returns error. ");
-						status = Fail;
-					}
 			}
 			// Restore the user id to root
 			if ( setuid(0) == -1 )

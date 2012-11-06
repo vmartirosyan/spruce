@@ -26,6 +26,7 @@
 	<Test Name="MkdirRmdirNormal" FaultSimulationReady="true">
 		<Description>Create and remove a directory.</Description>
 		<Code>
+			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
 			const char * path = "MkdirRmdirNormal_dir";
 			EnableFaultSim();
 			if ( mkdir(path, 0777) == -1 )

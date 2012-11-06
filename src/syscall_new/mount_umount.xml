@@ -50,7 +50,6 @@
 	</Test>
 		<Test Name="RemountGeneral" FaultSimulationReady="true">
 		<Description>Trying to remount the device to the same partition(with MS_REMOUNT flag activated)</Description>
-		<Header>int status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -61,21 +60,21 @@
 			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
-				status = Fail;
+				return Fail;
 			}
 			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, 0) == -1)
 			{
 				Error("Remount failed (with activated remount flag).");
-				status = Fail;
+				return Fail;
 			}
 			if(umount(path) == -1)
 			{
 				Error("could not unmount partition");
-				status = Fail;
+				return Fail;
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>return Success;</Footer>
 	</Test>
 		<Test Name="NoATimeGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_NOATIME flag attempted.</Description>
