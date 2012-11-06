@@ -114,6 +114,40 @@ class PartitionManager
 			LoadConfiguration();
 			_FSIndex = GetFSNumber(_FileSystem);			
 		}
+		
+		static uint64_t GetDeviceSize(string partition)
+		{
+			uint64_t DeviceSize;
+			struct stat st;
+			if ( stat(partition.c_str(), &st) == -1)
+			{
+				cerr << "Cannot get file stats. " << strerror(errno) << endl;
+				return 0;
+			}
+			if (S_ISREG(st.st_mode))
+			{
+				cout << "Loop device on regular file." << endl;
+				DeviceSize = st.st_size;
+			}
+			else
+			{
+				int fd = open(partition.c_str(), O_RDONLY);
+				if (fd == -1)
+				{
+					cerr << "Cannot open partition " << strerror(errno) << endl;
+					return 0;
+				}
+				
+				if ( ioctl( fd, BLKGETSIZE64, &DeviceSize ) == -1)			
+				{
+					close(fd);
+					cerr << "Cannot get partition size." << strerror(errno) << endl;
+					return 0;
+				}
+				close(fd);
+			}
+			return DeviceSize;
+		}
 
 		PartitionStatus PreparePartition()
 		{
@@ -320,37 +354,15 @@ retry:
 			input.close();
 			return result;
 		}
+		
+		
+		
 		bool CreateFilesystem(string fs, string partition)
 		{
-			uint64_t DeviceSize;
-			struct stat st;
-			if ( stat(partition.c_str(), &st) == -1)
-			{
-				cerr << "Cannot get file stats. " << strerror(errno) << endl;
+			uint64_t DeviceSize = GetDeviceSize(partition);
+			
+			if ( DeviceSize == 0 )
 				return false;
-			}
-			if (S_ISREG(st.st_mode))
-			{
-				cout << "Loop device on regular file." << endl;
-				DeviceSize = st.st_size;
-			}
-			else
-			{
-				int fd = open(partition.c_str(), O_RDONLY);
-				if (fd == -1)
-				{
-					cerr << "Cannot open partition " << strerror(errno) << endl;
-					return false;
-				}
-				
-				if ( ioctl( fd, BLKGETSIZE64, &DeviceSize ) == -1)			
-				{
-					close(fd);
-					cerr << "Cannot get partition size." << strerror(errno) << endl;
-					return false;
-				}
-				close(fd);
-			}
 			
 			UnixCommand * mkfs = new UnixCommand("mkfs." + fs);
 			vector<string> args;		
