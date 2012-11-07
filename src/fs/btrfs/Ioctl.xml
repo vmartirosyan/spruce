@@ -63,10 +63,15 @@
 	<Test Name="SetGetFlags_All" FaultSimulationReady="true">
 		<Description>Try to set and get flag values. </Description>
 		<File count="1"/>
+		<Header>
+			int  set_flags = FS_SYNC_FL | FS_APPEND_FL | FS_IMMUTABLE_FL 
+						| FS_NODUMP_FL | FS_NOATIME_FL | FS_DIRSYNC_FL;
+#if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,38)
+
+			set_flags |= FS_NOCOW_FL | FS_COMPR_FL | FS_NOCOMP_FL;
+#endif
+		</Header>
 		<Code>
-			
-			int  set_flags = FS_SYNC_FL | FS_APPEND_FL | FS_IMMUTABLE_FL | FS_NODUMP_FL | FS_NOATIME_FL |
-					FS_DIRSYNC_FL |  FS_NOCOW_FL ;
 			int  get_flags, flags;
 			
 			// get flag initial values
