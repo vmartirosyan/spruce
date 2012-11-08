@@ -128,10 +128,22 @@
 	<Test Name="OpenENXIO2">
 		<Description>pathname  refers  to  a device special file and no corresponding device exists.</Description>
 		<Code>
-			const char * FileName = "OpenNoDev_Nod";
-			Unres( mknod(FileName, S_IFCHR, 0666) == -1, "Cannot create device file.");
-			
-			ErrorTest(open( FileName, O_WRONLY ), -1, ENXIO);
+			bool NodevOption = PartitionManager::IsOptionEnabled("nodev");
+			bool CombOptions = ( !(PartitionManager::IsOptionEnabled("dev")) && PartitionManager::IsOptionEnabled("user") ) || (
+			!(PartitionManager::IsOptionEnabled("dev")) && PartitionManager::IsOptionEnabled("users") ) || (
+			!(PartitionManager::IsOptionEnabled("dev")) && PartitionManager::IsOptionEnabled("owner") ) || (
+			!(PartitionManager::IsOptionEnabled("dev")) && PartitionManager::IsOptionEnabled("group") );
+			if( NodevOption || CombOptions )
+			{
+				Error("Device files not supported", Unsupported);
+			}
+			else
+			{	
+				const char * FileName = "OpenNoDev_Nod";
+				Unres( mknod(FileName, S_IFCHR, 0666) == -1, "Cannot create device file.");
+				
+				ErrorTest(open( FileName, O_WRONLY ), -1, ENXIO);
+			}
 		</Code>
 	</Test>
 	<Test Name="OpenTxtBusy">
