@@ -56,8 +56,12 @@ enum Status
 	Signaled,
 	Unsupported,
 	Skipped,
+	Oops,
+	Bug,
+	Panic,
 	Unknown
 };
+extern string StatusMessages[];
 
 struct FSimInfo
 {

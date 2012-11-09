@@ -36,6 +36,9 @@ string StatusMessages[] = {
 	"Signaled",
 	"Unsupported",
 	"Skipped",
+	"Oops",
+	"Bug",
+	"Panic",
 	"Unknown"	
 };
 	
