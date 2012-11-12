@@ -31,22 +31,22 @@
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Directory dir(string("/tmp/MountNormal_dir"));
+		//	Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;			
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, 0 | rdonlyflag, 0) == -1)
+			if( !PartitionManager::ReleasePartition(MountPoint) )
+			{
+				Error("Unmount failed!");
+				status = Fail;
+			}
+			if(mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
 				status = Fail;
 			}
-			else if(umount(dir.GetPathname().c_str()) == -1)
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("could not unmount partition");
-				status = Fail;
+				Error("Mount failed!");
+				status = Fatal;
 			}
 			</Code>
 		<Footer>return status;</Footer>
@@ -57,31 +57,29 @@
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			int rdonlyflag = 0;
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-				
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, 0 | rdonlyflag, 0) == -1)
+			if( !PartitionManager::ReleasePartition(MountPoint) )
+			{
+				Error("Unmount failed!");
+				return Fail;
+			}
+			if(mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
 				return Fail;
 			}
-
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, MS_REMOUNT | rdonlyflag, 0) == -1)
+			if(mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, 0) == -1)
 			{
 				Error("Remount failed (with activated remount flag).");
 				return Fail;
 			}
 			
-			if(umount(dir.GetPathname().c_str()) == -1)
+			
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("could not unmount partition");
-				return Fail;
+				Error("Mount failed!");
+				return Fatal;
 			}
-			Unres( rmdir(dir.GetPathname().c_str()) == -1, "Cannot delete directory." );
 		</Code>
 		<Footer>return Success;</Footer>
 	</Test>
@@ -92,52 +90,49 @@
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, MS_NOATIME | rdonlyflag, 0) == -1)
+			if( !PartitionManager::ReleasePartition(MountPoint) )
+			{
+				Error("Unmount failed!");
+				status = Fail;
+			}
+			if(mount( DeviceName, MountPoint, FileSystem, MS_NOATIME, 0) == -1)
 			{
 				Error("Mount with MS_NOATIME flag attempted failed");
 				status = Fail;
 			}
-			else if(umount(dir.GetPathname().c_str()) == -1)
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("could not unmount partition");
-				status = Fail;
+				Error("Mount failed!");
+				status = Fatal;
 			}
-			Unres( rmdir(dir.GetPathname().c_str()) == -1, "Cannot delete directory." );
 		</Code>
 		<Footer>return status;</Footer>
 	</Test>
 		<Test Name="NoDevGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_NODEV flag attempted.</Description>
-		<File count="1"/>
 		<Header>int status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, MS_NODEV | rdonlyflag, 0) == -1)
+			if( !PartitionManager::ReleasePartition(MountPoint) )
+			{
+				Error("Unmount failed!");
+				status = Fail;
+			}
+	    	if(mount( DeviceName, MountPoint, FileSystem, MS_NODEV, 0) == -1)
 			{
 				Error("Mount with MS_NODEV flag attempted failed");
 				status = Fail;
 			}
-			else if(umount(dir.GetPathname().c_str()) == -1)
+			
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("could not unmount partition");
-				status = Fail;
+				Error("Mount failed!");
+				status = Fatal;
 			}
-			Unres( rmdir(dir.GetPathname().c_str()) == -1, "Cannot delete directory." );
 		</Code>
 		<Footer>return status;</Footer>
 	</Test>
@@ -148,24 +143,22 @@
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-				
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, MS_NODIRATIME | rdonlyflag, 0) == -1)
+			if( !PartitionManager::ReleasePartition(MountPoint) )
+			{
+				Error("Unmount failed!");
+				status = Fail;
+			}	
+			if(mount( DeviceName, MountPoint, FileSystem, MS_NODIRATIME, 0) == -1)
 			{
 				Error("Mount with MS_NODIRATIME flag attempted failed");
 				status = Fail;
 			}
-			else if(umount(dir.GetPathname().c_str()) == -1)
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("could not unmount partition");
-				status = Fail;
+				Error("Mount failed!");
+				status = Fatal;
 			}
-			Unres( rmdir(dir.GetPathname().c_str()) == -1, "Cannot delete directory." );
 		</Code>
 		<Footer>return status;</Footer>
 	</Test>
@@ -178,23 +171,21 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;			
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, MS_NOEXEC | rdonlyflag, 0) == -1)
+			if( !PartitionManager::ReleasePartition(MountPoint) )
+			{
+				Error("Unmount failed!");
+				status = Fail;
+			}
+			if(mount( DeviceName, MountPoint, FileSystem, MS_NOEXEC, 0) == -1)
 			{
 				Error("Mount with MS_NOEXEC flag attempted failed");
 				status = Fail;
 			}
-			else if(umount(dir.GetPathname().c_str()) == -1)
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("could not unmount partition");
-				status = Fail;
+				Error("Mount failed!");
+				status = Fatal;
 			}
-			Unres( rmdir(dir.GetPathname().c_str()) == -1, "Cannot delete directory." );
 		</Code>
 		<Footer>return status;</Footer>
 	</Test>
@@ -205,24 +196,22 @@
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, MS_NOSUID | rdonlyflag, 0) == -1)
+			if( !PartitionManager::ReleasePartition(MountPoint) )
+			{
+				Error("Unmount failed!");
+				status = Fail;
+			}
+			if(mount( DeviceName, MountPoint, FileSystem, MS_NOSUID, 0) == -1)
 			{
 				Error("Mount with MS_NOSUID flag attempted failed");
 				status = Fail;
 			}
-			else if(umount(dir.GetPathname().c_str()) == -1)
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("could not unmount partition");
-				status = Fail;
+				Error("Mount failed!");
+				status = Fatal;
 			}
-			Unres( rmdir(dir.GetPathname().c_str()) == -1, "Cannot delete directory." );
 		</Code>
 		<Footer>return status;</Footer>
 	</Test>
@@ -259,23 +248,22 @@
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, MS_RELATIME | rdonlyflag, 0) == -1)
+			if( !PartitionManager::ReleasePartition(MountPoint) )
+			{
+				Error("Unmount failed!");
+				status = Fail;
+			}
+			if(mount( DeviceName, MountPoint, FileSystem, MS_RELATIME, 0) == -1)
 			{
 				Error("Mount with MS_RELATIME flag attempted failed");
 				status = Fail;
 			}
-			else if(umount(dir.GetPathname().c_str()) == -1)
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("could not unmount partition");
-				status = Fail;
+				Error("Mount failed!");
+				status = Fatal;
 			}
-			Unres( rmdir(dir.GetPathname().c_str()) == -1, "Cannot delete directory." );
 		</Code>
 		<Footer>return status;</Footer>
 	</Test>
@@ -289,11 +277,12 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, MS_SILENT | rdonlyflag, 0) == -1)
+			if( !PartitionManager::ReleasePartition(MountPoint) )
+			{
+				Error("Unmount failed!");
+				status = Fail;
+			}
+			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, MS_SILENT, 0) == -1)
 			{
 				Error("Mount with MS_SILENT flag attempted failed");
 				status = Fail;
@@ -304,6 +293,11 @@
 				status = Fail;
 			}
 			Unres( rmdir(dir.GetPathname().c_str()) == -1, "Cannot delete directory." );
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+			{
+				Error("Mount failed!");
+				status = Fatal;
+			}
 		</Code>
 		<Footer>return status;</Footer>
 	</Test>
@@ -315,23 +309,22 @@
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, MS_STRICTATIME | rdonlyflag, 0) == -1)
+			if( !PartitionManager::ReleasePartition(MountPoint) )
+			{
+				Error("Unmount failed!");
+				status = Fail;
+			}
+			if(mount( DeviceName, MountPoint, FileSystem, MS_STRICTATIME, 0) == -1)
 			{
 				Error("Mount with MS_STRICTATIME flag attempted failed");
 				status = Fail;
 			}
-			else if(umount(dir.GetPathname().c_str()) == -1)
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("could not unmount partition");
-				status = Fail;
+				Error("Mount failed!");
+				status = Fatal;
 			}
-			Unres( rmdir(dir.GetPathname().c_str()) == -1, "Cannot delete directory." );
 		</Code>
 		<Footer>return status;</Footer>
 	</Test>
@@ -342,23 +335,22 @@
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, MS_SYNCHRONOUS | rdonlyflag, 0) == -1)
+			if( !PartitionManager::ReleasePartition(MountPoint) )
+			{
+				Error("Unmount failed!");
+				status = Fail;
+			}
+			if(mount( DeviceName, MountPoint, FileSystem, MS_SYNCHRONOUS, 0) == -1)
 			{
 				Error("Mount with MS_SYNCHRONOUS flag attempted failed");
 				status = Fail;
 			}
-			else if(umount(dir.GetPathname().c_str()) == -1)
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("could not unmount partition");
-				status = Fail;
+				Error("Mount failed!");
+				status = Fatal;
 			}
-			Unres( rmdir(dir.GetPathname().c_str()) == -1, "Cannot delete directory." );
 		</Code>
 		<Footer>return status;</Footer>
 	</Test>
@@ -379,11 +371,7 @@
 		<Code>
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No filesystem is provided.");
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			ENameTooLongTest(mount(DeviceName, path, FileSystem, 0 | rdonlyflag, NULL), -1);
+			ENameTooLongTest(mount(DeviceName, path, FileSystem, 0, NULL), -1);
 		</Code>
 	</Test>
 	<Test Name="MountBusy">
