@@ -172,8 +172,8 @@ public:
 			 TestMap::iterator it = _fsim_tests.begin();
 			 cerr &lt;&lt; "\033[1;31mCalling: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
 				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
-				if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
-						pr->SetStatus(Success);
+				//if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
+						//pr->SetStatus(Success);
 					cerr &lt;&lt; "\033[1;31mCalled: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
 					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
 					delete pr;
@@ -212,8 +212,13 @@ public:
 				//for ( unsigned int k = 0; k &lt; _fsim_testCount; ++k)
 				
 					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
-					if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
-						pr->SetStatus(Success);
+					//if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
+						//pr->SetStatus(Success);
+					if( _fsim_info_vec[i].Count > 0 &amp;&amp;  pr->GetStatus() == Success )
+					{
+						pr->SetStatus(Fail);
+						pr->ModOutput("Test returned Success instead of Fail. Fault Simulation failed.");	
+					}
 					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
 					delete pr;
 					res.AddResult( tr );
