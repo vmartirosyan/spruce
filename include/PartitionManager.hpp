@@ -152,7 +152,7 @@ class PartitionManager
 		PartitionStatus PreparePartition()
 		{
 			cerr << "Preparing partition " << _DeviceName << endl;			
-			if ( !ReleasePartition() )
+			if ( !ReleasePartition(_MountPoint) )
 			{
 				return PS_Fatal;
 			}
@@ -164,18 +164,11 @@ class PartitionManager
 			}
 			cout << "File system " << _FileSystem << " is created successfully." << endl;
 			
-			UnixCommand * mnt = new UnixCommand("mount");
-			vector<string> mnt_args;
-			mnt_args.push_back(_DeviceName);
-			mnt_args.push_back(_MountPoint);
 			
 			if ( (_MountOpts != "" || _Index > 0) && _Index < _AdditionalMountOptions[_FSIndex].size() )
 			{
 				_CurrentMountOptions = _MountOpts + _AdditionalMountOptions[_FSIndex][_Index];
 				
-				mnt_args.push_back("-o");
-				mnt_args.push_back(_CurrentMountOptions);
-				setenv("MountOpts", _CurrentMountOptions.c_str(), 1);
 				cerr << "Mounting with additional option: " << _CurrentMountOptions << endl;
 			}
 			if ( _Index == _AdditionalMountOptions[_FSIndex].size() )
@@ -184,50 +177,35 @@ class PartitionManager
 				return PS_Done;
 			}
 			_Index++;
-						
-			ProcessResult * res = mnt->Execute(mnt_args);
-			delete mnt;
-			if ( res->GetStatus() != Success )
-			{
-				cerr << "Cannot mount " << _DeviceName << " at folder " << _MountPoint << endl;
-				cerr << "Error: " << res->GetOutput() << endl;
+			cout<<_Index << " of " << _AdditionalMountOptions[_FSIndex].size() << endl;
+			if( !Mount(_DeviceName,_MountPoint,_FileSystem,_CurrentMountOptions) )
 				return PS_Skip;
-			}
-			
-			cout << "Device " << _DeviceName << " was mounted on folder " << _MountPoint << "(opts=" << _CurrentMountOptions << ") " << _Index << " of " << _AdditionalMountOptions[_FSIndex].size() << endl;
-			
-			// Now change current dir to the newly mounted partition folder
-			if ( chdir(_MountPoint.c_str()) != 0 )
-			{
-				cerr << "Cannot change current dir to " << _MountPoint << endl;
-				cerr << "Error: " << strerror(errno) << endl;
-				return PS_Skip;
-			}
-			cout << "Changed dir" << endl;
-			
 			return PS_Success;
 		}
 		
 		// Try to re-create the file system and mount it with the precious mount options.		
-		PartitionStatus RestorePartition()
+		static PartitionStatus RestorePartition(string DeviceName, string MountPoint, string FileSystem, bool RecreateFilesystem = false)
 		{
-			//cerr << "\034[1;31mPartitionManager: restoring partition. \033[0m" << _Index << endl;
-			_Index--;
-			PartitionStatus ret = PreparePartition();
-			//_Index++;
-			//return ret;*/
-			return ret;
+			if( !getenv("MountOpts"))
+				return PS_Fatal;
+			if( !ReleasePartition(MountPoint))
+				return PS_Skip;
+			if( RecreateFilesystem && !CreateFilesystem(FileSystem, DeviceName))
+				return PS_Fatal;
+			if( !Mount(DeviceName,MountPoint,FileSystem,getenv("MountOpts")) )
+				return PS_Skip;
+			return PS_Success;
 		}
 		
 		
-		bool ReleasePartition()
+		static bool ReleasePartition(string MountPoint)
 		{
-			cout << "Unmounting partition " << _DeviceName << endl;
+			cout << "Unmounting partition " << MountPoint << endl;
 			if ( chdir("/") == -1)				
 				return false;
 			int RetryCount = 0;
 retry:
-			int res = umount(_MountPoint.c_str());
+			int res = umount(MountPoint.c_str());
 			// Check if partition was successfully unmounted, or it was not mounted yet!
 			if ( res == 0 ) 
 			{
@@ -248,9 +226,10 @@ retry:
 					goto retry;
 				}
 			}
-			cerr << "Cannot umnount partition " << _DeviceName << ". " << strerror(errno) << endl;
+			cerr << "Cannot unmount partition " << MountPoint << ". " << strerror(errno) << endl;
 			return false;
 		}
+		
 		string GetCurrentMountOptions() const
 		{
 			return _CurrentMountOptions;
@@ -357,7 +336,7 @@ retry:
 		
 		
 		
-		bool CreateFilesystem(string fs, string partition)
+		static bool CreateFilesystem(string fs, string partition)
 		{
 			uint64_t DeviceSize = GetDeviceSize(partition);
 			
@@ -421,7 +400,42 @@ retry:
 			return true;
 		}
 
-
+		static bool Mount(string DeviceName,string MountPoint,string FileSystem,string Options)
+		{
+			UnixCommand * mnt = new UnixCommand("mount");
+			vector<string> mnt_args;
+			mnt_args.push_back(DeviceName);
+			mnt_args.push_back(MountPoint);
+			mnt_args.push_back("-t");
+			mnt_args.push_back(FileSystem);
+			
+			mnt_args.push_back("-o");
+			mnt_args.push_back(Options);
+			setenv("MountOpts", Options.c_str(), 1);
+			cerr << "Mounting with option: " << Options << endl;
+						
+			ProcessResult * res = mnt->Execute(mnt_args);
+			delete mnt;
+			if ( res == NULL || res->GetStatus() != Success )
+			{
+				cerr << "Cannot mount " << DeviceName << " at folder " << MountPoint << endl;
+				cerr << "Error: " << res->GetOutput() << endl;
+				return false;
+			}
+			
+			cout << "Device " << DeviceName << " was mounted on folder ";
+			cout << MountPoint << "(opts=" << Options << ") "<< endl;
+			
+			// Now change current dir to the newly mounted partition folder
+			if ( chdir(MountPoint.c_str()) != 0 )
+			{
+				cerr << "Cannot change current dir to " << MountPoint << endl;
+				cerr << "Error: " << strerror(errno) << endl;
+				return false;
+			}
+			cout << "Changed dir" << endl;
+			return true;
+		}
 		FileSystems GetFSNumber(string FSName)
 		{
 			for ( int i = 0; i < FS_UNSUPPORTED; ++i )
