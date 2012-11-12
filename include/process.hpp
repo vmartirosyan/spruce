@@ -68,6 +68,14 @@ public:
 		else
 			_status = st;
 	}
+	void ModOutput( string s )
+	{
+		_output +=s;
+	}
+	void SetOutput( string s )
+	{
+		_output = s;
+	}
 	string GetOutput() const
 	{
 		return _output;

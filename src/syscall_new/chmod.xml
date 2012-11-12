@@ -75,6 +75,7 @@
 	<Internal>
 	Status PermissionsTest(mode_t open_mode)
 	{
+		//DisableFaultSim();
 
 		const char *path="chmodTest.txt";
 		int ret_chmod;
@@ -84,7 +85,7 @@
 		{
 			File file(path, open_mode);
 
-			EnableFaultSim();
+			//EnableFaultSim();
 			ret_chmod = chmod(path, open_mode);
 			
 			Fail (ret_chmod == -1, "Chmod  failed: Aborting test.");
@@ -98,6 +99,7 @@
 				Error("Chmod failed.", Fail);
 			}	
 		
+		//	DisableFaultSim();
 			return Success;
 
 		}

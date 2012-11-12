@@ -33,6 +33,7 @@
 			{
 				Error("Cannot close file.", Fail);
 			}
+			DisableFaultSim();
 			return Success;
 		</Code>
 	</Test>
