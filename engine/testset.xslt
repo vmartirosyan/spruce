@@ -38,9 +38,12 @@
 
 #include &lt;map>
 #include &lt;process.hpp>
+#include &lt;memory>
+#include &lt;UnixCommand.hpp>
 #include &lt;kedr_integrator.hpp>
 #include &lt;PartitionManager.hpp>
 using std::map;
+using std::string;
 	<xsl:variable name="TestSetName" select="@Name" />
 	
 class <xsl:value-of select="$TestClassName" /> : public Process
@@ -129,16 +132,28 @@ public:
 			{
 				<xsl:value-of select="$ModuleName"/>TestResult * tr = NULL;
 				// Check if the test is set to be excluded
+				std::auto_ptr&lt;ProcessResult> pr;
 				if ( IsTestExcluded(it->first) )
 				{
 					tr = new <xsl:value-of select="$ModuleName"/>TestResult(new ProcessResult(Skipped, "Test was excluded"), "<xsl:value-of select="$TestSetName" />", it->first);
 				}
 				else
 				{
-					ProcessResult * pr = Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(it->second));
-					tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
-					delete pr;
+					pr = std::auto_ptr&lt;ProcessResult>( Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(it->second)) );
+					tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr.get(), "<xsl:value-of select="$TestSetName" />", it->first);
+				
 				}
+
+				string log;
+				Status oopsStatus = OopsChecker(log); // log is an output parameter
+				if(oopsStatus != Success) 
+				{	
+					//so we have an emergency situation...
+					cerr&lt;&lt;"Oops Checker is activated: \n";
+					log = "Status: " + StatusMessages[oopsStatus] + "\nTest output: \n" + pr->GetOutput() + "\nSystem log message: \n" + log;
+					tr = new <xsl:value-of select="$ModuleName"/>TestResult(new ProcessResult(Fatal, log),"<xsl:value-of select="$TestSetName" />", it->first);
+				}
+				
 				res.AddResult( tr );
 				// If Fatal error has rised quit!
 				if ( tr->GetStatus() == Fatal )
@@ -338,6 +353,106 @@ protected:
 	<xsl:value-of select="/TestSet/Internal"/>
 	const string DirPrefix;
 	const string FilePrefix;
+	Status OopsChecker(string&amp; OutputLog)	
+	{
+		string mainMessage;
+		vector&lt;string> args;
+		args.push_back("-c");
+		args.push_back("dmesg");
+		UnixCommand* command = new UnixCommand("dmesg");
+		std::auto_ptr&lt;ProcessResult> result(command->Execute());
+		if(result.get() == NULL || result->GetStatus() != Success)
+		{
+			OutputLog = "Unable to read system log";
+			if ( result.get() != NULL )
+				OutputLog += result->GetOutput();
+			return Unresolved;
+		}
+		mainMessage = result->GetOutput();
+		delete command;
+		
+		//searching points
+		const string bug = "BUG";
+		const string oops = "Oops";
+		const string panic = "ernel panic";  //interested in both "Kernel panic" and "kernel panic"
+		const char less = 60;  // 60 is the ASCII code of the operation 'less than'
+		const char amp = 38;   // 38 is the ASCII code of the operation 'ampersand'
+		size_t foundPos;
+		
+		foundPos = mainMessage.find(bug); // searching "bug" in the kernel output
+		if( foundPos != string::npos )
+		{
+			OutputLog.assign(mainMessage.begin() + foundPos, mainMessage.end());
+			size_t pos = 0;
+			while(true)
+			{
+				pos = (OutputLog.find(amp, pos));
+				if(pos == std::string::npos)
+					break;
+				OutputLog.replace(pos, 1, "&amp;amp;"); 
+				++pos;
+			}
+			while(true)
+			{
+				pos = (OutputLog.find(less, pos));
+				if(pos == std::string::npos)
+					break;
+				OutputLog.replace(pos, 1, "&amp;lt;");   
+				++pos;
+			}
+			cerr &lt;&lt; "Oops checker: bug found" &lt;&lt; endl;
+			return Bug;
+		}
+		foundPos = mainMessage.find(oops);			
+		if( foundPos != string::npos )
+		{
+			OutputLog.assign(mainMessage.begin() + foundPos, mainMessage.end());
+			size_t pos = 0;
+			while(true)
+			{
+				pos = (OutputLog.find(amp, pos));
+				if(pos == std::string::npos)
+					break;
+				OutputLog.replace(pos, 1, "&amp;amp;");  
+				++pos;
+			}
+			while(true)
+			{
+				pos = (OutputLog.find(less, pos));
+				if(pos == std::string::npos)
+					break;
+				OutputLog.replace(pos, 1, "&amp;lt;");  
+				++pos;
+			}
+			cerr &lt;&lt; "Oops checker: oops found" &lt;&lt; endl;
+			return Oops;
+		}
+		foundPos = mainMessage.find(panic);			
+		if( foundPos != string::npos )
+		{
+			OutputLog.assign(mainMessage.begin() + foundPos, mainMessage.end());
+			size_t pos = 0;
+			while(true)
+			{
+				pos = (OutputLog.find(amp, pos));
+				if(pos == std::string::npos)
+					break;
+				OutputLog.replace(pos, 1, "&amp;amp;");   // ???
+				++pos;
+			}
+			while(true)
+			{
+				pos = (OutputLog.find(less, pos));
+				if(pos == std::string::npos)
+					break;
+				OutputLog.replace(pos, 1, "&amp;lt;");  
+				++pos;
+			}
+			cerr &lt;&lt; "Oops checker: Panic found" &lt;&lt; endl;
+			return Panic;
+		}
+		return Success;
+	}
 };
 
 <xsl:value-of select="GlobalFooter"/>
