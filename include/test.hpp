@@ -43,7 +43,7 @@ public:
 		_stroperation(OperationToString()),
 		_arguments(args) {}
 	TestResult(Status s, string output, int op, string args):
-		ProcessResult(static_cast<int>(s), output),
+		ProcessResult(s, output),
 		_operation(op),
 		_stroperation(OperationToString()),
 		_arguments(args) {}
@@ -54,7 +54,7 @@ public:
 		_arguments(args)
 		 {}
 	TestResult(Status s, string output, string op, string args):
-		ProcessResult(static_cast<int>(s), output),
+		ProcessResult(s, output),
 		_operation(0),
 		_stroperation(op),
 		_arguments(args) {}
@@ -112,12 +112,14 @@ public:
 		
 		return result;
 	}
+	// Returns the highest status in the collection.
 	Status GetStatus()
 	{
+		Status max_stat = Success;
 		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
-			if ( (*i)->GetStatus() != Success )
-				return Fail;
-		return Success;
+			if ( (*i)->GetStatus() > max_stat && (*i)->GetStatus() >= Unresolved )
+				max_stat = (*i)->GetStatus();
+		return max_stat;
 	}
 	string GetOutput() const
 	{
