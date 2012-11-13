@@ -93,7 +93,8 @@ int main(int argc, char ** argv)
 		KedrIntegrator kedr;
 		// The status of the whole process.
 		// If any of the tests does not succeed then FAULT is returned!
-		int Status = 0;
+		Status SpruceStatus = Success;
+		Status ModuleStatus = Success;
 		
 		
 		// Log files of the modules
@@ -343,7 +344,7 @@ int main(int argc, char ** argv)
 			//PartitionManager * pm = ShmAllocator<PartitionManager>::GetInstance();
 			PartitionManager pm(INSTALL_PREFIX"/share/spruce/config/PartitionManager.cfg", partition, MountAt, *fs, MountOpts);
 			
-			for (vector<string>::iterator module = Modules.begin(); module != Modules.end(); ++module)
+			for (vector<string>::iterator module = Modules.begin(); module != Modules.end() && ModuleStatus < Fatal; ++module)
 			{				
 				cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
 				string ModuleBin = (module->find("fs-spec") == string::npos ? *module : (*fs + module->substr(7, module->size())));
@@ -485,11 +486,18 @@ int main(int argc, char ** argv)
 					
 					if ( res->GetStatus() != Success )
 					{
-						cerr << res->GetOutput() << endl;						
+						cerr << res->GetOutput() << endl;
 					}			
 					
-					Status |= result->GetStatus();
-					cerr << "Module " << *module << " exits with status " << result->GetStatus() << endl;
+					ModuleStatus = result->GetStatus();					
+					
+					SpruceStatus = static_cast<Status>(ModuleStatus | SpruceStatus);
+					cerr << "Module " << *module << " exits with status " << ModuleStatus << endl;
+					if ( ModuleStatus >= Fatal )
+					{
+						cerr << "\033[1;31mSpruce: Fatal error has rised. Stopping system execution.\033[0m" << endl;						
+						break;
+					}
 				}
 				while ( PS != PS_Done );
 				
@@ -574,8 +582,12 @@ int main(int argc, char ** argv)
 				//OpenLogFiles(browser, logfolder, XMLFilesToProcess);
 				//XMLFilesToProcess.erase(XMLFilesToProcess.begin(), XMLFilesToProcess.end());
 			}
+			if (  ModuleStatus >= Fatal )
+			{
+				break;
+			}
 		}
-		return ( Status == 0 ) ? SUCCESS : FAULT;
+		return ( SpruceStatus == 0 ) ? SUCCESS : FAULT;
 	}
 	catch (Exception e)
 	{
