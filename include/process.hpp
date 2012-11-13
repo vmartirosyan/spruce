@@ -43,7 +43,7 @@ using namespace std;
 class ProcessResult
 {
 public:
-	ProcessResult(int s, string output):
+	ProcessResult(Status s, string output):
 		_status(s),	_output(output) 
 	{
 		
@@ -57,11 +57,11 @@ public:
 	
 	virtual ~ProcessResult();
 	
-	int GetStatus() const
+	Status GetStatus() const
 	{
 		return _status;
 	}
-	void SetStatus(int st)
+	void SetStatus(Status st)
 	{
 		if (st < 0 || st > Unknown)
 			_status = Unknown;
@@ -83,7 +83,7 @@ public:
 		
 	
 protected:
-	int _status;
+	Status _status;
 	string _output;
 	string StatusToString();
 	
@@ -122,4 +122,3 @@ protected:
 };
 
 #endif /* PROCESS_HPP */
-
