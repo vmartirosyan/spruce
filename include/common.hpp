@@ -47,19 +47,20 @@ enum Mode
 
 enum Status
 {
-	Success,
+	Success = 0, // 0 means Success!
 	Shallow,
-	Fail,
+	Skipped,
+	Unsupported,
 	Unresolved,
-	Fatal,
+	Fail,
 	Timeout,
 	Signaled,
-	Unsupported,
-	Skipped,
+	Fatal,	
 	Oops,
 	Bug,
 	Panic,
-	Unknown
+	
+	Unknown	 // Must be the last status
 };
 extern string StatusMessages[];
 
