@@ -26,20 +26,22 @@
 #include <fstream>
 using namespace std;
 
-string StatusMessages[] = {
+string StatusMessages[] = {	
 	"Success",
 	"Shallow",
-	"Failed",
+	"Skipped",
+	"Unsupported",
 	"Unresolved",
-	"Fatal",
+	"Failed",	
 	"Timeout",
 	"Signaled",
-	"Unsupported",
-	"Skipped",
+	"Fatal",		
 	"Oops",
 	"Bug",
 	"Panic",
-	"Unknown"	
+		
+	"Unknown" // Must be the last status
+	
 };
 	
 string ProcessResult::StatusToString()
@@ -200,7 +202,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	
 	
 	close(fds[0]);
-	return new ProcessResult(MY_WEXITSTATUS(status), Output);
+	return new ProcessResult(static_cast<Status>(WEXITSTATUS(status)), Output);
 }
 
 ProcessResult * BackgroundProcess::Execute(vector<string> args)
@@ -234,5 +236,5 @@ ProcessResult * BackgroundProcess::Execute(vector<string> args)
 	int status = 0;
 	
 	// This is a background process. No need to wait for the child :)
-	return new ProcessResult(MY_WEXITSTATUS(status), "Child process is executed.");
+	return new ProcessResult(static_cast<Status>(WEXITSTATUS(status)), "Child process is executed.");
 }
