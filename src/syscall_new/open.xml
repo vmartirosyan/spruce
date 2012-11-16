@@ -44,6 +44,10 @@
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
 		<Code>
 			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
+			if( PartitionManager::IsOptionEnabled("data=journal") )
+			{
+				Error("O_DIRECT not supported", Unsupported);
+			}
 			const char * filename = "openDirect.txt";
 			EnableFaultSim();
 			int ret_val = open(filename, O_CREAT | O_DIRECT, S_IRUSR);
