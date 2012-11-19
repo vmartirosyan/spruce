@@ -74,6 +74,48 @@
 		</table>
 	</div>
 	<br />
+	<span class="FSimSuccess">Total fault simulation tests failed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='FSimSuccess'])" /></span>
+	<a href="#" style="text-decoration:none">
+		<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Module" />TestsFaultSimFailed')</xsl:attribute> +</a>
+	<div style="border: solid 1px black; padding: 5px; display:none;" class="FSimSuccess">
+		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsFaultSimFailed</xsl:attribute>
+		<table width="100%">
+			<tr>
+				<th width="20%">Name</th>
+				<th width="20%">Operation</th>
+				<th width="60%">Output</th>
+			</tr>
+		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='FSimSuccess']" >				
+			<tr>
+				<td width="20%"><xsl:value-of select="@Name" /></td>
+				<td width="20%"><xsl:value-of select="Operation" /></td>
+				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+			</tr>
+		</xsl:for-each>
+		</table>
+	</div>
+	<br />
+	<span class="FSimFail">Total fault simulation tests passed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='FSimFail'])" /></span>
+	<a href="#" style="text-decoration:none">
+		<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Module" />TestsFaultSimPassed')</xsl:attribute> +</a>
+	<div style="border: solid 1px black; padding: 5px; display:none;" class="FSimFail">
+		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsFaultSimPassed</xsl:attribute>
+		<table width="100%">
+			<tr>
+				<th width="20%">Name</th>
+				<th width="20%">Operation</th>
+				<th width="60%">Output</th>
+			</tr>
+		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='FSimFail']" >				
+			<tr>
+				<td width="20%"><xsl:value-of select="@Name" /></td>
+				<td width="20%"><xsl:value-of select="Operation" /></td>
+				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+			</tr>
+		</xsl:for-each>
+		</table>
+	</div>
+	<br />
 	<span class="Unresolved">Total tests unresolved: <xsl:value-of select="count(//Module[@Name=$Module]/Item[Status='Unresolved'])" /></span>
 	<a href="#" style="text-decoration:none">
 		<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Module" />TestsUnresolved')</xsl:attribute> +</a>
@@ -206,6 +248,8 @@
 			<span class="Failed">Tests failed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Failed'])" /></span> <br/>
 			<span class="Signaled">Tests signaled: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Signaled'])" /></span> <br/>
 			<span class="Unresolved">Tests unresolved: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Unresolved'])" /></span> <br/>
+			<span class="FSimSuccess">Tests fault_sim failed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='FSimSuccess'])" /></span> <br/>
+			<span class="FSimFail">Tests fault_sim passed: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='FSimFail'])" /></span> <br/>
 			<span class="Unsupported">Tests unsupported: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Unsupported'])" /></span> <br/>
 			<span class="Timeout">Tests timed out: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Timeout'])" /></span> <br/>
 			<span class="Fatal">Tests fatal: <xsl:value-of select="count(//Module[@Name=$Module]/Item[@Name=$Item and Status='Fatal'])" /></span> <br/>
