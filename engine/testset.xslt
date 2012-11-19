@@ -231,9 +231,11 @@ public:
 						//pr->SetStatus(Success);
 					if( _fsim_info_vec[i].Count > 0 &amp;&amp;  pr->GetStatus() == Success )
 					{
-						pr->SetStatus(Fail);
+						pr->SetStatus(FSimSuccess);
 						pr->ModOutput("Test returned Success instead of Fail. Fault Simulation failed.");	
 					}
+					if( _fsim_info_vec[i].Count > 0 &amp;&amp; pr->GetStatus() == Fail )
+						pr->SetStatus(FSimFail);
 					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
 					delete pr;
 					res.AddResult( tr );

@@ -59,6 +59,8 @@ enum Status
 	Oops,
 	Bug,
 	Panic,
+	FSimSuccess,
+	FSimFail,
 	
 	Unknown	 // Must be the last status
 };

@@ -53,6 +53,14 @@
 			{
 				color:DarkRed;
 			}
+			.FSimSuccess
+			{
+				color:Crimson;
+			}
+			.FSimFail
+			{
+				color:Teal
+			}
 		</style>
 		<title>Spruce log for filesystem <xsl:value-of select="//FS/@Name" /></title>
 	</head>
