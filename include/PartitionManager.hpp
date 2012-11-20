@@ -245,18 +245,18 @@ retry:
 			char * opts = NULL;
 			if ( (opts = getenv("MountOpts")) != NULL )
 			{
-				string strOpts = opts;
-				if ( strOpts.find(optionName) == string::npos )
+				char * pch;
+				pch = strtok (opts," ,");
+				while (pch != NULL)
 				{
-					return false;
+					if(strcmp(pch,optionName.c_str()) == 0)
+					{
+						return true;
+					}
+					pch = strtok (NULL, " ,");
 				}
 			}
-			else
-			{				
-				return false;
-			}
-			
-			return true;
+			return false;
 		}
 	private:
 		string _ConfigFile;
