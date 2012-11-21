@@ -57,7 +57,7 @@
 			}
 			
 			// According to (man 8 mount), "user" or "users" mount option implies "noexec" option, unless unless overridden by subsequent options, as "exec" 
-			if( PartitionManager::IsOptionEnabled("noexec") || PartitionManager::IsOptionEnabled("user") ||  PartitionManager::IsOptionEnabled("users"))
+			if( PartitionManager::IsOptionEnabled("noexec") || (PartitionManager::IsOptionEnabled("user") && !PartitionManager::IsOptionEnabled("exec")) ||  (PartitionManager::IsOptionEnabled("users") && !PartitionManager::IsOptionEnabled("exec")) )
 			{
 				cerr <<  "noexec mount option is provided." << endl;
 				status = Unsupported;
