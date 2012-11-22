@@ -49,7 +49,7 @@
 #include <kedr_integrator.hpp>
 #include <leak_checker.hpp>
 #include <PartitionManager.hpp>
-//#include <ShmAllocator.hpp>
+#include <logger.hpp>
 
 using std::ifstream;
 using std::ofstream;
@@ -88,6 +88,7 @@ void OpenDashboard(string browser, string logfolder, string fs);
 
 int main(int argc, char ** argv)
 {
+	Logger::Init("/tmp/spruce.log", LOG_All);
 	try
 	{
 		KedrIntegrator kedr;

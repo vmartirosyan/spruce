@@ -42,6 +42,7 @@
 #include &lt;UnixCommand.hpp>
 #include &lt;kedr_integrator.hpp>
 #include &lt;PartitionManager.hpp>
+#include &lt;logger.hpp>
 using std::map;
 using std::string;
 	<xsl:variable name="TestSetName" select="@Name" />
@@ -139,7 +140,9 @@ public:
 				}
 				else
 				{
+					Logger::LogInfo("Running test: " + it->first);
 					pr = std::auto_ptr&lt;ProcessResult>( Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(it->second)) );
+					Logger::LogInfo("Test  " + it->first + " completed.");
 					tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr.get(), "<xsl:value-of select="$TestSetName" />", it->first);
 				
 				}
@@ -359,10 +362,10 @@ protected:
 	{
 		string mainMessage;
 		vector&lt;string> args;
-		args.push_back("-c");
-		args.push_back("dmesg");
+		args.push_back("-c"); // Clear the ring
+		//args.push_back("dmesg");
 		UnixCommand* command = new UnixCommand("dmesg");
-		std::auto_ptr&lt;ProcessResult> result(command->Execute());
+		std::auto_ptr&lt;ProcessResult> result(command->Execute(args));
 		if(result.get() == NULL || result->GetStatus() != Success)
 		{
 			OutputLog = "Unable to read system log";

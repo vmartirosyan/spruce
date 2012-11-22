@@ -21,6 +21,7 @@
 //      MA 02110-1301, USA.
 
 #include <kedr_integrator.hpp>
+#include <logger.hpp>
 #include <process.hpp>
 #include <signal.h>
 #include <fstream>
@@ -55,6 +56,8 @@ string ProcessResult::StatusToString()
 }
 
 int Process::Level = 0;
+string Logger::_LogFile = "/tmp/spruce.log";
+LogLevel Logger::_LogLevel = LOG_Warn;
 
 ProcessResult::~ProcessResult()
 {
