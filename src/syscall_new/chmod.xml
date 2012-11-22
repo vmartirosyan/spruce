@@ -1,0 +1,114 @@
+<!--      Chmod.hpp
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Gurgen Torozyan <gurgen.torozyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="chmod">
+	<Test Name="ChmodNormal" FaultSimulationReady="true">
+		<Description>Change permissions of a file.</Description>
+		<Code>
+			vector<mode_t> PermissionsToTest;
+			PermissionsToTest.push_back(S_IRWXU);
+			PermissionsToTest.push_back(S_IRUSR);
+			PermissionsToTest.push_back(S_IWUSR);
+			PermissionsToTest.push_back(S_IXUSR);
+			
+			PermissionsToTest.push_back(S_IRWXG);
+			PermissionsToTest.push_back(S_IRGRP);
+			PermissionsToTest.push_back(S_IWGRP);
+			PermissionsToTest.push_back(S_IXGRP);
+			
+			PermissionsToTest.push_back(S_IRWXO);
+			PermissionsToTest.push_back(S_IROTH);
+			PermissionsToTest.push_back(S_IWOTH);
+			PermissionsToTest.push_back(S_IXOTH);
+			
+			PermissionsToTest.push_back(S_ISUID);
+			
+			int status = Success;
+			for ( unsigned int i = 0; i < PermissionsToTest.size() && !status; ++i )
+			{
+				status |= PermissionsTest(PermissionsToTest[i]);
+			}			
+			
+			return status;
+		</Code>	
+	</Test>
+	<Test Name="ChmodIsNotDirectory">
+		<Description>A component of the path prefix is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+			ENotDirTest(chmod(path, S_IWUSR), -1);			
+		</Code>
+	</Test>
+	<Test Name="ChmodTooLongPath">
+		<Description>path is too long.</Description>		
+		<Code>
+			ENameTooLongTest(chmod(path, 0777), -1);
+		</Code>
+	</Test>
+	<Test Name="ChmodFileNotExist">
+		<Description>The file does not exist.</Description>		
+		<Code>
+			ErrorTest(chmod("non_existing_file", 0777), -1, ENOENT);
+		</Code>
+	</Test>
+	<Internal>
+	Status PermissionsTest(mode_t open_mode)
+	{
+		//DisableFaultSim();
+
+		const char *path="chmodTest.txt";
+		int ret_chmod;
+		struct stat mode;
+			
+		try
+		{
+			File file(path, open_mode);
+
+			//EnableFaultSim();
+			ret_chmod = chmod(path, open_mode);
+			
+			Fail (ret_chmod == -1, "Chmod  failed: Aborting test.");
+			
+			int ret = stat(path, &mode);
+			
+			Unres( ret == -1, "stat failed: Aborting test.");
+			
+			if((mode.st_mode & 4095) !=  open_mode)
+			{
+				Error("Chmod failed.", Fail);
+			}	
+		
+		//	DisableFaultSim();
+			return Success;
+
+		}
+		catch (Exception ex)
+		{
+			Error("Exception was throws. ", ex.GetMessage(), Unresolved);
+		}
+	}
+
+	</Internal>
+	
+</TestSet>

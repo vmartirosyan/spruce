@@ -1,0 +1,7 @@
+<MetaModule Name="FaultSimulation" RunTests="Faulty">
+	<Module Name="syscall" Path="syscall_new/"/>
+	<!--Module Name="ext4" Path="fs/ext4fs/"/>
+	<Module Name="btrfs" Path="fs/btrfs/"/>
+	<Module Name="jfs" Path="fs/jfs/"/>
+	<Module Name="xfs" Path="fs/xfs/"/-->
+</MetaModule>

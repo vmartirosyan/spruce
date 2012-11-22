@@ -1,0 +1,50 @@
+<!--    sync.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Suren Grigoryan <suren.grigoryan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="sync">
+	<Test Name="SyncNormal" FaultSimulationReady="true">
+		<Description>Commit buffer cache to disk.</Description>
+		<File count="1" />
+		<Code>
+			const char * buf = "abcdefg";
+			Unres (write (FDs[0], buf, strlen(buf)) == -1, "Cannot write to file.");
+			
+			struct stat stat_buf;
+			
+			time_t time_before = time(NULL);
+			EnableFaultSim();
+			sync ();
+			
+			time_t time_after = time(NULL);
+			
+			Unres( stat (FilePaths[0].c_str(), &stat_buf) == -1, "stat failed.");
+			
+			Fail (stat_buf.st_mtime < time_before || stat_buf.st_mtime > time_after, "sync hasn't updated last modification time of the file.");
+			
+			return Success;
+		</Code>
+	</Test>	
+</TestSet>
+
+
