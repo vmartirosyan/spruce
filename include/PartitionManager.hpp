@@ -204,7 +204,8 @@ class PartitionManager
 			if ( chdir("/") == -1)				
 				return false;
 			int RetryCount = 0;
-retry:
+			
+retry:			
 			int res = umount(MountPoint.c_str());
 			// Check if partition was successfully unmounted, or it was not mounted yet!
 			if ( res == 0 ) 
