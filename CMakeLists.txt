@@ -66,6 +66,15 @@ IF (NOT KEDR_ROOT_DIR)
 	SET ( KEDR_ROOT_DIR "/usr/bin" )
 ENDIF (NOT KEDR_ROOT_DIR)
 
+# Check if KEDR framework is there
+IF (NOT EXISTS ${KEDR_ROOT_DIR}/kedr)
+	Message("KEDR Framework is not installed or the KEDR root is not correct.")
+	Message("Please install the KEDR Framework and/or provide the KEDR root directory via -DKEDR_ROOT_DIR=/kedr/root/dir")
+	SET (KEDR_INSTALLED 0)
+ELSE (NOT EXISTS ${KEDR_ROOT_DIR}/kedr)
+	SET (KEDR_INSTALLED 1)
+ENDIF (NOT EXISTS ${KEDR_ROOT_DIR}/kedr)
+
 IF (NOT QUOTACHECK_PATH)
 	SET( QUOTACHECK_PATH "/usr/sbin/quotacheck")
 ENDIF (NOT QUOTACHECK_PATH)

@@ -46,8 +46,9 @@ public:
 		KEDRProfiles()	
 		//_IsRunning(false)
 	{
-		if ( !IsKEDRInstalled() )
-			throw (Exception("KEDR framework is not installed on the system."));
+		if ( KEDR_INSTALLED )
+			if ( !IsKEDRInstalled() )
+				throw (Exception("KEDR framework is not installed on the system."));
 	}
 	KedrIntegrator(string module):		
 		TargetModule(""),
@@ -56,8 +57,9 @@ public:
 		KEDRProfiles()
 		//_IsRunning(false)
 	{
-		if ( !IsKEDRInstalled() )
-			throw (Exception("KEDR framework is not installed on the system."));
+		if ( KEDR_INSTALLED )
+			if ( !IsKEDRInstalled() )
+				throw (Exception("KEDR framework is not installed on the system."));
 			
 		if ( module != "" )
 			if ( !SetTargetModule(module) )
@@ -280,7 +282,7 @@ protected:
 		return true;
 	}
 	bool IsKEDRInstalled()
-	{		
+	{
 		return (access(KEDR_ROOT_DIR"/kedr", F_OK) == 0);
 	}
 	

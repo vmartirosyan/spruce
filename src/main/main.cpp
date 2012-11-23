@@ -176,15 +176,33 @@ int main(int argc, char ** argv)
 #endif
 		if ( (it = find(Modules.begin(), Modules.end(), "leak-check")) != Modules.end() )
 		{
-			cerr << "Leak checker module is enabled" << endl;
-			PerformLeakCheck = true;
-			Modules.erase(it);
-		}
+			if ( KEDR_INSTALLED )
+			{	
+				cerr << "Leak checker module is enabled" << endl;
+				PerformLeakCheck = true;
+				Modules.erase(it);
+			}
+			else
+			{
+				cerr << "Leak checker module cannot be enabled because the KEDR framework is not available." << endl;
+				PerformLeakCheck = false;
+				Modules.erase(it);
+			}
+		}		
 		if ( (it = find(Modules.begin(), Modules.end(), "fault-sim")) != Modules.end() )
 		{
-			cerr << "Fault simulation module is enabled" << endl;
-			PerformFaultSimulation = true;
-			*it = "fault_sim";
+			if ( KEDR_INSTALLED )
+			{	
+				cerr << "Fault simulation module is enabled" << endl;
+				PerformFaultSimulation = true;
+				*it = "fault_sim";
+			}
+			else
+			{
+				cerr << "Fault simulation module cannot be enabled because the KEDR framework is not available." << endl;
+				PerformFaultSimulation = false;
+				Modules.erase(it);
+			}
 		}
 #if OS_32_BITS==0 && HAVE_MULTILIB
 		if ( (it = find(Modules.begin(), Modules.end(), "syscall")) != Modules.end() )

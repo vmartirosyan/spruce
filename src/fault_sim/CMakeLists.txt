@@ -1,5 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
+IF ( NOT ${KEDR_INSTALLED} )
+	Message("-- The KEDR framework is not available. Skipping the Fault Simulation module")
+	return()
+ENDIF ( NOT ${KEDR_INSTALLED} )
+
 MESSAGE("Configuring Fault Simulation module")
 PROJECT (Spruce)
 
