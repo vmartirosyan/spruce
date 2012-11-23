@@ -33,11 +33,11 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 		//	Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			if( !PartitionManager::ReleasePartition(MountPoint) )
-			{
-				Error("Unmount failed!");
-				status = Fail;
-			}
+			char buf[100];
+			sprintf(buf, "lsof -p %d", getpid());
+			system(buf);
+			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+				
 			if(mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -58,11 +58,8 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			EnableFaultSim();
-			if( !PartitionManager::ReleasePartition(MountPoint) )
-			{
-				Error("Unmount failed!");
-				return Fail;
-			}
+			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+			
 			if(mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1)
 			{
 				Error("Mount failed");
@@ -117,11 +114,8 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			EnableFaultSim();
-			if( !PartitionManager::ReleasePartition(MountPoint) )
-			{
-				Error("Unmount failed!");
-				status = Fail;
-			}
+			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+			
 	    	if(mount( DeviceName, MountPoint, FileSystem, MS_NODEV, 0) == -1)
 			{
 				Error("Mount with MS_NODEV flag attempted failed");
@@ -144,11 +138,8 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			EnableFaultSim();
-			if( !PartitionManager::ReleasePartition(MountPoint) )
-			{
-				Error("Unmount failed!");
-				status = Fail;
-			}	
+			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+			
 			if(mount( DeviceName, MountPoint, FileSystem, MS_NODIRATIME, 0) == -1)
 			{
 				Error("Mount with MS_NODIRATIME flag attempted failed");
@@ -171,11 +162,8 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			if( !PartitionManager::ReleasePartition(MountPoint) )
-			{
-				Error("Unmount failed!");
-				status = Fail;
-			}
+			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+			
 			if(mount( DeviceName, MountPoint, FileSystem, MS_NOEXEC, 0) == -1)
 			{
 				Error("Mount with MS_NOEXEC flag attempted failed");
@@ -197,11 +185,8 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			EnableFaultSim();
-			if( !PartitionManager::ReleasePartition(MountPoint) )
-			{
-				Error("Unmount failed!");
-				status = Fail;
-			}
+			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+			
 			if(mount( DeviceName, MountPoint, FileSystem, MS_NOSUID, 0) == -1)
 			{
 				Error("Mount with MS_NOSUID flag attempted failed");
@@ -215,32 +200,33 @@
 		</Code>
 		<Footer>return status;</Footer>
 	</Test>
-	<!--Test Name="MountRdOnlyGeneral" FaultSimulationReady="true">
+	<Test Name="MountRdOnlyGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_RDONLY flag attempted.</Description>
 		<Header>int status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			const char * path = "/tmp/MountNormal_dir";
-			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
-			char s[100]; 
+			/*char s[100]; 
 			sprintf(s, "lsof -p %d,%d", getpid(), getppid());
-			system(s);
-			if(mount( DeviceName, path, FileSystem, MS_RDONLY, 0) == -1)
+			system(s);*/
+			
+			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+			
+			if(mount( DeviceName, MountPoint, FileSystem, MS_RDONLY, 0) == -1)
 			{
 				Error("Mount with MS_RDONLY flag attempted failed");
 				status = Fail;
 			}
-			if(umount(path) == -1)
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("could not unmount partition");
-				status = Fail;
+				Error("Mount failed!");
+				status = Fatal;
 			}
-			Unres( rmdir(path) == -1, "Cannot delete directory." );
+			//Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
 		<Footer>return status;</Footer>
-	</Test-->
+	</Test>
 	<Test Name="MountRELATIME" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_RELATIME flag attempted.</Description>
 		<Header>int status = Success;</Header>
@@ -249,11 +235,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			EnableFaultSim();
-			if( !PartitionManager::ReleasePartition(MountPoint) )
-			{
-				Error("Unmount failed!");
-				status = Fail;
-			}
+			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
 			if(mount( DeviceName, MountPoint, FileSystem, MS_RELATIME, 0) == -1)
 			{
 				Error("Mount with MS_RELATIME flag attempted failed");
@@ -275,24 +257,15 @@
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Directory dir(string("/tmp/MountNormal_dir"));
+			//Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
-			if( !PartitionManager::ReleasePartition(MountPoint) )
-			{
-				Error("Unmount failed!");
-				status = Fail;
-			}
-			if(mount( DeviceName, dir.GetPathname().c_str(), FileSystem, MS_SILENT, 0) == -1)
+			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+			if(mount( DeviceName, MountPoint, FileSystem, MS_SILENT, 0) == -1)
 			{
 				Error("Mount with MS_SILENT flag attempted failed");
 				status = Fail;
 			}
-			else if(umount(dir.GetPathname().c_str()) == -1)
-			{
-				Error("could not unmount partition");
-				status = Fail;
-			}
-			Unres( rmdir(dir.GetPathname().c_str()) == -1, "Cannot delete directory." );
+			
 			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
 				Error("Mount failed!");
@@ -310,11 +283,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			EnableFaultSim();
-			if( !PartitionManager::ReleasePartition(MountPoint) )
-			{
-				Error("Unmount failed!");
-				status = Fail;
-			}
+			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
 			if(mount( DeviceName, MountPoint, FileSystem, MS_STRICTATIME, 0) == -1)
 			{
 				Error("Mount with MS_STRICTATIME flag attempted failed");
@@ -336,11 +305,7 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			EnableFaultSim();
-			if( !PartitionManager::ReleasePartition(MountPoint) )
-			{
-				Error("Unmount failed!");
-				status = Fail;
-			}
+			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
 			if(mount( DeviceName, MountPoint, FileSystem, MS_SYNCHRONOUS, 0) == -1)
 			{
 				Error("Mount with MS_SYNCHRONOUS flag attempted failed");
