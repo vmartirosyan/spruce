@@ -49,7 +49,7 @@
 #include <kedr_integrator.hpp>
 #include <leak_checker.hpp>
 #include <PartitionManager.hpp>
-#include <logger.hpp>
+//#include <ShmAllocator.hpp>
 
 using std::ifstream;
 using std::ofstream;
@@ -88,7 +88,6 @@ void OpenDashboard(string browser, string logfolder, string fs);
 
 int main(int argc, char ** argv)
 {
-	Logger::Init("/tmp/spruce.log", LOG_All);
 	try
 	{
 		KedrIntegrator kedr;
@@ -166,7 +165,7 @@ int main(int argc, char ** argv)
 		bool PerformLeakCheck = false;
 		bool PerformFaultSimulation = false;
 		vector<string>::iterator it = Modules.end();
-#if OS_32_BITS==0
+#if OS_32_BITS==0 && HAVE_MULTILIB
 		if ( (it = find(Modules.begin(), Modules.end(), "fs-spec")) != Modules.end() )
 		{
 			cerr << "FS-specific module is enabled" << endl;
@@ -187,7 +186,7 @@ int main(int argc, char ** argv)
 			PerformFaultSimulation = true;
 			*it = "fault_sim";
 		}
-#if OS_32_BITS==0
+#if OS_32_BITS==0 && HAVE_MULTILIB
 		if ( (it = find(Modules.begin(), Modules.end(), "syscall")) != Modules.end() )
 		{
 			cerr << "Replacing syscall module with pair of <syscall_32, syscall_64> modules" << endl;
