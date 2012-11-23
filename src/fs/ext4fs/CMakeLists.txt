@@ -2,13 +2,18 @@ cmake_minimum_required(VERSION 2.6)
 project (Spruce)
 message("Configuring EXT4 specific sources.")
 
+IF ( NOT ${HAVE_EXT2_FS_H} )
+	Message("The ext2fs/ext2_fs.h header file is not found. Skiping Ext4 specific tests.")																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																				
+	return()
+ENDIF ( NOT ${HAVE_EXT2_FS_H} )
+
 ADD_CUSTOM_COMMAND(
    OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp
    COMMAND ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/engine
    DEPENDS ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_SOURCE_DIR}/engine/module.xslt ${CMAKE_SOURCE_DIR}/engine/testset.xslt ${CMAKE_CURRENT_SOURCE_DIR}/module.xml Ioctl.xml Mount.xml
    )
 
-IF ( ${OS_32_BITS})	
+IF ( ${OS_32_BITS} OR NOT ${HAVE_MULTILIB})	
 ADD_EXECUTABLE(ext4 ${CMAKE_CURRENT_BINARY_DIR}/module.cpp )
 
 					
@@ -18,7 +23,7 @@ TARGET_LINK_LIBRARIES(ext4 rt)
 install (	FILES "${CMAKE_BINARY_DIR}/bin/ext4"
 			DESTINATION bin
 			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
-ELSE ( ${OS_32_BITS})
+ELSE ( ${OS_32_BITS} OR NOT ${HAVE_MULTILIB})	
 	ADD_EXECUTABLE(ext4_64 ${CMAKE_CURRENT_BINARY_DIR}/module.cpp)
 				
 	TARGET_LINK_LIBRARIES(ext4_64 utils)
@@ -28,9 +33,9 @@ ELSE ( ${OS_32_BITS})
 			DESTINATION bin
 			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
 
-ENDIF ( ${OS_32_BITS})	
+ENDIF ( ${OS_32_BITS} OR NOT ${HAVE_MULTILIB})	
 
-IF (NOT ${OS_32_BITS})	
+IF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB})	
 	ADD_CUSTOM_COMMAND(
    OUTPUT  module_32.cpp
    COMMAND cp module.cpp module_32.cpp
@@ -49,4 +54,4 @@ IF (NOT ${OS_32_BITS})
 			DESTINATION bin
 			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
 	
-ENDIF (NOT ${OS_32_BITS})
+ENDIF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB})	
