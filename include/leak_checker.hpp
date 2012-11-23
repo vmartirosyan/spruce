@@ -41,24 +41,46 @@ public:
 	{
 		try
 		{
+			int fd = -1;
+			if((fd = open(LogFilePath.c_str(), O_RDWR)) == -1)
+			{
+				throw Exception(string("open log file failed"));
+			}
+			
+			struct stat sb;
+			if(fstat(fd, &sb) == -1)
+			{
+				throw Exception(string("stat failed"));
+			}
+			
+			if(ftruncate(fd, sb.st_size - 9) == -1)
+			{
+				throw Exception(string("ftruncate failed"));
+			}
+			
+			close(fd);
+			
 			ofstream of(LogFilePath.c_str(), ios_base::app);
-			of << "<Module Name=\"leak_checker\">";
 			// First process the possible leaks
 			ifstream in_file((DebugFSPath + "/kedr_leak_check/possible_leaks").c_str());
-						
-			while (in_file.good())
-			{
-				string line;
-				getline(in_file, line);
-				
-				if ( line.find("Block at") == string::npos )
-					continue;
-				string Data = line + "\n";
-				while ( line.find("------") == string::npos )
+			string line;
+			getline(in_file, line);
+			while (in_file.good() && !in_file.eof())
+			{					
+				if ( line.find("Address:") == string::npos )
 				{
-					cerr << "Line: " << line << endl;	
 					getline(in_file, line);
-					// Process the line to make it valid XML...
+					continue;
+				}
+
+				cerr << "Leak checker. Adding item." << endl;
+				of << "\t<Item Name=\"PossibleLeak\" Id=\"" << rand() << "\">\n\t\t<Status>Failed</Status><Output>";
+
+				string Data;
+				do
+				{
+					//process line to valid xml
+					//cerr << "Line: " << line << endl;
 					size_t pos = 0;
 					while ( ( pos = line.find("<", pos ) ) != string::npos )
 					{
@@ -66,30 +88,35 @@ public:
 					}
 					
 					Data += line + "\n";
+					
+					getline(in_file, line);
 				}
-				cerr << "Leak checker. Adding item." << endl;
+				while(line.find("Address:") == string::npos && !in_file.eof());
 				
-				of << "\t<Item Name=\"PossibleLeak\" Id=\"" << rand() << "\">\n\t\t<Status>Possibe Leak</Status><Output>" << Data << "</Output>\n\t</Item>";
+				// Write data
+				of << Data << "</Output>\n\t</Item>";				
 			}
-			in_file.close();
-			
+			in_file.close();	
 			
 			// Then the unallocated frees will come
 			in_file.open((DebugFSPath + "/kedr_leak_check/unallocated_frees").c_str());
-						
-			while (in_file.good())
-			{
-				string line;
-				getline(in_file, line);
-				
-				if ( line.find("Block at") == string::npos )
-					continue;
-				string Data = line + "\n";
-				while ( line.find("------") == string::npos )
+			getline(in_file, line);
+			while (in_file.good() && !in_file.eof())
+			{					
+				if ( line.find("Address:") == string::npos )
 				{
-					cerr << "Line: " << line << endl;	
 					getline(in_file, line);
-					// Process the line to make it valid XML...
+					continue;
+				}
+
+				cerr << "Leak checker. Adding item." << endl;
+				of << "\t<Item Name=\"UnallocatedFree\" Id=\"" << rand() << "\">\n\t\t<Status>Failed</Status><Output>";
+
+				string Data;
+				do
+				{
+					//process line to valid xml
+					//cerr << "Line: " << line << endl;
 					size_t pos = 0;
 					while ( ( pos = line.find("<", pos ) ) != string::npos )
 					{
@@ -97,24 +124,27 @@ public:
 					}
 					
 					Data += line + "\n";
+					
+					getline(in_file, line);
 				}
-				cerr << "Leak checker. Adding item." << endl;
+				while(line.find("Address:") == string::npos && !in_file.eof());
 				
-				of << "\t<Item Name=\"UnallocatedFrees\" Id=\"" << rand() << "\">\n\t\t<Status>Unallocated Free</Status><Output>" << Data << "</Output>\n\t</Item>";
+				// Write data
+				of << Data << "</Output>\n\t</Item>";
 			}
 			in_file.close();
 			
 			of << "</Module>";
 			of.close();
-			return true;
+			
 		}
 		catch(exception& err)
 		{
 			cerr << "Exception is thrown." << err.what() << endl;
 			return false;
 		}
+		return true;
 	}
-	
 protected:
 	string DebugFSPath;
 	string LogFilePath;

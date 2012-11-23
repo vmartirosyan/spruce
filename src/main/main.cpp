@@ -99,7 +99,7 @@ int main(int argc, char ** argv)
 		
 		// Log files of the modules
 		//vector<string> XMLFilesToProcess;
-		vector<string> MountOptions;;
+		vector<string> MountOptions;
 		
 		//Prepare the allowed modules list
 		ModulesAvailable.push_back("syscall");
@@ -155,8 +155,8 @@ int main(int argc, char ** argv)
 		}
 		// Split the module list into module names
 		vector<string> Modules = SplitString(configValues["modules"], ';', ModulesAvailable);
-		
-		/*for ( int i = 0; i < Modules.size(); ++i )
+		/*
+		for ( int i = 0; i < Modules.size(); ++i )
 			cerr << Modules[i] << " ";
 		cerr << endl;*/
 		
@@ -248,7 +248,7 @@ int main(int argc, char ** argv)
 		}
 		
 		// A small hack for firefox to overcome a security problem
-		// Copy the transformation file to the log folder	
+		// Copy the transformation file to the log folder
 		vector<string> args;
 		
 		args.push_back("cp");
@@ -319,7 +319,7 @@ int main(int argc, char ** argv)
 			}
 			cout << "Unmounted" << endl;
 			
-			// Check if KEDR needs to be loaded
+			// Check if KEDR needs to be loaded			
 			if ( PerformLeakCheck || PerformFaultSimulation )
 			{
 				try
@@ -339,6 +339,7 @@ int main(int argc, char ** argv)
 					cerr << "KEDR cannot be loaded." << endl;
 					cerr << "Exception is thrown. " << e.GetMessage() << endl;
 					PerformFaultSimulation = false;
+					PerformLeakCheck = false;
 				}
 			}
 			//PartitionManager * pm = ShmAllocator<PartitionManager>::GetInstance();
@@ -434,8 +435,7 @@ int main(int argc, char ** argv)
 						string prefix = *fs + "." + pm.GetCurrentMountOptions() + "." + *module;
 						
 						if ( (*it).find(prefix) != string::npos )
-						{
-							
+						{							
 							RunModuleTests.push_back(it->substr(prefix.size() + 1, it->size() - prefix.size()));							
 						}
 					}
@@ -457,8 +457,21 @@ int main(int argc, char ** argv)
 					stringstream str;
 					str << ItemDuration;
 					
-					of.open(FileName.c_str(), ios_base::app);
+					// Process the memory leak checker output
+					if ( PerformLeakCheck && kedr.IsRunning() )
+					{
+						if(PartitionManager:: ReleasePartition(MountAt) && kedr.UnloadModule(*fs)) 
+						{
+							LeakChecker leak_check(FileName);
+							if(!leak_check.ProcessLeakCheckerOutput())
+							{
+								cerr << "Leak Check: Bad input file" << endl;
+								//XMLFilesToProcess.push_back(FileName);
+							}
+						}
+					}
 					
+					of.open(FileName.c_str(), ios_base::app);
 					of << "<Duration>" + str.str() + "</Duration>";
 					
 					of << "</FS></SpruceLog>";
@@ -501,6 +514,8 @@ int main(int argc, char ** argv)
 				}
 				while ( PS != PS_Done );
 				
+				
+				
 				/*if ( !pm.ReleasePartition() )
 				{
 					cerr << "Cannot release the partition: " << strerror(errno) << endl;
@@ -510,36 +525,14 @@ int main(int argc, char ** argv)
 				//ShmAllocator<PartitionManager>::Free(pm);
 				pm.ClearCurrentMountOptions();
 			}
-			
-			
-			// Process the memory leak checker output
-			if ( PerformLeakCheck && kedr.IsRunning() )
-			{
-				string FileName = logfolder + "/" + *fs + "_leak_check_log.xml";
-				ofstream of(FileName.c_str());
-				
-				of << "<SpruceLog><FS Name=\"" << *fs << "\">\n";
-				
-				of.close();
-				
-				LeakChecker leak_check(FileName);
-				//if ( leak_check.ProcessLeakCheckerOutput() )
-				//	XMLFilesToProcess.push_back(FileName);
-				
-				of.open(FileName.c_str(), ios_base::app);
-				
-				of << "\n</FS></SpruceLog>";
-				
-				of.close();
-			}
 
 			// Unload the KEDR framework
 			try
 			{
 				if ( kedr.IsRunning() )
 				{
-					kedr.UnloadKEDR();
-					cout << "KEDR is successfully unloaded." << endl;
+					if(kedr.UnloadKEDR())
+						cout << "KEDR is successfully unloaded." << endl;
 				}
 			}
 			catch(Exception e)
