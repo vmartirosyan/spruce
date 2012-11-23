@@ -43,17 +43,18 @@ public:
 		TargetModule(""),
 		MemLeakCheckEnabled(false),
 		FaultSimulationEnabled(false),
-		KEDRProfiles(),		
-		_IsRunning(false)
+		KEDRProfiles()	
+		//_IsRunning(false)
 	{
-		
+		if ( !IsKEDRInstalled() )
+			throw (Exception("KEDR framework is not installed on the system."));
 	}
 	KedrIntegrator(string module):		
 		TargetModule(""),
 		MemLeakCheckEnabled(false),
 		FaultSimulationEnabled(false),
-		KEDRProfiles(),
-		_IsRunning(false)
+		KEDRProfiles()
+		//_IsRunning(false)
 	{
 		if ( !IsKEDRInstalled() )
 			throw (Exception("KEDR framework is not installed on the system."));
@@ -154,11 +155,15 @@ public:
 	bool LoadKEDR()
 	{
 		// Try to unload KEDR first
-		UnloadKEDR();
+		if(IsRunning())
+		{
+			cerr << "is running !" << endl;
+			UnloadKEDR();
+		}
 		
 		MountDebugFS();
 		
-		UnixCommand kedr(/*KEDR_ROOT_DIR"/*/"kedr");
+		UnixCommand kedr(KEDR_ROOT_DIR"/kedr");
 		vector<string> args;
 		args.push_back("start");
 		args.push_back(TargetModule);
@@ -185,7 +190,7 @@ public:
 		
 		 // Indicators are loaded by the KEDR framework automatically.
 		  //LoadIndicators();
-		_IsRunning = true;
+		//_IsRunning = true;
 		return true;
 	}
 	
@@ -195,8 +200,7 @@ public:
 		{
 			// No need to unload the indicators. They are not controlled by us.
 			 //UnloadIndicators();
-			UnloadModule(TargetModule);			
-		
+			UnloadModule(TargetModule);
 			UnixCommand kedr(KEDR_ROOT_DIR"/kedr");
 			vector<string> args;
 			args.push_back("stop");
@@ -206,26 +210,59 @@ public:
 			
 			if ( res == NULL || res->GetStatus() != Success )
 				throw(Exception("Error unloading KEDR. " + (res ? res->GetOutput() : "")));
-			_IsRunning = false;
+			//_IsRunning = false;
 		}
-		catch (...)
+		catch (Exception e)
 		{
-			cerr << "Not all of the components were successfully unloaded." << endl;
+			cerr << "Not all of the components were successfully unloaded. " << e.GetMessage() << endl;
 			return false;
 		}
 		return true;
 	}
+	
 	bool IsRunning()
 	{
-		return _IsRunning;
+		//return _IsRunning;
+		UnixCommand kedr(KEDR_ROOT_DIR"/kedr");
+		vector<string> args;
+		args.push_back("status");
+		ProcessResult * res = kedr.Execute(args);
+		if(res == NULL || res->GetStatus() != Success)
+		{
+			cerr << "failed to get kedr status " + (res ? res->GetOutput() : "") << endl;
+			return false;
+		}
+		string StrRes = res->GetOutput();
+		if(StrRes.find("KEDR is running") != string:: npos)
+			return true;
+		
+		return false;
 	}
 	
-protected:	
+	bool UnloadModule(string module)
+	{
+		UnixCommand rmmod("rmmod");
+		vector<string> args;
+		args.push_back(module);
+		
+		ProcessResult * res = 
+		rmmod.Execute(args);
+		
+		if ( res == NULL || res->GetStatus() != Success )
+		{
+			//throw(Exception("Error executing rmmod. " + (res ? res->GetOutput() : "")));
+			cerr << "Error executing rmmod. " << (res ? res->GetOutput() : "") << endl;
+			return false;
+		}
+		return true;
+	}
+	
+protected:
 	string TargetModule;
 	bool MemLeakCheckEnabled;
 	bool FaultSimulationEnabled;
 	vector<string> KEDRProfiles;
-	bool _IsRunning;
+	//bool _IsRunning;
 	static bool MountDebugFS()
 	{
 		// Is DebugFS already mounted?
@@ -244,7 +281,7 @@ protected:
 	}
 	bool IsKEDRInstalled()
 	{		
-		return (access(/*KEDR_ROOT_DIR"/*/"kedr", F_OK) == 0);
+		return (access(KEDR_ROOT_DIR"/kedr", F_OK) == 0);
 	}
 	
 	void DoesModuleExist(string module)
@@ -291,21 +328,6 @@ protected:
 		modules.close();
 		return false;
 	}	
-	
-	void UnloadModule(string module)
-	{
-		UnixCommand rmmod("rmmod");
-		vector<string> args;
-		args.push_back(module);
-		
-		ProcessResult * res = 
-		rmmod.Execute(args);
-		
-		if ( res == NULL || res->GetStatus() != Success )
-			//throw(Exception("Error executing rmmod. " + (res ? res->GetOutput() : "")));
-			cerr << "Error executing rmmod. " << (res ? res->GetOutput() : "") << endl;
-		
-	}
 	
 	// Loads the common, kmalloc and capable indicators into the kernel
 	void LoadIndicators()
