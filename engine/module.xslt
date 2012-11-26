@@ -34,9 +34,9 @@
 	
 
 	<xsl:template match="/Module">
-#include &lt;common.hpp>
+#include &lt;Common.hpp>
 #include &lt;sys/mount.h>
-#include &lt;test.hpp>
+#include &lt;Test.hpp>
 #include &lt;File.hpp>
 #include &lt;Directory.hpp>
 #include &lt;map>
@@ -187,9 +187,9 @@ int main(int argc, char ** argv)
 	
 	<xsl:template match="/MetaModule">
 		<xsl:variable name="RunTests"><xsl:value-of select="@RunTests"/></xsl:variable>
-#include &lt;common.hpp>
+#include &lt;Common.hpp>
 #include &lt;sys/mount.h>
-#include &lt;test.hpp>
+#include &lt;Test.hpp>
 #include &lt;File.hpp>
 #include &lt;Directory.hpp>
 #include &lt;map>

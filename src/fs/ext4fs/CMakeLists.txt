@@ -1,6 +1,8 @@
-cmake_minimum_required(VERSION 2.6)
-project (Spruce)
-message("Configuring EXT4 specific sources.")
+message("-- Configuring EXT4FS specific sources.")
+
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
 
 IF ( NOT ${HAVE_EXT2_FS_H} )
 	Message("The ext2fs/ext2_fs.h header file is not found. Skiping Ext4 specific tests.")																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																				

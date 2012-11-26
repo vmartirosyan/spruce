@@ -44,10 +44,10 @@
 #include <sys/mount.h>
 #include <sys/stat.h>
 #include <stdlib.h>
-#include <platform_config.hpp>
+#include <PlatformConfig.hpp>
 #include <pwd.h>
-#include <kedr_integrator.hpp>
-#include <leak_checker.hpp>
+#include <KedrIntegrator.hpp>
+#include <LeakChecker.hpp>
 #include <PartitionManager.hpp>
 //#include <ShmAllocator.hpp>
 

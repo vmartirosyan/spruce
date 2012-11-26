@@ -37,12 +37,12 @@
 	</xsl:for-each> 
 
 #include &lt;map>
-#include &lt;process.hpp>
+#include &lt;Process.hpp>
 #include &lt;memory>
 #include &lt;UnixCommand.hpp>
-#include &lt;kedr_integrator.hpp>
+#include &lt;KedrIntegrator.hpp>
 #include &lt;PartitionManager.hpp>
-#include &lt;logger.hpp>
+#include &lt;Logger.hpp>
 using std::map;
 using std::string;
 	<xsl:variable name="TestSetName" select="@Name" />

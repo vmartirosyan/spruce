@@ -26,7 +26,7 @@
 #define BENCHMARK_TEST_HPP
 
 #include <sys/time.h>
-#include "test.hpp"
+#include "Test.hpp"
 #include "BenchmarkTestResult.hpp"
 
 class BenchmarkTest : public Test

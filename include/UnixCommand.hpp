@@ -22,7 +22,7 @@
 #ifndef UNIX_COMMAND_H
 #define UNIX_COMMAND_H
 
-#include <process.hpp>
+#include <Process.hpp>
 #include <string>
 #include <vector>
 #include <unistd.h>
