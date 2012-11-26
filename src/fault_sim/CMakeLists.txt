@@ -1,12 +1,9 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-
 IF ( NOT ${KEDR_INSTALLED} )
 	Message("-- The KEDR framework is not available. Skipping the Fault Simulation module")
 	return()
 ENDIF ( NOT ${KEDR_INSTALLED} )
 
-MESSAGE("Configuring Fault Simulation module")
-PROJECT (Spruce)
+MESSAGE("-- Configuring Fault Simulation module")
 
 ADD_CUSTOM_COMMAND(
    OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp

@@ -20,9 +20,9 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include <kedr_integrator.hpp>
-#include <logger.hpp>
-#include <process.hpp>
+#include <KedrIntegrator.hpp>
+#include <Logger.hpp>
+#include <Process.hpp>
 #include <signal.h>
 #include <fstream>
 using namespace std;

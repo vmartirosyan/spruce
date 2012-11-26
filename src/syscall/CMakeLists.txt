@@ -1,77 +1,54 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+MESSAGE("-- Configuring Syscall module")
 
-MESSAGE("Configuring project syscall module")
-PROJECT (Spruce)
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
+ADD_CUSTOM_COMMAND(
+   OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp
+   COMMAND rm -f ${CMAKE_CURRENT_BINARY_DIR}/*.hpp && ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/engine
+   DEPENDS ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_SOURCE_DIR}/engine/module.xslt ${CMAKE_SOURCE_DIR}/engine/testset.xslt ${CMAKE_CURRENT_SOURCE_DIR}/module.xml *.xml
+   )
+   
+IF ( ${OS_32_BITS} OR NOT ${HAVE_MULTILIB} )	
+ADD_EXECUTABLE(syscall ${CMAKE_CURRENT_BINARY_DIR}/module.cpp )
 
-
-
-ADD_EXECUTABLE(syscall 	${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/chmod/Chmod.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/chown/Chown.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/close/Close.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/creat/Creat.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/open/Open.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/openat/Openat.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/linkat/Linkat.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/dup/DupFileDescriptor.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/fcntl/fcntlFD.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/fdatasync/FDataSyncTest.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/fsync/FSyncTest.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/getdents/getdents.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/ioctl/IoctlTest.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/link/Link.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/lseek/LseekTest.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/mknod/MknodTest.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/pread_pwrite/PreadPwrite.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/read_write/ReadWriteFile.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/readv_writev/ReadvWritev.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/rename/rename.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/select/Select.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/stat/StatTest.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/umask/Umask.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/unlink/Unlink.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/unlinkat/UnlinkAT.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/mmap/MmapMemory.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/msync/MsyncMemory.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/mlock/MlockMemory.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/mprotect/MprotectMemory.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/readdir/ReadDir.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/readlink/Readlink.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/xattr/Xattr.cpp
-						# Karen
-						${CMAKE_CURRENT_SOURCE_DIR}/mount_umount/Mount_Umount.cpp		
-						# Gio
-						${CMAKE_CURRENT_SOURCE_DIR}/chdir/Chdir.cpp	
-						${CMAKE_CURRENT_SOURCE_DIR}/getcwd/Getcwd.cpp	
-						${CMAKE_CURRENT_SOURCE_DIR}/mkdir_rmdir/Mkdir_rmdir.cpp	
-						${CMAKE_CURRENT_SOURCE_DIR}/chroot/Chroot.cpp	
-						# Vahram
-						${CMAKE_CURRENT_SOURCE_DIR}/utime/Utime.cpp	
-						${CMAKE_CURRENT_SOURCE_DIR}/access/Access.cpp	
-						${CMAKE_CURRENT_SOURCE_DIR}/fstat/Fstat.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/statfs/Statfs.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/fstatfs/Fstatfs.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/truncate/Truncate.cpp
-						${CMAKE_CURRENT_SOURCE_DIR}/ftruncate/Ftruncate.cpp
-						# Suren
-						${CMAKE_CURRENT_SOURCE_DIR}/bdflush/Bdflush.cpp
-						# Gurgen
-						${CMAKE_CURRENT_SOURCE_DIR}/fchmod/Fchmod.cpp	
-						${CMAKE_CURRENT_SOURCE_DIR}/fchown/Fchown.cpp	
-						${CMAKE_CURRENT_SOURCE_DIR}/sync/Sync.cpp	
-						${CMAKE_CURRENT_SOURCE_DIR}/lchown/Lchown.cpp
-						# Ruzanna
-
-						# Ani
-						)
-						
-
+					
 TARGET_LINK_LIBRARIES(syscall utils)
 TARGET_LINK_LIBRARIES(syscall rt)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/syscall"
 			DESTINATION bin
 			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
+ELSE ( ${OS_32_BITS} OR NOT ${HAVE_MULTILIB} )
+	ADD_EXECUTABLE(syscall_64 ${CMAKE_CURRENT_BINARY_DIR}/module.cpp)
+				
+	TARGET_LINK_LIBRARIES(syscall_64 utils)
+	TARGET_LINK_LIBRARIES(syscall_64 rt)
+
+	install (	FILES "${CMAKE_BINARY_DIR}/bin/syscall_64"
+			DESTINATION bin
+			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
+
+ENDIF ( ${OS_32_BITS} OR NOT ${HAVE_MULTILIB} )	
+
+IF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB} )	
+	ADD_CUSTOM_COMMAND(
+   OUTPUT  module_32.cpp
+   COMMAND cp module.cpp module_32.cpp
+   DEPENDS module.cpp
+   )
+	set_source_files_properties(module_32.cpp PROPERTIES COMPILE_FLAGS "-m32")
+	
+	
+	ADD_EXECUTABLE(syscall_32 module_32.cpp)
+	TARGET_LINK_LIBRARIES(syscall_32 utils_32)
+	TARGET_LINK_LIBRARIES(syscall_32 rt)
+	
+	set_target_properties(syscall_32 PROPERTIES LINK_FLAGS "-m32") 
+	
+	install (	FILES "${CMAKE_BINARY_DIR}/bin/syscall_32"
+			DESTINATION bin
+			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
+	
+ENDIF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB} )	

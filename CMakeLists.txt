@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
-include (ExternalProject)
+cmake_minimum_required(VERSION 2.4)
 INCLUDE (CheckIncludeFiles)
 INCLUDE (CheckTypeSize)
 
@@ -129,9 +128,9 @@ include_directories("${CMAKE_BINARY_DIR}/include")
 
 add_subdirectory (src/utils)
 add_subdirectory (engine)
-add_subdirectory (bin)
+#add_subdirectory (bin)
 add_subdirectory (include)
-add_subdirectory (lib)
+#add_subdirectory (lib)
 add_subdirectory (src)
 #add_subdirectory (tests)
 add_subdirectory (config)

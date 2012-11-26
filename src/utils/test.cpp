@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include "test.hpp"
+#include "Test.hpp"
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>

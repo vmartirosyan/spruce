@@ -23,7 +23,7 @@
 #ifndef DIRECTORY_H
 #define DIRECTORY_H
 
-#include "exception.hpp"
+#include "Exception.hpp"
 #include "UnixCommand.hpp"
 #include <string>
 #include <stdlib.h>

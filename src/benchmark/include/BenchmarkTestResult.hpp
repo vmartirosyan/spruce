@@ -25,7 +25,7 @@
 #define BENCHMARK_TEST_RESULT_HPP
 
 #include <stdio.h>
-#include "test.hpp"
+#include "Test.hpp"
 
 class BenchmarkTestResult : public TestResult
 {

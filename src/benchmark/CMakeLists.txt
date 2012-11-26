@@ -1,7 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
-
-MESSAGE("Configuring project benchmark BINARYs")
-PROJECT (Spruce)
+MESSAGE("-- Configuring project benchmark BINARYs")
 
 ADD_SUBDIRECTORY(utils)
 

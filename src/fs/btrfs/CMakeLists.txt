@@ -1,7 +1,8 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+MESSAGE("-- Configuring BTRFS module")
 
-MESSAGE("Configuring BTRFS module")
-PROJECT (Spruce)
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
 
 ADD_CUSTOM_COMMAND(
    OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp 
