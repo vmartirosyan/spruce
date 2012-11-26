@@ -70,7 +70,7 @@
 		<Code>
 			struct stat stat_old, stat_new;
 			Unres(fstat(FDs[0], &stat_old) == -1, "Cannot get stat before lchown.");
-			
+			unlink( "symlink" );
 			Unres( symlink(FilePaths[0].c_str(), "symlink") == -1, "Cannot create symbolic link." );
 			
 			EnableFaultSim();
