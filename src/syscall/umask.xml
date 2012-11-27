@@ -25,40 +25,39 @@
 <TestSet Name="umask">	
 	<Test Name="UmaskNormal" FaultSimulationReady="true">
 		<Description>umask()  sets  the calling process's file mode creation mask (umask) to mask and 0777 (i.e., only the file permission bits of mask are used), and returns the previous value of the mask.</Description>
-		<File count="1"/>
 		<Code>
-			Unres(1, "Needs to be refactored");
 			struct stat statbuf;
-			mode_t setMask = 0077;
 			unsigned mode;
 			mode_t retMask;
 			bool firstCallSkiped = false;
-			EnableFaultSim();
-			for(umask(setMask); setMask < 01000; retMask = umask(++setMask))
+			mode_t file_mode = 0777; 
+			for(mode_t setMask = 0077; setMask < 100; ++setMask)
 			{
+				DisableFaultSim();
 				if(firstCallSkiped)
 				{
+					int fd = open("testfile", O_CREAT, file_mode);
+					Unres(fd == -1, "Unable to create file");
 					Fail(retMask != setMask - 1, "Returned by the function mask is wrong");					
+					if(fstat(fd, &statbuf) != 0) 
+					{
+						unlink("testfile");
+						Unres(true, "Cannot fstat file.");
+					}
+					mode = statbuf.st_mode & 0777; 
+					if (mode != (~setMask & file_mode))
+					{
+						unlink("testfile");
+						Fail(true, "Wrong mask is set");
+					}
+					file_mode--;
+					Unres( unlink("testfile") == -1, "Unable to unlink file."); 
+					firstCallSkiped = true;
 				}
 				
-				firstCallSkiped = true;
-				
-				int fd = creat("testfile", 0777);
-				Unres(fd == -1, "Unable to create file");
-								
-				if(fstat(fd, &statbuf) != 0) 
-				{
-					unlink("testfile");
-					Unres(true, "Cannot fstat file");
-				}
-				
-				mode = statbuf.st_mode & 0777;
-				if (mode != (~setMask & 0777))
-				{
-					unlink("testfile");
-					Fail(true, "Wrong mask is set");
-				}
-				unlink("testfile");
+				EnableFaultSim();
+				retMask = umask( setMask );
+			
 			}
 			return Success;
 		</Code>
