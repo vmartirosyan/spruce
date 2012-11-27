@@ -93,6 +93,8 @@ public:
 	// The process ID is set to the curent PID
 	static bool SetIndicator(string point, string indicator, string expression)
 	{
+		if ( !KEDR_INSTALLED )
+			return false;
 		try
 		{
 			ofstream of((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/current_indicator").c_str());
@@ -118,6 +120,8 @@ public:
 	}
 	static bool ClearIndicator(string point)
 	{
+		if ( !KEDR_INSTALLED )
+			return false;
 		try
 		{
 			ofstream of((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/current_indicator").c_str());
@@ -156,6 +160,8 @@ public:
 	} 
 	bool LoadKEDR()
 	{
+		if ( !KEDR_INSTALLED )
+			return false;
 		// Try to unload KEDR first
 		if(IsRunning())
 		{
@@ -198,6 +204,8 @@ public:
 	
 	bool UnloadKEDR()
 	{
+		if ( !KEDR_INSTALLED )
+			return true;
 		try
 		{
 			// No need to unload the indicators. They are not controlled by us.
@@ -224,6 +232,8 @@ public:
 	
 	bool IsRunning()
 	{
+		if ( !KEDR_INSTALLED )
+			return false;
 		//return _IsRunning;
 		UnixCommand kedr(KEDR_ROOT_DIR"/kedr");
 		vector<string> args;
