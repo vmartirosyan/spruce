@@ -67,8 +67,8 @@ ENDIF (NOT KEDR_ROOT_DIR)
 
 # Check if KEDR framework is there
 IF (NOT EXISTS ${KEDR_ROOT_DIR}/kedr)
-	Message("KEDR Framework is not installed or the KEDR root is not correct.")
-	Message("Please install the KEDR Framework and/or provide the KEDR root directory via -DKEDR_ROOT_DIR=/kedr/root/dir")
+	Message("!! KEDR Framework is not installed or the KEDR root is not correct.")
+	Message("!! Please install the KEDR Framework and/or provide the KEDR root directory via -DKEDR_ROOT_DIR=/kedr/root/dir")
 	SET (KEDR_INSTALLED 0)
 ELSE (NOT EXISTS ${KEDR_ROOT_DIR}/kedr)
 	SET (KEDR_INSTALLED 1)
@@ -85,7 +85,7 @@ IF (EXISTS ${QUOTACHECK_PATH})
 	SET ( QUOTA_ENABLED 1 )	
 ELSE (EXISTS ${QUOTACHECK_PATH})
 	Message("-- Looking for quotacheck file - NOT found")
-	Message("-- Please install the package quota(-tools) and/or provide the correct QUOTACHECK_PATH.")
+	Message("!! Please install the package quota(-tools) and/or provide the correct QUOTACHECK_PATH.")
 ENDIF (EXISTS ${QUOTACHECK_PATH})
 
 CHECK_INCLUDE_FILES ("sys/types.h;attr/xattr.h" HAVE_XATTR_H)
@@ -134,7 +134,7 @@ add_subdirectory (include)
 add_subdirectory (src)
 #add_subdirectory (tests)
 add_subdirectory (config)
-#add_subdirectory (doc)
+add_subdirectory (doc)
 
 
 
