@@ -42,6 +42,15 @@ enum LogLevel
 	LOG_All
 };
 
+const string LogLevelStrings[] = {
+	"None",
+	"Info",
+	"Debug",
+	"Warning",
+	"Error",
+	"Fatal"
+};
+
 class Logger
 {
 private:
@@ -53,12 +62,22 @@ private:
 		if ( _LogLevel < level )
 			return;
 			
+		time_t t = time(NULL);
+		struct tm * tm = localtime(&t);
+		char buf[25];
+		size_t bytes = strftime(buf, 25, "%F %T", tm);
+		buf[bytes] = 0;
+			
+		string MsgInternal = "[" + (string)buf + "][" + LogLevelStrings[level] + "]: " + msg;
+			
 		// Well the log level is ok. Print it!
 		try
 		{
 			ofstream of(_LogFile.c_str(), ios_base::app);
-			of << msg << endl;
+			of << MsgInternal << endl;
 			of.close();
+			if ( level >= LOG_Warn )
+				cerr << MsgInternal << endl;
 		}
 		catch (...)
 		{
