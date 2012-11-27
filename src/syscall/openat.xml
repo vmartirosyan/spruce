@@ -118,13 +118,8 @@
 	</Test>
 	<Test Name="OpenAtENXIO2">
 		<Description>pathname  refers  to  a device special file and no corresponding device exists.</Description>
-		<Code>
-			bool NodevOption = PartitionManager::IsOptionEnabled("nodev");
-			bool CombOptions = ( !(PartitionManager::IsOptionEnabled("dev")) && PartitionManager::IsOptionEnabled("user") ) || (
-			!(PartitionManager::IsOptionEnabled("dev")) && PartitionManager::IsOptionEnabled("users") ) || (
-			!(PartitionManager::IsOptionEnabled("dev")) && PartitionManager::IsOptionEnabled("owner") ) || (
-			!(PartitionManager::IsOptionEnabled("dev")) && PartitionManager::IsOptionEnabled("group") );
-			if( NodevOption || CombOptions )
+		<Code>			
+			if( PartitionManager::IsOptionEnabled("nodev") )
 			{
 				Error("Device files not supported", Unsupported);
 			}

@@ -240,6 +240,8 @@
 	<Test Name="RenameNoEnt1">
 		<Description>The link named by oldpath does not exist.</Description>
 		<Code>
+			Unres ( PartitionManager::IsOptionEnabled("ro"), "Read only file system.");
+			
 			ErrorTest(rename("non_existing_file", "someFile"), -1, ENOENT);
 		</Code>
 	</Test>

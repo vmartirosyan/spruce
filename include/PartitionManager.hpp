@@ -24,6 +24,7 @@
 #ifndef PARTITIONMANAGER_HPP
 #define PARTITIONMANAGER_HPP
 
+#include <Logger.hpp>
 #include <sstream>
 #include <stdint.h>
 #include <inttypes.h>
@@ -126,7 +127,7 @@ class PartitionManager
 			}
 			if (S_ISREG(st.st_mode))
 			{
-				cout << "Loop device on regular file." << endl;
+				Logger::LogInfo("Loop device on regular file.");
 				DeviceSize = st.st_size;
 			}
 			else
@@ -151,7 +152,7 @@ class PartitionManager
 
 		PartitionStatus PreparePartition()
 		{
-			cerr << "Preparing partition " << _DeviceName << endl;			
+			Logger::LogInfo((string)"Preparing partition " + _DeviceName);
 			if ( !ReleasePartition(_MountPoint) )
 			{
 				return PS_Fatal;
@@ -162,14 +163,14 @@ class PartitionManager
 				_Index = 0;
 				return PS_Done;
 			}
-			cout << "File system " << _FileSystem << " is created successfully." << endl;
+			Logger::LogInfo((string)"File system " + _FileSystem + " is created successfully.");
 			
 			
 			if ( (_MountOpts != "" || _Index > 0) && _Index < _AdditionalMountOptions[_FSIndex].size() )
 			{
 				_CurrentMountOptions = _MountOpts + _AdditionalMountOptions[_FSIndex][_Index];
 				
-				cerr << "Mounting with additional option: " << _CurrentMountOptions << endl;
+				Logger::LogInfo((string)"Mounting with additional option: " + _CurrentMountOptions);
 			}
 			if ( _Index == _AdditionalMountOptions[_FSIndex].size() )
 			{
@@ -177,7 +178,7 @@ class PartitionManager
 				return PS_Done;
 			}
 			_Index++;
-			cout<<_Index << " of " << _AdditionalMountOptions[_FSIndex].size() << endl;
+			cout<<  "Mount options: " << _CurrentMountOptions << ". " << _Index << " of " << _AdditionalMountOptions[_FSIndex].size() << endl;
 			if( !Mount(_DeviceName,_MountPoint,_FileSystem,_CurrentMountOptions) )
 				return PS_Skip;
 			return PS_Success;
@@ -200,7 +201,7 @@ class PartitionManager
 		
 		static bool ReleasePartition(string MountPoint)
 		{
-			cout << "Unmounting partition " << MountPoint << endl;
+			Logger::LogInfo((string)"Unmounting partition " + MountPoint);
 			if ( chdir("/") == -1)				
 				return false;
 			int RetryCount = 0;
@@ -210,12 +211,12 @@ retry:
 			// Check if partition was successfully unmounted, or it was not mounted yet!
 			if ( res == 0 ) 
 			{
-				cout << "Device is unmounted successfully." << endl;
+				Logger::LogInfo((string)"Device is unmounted successfully.");
 				return true;
 			}
 			if ( res == -1 && errno == EINVAL )
 			{
-				cout << "Cannot unmount. Device was not mounted!" << endl;
+				Logger::LogWarn((string)"Cannot unmount. Device was not mounted!");
 				return true;
 			}
 			if ( errno == EBUSY ) // Well, try again...
@@ -223,7 +224,7 @@ retry:
 				sleep(1);
 				if ( RetryCount++ < 10 )
 				{
-					cerr << "Device was busy.. retrying... " << endl;
+					Logger::LogWarn((string)"Device was busy.. retrying... ");
 					goto retry;
 				}
 			}
@@ -243,21 +244,9 @@ retry:
 		
 		static bool IsOptionEnabled(string optionName)
 		{
-			char * opts = NULL;
-			if ( (opts = getenv("MountOpts")) != NULL )
-			{
-				char * pch;
-				pch = strtok (opts," ,");
-				while (pch != NULL)
-				{
-					if(strcmp(pch,optionName.c_str()) == 0)
-					{
-						return true;
-					}
-					pch = strtok (NULL, " ,");
-				}
-			}
-			return false;
+			if ( IsSpecialOption(optionName) )
+				return IsSpecialOptionEnabled(optionName);
+			return IsOptionEnabledInternal(optionName);
 		}
 	private:
 		string _ConfigFile;
@@ -269,6 +258,124 @@ retry:
 		unsigned int _Index;
 		FileSystems _FSIndex;		
 		vector<string> _AdditionalMountOptions[FS_UNSUPPORTED];
+		// Some options need to be processed differentelly. (e.g. noexec, nodev)		
+		static bool IsSpecialOption(const string & opt)
+		{
+			if ( opt == "noexec" || opt == "nodev" || opt == "nosuid" )
+				return true;
+			return false;
+		}
+		static bool IsSpecialOptionEnabled(const string & opt)
+		{
+			// According to man 8 mount:
+			// user, users: These  options  imply  the  options  noexec,
+            //  nosuid,  and  nodev (unless overridden by subsequent options, as
+            //  in the option line user,exec,dev,suid).
+			if ( opt == "noexec" )
+			{
+				int userPos;
+				int execPos;
+				int noexecPos;
+				// If the noexec option is there and (exec option is missing or comes before noexec)
+				if ( IsOptionEnabledInternal("noexec", &noexecPos) && ( !IsOptionEnabledInternal("exec", &execPos) || execPos < noexecPos ) )
+					return true;
+				// If the user option is there and (exec option is missing or comes before user)
+				if ( IsOptionEnabledInternal("user", &userPos) && ( !IsOptionEnabledInternal("exec", &execPos) || execPos < userPos) )
+					return true;
+				// If the users option is there and (exec option is missing or comes before users)
+				if ( IsOptionEnabledInternal("users", &userPos) && ( !IsOptionEnabledInternal("exec", &execPos) || execPos < userPos) )
+					return true;
+					
+				return false;
+			}
+			
+			// According to man 8 mount:
+			// user, users, group, owner: These  options  imply  the  options  
+            //  nosuid,  and  nodev (unless overridden by subsequent options, as
+            //  in the option line user,dev,suid).
+			if ( opt == "nodev" )
+			{
+				int userPos;
+				int groupPos;
+				int devPos;
+				int nodevPos;
+				int ownerPos;
+				// If the nodev option is there and (dev option is missing or comes before nodev)
+				if ( IsOptionEnabledInternal("nodev", &nodevPos) && ( !IsOptionEnabledInternal("dev", &devPos) || devPos < nodevPos ) )
+					return true;
+				// If the user option is there and (dev option is missing or comes before user)
+				if ( IsOptionEnabledInternal("user", &userPos) && ( !IsOptionEnabledInternal("dev", &devPos) || devPos < userPos) )
+					return true;
+				// If the users option is there and (dev option is missing or comes before users)
+				if ( IsOptionEnabledInternal("users", &userPos) && ( !IsOptionEnabledInternal("dev", &devPos) || devPos < userPos) )
+					return true;
+				// If the group option is there and (dev option is missing or comes before group)
+				if ( IsOptionEnabledInternal("group", &groupPos) && ( !IsOptionEnabledInternal("dev", &devPos) || devPos < groupPos) )
+					return true;
+				// If the owner option is there and (dev option is missing or comes before group)
+				if ( IsOptionEnabledInternal("owner", &ownerPos) && ( !IsOptionEnabledInternal("dev", &devPos) || devPos < ownerPos) )
+					return true;
+					
+				return false;
+			}
+			
+			// According to man 8 mount:
+			// user, users, group, owner: These  options  imply  the  options  
+            //  nosuid,  and  nodev (unless overridden by subsequent options, as
+            //  in the option line user,dev,suid).
+			if ( opt == "nosuid" )
+			{
+				int userPos;
+				int groupPos;
+				int suidPos;
+				int nosuidPos;
+				int ownerPos;
+				// If the nosuid option is there and (suid option is missing or comes before nosuid)
+				if ( IsOptionEnabledInternal("nosuid", &nosuidPos) && ( !IsOptionEnabledInternal("suid", &suidPos) || suidPos < nosuidPos ) )
+					return true;
+				// If the user option is there and (suid option is missing or comes before user)
+				if ( IsOptionEnabledInternal("user", &userPos) && ( !IsOptionEnabledInternal("suid", &suidPos) || suidPos < userPos) )
+					return true;
+				// If the users option is there and (suid option is missing or comes before users)
+				if ( IsOptionEnabledInternal("users", &userPos) && ( !IsOptionEnabledInternal("suid", &suidPos) || suidPos < userPos) )
+					return true;
+				// If the group option is there and (suid option is missing or comes before group)
+				if ( IsOptionEnabledInternal("group", &groupPos) && ( !IsOptionEnabledInternal("suid", &suidPos) || suidPos < groupPos) )
+					return true;
+				// If the owner option is there and (dev option is missing or comes before group)
+				if ( IsOptionEnabledInternal("owner", &ownerPos) && ( !IsOptionEnabledInternal("suid", &suidPos) || suidPos < ownerPos) )
+					return true;
+					
+				return false;
+			}
+			// In case of unknown option
+			return false;
+		}
+		static bool IsOptionEnabledInternal(const string & opt, int * position = 0)
+		{			
+			char * opts = NULL;
+			if ( (opts = getenv("MountOpts")) != NULL )
+			{
+				char * buf = new char[strlen(opts) + 1];
+				strncpy( buf, opts, strlen(opts) );
+				buf[strlen(opts)] = 0;				
+				char * pch;
+				pch = strtok (buf," ,");
+				int pos = -1;
+				while (pch != NULL)
+				{
+					pos++;
+					if(strcmp(pch,opt.c_str()) == 0)
+					{
+						if ( position )
+							*position = pos;						
+						return true;
+					}
+					pch = strtok (NULL, " ,");					
+				}
+			}			
+			return false;
+		}		
 		bool LoadConfiguration()
 		{
 			bool result = false;
@@ -277,7 +384,7 @@ retry:
 			{
 				string line;
 				input.open(_ConfigFile.c_str());
-				cout << "PartitionManager: Processing file " << _ConfigFile << endl;
+				//cout << "PartitionManager: Processing file " << _ConfigFile << endl;
 				// Find the section start
 				while ( input.good() )
 				{
@@ -292,7 +399,7 @@ retry:
 					_FSIndex = GetFSNumber(FSName);
 					if ( _FSIndex == -1 )
 						continue;
-					cout << "PartitionManager: FS = " << FSName << endl;
+					//cout << "PartitionManager: FS = " << FSName << endl;
 					// Fill in _AdditionalMountOptions[FSNum]
 					// Set the quota mount option for normal case to be able to run all the quota-related tests
 					//_AdditionalMountOptions[_FSIndex].push_back("quota");
@@ -334,8 +441,6 @@ retry:
 			input.close();
 			return result;
 		}
-		
-		
 		
 		static bool CreateFilesystem(string fs, string partition)
 		{
@@ -397,12 +502,13 @@ retry:
 				cerr << "Error: " << res->GetOutput() << endl;
 				return false;
 			}
-			cout << "Mkfs complete." << endl;
+			Logger::LogInfo("Mkfs complete.");
 			return true;
 		}
 
 		static bool Mount(string DeviceName,string MountPoint,string FileSystem,string Options)
 		{
+			Logger::LogWarn("Mount: Options: " + Options);
 			UnixCommand * mnt = new UnixCommand("mount");
 			vector<string> mnt_args;
 			mnt_args.push_back(DeviceName);
@@ -413,7 +519,6 @@ retry:
 			mnt_args.push_back("-o");
 			mnt_args.push_back(Options);
 			setenv("MountOpts", Options.c_str(), 1);
-			cerr << "Mounting with option: " << Options << endl;
 						
 			ProcessResult * res = mnt->Execute(mnt_args);
 			delete mnt;
@@ -434,7 +539,7 @@ retry:
 				cerr << "Error: " << strerror(errno) << endl;
 				return false;
 			}
-			cout << "Changed dir" << endl;
+			//cout << "Changed dir" << endl;
 			return true;
 		}
 		FileSystems GetFSNumber(string FSName)
