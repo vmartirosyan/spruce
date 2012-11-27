@@ -240,7 +240,7 @@ int main(int argc, char ** argv)
 		string logfolder = "/tmp/spruce_log/";
 		if ( configValues.find("logfolder") != configValues.end() )
 		{
-			logfolder = configValues["logfolder"];
+			logfolder = configValues["logfolder"];			
 		}
 		else
 		{
@@ -250,6 +250,18 @@ int main(int argc, char ** argv)
 		if ( mkdir( logfolder.c_str(), 0777 ) == -1 && errno != EEXIST )
 		{
 			cerr << "Cannot create log folder: " << strerror(errno) << endl;
+			return FAULT;
+		}
+		// Add the date and time to the log folder
+		time_t t = time(NULL);
+		struct tm * tm = localtime(&t);
+		char buf[25];
+		size_t bytes = strftime(buf, 25, "%F_%T", tm);
+		buf[bytes] = 0;
+		logfolder = logfolder + "/" + buf;
+		if ( mkdir(logfolder.c_str(), 0777) )
+		{
+			cerr << "Cannot create logfolder: " << logfolder << ". " << strerror(errno) << endl;
 			return FAULT;
 		}
 
@@ -316,11 +328,12 @@ int main(int argc, char ** argv)
 		
 		// Go through the modules, execute them
 		// and collect the output
-		cerr << "Executing modules." << endl;
+		//cerr << "Executing modules." << endl;
 		for ( vector<string>::iterator fs = FileSystems.begin(); fs != FileSystems.end(); ++fs )
 		{
 			time_t FSStartTime = time(0);
-			cerr << "Filesystem : " << *fs << endl;
+			cerr << endl << "\033[1;32mFilesystem : " << *fs << "\033[0m" << endl;						
+			
 			// Before executing the modules prepare the environment
 			setenv("MountAt", MountAt.c_str(), 1);
 			setenv("Partition", partition.c_str(), 1);
@@ -334,8 +347,7 @@ int main(int argc, char ** argv)
 				cerr << "Cannot unmount folder " << MountAt << endl;
 				cerr << "Error: " << strerror(errno) << endl;
 				continue;
-			}
-			cout << "Unmounted" << endl;
+			}			
 			
 			// Check if KEDR needs to be loaded			
 			if ( PerformLeakCheck || PerformFaultSimulation )
@@ -365,7 +377,6 @@ int main(int argc, char ** argv)
 			
 			for (vector<string>::iterator module = Modules.begin(); module != Modules.end() && ModuleStatus < Fatal; ++module)
 			{				
-				cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
 				string ModuleBin = (module->find("fs-spec") == string::npos ? *module : (*fs + module->substr(7, module->size())));
 				if ( *module == "fault-sim" )
 					ModuleBin = "fault_sim";
@@ -391,7 +402,7 @@ int main(int argc, char ** argv)
 					}
 					if ( PS == PS_Done  )
 					{
-						cout << "End of mount options" << endl;
+						Logger::LogInfo("End of mount options.");
 						break;
 					}
 					ShowOutput = true;
@@ -412,6 +423,8 @@ int main(int argc, char ** argv)
 						continue;
 					}
 					UnixCommand * command = new UnixCommand((INSTALL_PREFIX"/bin/" + ModuleBin).c_str());
+					
+					
 					
 					string FileName = logfolder + "/" + *fs + "_" + *module + "_" + pm.GetCurrentMountOptions() + "_log.xml";
 					
@@ -466,8 +479,9 @@ int main(int argc, char ** argv)
 							module_args.push_back(*it);
 						}
 					}
+					cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
+					
 					time_t ItemStartTime = time(0);
-
 					ProcessResult * result = command->Execute(module_args);
 					delete command;
 					
@@ -496,7 +510,7 @@ int main(int argc, char ** argv)
 					
 					of.close();
 					
-					cerr << "Module output: " << result->GetOutput() << endl;
+					// cerr << "Module output: " << result->GetOutput() << endl;
 					
 					// Generate the HTML log file
 					UnixCommand xslt("xsltproc");
@@ -523,12 +537,13 @@ int main(int argc, char ** argv)
 					ModuleStatus = result->GetStatus();					
 					
 					SpruceStatus = static_cast<Status>(ModuleStatus | SpruceStatus);
-					cerr << "Module " << *module << " exits with status " << ModuleStatus << endl;
+					cerr << "Module " << *module << " exits with status `" << StatusMessages[ModuleStatus] << "`" << endl;
 					if ( ModuleStatus >= Fatal )
 					{
 						cerr << "\033[1;31mSpruce: Fatal error has rised. Stopping system execution.\033[0m" << endl;						
 						break;
 					}
+					cout << endl;
 				}
 				while ( PS != PS_Done );
 				
@@ -613,9 +628,10 @@ void OpenDashboard(string browser, string logfolder, string fs)
 	// The new process must be created to be able to execute the browser as non-privileged user.
 	if ( fork() == 0 )
 	{
+		cout << "Opening logfile in browser " << browser << endl;
 		ProcessResult * res = NULL;
 		// Process the dashboard file
-		cout << "Processing file " << fs << ".xml ...";
+		// cout << "Processing file " << fs << ".xml ...";
 		UnixCommand xslt("xsltproc");
 		vector<string> xslt_args;
 		
@@ -641,7 +657,7 @@ void OpenDashboard(string browser, string logfolder, string fs)
 			cerr << res->GetOutput() << endl;
 			_exit(1);
 		}			
-		cout << "Done" << endl;
+		cout << endl;
 	
 		
 		// Change the effective user id to real user id... browsers don't like ronning as root.
@@ -654,8 +670,6 @@ void OpenDashboard(string browser, string logfolder, string fs)
 			cerr << "Cannot obtain user name. " << strerror(errno) << endl;
 			return;
 		}
-		
-		cout << "Switching to user `" << UserName << "`" << endl;
 		
 		setenv("HOME", (static_cast<string>("/home/") + UserName).c_str(), 1);
 		
