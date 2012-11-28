@@ -50,20 +50,42 @@
 			
 			Unres( strcmp(DeviceName, "") == 0, "No device name is provided." );
 			Unres( strcmp(MountPoint, "") == 0, "No mount point is provided." );
+			int cmd_on;
+			int cmd_off;
+		
+			if(PartitionManager::IsOptionEnabled("usrquota"))
+			{
+				cmd_on = QCMD(Q_QUOTAON, USRQUOTA);
+				cmd_off = QCMD(Q_QUOTAOFF, USRQUOTA);
+			}
+			else
+			{
+				cmd_on = QCMD(Q_QUOTAON, GRPQUOTA);
+				cmd_off = QCMD(Q_QUOTAOFF, GRPQUOTA);
+			}
 			
-			int cmd_on = QCMD(Q_QUOTAON, USRQUOTA);
-			int cmd_off = QCMD(Q_QUOTAOFF, USRQUOTA);
 			// Create the quota file
 			UnixCommand* quotacheck = new UnixCommand(QUOTACHECK_PATH);
-			vector<string> quota_args;
-			quota_args.push_back(MountPoint);
+			vector<string> args;
+			args.push_back("-c");
+			args.push_back("-u");
+			args.push_back("-g");
+			args.push_back(MountPoint);
 			
-			ProcessResult * res = quotacheck->Execute(quota_args);
+			ProcessResult * res = quotacheck->Execute(args);
 			delete quotacheck;
 			Unres( res == NULL, "Cannot execute 'quotacheck' command to create the quota file." );
-			Unres( res->GetStatus() != Success, "Error executing 'quotacheck'. " + res->GetOutput() );
+		//	Unres( res->GetStatus() != Success, "Error executing 'quotacheck'. " + res->GetOutput() );
+			
 			string QuotaFile = MountPoint;
-			QuotaFile += "/aquota.user";
+			if(PartitionManager::IsOptionEnabled("usrquota"))
+			{
+				QuotaFile += "/aquota.user";
+			}
+			else
+			{
+				QuotaFile += "/aquota.group";
+			}
 	</Header>
 	<Test Name="QuotactlQuotaOnOff" FaultSimulationReady="true">
 		<Description>Turn on and off quotas for a file system.</Description>		
@@ -79,9 +101,18 @@
 	<Test Name="QuotactlGetSetQuota" FaultSimulationReady="true">
 		<Description>Set and get quota information for user or group id.</Description>		
 		<Code>
-			int cmd_get_quota = QCMD(Q_GETQUOTA, USRQUOTA);
-			int cmd_set_quota = QCMD(Q_SETQUOTA, USRQUOTA);
-			
+			int cmd_get_quota;
+			int cmd_set_quota;
+			if(PartitionManager::IsOptionEnabled("usrquota"))
+			{
+				cmd_get_quota = QCMD(Q_GETQUOTA, USRQUOTA);
+				cmd_set_quota = QCMD(Q_SETQUOTA, USRQUOTA);
+			}
+			else
+			{
+				cmd_get_quota = QCMD(Q_GETQUOTA, GRPQUOTA);
+				cmd_set_quota = QCMD(Q_SETQUOTA, GRPQUOTA);
+			}
 			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );
 			
 			struct dqblk quota_data, quota_data2;
@@ -106,9 +137,18 @@
 	<Test Name="QuotactlGetSetQuotaInfo" FaultSimulationReady="true">
 		<Description>Set and get information about quotafile.</Description>		
 		<Code>	
-			int cmd_get_info = QCMD(Q_GETINFO, USRQUOTA);
-			int cmd_set_info = QCMD(Q_SETINFO, USRQUOTA);
-			
+			int cmd_get_info;
+			int cmd_set_info;
+			if(PartitionManager::IsOptionEnabled("usrquota"))
+			{
+				cmd_get_info = QCMD(Q_GETINFO, USRQUOTA);
+				cmd_set_info = QCMD(Q_SETINFO, USRQUOTA);
+			}
+			else
+			{
+				cmd_get_info = QCMD(Q_GETINFO, GRPQUOTA);
+				cmd_set_info = QCMD(Q_SETINFO, GRPQUOTA);
+			}
 			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );
 			
 			struct dqinfo quota_info, quota_info2;
@@ -133,9 +173,16 @@
 	<Test Name="QuotactlGetFormat" FaultSimulationReady="true">
 		<Description>Get quota format used on the specified file system.</Description>		
 		<Code>
-			int cmd_get_format = QCMD(Q_GETFMT, USRQUOTA);
+			int cmd_get_format;
 			int format;
-			
+			if(PartitionManager::IsOptionEnabled("usrquota"))
+			{
+				cmd_get_format = QCMD(Q_GETFMT, USRQUOTA);
+			}
+			else
+			{
+				cmd_get_format = QCMD(Q_GETFMT, GRPQUOTA);
+			}
 			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );
 			EnableFaultSim();
 			Fail( quotactl(cmd_get_format, DeviceName, 0, reinterpret_cast<caddr_t>(&format) ) == -1, "Cannot get format." );
