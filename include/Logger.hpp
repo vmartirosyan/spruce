@@ -59,7 +59,7 @@ private:
 	static void Log(LogLevel level, const string & msg)
 	{
 		// Check if we should print the log
-		if ( _LogLevel < level )
+		if ( _LogLevel > level )
 			return;
 			
 		time_t t = time(NULL);
@@ -111,7 +111,16 @@ public:
 		_LogFile = file;
 		_LogLevel = level;
 	}
-	
+	static LogLevel Parse(const string & sLevel)
+	{		
+		for ( int i = LOG_None; i < LOG_All; ++i )
+		{
+			if ( sLevel == LogLevelStrings[i] )
+				return (LogLevel)i;
+		}
+		return LOG_None;
+	}
 };
+
 
 #endif /* LOGGER_HPP */

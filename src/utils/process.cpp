@@ -56,8 +56,8 @@ string ProcessResult::StatusToString()
 }
 
 int Process::Level = 0;
-string Logger::_LogFile = "/tmp/spruce.log";
-LogLevel Logger::_LogLevel = LOG_Warn;
+string Logger::_LogFile;
+LogLevel Logger::_LogLevel;
 
 ProcessResult::~ProcessResult()
 {

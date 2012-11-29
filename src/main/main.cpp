@@ -260,6 +260,29 @@ int main(int argc, char ** argv)
 			return FAULT;
 		}
 		
+		// Determine the log level
+		string loglevel = "warning";
+		if ( configValues.find("loglevel") != configValues.end() )
+		{
+			loglevel = configValues["loglevel"];			
+		}
+		else
+		{
+			cerr << "Notice. No log level specified. Using `" << loglevel << "` as default." << endl;
+		}
+		LogLevel nLogLevel = Logger::Parse(loglevel);
+		if ( LOG_None == nLogLevel)
+			nLogLevel = LOG_Warn;
+		cerr << "Logger::Init(" << logfolder + "/spruce.log" << "," << nLogLevel << ")" << endl; 
+		Logger::Init(logfolder + "/spruce.log", nLogLevel);
+
+		// Prepare the log folder
+		if ( mkdir( logfolder.c_str(), 0777 ) == -1 && errno != EEXIST )
+		{
+			cerr << "Cannot create log folder: " << strerror(errno) << endl;
+			return FAULT;
+		}
+
 		// Find out which browser must be used to view the log file
 		// If no browser name is specified, then the system will be executed in batch mode.
 		string browser = "";
