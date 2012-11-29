@@ -106,7 +106,7 @@
 			ErrorTest(writev(FDs[0], WriteVec, BufCount), -1, EBADF);
 		</Code>
 	</Test>
-	<Test Name="ReadvInval">
+	<!--Test Name="ReadvInval">
 		<Description>readv: fd  was  created  via  a call to timerfd_create(2) and the wrong size buffer was given to readv().</Description>
 		<Code>
 			const int BufCount = 2;
@@ -129,7 +129,7 @@
 			Unres (timerfd_settime(fd, TFD_TIMER_ABSTIME, &new_value, NULL) == -1, "Cannot set time.");			
 			ErrorTest(readv(fd, ReadVec, BufCount), -1, EINVAL);
 		</Code>
-	</Test>
+	</Test-->
 	<Test Name="ReadvIsDir">
 		<Description>readv: fd refers to a directory.</Description>
 		<Dir count="1"/>
