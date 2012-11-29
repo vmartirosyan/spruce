@@ -171,7 +171,7 @@ public:
 		
 		MountDebugFS();
 		
-		UnixCommand kedr(KEDR_ROOT_DIR"/kedr");
+		UnixCommand kedr(KEDR_PATH);
 		vector<string> args;
 		args.push_back("start");
 		args.push_back(TargetModule);
@@ -211,7 +211,7 @@ public:
 			// No need to unload the indicators. They are not controlled by us.
 			 //UnloadIndicators();
 			UnloadModule(TargetModule);
-			UnixCommand kedr(KEDR_ROOT_DIR"/kedr");
+			UnixCommand kedr(KEDR_PATH);
 			vector<string> args;
 			args.push_back("stop");
 					
@@ -235,7 +235,7 @@ public:
 		if ( !KEDR_INSTALLED )
 			return false;
 		//return _IsRunning;
-		UnixCommand kedr(KEDR_ROOT_DIR"/kedr");
+		UnixCommand kedr(KEDR_PATH);
 		vector<string> args;
 		args.push_back("status");
 		ProcessResult * res = kedr.Execute(args);
@@ -293,7 +293,7 @@ protected:
 	}
 	bool IsKEDRInstalled()
 	{
-		return (access(KEDR_ROOT_DIR"/kedr", F_OK) == 0);
+		return (access(KEDR_PATH, F_OK) == 0);
 	}
 	
 	void DoesModuleExist(string module)

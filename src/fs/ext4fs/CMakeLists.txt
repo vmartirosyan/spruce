@@ -1,8 +1,5 @@
 message("-- Configuring EXT4FS specific sources.")
 
-if(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
 
 IF ( NOT ${HAVE_EXT2_FS_H} )
 	Message("The ext2fs/ext2_fs.h header file is not found. Skiping Ext4 specific tests.")																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																				
@@ -20,7 +17,7 @@ ADD_EXECUTABLE(ext4 ${CMAKE_CURRENT_BINARY_DIR}/module.cpp )
 
 					
 TARGET_LINK_LIBRARIES(ext4 utils)
-TARGET_LINK_LIBRARIES(ext4 rt)
+#TARGET_LINK_LIBRARIES(ext4 rt)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/ext4"
 			DESTINATION bin
@@ -29,7 +26,7 @@ ELSE ( ${OS_32_BITS} OR NOT ${HAVE_MULTILIB})
 	ADD_EXECUTABLE(ext4_64 ${CMAKE_CURRENT_BINARY_DIR}/module.cpp)
 				
 	TARGET_LINK_LIBRARIES(ext4_64 utils)
-	TARGET_LINK_LIBRARIES(ext4_64 rt)
+#	TARGET_LINK_LIBRARIES(ext4_64 rt)
 
 	install (	FILES "${CMAKE_BINARY_DIR}/bin/ext4_64"
 			DESTINATION bin
@@ -48,7 +45,7 @@ IF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB})
 	
 	ADD_EXECUTABLE(ext4_32 module_32.cpp)
 	TARGET_LINK_LIBRARIES(ext4_32 utils_32)
-	TARGET_LINK_LIBRARIES(ext4_32 rt)
+#	TARGET_LINK_LIBRARIES(ext4_32 rt)
 	
 	set_target_properties(ext4_32 PROPERTIES LINK_FLAGS "-m32") 
 	

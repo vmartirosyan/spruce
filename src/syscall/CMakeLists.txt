@@ -1,8 +1,5 @@
 MESSAGE("-- Configuring Syscall module")
 
-if(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
 
 ADD_CUSTOM_COMMAND(
    OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp
@@ -15,7 +12,7 @@ ADD_EXECUTABLE(syscall ${CMAKE_CURRENT_BINARY_DIR}/module.cpp )
 
 					
 TARGET_LINK_LIBRARIES(syscall utils)
-TARGET_LINK_LIBRARIES(syscall rt)
+#TARGET_LINK_LIBRARIES(syscall rt)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/syscall"
 			DESTINATION bin
@@ -24,7 +21,7 @@ ELSE ( ${OS_32_BITS} OR NOT ${HAVE_MULTILIB} )
 	ADD_EXECUTABLE(syscall_64 ${CMAKE_CURRENT_BINARY_DIR}/module.cpp)
 				
 	TARGET_LINK_LIBRARIES(syscall_64 utils)
-	TARGET_LINK_LIBRARIES(syscall_64 rt)
+#	TARGET_LINK_LIBRARIES(syscall_64 rt)
 
 	install (	FILES "${CMAKE_BINARY_DIR}/bin/syscall_64"
 			DESTINATION bin
@@ -43,7 +40,7 @@ IF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB} )
 	
 	ADD_EXECUTABLE(syscall_32 module_32.cpp)
 	TARGET_LINK_LIBRARIES(syscall_32 utils_32)
-	TARGET_LINK_LIBRARIES(syscall_32 rt)
+#	TARGET_LINK_LIBRARIES(syscall_32 rt)
 	
 	set_target_properties(syscall_32 PROPERTIES LINK_FLAGS "-m32") 
 	
