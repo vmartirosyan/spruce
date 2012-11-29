@@ -1,9 +1,5 @@
 MESSAGE("-- Configuring XFS module")
 
-if(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
-
 ADD_CUSTOM_COMMAND(
    OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp
    COMMAND ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/engine
@@ -15,7 +11,7 @@ ADD_EXECUTABLE(xfs ${CMAKE_CURRENT_BINARY_DIR}/module.cpp )
 
 					
 TARGET_LINK_LIBRARIES(xfs utils)
-TARGET_LINK_LIBRARIES(xfs rt)
+#TARGET_LINK_LIBRARIES(xfs rt)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/xfs"
 			DESTINATION bin
@@ -24,7 +20,7 @@ ELSE ( ${OS_32_BITS} OR NOT ${HAVE_MULTILIB})
 	ADD_EXECUTABLE(xfs_64 ${CMAKE_CURRENT_BINARY_DIR}/module.cpp)
 				
 	TARGET_LINK_LIBRARIES(xfs_64 utils)
-	TARGET_LINK_LIBRARIES(xfs_64 rt)
+#	TARGET_LINK_LIBRARIES(xfs_64 rt)
 
 	install (	FILES "${CMAKE_BINARY_DIR}/bin/xfs_64"
 			DESTINATION bin
@@ -43,7 +39,7 @@ IF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB})
 	
 	ADD_EXECUTABLE(xfs_32 module_32.cpp)
 	TARGET_LINK_LIBRARIES(xfs_32 utils_32)
-	TARGET_LINK_LIBRARIES(xfs_32 rt)
+#	TARGET_LINK_LIBRARIES(xfs_32 rt)
 	
 	set_target_properties(xfs_32 PROPERTIES LINK_FLAGS "-m32") 
 	

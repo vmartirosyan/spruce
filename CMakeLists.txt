@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.4)
+cmake_minimum_required(VERSION 2.8)
 INCLUDE (CheckIncludeFiles)
 INCLUDE (CheckTypeSize)
 
@@ -20,29 +20,45 @@ IF( UNIX )
 	SET( OS_32_BITS 1 )
       ENDIF( OS_ARCH MATCHES ".*x86_64.*" )
     ENDIF( OS_ARCH MATCHES ".*Linux.*" )
-    SET (HAVE_MULTILIB 0)
-    CHECK_INCLUDE_FILES ("gnu/stubs-32.h" HAVE_MULTILIB)
     
-    #Message("Is 32 bit: ${OS_32_BITS}")
+    SET (HAVE_MULTILIB 0)
+    IF ( NOT ${OS_32_BITS} )		
+		CHECK_INCLUDE_FILES ("gnu/stubs-32.h" HAVE_MULTILIB)
+		IF (NOT HAVE_MULTILIB)
+			Message(FATAL_ERROR "The 'multilib' library wasn't found. Please install it.")
+			#SET(HAVE_XFS_H 0)
+		ENDIF (NOT HAVE_MULTILIB)
+	ENDIF ( NOT ${OS_32_BITS} )
+    
 ENDIF ( UNIX )
 
-SET( CMAKE_REQUIRED_DEFINITIONS "-D _GNU_SOURCE")
-SET(CMAKE_EXTRA_INCLUDE_FILES "fcntl.h")
-CHECK_TYPE_SIZE("struct file_handle" STRUCT_FILE_HANDLE)
-if (NOT HAVE_STRUCT_FILE_HANDLE)
-SET(HAVE_STRUCT_FILE_HANDLE 0)
-else (NOT HAVE_STRUCT_FILE_HANDLE)
-SET(HAVE_STRUCT_FILE_HANDLE 1)
-endif (NOT HAVE_STRUCT_FILE_HANDLE)
-SET(CMAKE_EXTRA_INCLUDE_FILES)
+# Check if xsltproc is there
+Message("-- Looking for 'xsltproc' executable.")
+IF ( XSLTPROC_PATH AND NOT EXISTS ${XSLTPROC_PATH} )
+	Message(FATAL_ERROR "${XSLTPROC_PATH} cannot be executed. Set XSLTPROC_PATH to correct path of 'xsltproc' executable.")
 
-IF (NOT XSLTPROC_PATH)
-	SET( XSLTPROC_PATH "/usr/bin/xsltproc")
-ENDIF (NOT XSLTPROC_PATH)
 
-IF (NOT EXISTS ${XSLTPROC_PATH})
-	MESSAGE(FATAL_ERROR "xsltproc is not found at ${XSLTPROC_PATH}. Please install the corresponding package and/or provide the XSLTPROC_PATH variable.")
-ENDIF (NOT EXISTS ${XSLTPROC_PATH})
+	execute_process( COMMAND ${XSLTPROC_PATH} -V 
+					RESULT_VARIABLE XSLTPROC_STATUS
+					OUTPUT_QUIET
+					ERROR_QUIET)
+					
+	IF ( ${XSLTPROC_STATUS} )
+		Message(FATAL_ERROR "Cannot get xsltproc version via '${XSLTPROC_PATH} -V'. Set XSLTPROC_PATH to correct path of 'xsltproc' executable.")
+	ENDIF ( ${XSLTPROC_STATUS} )
+
+ELSE ( XSLTPROC_PATH AND NOT EXISTS ${XSLTPROC_PATH} )
+
+	find_program(XSLTPROC_PATH xsltproc 
+		PATHS /usr/bin)
+
+	IF ( NOT XSLTPROC_PATH )
+		MESSAGE(FATAL_ERROR "'xsltproc' executable wasn't found. "
+		"\nIf xsltproc is installed into a non-default directory, set XSLTPROC_PATH to the path of 'xsltproc' executable. ")
+	ENDIF ( NOT XSLTPROC_PATH )
+
+ENDIF ( XSLTPROC_PATH AND NOT EXISTS ${XSLTPROC_PATH} )
+Message("-- Looking for 'xsltproc' executable - found.")
 
 # By default install Spruce to /opt/spruce
 IF (NOT CMAKE_INSTALL_PREFIX)
@@ -61,48 +77,85 @@ IF (NOT FIFO_PATH)
 	SET ( FIFO_PATH "/tmp/spruce_fifo" )
 ENDIF (NOT FIFO_PATH)
 
-IF (NOT KEDR_ROOT_DIR)
-	SET ( KEDR_ROOT_DIR "/usr/bin" )
-ENDIF (NOT KEDR_ROOT_DIR)
-
 # Check if KEDR framework is there
-IF (NOT EXISTS ${KEDR_ROOT_DIR}/kedr)
-	Message("!! KEDR Framework is not installed or the KEDR root is not correct.")
-	Message("!! Please install the KEDR Framework and/or provide the KEDR root directory via -DKEDR_ROOT_DIR=/kedr/root/dir")
-	SET (KEDR_INSTALLED 0)
-ELSE (NOT EXISTS ${KEDR_ROOT_DIR}/kedr)
-	SET (KEDR_INSTALLED 1)
-ENDIF (NOT EXISTS ${KEDR_ROOT_DIR}/kedr)
+Message("-- Looking for 'kedr' executable.")
+IF ( KEDR_PATH AND NOT EXISTS ${KEDR_PATH} )
+	Message(FATAL_ERROR "${KEDR_PATH} cannot be executed. Set KEDR_PATH to correct path of 'kedr' executable.")
 
-IF (NOT QUOTACHECK_PATH)
-	SET( QUOTACHECK_PATH "/usr/sbin/quotacheck")
-ENDIF (NOT QUOTACHECK_PATH)
+	execute_process( COMMAND ${KEDR_PATH} status 
+				RESULT_VARIABLE KEDR_STATUS
+				OUTPUT_QUIET
+				ERROR_QUIET)
+				
+	IF ( ${KEDR_STATUS} )
+		Message(FATAL_ERROR "Cannot get KEDR status via '${KEDR_PATH} status'. Set KEDR_PATH to correct path of 'kedr' executable.")
+	ENDIF ( ${KEDR_STATUS} )
+ELSE ( KEDR_PATH AND NOT EXISTS ${KEDR_PATH} )
 
-SET (QUOTA_ENABLED 0)
-Message("-- Looking for quotacheck file")
-IF (EXISTS ${QUOTACHECK_PATH})
-	Message("-- Looking for quotacheck file - found")
-	SET ( QUOTA_ENABLED 1 )	
-ELSE (EXISTS ${QUOTACHECK_PATH})
-	Message("-- Looking for quotacheck file - NOT found")
-	Message("!! Please install the package quota(-tools) and/or provide the correct QUOTACHECK_PATH.")
-ENDIF (EXISTS ${QUOTACHECK_PATH})
+	find_program(KEDR_PATH kedr
+		PATHS /usr/local/bin)
+	IF (NOT KEDR_PATH)
+		Message(FATAL_ERROR "'kedr' executable wasn't found. "
+		"\nIf KEDR is installed into a non-default directory, set KEDR_PATH to the path of 'kedr' executable. ")	
+	ENDIF (NOT KEDR_PATH)
+ENDIF ( KEDR_PATH AND NOT EXISTS ${KEDR_PATH} )
+Message("-- Looking for 'kedr' executable - found.")
+
+# Check if quotacheck is there
+Message("-- Looking for 'quotacheck' executable.")
+IF ( QUOTACHECK_PATH AND NOT EXISTS ${QUOTACHECK_PATH} )
+	Message(FATAL_ERROR "${QUOTACHECK_PATH} cannot be executed. Set QUOTACHECK_PATH to correct path of 'quotacheck' executable.")
+
+	execute_process( COMMAND ${QUOTACHECK_PATH} -V 
+				RESULT_VARIABLE QUOTACHECK_STATUS
+				OUTPUT_QUIET
+				ERROR_QUIET)
+				
+	IF ( ${QUOTACHECK_STATUS} )
+		Message(FATAL_ERROR "Cannot get quotacheck version via '${QUOTACHECK_PATH} -V'. Set QUOTACHECK_PATH to correct path of 'quotacheck' executable.")
+	ENDIF ( ${QUOTACHECK_STATUS} )
+	
+ELSE ( QUOTACHECK_PATH AND NOT EXISTS ${QUOTACHECK_PATH} )
+
+	find_program(QUOTACHECK_PATH quotacheck
+		PATHS /usr/sbin /sbin)
+	IF (NOT QUOTACHECK_PATH)
+		Message(FATAL_ERROR "'quotacheck' executable wasn't found. "
+		"\nIf quotacheck is installed into a non-default directory, set QUOTACHECK_PATH to the path of 'quotacheck' executable. ")	
+	ENDIF (NOT QUOTACHECK_PATH)
+ENDIF ( QUOTACHECK_PATH AND NOT EXISTS ${QUOTACHECK_PATH} )
+Message("-- Looking for 'quotacheck' executable - found.")
+
 
 CHECK_INCLUDE_FILES ("sys/types.h;attr/xattr.h" HAVE_XATTR_H)
 IF (NOT HAVE_XATTR_H)
-	SET(HAVE_XATTR_H 0)
+	Message(FATAL_ERROR "'attr/xattr.h' header file wasn't found. Please install the 'attr' package.")
+	#SET(HAVE_XATTR_H 0)
 ENDIF (NOT HAVE_XATTR_H)
 
 CHECK_INCLUDE_FILES (ext2fs/ext2_fs.h HAVE_EXT2_FS_H)
 IF (NOT HAVE_EXT2_FS_H)
-	SET(HAVE_EXT2_FS_H 0)
+	Message(FATAL_ERROR "'ext2fs/ext2_fs.h' header file wasn't found. Please install the 'e2fslibs' package.")
+	#SET(HAVE_EXT2_FS_H 0)
 ENDIF (NOT HAVE_EXT2_FS_H)
 
 
 CHECK_INCLUDE_FILES ("xfs/xfs.h" HAVE_XFS_H)
 IF (NOT HAVE_XFS_H)
-	SET(HAVE_XFS_H 0)
+	Message(FATAL_ERROR "'xfs/xfs.h' header file wasn't found. Please install the 'xfslibs' package.")
+	#SET(HAVE_XFS_H 0)
 ENDIF (NOT HAVE_XFS_H)
+
+SET( CMAKE_REQUIRED_DEFINITIONS "-D _GNU_SOURCE")
+SET(CMAKE_EXTRA_INCLUDE_FILES "fcntl.h")
+CHECK_TYPE_SIZE("struct file_handle" STRUCT_FILE_HANDLE)
+if (NOT HAVE_STRUCT_FILE_HANDLE)
+SET(HAVE_STRUCT_FILE_HANDLE 0)
+else (NOT HAVE_STRUCT_FILE_HANDLE)
+SET(HAVE_STRUCT_FILE_HANDLE 1)
+endif (NOT HAVE_STRUCT_FILE_HANDLE)
+SET(CMAKE_EXTRA_INCLUDE_FILES)
+
 
 SET (LIBRARY_OUTPUT_PATH
  ${PROJECT_BINARY_DIR}/lib

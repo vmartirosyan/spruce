@@ -1,9 +1,5 @@
 MESSAGE("-- Configuring JFS module")
 
-if(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
-
 ADD_CUSTOM_COMMAND(
    OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp
    COMMAND ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/engine
@@ -14,7 +10,7 @@ ADD_EXECUTABLE(jfs ${CMAKE_CURRENT_BINARY_DIR}/module.cpp )
 
 					
 TARGET_LINK_LIBRARIES(jfs utils)
-TARGET_LINK_LIBRARIES(jfs rt)
+#TARGET_LINK_LIBRARIES(jfs rt)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/jfs"
 			DESTINATION bin
@@ -23,7 +19,7 @@ ELSE ( ${OS_32_BITS} OR NOT ${HAVE_MULTILIB})
 	ADD_EXECUTABLE(jfs_64 ${CMAKE_CURRENT_BINARY_DIR}/module.cpp)
 				
 	TARGET_LINK_LIBRARIES(jfs_64 utils)
-	TARGET_LINK_LIBRARIES(jfs_64 rt)
+#	TARGET_LINK_LIBRARIES(jfs_64 rt)
 
 	install (	FILES "${CMAKE_BINARY_DIR}/bin/jfs_64"
 			DESTINATION bin
@@ -42,7 +38,7 @@ IF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB})
 	
 	ADD_EXECUTABLE(jfs_32 module_32.cpp)
 	TARGET_LINK_LIBRARIES(jfs_32 utils_32)
-	TARGET_LINK_LIBRARIES(jfs_32 rt)
+#	TARGET_LINK_LIBRARIES(jfs_32 rt)
 	
 	set_target_properties(jfs_32 PROPERTIES LINK_FLAGS "-m32") 
 	

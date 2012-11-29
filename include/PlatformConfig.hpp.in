@@ -31,9 +31,9 @@
 #define HAVE_STRUCT_FILE_HANDLE ${HAVE_STRUCT_FILE_HANDLE}
 #define HAVE_XFS_H ${HAVE_XFS_H}
 #define HAVE_MULTILIB ${HAVE_MULTILIB}
-#define KEDR_ROOT_DIR "${KEDR_ROOT_DIR}"
-#define KEDR_INSTALLED ${KEDR_INSTALLED}
-#define QUOTA_ENABLED ${QUOTA_ENABLED}
+#define KEDR_PATH "${KEDR_PATH}"
+#define KEDR_INSTALLED 1 // non-optional at the moment
+#define QUOTA_ENABLED 1 // non-optional at the moment
 #define QUOTACHECK_PATH "${QUOTACHECK_PATH}"
 
 #endif

@@ -1,8 +1,5 @@
 MESSAGE("-- Configuring BTRFS module")
 
-if(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)
 
 ADD_CUSTOM_COMMAND(
    OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp 
@@ -17,7 +14,7 @@ ADD_EXECUTABLE(btrfs ${CMAKE_CURRENT_BINARY_DIR}/module.cpp )
 
 					
 TARGET_LINK_LIBRARIES(btrfs utils)
-TARGET_LINK_LIBRARIES(btrfs rt)
+#TARGET_LINK_LIBRARIES(btrfs rt)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/btrfs"
 			DESTINATION bin
@@ -26,7 +23,7 @@ ELSE ( ${OS_32_BITS} OR NOT ${HAVE_MULTILIB})
 	ADD_EXECUTABLE(btrfs_64 ${CMAKE_CURRENT_BINARY_DIR}/module.cpp)
 				
 	TARGET_LINK_LIBRARIES(btrfs_64 utils)
-	TARGET_LINK_LIBRARIES(btrfs_64 rt)
+#	TARGET_LINK_LIBRARIES(btrfs_64 rt)
 
 	install (	FILES "${CMAKE_BINARY_DIR}/bin/btrfs_64"
 			DESTINATION bin
@@ -45,7 +42,7 @@ IF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB})
 	
 	ADD_EXECUTABLE(btrfs_32 module_32.cpp)
 	TARGET_LINK_LIBRARIES(btrfs_32 utils_32)
-	TARGET_LINK_LIBRARIES(btrfs_32 rt)
+#	TARGET_LINK_LIBRARIES(btrfs_32 rt)
 	
 	set_target_properties(btrfs_32 PROPERTIES LINK_FLAGS "-m32") 
 	
