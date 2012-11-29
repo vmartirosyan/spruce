@@ -35,11 +35,14 @@
 #define QFMT_VFS_V0 2
 #endif	
 			char * opts = NULL;
-			if ( (opts = getenv("MountOpts")) != NULL )
+			opts = getenv("MountOpts");
+			string strOpts = opts;
+			if ( opts != NULL )
 			{
-				string strOpts = opts;
 				if ( strOpts.find("quota") == string::npos || PartitionManager::IsOptionEnabled("noquota"))
 					Error("quota mount option is not provided.", Unsupported);
+				if ( strOpts.find("vfsold") != string::npos )
+					Error("V0 quota format not supported yet.", Unresolved);
 			}
 			else
 				Error("quota mount option is not provided.", Unsupported);
@@ -53,7 +56,8 @@
 			int cmd_on;
 			int cmd_off;
 		
-			if(PartitionManager::IsOptionEnabled("usrquota"))
+			if( PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") || 
+						strOpts.find("usrjquota") != string::npos )
 			{
 				cmd_on = QCMD(Q_QUOTAON, USRQUOTA);
 				cmd_off = QCMD(Q_QUOTAOFF, USRQUOTA);
@@ -64,12 +68,14 @@
 				cmd_off = QCMD(Q_QUOTAOFF, GRPQUOTA);
 			}
 			
-			// Create the quota file
+			// Create the quota files
 			UnixCommand* quotacheck = new UnixCommand(QUOTACHECK_PATH);
 			vector<string> args;
 			args.push_back("-c");
 			args.push_back("-u");
 			args.push_back("-g");
+			//args.push_back("-F");
+		//	args.push_back("vfsold");
 			args.push_back(MountPoint);
 			
 			ProcessResult * res = quotacheck->Execute(args);
@@ -78,7 +84,9 @@
 		//	Unres( res->GetStatus() != Success, "Error executing 'quotacheck'. " + res->GetOutput() );
 			
 			string QuotaFile = MountPoint;
-			if(PartitionManager::IsOptionEnabled("usrquota"))
+			
+			if( PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") ||
+						strOpts.find("usrjquota") != string::npos )
 			{
 				QuotaFile += "/aquota.user";
 			}
@@ -103,7 +111,8 @@
 		<Code>
 			int cmd_get_quota;
 			int cmd_set_quota;
-			if(PartitionManager::IsOptionEnabled("usrquota"))
+			if(PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") ||
+						strOpts.find("usrjquota") != string::npos )
 			{
 				cmd_get_quota = QCMD(Q_GETQUOTA, USRQUOTA);
 				cmd_set_quota = QCMD(Q_SETQUOTA, USRQUOTA);
@@ -139,7 +148,8 @@
 		<Code>	
 			int cmd_get_info;
 			int cmd_set_info;
-			if(PartitionManager::IsOptionEnabled("usrquota"))
+			if(PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") || 
+						strOpts.find("usrjquota") != string::npos )
 			{
 				cmd_get_info = QCMD(Q_GETINFO, USRQUOTA);
 				cmd_set_info = QCMD(Q_SETINFO, USRQUOTA);
@@ -175,7 +185,8 @@
 		<Code>
 			int cmd_get_format;
 			int format;
-			if(PartitionManager::IsOptionEnabled("usrquota"))
+			if(PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") || 
+						strOpts.find("usrjquota") != string::npos )
 			{
 				cmd_get_format = QCMD(Q_GETFMT, USRQUOTA);
 			}
