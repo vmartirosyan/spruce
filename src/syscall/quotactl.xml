@@ -42,7 +42,7 @@
 				if ( strOpts.find("quota") == string::npos || PartitionManager::IsOptionEnabled("noquota"))
 					Error("quota mount option is not provided.", Unsupported);
 				if ( strOpts.find("vfsold") != string::npos )
-					Error("V0 quota format not supported yet.", Unresolved);
+					Error("vfsold quota format not supported yet.", Unresolved);
 			}
 			else
 				Error("quota mount option is not provided.", Unsupported);
