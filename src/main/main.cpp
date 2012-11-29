@@ -235,7 +235,7 @@ int main(int argc, char ** argv)
 			cerr << "Error. No partition name provided." << endl;
 			return FAULT;
 		}
-			
+
 		// Where the output must be stored?
 		string logfolder = "/tmp/spruce_log/";
 		if ( configValues.find("logfolder") != configValues.end() )
@@ -246,12 +246,7 @@ int main(int argc, char ** argv)
 		{
 			cerr << "Notice. No log folder specified. Using " << logfolder << "." << endl;
 		}
-		// Prepare the log folder
-		if ( mkdir( logfolder.c_str(), 0777 ) == -1 && errno != EEXIST )
-		{
-			cerr << "Cannot create log folder: " << strerror(errno) << endl;
-			return FAULT;
-		}
+				
 		// Add the date and time to the log folder
 		time_t t = time(NULL);
 		struct tm * tm = localtime(&t);
@@ -264,7 +259,7 @@ int main(int argc, char ** argv)
 			cerr << "Cannot create logfolder: " << logfolder << ". " << strerror(errno) << endl;
 			return FAULT;
 		}
-
+		
 		// Find out which browser must be used to view the log file
 		// If no browser name is specified, then the system will be executed in batch mode.
 		string browser = "";
