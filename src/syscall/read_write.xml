@@ -115,7 +115,7 @@
 			ErrorTest(write(FDs[0], buf, 10), -1, EBADF);
 		</Code>
 	</Test>
-	<Test Name="ReadInval">
+	<!--Test Name="ReadInval">
 		<Description>read: fd  was  created  via  a call to timerfd_create(2) and the wrong size buffer was given to read().</Description>
 		<Code>
 			int fd = timerfd_create(CLOCK_REALTIME, 0);
@@ -135,7 +135,7 @@
 			
 			ErrorTest(read(fd, buf, 0), -1, EINVAL);
 		</Code>
-	</Test>
+	</Test-->
 	<Test Name="ReadIsDir">
 		<Description>read: fd refers to a directory.</Description>
 		<Dir count="1"/>
