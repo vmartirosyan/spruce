@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.6)
 INCLUDE (CheckIncludeFiles)
 INCLUDE (CheckTypeSize)
 
@@ -21,13 +21,14 @@ IF( UNIX )
       ENDIF( OS_ARCH MATCHES ".*x86_64.*" )
     ENDIF( OS_ARCH MATCHES ".*Linux.*" )
     
-#    SET (HAVE_MULTILIB 0)
     IF ( NOT ${OS_32_BITS} )		
 		CHECK_INCLUDE_FILES ("gnu/stubs-32.h" HAVE_MULTILIB)
 		IF (NOT HAVE_MULTILIB)
 			Message(FATAL_ERROR "The 'multilib' library wasn't found. Please install it.")
 			#SET(HAVE_XFS_H 0)
 		ENDIF (NOT HAVE_MULTILIB)
+	ELSE ( NOT ${OS_32_BITS} ) 
+		SET (HAVE_MULTILIB 0)
 	ENDIF ( NOT ${OS_32_BITS} )
     
 ENDIF ( UNIX )
