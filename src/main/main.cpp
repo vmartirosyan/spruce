@@ -253,10 +253,18 @@ int main(int argc, char ** argv)
 		char buf[25];
 		size_t bytes = strftime(buf, 25, "%F_%T", tm);
 		buf[bytes] = 0;
+		if ( mkdir(logfolder.c_str(), 0777) )
+		{
+			if(errno != EEXIST)
+			{
+				cerr << "Cannot create logfolder: " << logfolder << ". " << strerror(errno) << endl;
+				return FAULT;		
+			}	
+		} 
 		logfolder = logfolder + "/" + buf;
 		if ( mkdir(logfolder.c_str(), 0777) )
 		{
-			cerr << "Cannot create logfolder: " << logfolder << ". " << strerror(errno) << endl;
+			cerr << "Cannot create log subfolder: " << logfolder << ". " << strerror(errno) << endl;
 			return FAULT;
 		}
 		
