@@ -479,7 +479,7 @@
 			//memset(&arg, 1, sizeof(btrfs_ioctl_space_args));
 			arg->space_slots = 1;
 						
-			ioctl( FDs[0], BTRFS_IOC_SPACE_INFO, &arg);
+			ioctl( FDs[0], BTRFS_IOC_SPACE_INFO, arg);
 			return Shallow;
 		</Code>
 	</Test>
