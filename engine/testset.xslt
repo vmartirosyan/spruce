@@ -156,7 +156,7 @@ public:
 					log = "Status: " + StatusMessages[oopsStatus] + "\nTest output: \n" + pr->GetOutput() + "\nSystem log message: \n" + log;
 					tr = new <xsl:value-of select="$ModuleName"/>TestResult(new ProcessResult(Fatal, log),"<xsl:value-of select="$TestSetName" />", it->first);
 				}
-				
+			
 				res.AddResult( tr );
 				// If Fatal error has rised quit!
 				if ( tr->GetStatus() == Fatal )
@@ -391,19 +391,17 @@ protected:
 			size_t pos = 0;
 			while(true)
 			{
-				pos = (OutputLog.find(amp, pos));
+				pos = (OutputLog.find(amp, pos+1));
 				if(pos == std::string::npos)
 					break;
-				OutputLog.replace(pos, 1, "&amp;amp;"); 
-				++pos;
+				OutputLog.replace(pos, 1, " "); 
 			}
 			while(true)
 			{
-				pos = (OutputLog.find(less, pos));
+				pos = (OutputLog.find(less, pos+1));
 				if(pos == std::string::npos)
 					break;
-				OutputLog.replace(pos, 1, "&amp;lt;");   
-				++pos;
+				OutputLog.replace(pos, 1, " ");   
 			}
 			cerr &lt;&lt; "Oops checker: bug found" &lt;&lt; endl;
 			return Bug;
@@ -415,19 +413,17 @@ protected:
 			size_t pos = 0;
 			while(true)
 			{
-				pos = (OutputLog.find(amp, pos));
+				pos = (OutputLog.find(amp, pos+1));
 				if(pos == std::string::npos)
 					break;
-				OutputLog.replace(pos, 1, "&amp;amp;");  
-				++pos;
+				OutputLog.replace(pos, 1, " ");  
 			}
 			while(true)
 			{
-				pos = (OutputLog.find(less, pos));
+				pos = (OutputLog.find(less, pos+1));
 				if(pos == std::string::npos)
 					break;
-				OutputLog.replace(pos, 1, "&amp;lt;");  
-				++pos;
+				OutputLog.replace(pos, 1, " ");  
 			}
 			cerr &lt;&lt; "Oops checker: oops found" &lt;&lt; endl;
 			return Oops;
@@ -439,19 +435,17 @@ protected:
 			size_t pos = 0;
 			while(true)
 			{
-				pos = (OutputLog.find(amp, pos));
+				pos = (OutputLog.find(amp, pos+1));
 				if(pos == std::string::npos)
 					break;
-				OutputLog.replace(pos, 1, "&amp;amp;");   // ???
-				++pos;
+				OutputLog.replace(pos, 1, " ");  
 			}
 			while(true)
 			{
-				pos = (OutputLog.find(less, pos));
+				pos = (OutputLog.find(less, pos+1));
 				if(pos == std::string::npos)
 					break;
-				OutputLog.replace(pos, 1, "&amp;lt;");  
-				++pos;
+				OutputLog.replace(pos, 1, " ");  
 			}
 			cerr &lt;&lt; "Oops checker: Panic found" &lt;&lt; endl;
 			return Panic;
