@@ -1,0 +1,355 @@
+<TestSet Name="Ioctl">
+	<Requires>sys/ioctl.h</Requires>
+	<Requires>linux/fs.h</Requires>
+	<Requires>fcntl.h</Requires>
+	<Requires>ext2fs/ext2_fs.h</Requires>	
+	<Requires>pwd.h</Requires>
+	<Requires>linux/version.h</Requires>
+	<Requires>inttypes.h</Requires>
+	<Test Name="SetFlagsGetFlags" FaultSimulationReady="true">		
+		<Description>Try to set and get some flag values.</Description>
+		<File count="1"/>
+		<Code>
+			int set_flags = EXT4_EXTENTS_FL | 1; // We may NOT clear the extents flag...
+			int get_flags = 0;
+			
+			// Backup the old values just in case
+			int old_flags;	
+			Unres( ioctl(FDs[0], EXT2_IOC_GETFLAGS, &old_flags ) == -1 , "Error backing up old values.");
+			
+			// Set our testing flag values
+			Unres ( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+		
+			// Get the flags back
+			Unres ( ioctl(FDs[0], EXT2_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+			
+			// Restore the original flags
+			Unres ( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+			
+			// Compare them
+			Fail ( get_flags != set_flags, "Set and Get flags mismatch");
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="ClearExtentsFlags">
+		<Description>Try to clear the Extentes flag which is not allowed to be cleared.</Description>
+		<File count="1"/>
+		<Code>
+			// Backup the old values just in case
+			int old_flags;
+			Unres ( ioctl(FDs[0], EXT2_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+			
+			int non_permitted_flags = old_flags & ~EXT4_EXTENTS_FL; // We may NOT clear the extents flag... but we shall try!
+			EnableFaultSim();
+			// Try to set the non-permitted flag
+			Fail( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &non_permitted_flags ) == 0, "It was permitted to set non-permitted flag!.");
+			
+			return Success;						
+		</Code>
+	</Test>
+	<Test Name="SetFlagsNotOwner">
+		<Description>Try to perform a special operation not being file owner.</Description>
+		<File count="1"/>
+		<Code>
+			int flags = EXT4_EXTENTS_FL;			
+			
+			ENoAccessTest(ioctl(FDs[0], EXT2_IOC_SETFLAGS, &flags ), -1);			
+		</Code>
+	</Test>
+	<Test Name="SetVersionGetVersion" FaultSimulationReady="true">
+		<Description>Get and set version.</Description>
+		<File count="1"/>
+		<Code>
+			int set_version = 10; 
+			int get_version = 0;
+			
+			// Backup the old version just in case
+			int old_version;
+			Unres ( ioctl(FDs[0], EXT2_IOC_GETVERSION, &old_version) == -1, "Error backing up old version.");
+			
+			// Set our testing version value
+			Unres ( ioctl(FDs[0], EXT2_IOC_SETVERSION, &set_version) == -1, "Error setting new version values.");
+			
+			// Get the version back
+			Unres ( ioctl(FDs[0], EXT2_IOC_GETVERSION, &get_version) == -1, "Error getting version value back.");
+			
+			// Restore the original version
+			Unres ( ioctl(FDs[0], EXT2_IOC_SETVERSION, &old_version) == -1, "Error restoring old version value.");
+			
+			// Compare them
+			Fail ( get_version != set_version, "Set and Get version mismatch");
+			return Success;				
+		</Code>
+	</Test>
+	<!-- This commang is removed in newer kernels... -->
+	<Test Name="WaitForReadonly" FaultSimulationReady="true">
+		<Header>
+#if  LINUX_VERSION_CODE > KERNEL_VERSION(3,1,0)
+		Error("Wait for read only operation is unsupported in Linux 3.1+ versions.", Unsupported);
+#else
+#ifndef EXT4_IOC_WAIT_FOR_READONLY
+#define EXT4_IOC_WAIT_FOR_READONLY	_IOR('f', 99, long)
+#endif
+		</Header>
+		<Description>Wait for read only.</Description>
+		<File count="1"/>
+		<Code>
+			EnableFaultSim();
+			if ( ioctl(FDs[0], EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1 )
+			{
+				if ( errno == ENOTTY )
+				{
+					Error("EXT4_IOC_WAIT_FOR_READONLY is not supported.", Unsupported);
+				}
+				else
+				{
+					Error("Error waiting for readonly.", Fail);
+				}
+			}
+			return Shallow;
+		</Code>
+		<Footer>
+#endif
+		</Footer>
+	</Test>
+	<Test Name="GroupExtend" FaultSimulationReady="true">
+		<Description>Group extend.</Description>
+		<File count="1"/>
+		<Code>
+			struct stat st;
+			Unres ( fstat (FDs[0], &st ) == -1, "Cannot stat file " + static_cast<string>(MountPoint));
+		
+			cerr << "Shallow test";
+			int NewPartitionSizeInBlocks = 210000;
+			ioctl(FDs[0], EXT2_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks);
+			
+			return Shallow;
+			
+			//Status status;
+			
+			/*NewPartitionSizeInBlocks = 21000;// _PartitionSizeInBlocks + 10;
+			if ( ioctl(FDs[0], EXT2_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1 )
+			{
+				cerr << "Error during online resize. " << strerror(errno);
+				return Failure;
+			}
+			else
+			{
+				cerr << "Online resize was successful. " << endl;
+				return Success;
+			}*/
+		</Code>
+	</Test>
+	<Test Name="ResizeFS" FaultSimulationReady="true">
+		<Header>
+#if  LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
+		Error("Resize FS operation is unsupported in earlier versions than Linux 3.3.", Unsupported);
+#else
+#ifndef EXT4_IOC_RESIZE_FS
+#	define EXT4_IOC_RESIZE_FS              _IOW('f', 16, __u64)
+#endif
+		</Header>
+		<Description>Resize FS.</Description>
+		<File count="1"/>
+		<Code>
+			uint64_t DeviceSize;
+			struct stat st;
+			Unres ( stat(DeviceName, &st) == -1, "Cannot get file stats.");
+				
+			if (S_ISREG(st.st_mode))
+			{
+				cout << "Loop device on regular file." << endl;
+				DeviceSize = st.st_size;
+			}
+			else
+			{
+				int fd = open(DeviceName, O_RDONLY);
+				Unres (fd == -1, "Cannot open partition");
+				
+				Unres ( ioctl( fd, BLKGETSIZE64, &DeviceSize ) == -1, "Cannot get partition size.");
+
+				close(fd);
+			}
+			
+			__u64 BlockCount = DeviceSize / 4096;
+			Fail(ioctl(FDs[0], EXT4_IOC_RESIZE_FS, &BlockCount) == -1, "Resize FS failed");
+			
+			return Shallow;
+		</Code>
+		<Footer>
+#endif
+		</Footer>
+	</Test>
+	<Test Name="MoveExtent" FaultSimulationReady="true">
+		<Header>
+#ifndef EXT4_IOC_MOVE_EXT
+struct move_extent {
+	__u32 reserved;		/* should be zero */
+	__u32 donor_fd;		/* donor file descriptor */
+	__u64 orig_start;	/* logical start offset in block for orig */
+	__u64 donor_start;	/* logical start offset in block for donor */
+	__u64 len;		/* block length to be moved */
+	__u64 moved_len;	/* moved block length */
+};
+#define EXT4_IOC_MOVE_EXT		_IOWR('f', 15, struct move_extent)
+#endif
+		</Header>
+		<Description>Move extent.</Description>
+		<File count="2"/>
+		<Code>			
+			Unres (unlink(FilePaths[0].c_str()) == -1, "Cannot unlink the donor file.");
+			
+			Unres ( fallocate(FDs[0], 0, 0, 10*4096), "Cannot allocate space for donor file.");
+			
+			Unres ( fallocate(FDs[1], 0, 0, 10*4096), "Cannot allocate space for original file.");
+			
+			//unsigned int BlockCount = 1;
+			
+			struct move_extent me;
+			memset(&me, 0, sizeof(me));
+			me.donor_fd = FDs[0];
+			me.orig_start = 0;
+			me.donor_start = 0;
+			me.len = 10;
+			me.moved_len = 10;
+			
+			
+			Fail ( ioctl(FDs[1], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="GroupAdd" FaultSimulationReady="true">
+		<Header>
+struct ext4_new_group_data {
+	__u32 group;
+	__u64 block_bitmap;
+	__u64 inode_bitmap;
+	__u64 inode_table;
+	__u32 blocks_count;
+	__u16 reserved_blocks;
+	__u16 unused;
+	__u32 free_blocks_count;
+};
+#ifndef EXT4_IOC_GROUP_ADD
+#define EXT4_IOC_GROUP_ADD		_IOW('f', 8, struct ext4_new_group_input)
+#endif
+		</Header>
+		<Description>Group add.</Description>
+		<File count="1"/>
+		<Code>
+			struct ext4_new_group_input input;
+			memset(&input, 0, sizeof(input));			
+						
+			ioctl(FDs[0], EXT4_IOC_GROUP_ADD, &input);
+			
+			return Shallow;
+		</Code>
+	</Test>
+	<Test Name="Migrate" FaultSimulationReady="true">
+		<Description>Migrate an Ext3 partition to Ext4</Description>
+		<Header>
+#ifndef EXT4_IOC_MIGRATE
+#	define EXT4_IOC_MIGRATE		_IO('f', 9)
+#endif
+			Status result = Fail;
+			int _file = -1;
+		</Header>
+		<Code>
+			Unres ( chdir ("/") == -1 , "Cannot change directory.");
+			
+			//if ( umount2( MountPoint, MNT_FORCE ) == -1 )	
+			Unres ( umount( MountPoint ) == -1, "Cannot unmount " + (string)MountPoint);
+			
+			UnixCommand mkfs("mkfs.ext3");
+			vector<string> args;
+			args.push_back("-t");
+			args.push_back("ext3");
+			args.push_back("-O");
+			args.push_back("extents");
+			args.push_back(DeviceName);
+			
+			ProcessResult * res;
+			res = mkfs.Execute(args);
+			Unres ( res == NULL || res->GetStatus() != Success, "Cannot create ext3 filesystem on device " + (string)DeviceName);
+			
+			Unres ( mount( DeviceName, MountPoint, "ext4", 0, 0) == -1, "Cannot mount ext3 FS " + (string)DeviceName + " to " + (string)MountPoint);
+			
+			_file = open(MountPoint, O_DIRECTORY | O_RDONLY);
+		
+			if ( _file == -1 )
+			{
+				Error("Cannot open mount folder.");
+				result = Unresolved;
+				goto finally;
+			}
+			
+			cerr << "Calling Ioctl!!!" << endl;
+			if ( ioctl(_file, EXT4_IOC_MIGRATE, 0) == -1 )
+			{
+				Error("Error migrating.");
+				result = Fail;
+				goto finally;
+			}
+			else
+			{
+				result = Success;
+				goto finally;
+			}
+			return Success;
+		</Code>
+		<Footer>
+			finally:
+			if (_file != -1)
+				close(_file);
+				
+			/*PartitionManager * pm = ShmAllocator<PartitionManager>::GetInstance();
+			if ( pm == NULL )
+			{
+				cerr << "Cannot get the partition manager object." << endl;
+			}
+			pm->RestorePartition();
+			ShmAllocator<PartitionManager>::Free(pm);*/
+
+			return result;
+		</Footer>
+	</Test>
+	<Test Name="AllocDABlocks" FaultSimulationReady="true">
+		<Header>
+#ifndef EXT4_IOC_ALLOC_DA_BLKS
+#define EXT4_IOC_ALLOC_DA_BLKS		_IO('f', 12)
+#endif
+		</Header>
+		<Description>Allocate delayed-allocation blocks.</Description>
+		<File count="1"/>
+		<Code>
+			Fail ( ioctl(FDs[0], EXT4_IOC_ALLOC_DA_BLKS, 0) == -1, "Error during delayed allocation of blocks.");
+			return Shallow;
+			
+		</Code>
+	</Test>
+	<Test Name="Fitrim" FaultSimulationReady="true">
+		<Description>FITRIM?</Description>
+		<File count="1"/>
+		<Header>
+#ifdef FITRIM
+		</Header>
+		<Code>
+			struct fstrim_range arg;
+			Fail ( ioctl(FDs[0], FITRIM, &arg) == -1 , "Error FITRIM.");
+			return Shallow;				
+		</Code>
+		<Footer>
+#else
+	Error("FITRIM is not supported", Unsupported);
+#endif
+		</Footer>
+	</Test>
+	<Test Name="Unsupported">
+		<Description>Unsupported operation.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(ioctl(FDs[0], -100, 0), -1, ENOTTY);
+		</Code>
+	</Test>
+</TestSet>

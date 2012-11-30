@@ -1,0 +1,17 @@
+install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/xslt/dashboard.xslt"
+			DESTINATION share/spruce/config/xslt
+			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
+
+install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/xslt/processor.xslt"
+			DESTINATION share/spruce/config/xslt
+			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
+			
+install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/xslt/module.xslt"
+			DESTINATION share/spruce/config/xslt
+			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
+
+install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/PartitionManager.cfg"
+			DESTINATION share/spruce/config
+			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
+			
+

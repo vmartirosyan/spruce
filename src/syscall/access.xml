@@ -1,0 +1,148 @@
+<!--    access.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="access">	
+	<Test Name="AccessNormal" FaultSimulationReady="true">
+		<Requires>sys/param.h</Requires>
+		<Requires>sys/mount.h</Requires>
+		<Requires>sys/vfs.h</Requires>
+		<Description>access()  checks  whether the calling process can access the file pathname.</Description>
+		<File count="1"/>
+		<Header>int status = Success;</Header>
+		<Code>	
+			if( PartitionManager::IsOptionEnabled("umask=777") )
+			{
+				Error("chmod modifies only the permissions allowed by the umask, cannot set permission flags", Unresolved);
+			}
+			Unres(chmod(FilePaths[0].c_str(), 0777) == -1, "Cannot set permission flags on file." );
+						
+			struct passwd * nobody = getpwnam("nobody");
+			
+			Unres( nobody == NULL, "Cannot obtain nobody user information.");
+			
+			
+			Unres ( setuid(nobody->pw_uid) == -1, "Cannot set the user ID to nobody.");
+			
+			EnableFaultSim();
+			if (access(FilePaths[0].c_str(), R_OK) == -1 )
+			{
+				Error("Read permission is granted but access returns error.");
+				status = Fail;
+			}
+			
+			if ( access(FilePaths[0].c_str(), W_OK) == -1 )
+			{
+				Error("Write permission is granted but access returns error. ");
+				status = Fail;
+			}
+			
+			if( PartitionManager::IsOptionEnabled("noexec") )
+			{
+				cerr <<  "noexec mount option is provided." << endl;
+				status = Unsupported;
+			}
+			else
+			{
+				if ( access(FilePaths[0].c_str(), X_OK) != 0 )
+				{
+					Error("Execution permission is granted but access returns error. ");
+					status = Fail;
+				}
+			}
+			// Restore the user id to root
+			if ( setuid(0) == -1 )
+			{
+				Error("Cannot set the user ID to root.");
+			}
+			if( PartitionManager::IsOptionEnabled("umask=777") )
+			{
+				umask(0777);
+			}
+			
+		</Code>
+		<Footer>return status;</Footer>
+	</Test>
+	<Test Name="AccessFileExists" FaultSimulationReady="true">
+		<Description>the existence test (F_OK)</Description>
+		<File count="1" />
+		<Code>
+			if ( access(FilePaths[0].c_str(), F_OK) != 0 )
+			{
+				Error("The file exists but access returns error. ", Fail);
+			}
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="AccessErrAccess">
+		<Description>Permission bits of the file mode do  not  permit  the  requested access.</Description>
+		<File count="1" />
+		<Code>
+			struct passwd * nobody = getpwnam("nobody");
+		
+			Unres(nobody == NULL, "Cannot obtain nobody user information.");
+			
+			Unres( setuid(nobody->pw_uid) == -1, "Cannot set the effective user ID to nobody.");
+			if ( access(FilePaths[0].c_str(), W_OK) == 0 || errno != EACCES )
+			{
+				Error("access should return EACCES error code but it did not.", Fail);
+			}
+			
+			return Success;
+		</Code>
+	</Test>
+	<Test Name="AccessErrLoop">
+		<Description>A loop exists in symbolic links encountered during resolution of the path argument.</Description>			
+		<File count="1" />
+		<Code>
+			ELoopTest(access(FilePaths[0].c_str(), W_OK), -1);
+		</Code>
+	</Test>
+	<Test Name="AccessErrNameTooLong">
+		<Description>The length of the path argument exceeds {PATH_MAX} or a pathname component is longer than {NAME_MAX}.</Description>
+		<Code>
+			ENameTooLongTest(access(path, F_OK), -1);
+		</Code>
+	</Test>
+	<Test Name="AccessErrNoEnt1">
+		<Description>A component of path does not name an existing file. or path is an empty string.</Description>
+		<Code>
+			ErrorTest(access("non_existing_file", W_OK), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="AccessErrNoEnt2">
+		<Description>Path is an empty string.</Description>
+		<Code>
+			ErrorTest(access("", W_OK), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="AccessErrNotDir">
+		<Description>A component of the path prefix is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+			ENotDirTest(access(path, W_OK), -1 );
+		</Code>
+	</Test>	
+</TestSet>
+
+

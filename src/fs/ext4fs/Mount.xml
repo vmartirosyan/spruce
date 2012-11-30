@@ -1,0 +1,498 @@
+<!--    Mount.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//				Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+<TestSet Name="Mount">
+	<Requires>sys/mount.h</Requires>
+	<GlobalHeader>
+
+#define MountOptionTest(opt)\
+	MountOptionTest2(opt, "");
+
+#define MountOptionTest2(opt, mount_opt)\
+{\
+			int status = Success;\
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");\
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");\
+			Unres(chdir("/") == -1, "Cannot change surrent folder");\
+			const char * path = "/tmp/Ext4Mount_dir";\
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );\
+			EnableFaultSim();
+			if(mount( DeviceName, path, FileSystem, 0, #mount_opt) == -1)\
+			{\
+				Error("Mount failed");\
+				status = Fail;\
+			}\
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, #opt) == -1)\
+			{\
+				Error("Remount with option failed");\
+				status = Fail;\
+			}\
+			if(umount(path) == -1)\
+			{\
+				Error("could not unmount partition");\
+				status = Fail;\
+			}\
+			rmdir(path);\
+			Fail ( status != Success, "Test failed");\
+			return status;\
+}
+	</GlobalHeader>
+	<Test Name="MountBsddf" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'bsddf' mount option.</Description>		
+		<Code>
+			MountOptionTest(bsddf)
+		</Code>		
+	</Test>	
+	<Test Name="MountMinixdf" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'minixdf' mount option.</Description>		
+		<Code>
+			MountOptionTest(minixdf)
+		</Code>		
+	</Test>	
+	<Test Name="MountGrpid" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'grpid' mount option.</Description>
+		<Code>
+			MountOptionTest(grpid)
+		</Code>		
+	</Test>	
+	<Test Name="MountBsdgroups" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'bsdgroups' mount option.</Description>
+		<Code>
+			MountOptionTest(bsdgroups)
+		</Code>		
+	</Test>	
+	<Test Name="MountNogrpid" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'nogrpid' mount option.</Description>		
+		<Code>
+			MountOptionTest(nogrpid)
+		</Code>		
+	</Test>	
+	<Test Name="MountSysvgroups" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'sysvgroups' mount option.</Description>		
+		<Code>
+			MountOptionTest(sysvgroups)
+		</Code>		
+	</Test>	
+	<Test Name="MountResgid" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'resgid=%u' mount option.</Description>		
+		<Code>
+			MountOptionTest(resgid=0)
+		</Code>		
+	</Test>	
+	<Test Name="MountResuid" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'resuid=%u' mount option.</Description>		
+		<Code>
+			MountOptionTest(resuid=0)
+		</Code>		
+	</Test>
+	<Test Name="MountSb" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'sb=%u' mount option.</Description>
+		<Code>
+			MountOptionTest(sb=1)
+		</Code>		
+	</Test>
+	<Test Name="MountErrors_continue" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'errors=continue' mount option.</Description>
+		<Code>
+			MountOptionTest(errors=continue)
+		</Code>		
+	</Test>
+	<Test Name="MountErrors_panic" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'errors=panic' mount option.</Description>
+		<Code>
+			MountOptionTest(errors=panic)
+		</Code>		
+	</Test>
+	<Test Name="MountErrors_remount_ro" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'errors=remount-ro' mount option.</Description>
+		<Code>
+			MountOptionTest(errors=remount-ro)
+		</Code>
+	</Test>
+	<Test Name="MountNouid32" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'nouid32' mount option.</Description>
+		<Code>
+			MountOptionTest(nouid32)
+		</Code>
+	</Test>
+	<Test Name="MountDebug" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'debug' mount option.</Description>
+		<Code>
+			MountOptionTest(debug)
+		</Code>
+	</Test>
+	<Test Name="MountOldalloc" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'oldalloc' mount option.</Description>
+		<Code>
+			MountOptionTest(oldalloc)
+		</Code>
+	</Test>
+	<Test Name="MountOrlov" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'orlov' mount option.</Description>
+		<Code>
+			MountOptionTest(orlov)
+		</Code>
+	</Test>
+	<Test Name="MountUserXattr" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'user_xattr' mount option.</Description>
+		<Code>
+			MountOptionTest(user_xattr)
+		</Code>
+	</Test>
+	<Test Name="MountNoUserXattr" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'nouser_xattr' mount option.</Description>
+		<Code>
+			MountOptionTest(nouser_xattr)
+		</Code>
+	</Test>	
+	<Test Name="MountACL" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'acl' mount option.</Description>
+		<Code>
+			MountOptionTest(acl)
+		</Code>
+	</Test>	
+	<Test Name="MountNoACL" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'noacl' mount option.</Description>
+		<Code>
+			MountOptionTest(noacl)
+		</Code>
+	</Test>
+	<Test Name="MountNoLoad" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'noload' mount option.</Description>
+		<Code>
+			MountOptionTest(noload)
+		</Code>
+	</Test>
+	<Test Name="MountNoRecovery" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'norecovery' mount option.</Description>
+		<Code>
+			MountOptionTest(norecovery)
+		</Code>
+	</Test>
+	<Test Name="MountNoBH" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'nobh' mount option.</Description>
+		<Code>
+			MountOptionTest(nobh)
+		</Code>
+	</Test>
+	<Test Name="MountBH" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'bh' mount option.</Description>
+		<Code>
+			MountOptionTest(bh)
+		</Code>
+	</Test>
+	<Test Name="MountCommit" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'commit=%u' mount option.</Description>
+		<Code>
+			MountOptionTest(commit=1)
+		</Code>
+	</Test>
+	<Test Name="Mountmin_batch_time" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'min_batch_time=%u' mount option.</Description>
+		<Code>
+			MountOptionTest(min_batch_time=1)
+		</Code>
+	</Test>
+	<Test Name="Mountmax_batch_time" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'max_batch_time=%u' mount option.</Description>
+		<Code>
+			MountOptionTest(max_batch_time=1)
+		</Code>
+	</Test>
+	<Test Name="Mountjournal_update" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'journal=update' mount option.</Description>
+		<Code>
+			MountOptionTest(journal=10)
+		</Code>
+	</Test>
+	<Test Name="Mountjournal_dev" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'journal_dev=%u' mount option.</Description>
+		<Code>
+			MountOptionTest2(, journal_dev=1)
+		</Code>
+	</Test>
+	<Test Name="Mountjournal_checksum" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'journal_checksum' mount option.</Description>
+		<Code>
+			MountOptionTest(journal_checksum)
+		</Code>
+	</Test>
+	<Test Name="Mountjournal_async_commit" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'journal_async_commit' mount option.</Description>
+		<Code>
+			MountOptionTest(journal_async_commit)
+		</Code>
+	</Test>
+	<Test Name="Mountdata_journal" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'data=journal' mount option.</Description>
+		<Code>
+			MountOptionTest2(,data=journal)
+		</Code>
+	</Test>
+	<Test Name="Mountdata_ordered" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'data=ordered' mount option.</Description>
+		<Code>
+			MountOptionTest2(,data=ordered)
+		</Code>
+	</Test>
+	<Test Name="Mountdata_writeback" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'data=writeback' mount option.</Description>
+		<Code>
+			MountOptionTest2(,data=writeback)
+		</Code>
+	</Test>
+	<Test Name="Mountdata_err_abort" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'data_err=abort' mount option.</Description>
+		<Code>
+			MountOptionTest(data_err=abort)
+		</Code>
+	</Test>
+	<Test Name="Mountdata_err_ignore" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'data_err=ignore' mount option.</Description>
+		<Code>
+			MountOptionTest(data_err=ignore)
+		</Code>
+	</Test>	
+	<Test Name="Mountusrjquota" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'usrjquota' mount option.</Description>
+		<Code>
+			MountOptionTest(usrjquota=10)
+		</Code>
+	</Test>
+	<Test Name="Mountjqfmt_vfsold" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'jqfmt=vfsold' mount option.</Description>
+		<Code>
+			MountOptionTest2( ,jqfmt=vfsold)
+		</Code>
+	</Test>
+	<Test Name="Mountjqfmt_vfsv0" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'jqfmt=vfsv0' mount option.</Description>
+		<Code>
+			MountOptionTest2(,jqfmt=vfsv0)
+		</Code>
+	</Test>
+	<Test Name="Mountjqfmt_vfsv1" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'jqfmt=vfsv1' mount option.</Description>
+		<Code>
+			MountOptionTest2(, jqfmt=vfsv1)
+		</Code>
+	</Test>
+	<Test Name="Mountgrpquota" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'grpquota' mount option.</Description>
+		<Code>
+			MountOptionTest(grpquota)
+		</Code>
+	</Test>
+	<Test Name="Mountnoquota" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'noquota' mount option.</Description>
+		<Code>
+			MountOptionTest(noquota)
+		</Code>
+	</Test>
+	<Test Name="Mountquota" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'quota' mount option.</Description>
+		<Code>
+			MountOptionTest(quota)
+		</Code>
+	</Test>
+	<Test Name="Mountusrquota" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'usrquota' mount option.</Description>
+		<Code>
+			MountOptionTest(usrquota)
+		</Code>
+	</Test>
+	<Test Name="Mountbarrier_" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'barrier=%u' mount option.</Description>
+		<Code>
+			MountOptionTest(barrier=1)
+		</Code>
+	</Test>
+	<Test Name="Mountbarrier" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'barrier' mount option.</Description>
+		<Code>
+			MountOptionTest(barrier)
+		</Code>
+	</Test>
+	<Test Name="Mountnobarrier" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'nobarrier' mount option.</Description>
+		<Code>
+			MountOptionTest(nobarrier)
+		</Code>
+	</Test>
+	<Test Name="Mounti_version" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'i_version' mount option.</Description>
+		<Code>
+			MountOptionTest(i_version)
+		</Code>
+	</Test>
+	<Test Name="Mountstripe_" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'stripe=%u' mount option.</Description>
+		<Code>
+			MountOptionTest(stripe=1)
+		</Code>
+	</Test>
+	<!--Test Name="Mountresize" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'resize' mount option.</Description>
+		<Code>
+			MountOptionTest(resize=100)
+		</Code>
+	</Test-->
+	<Test Name="Mountrdelalloc" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'delalloc' mount option.</Description>
+		<Code>
+			MountOptionTest(delalloc)
+		</Code>
+	</Test>
+	<Test Name="Mountrnodelalloc" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'nodelalloc' mount option.</Description>
+		<Code>
+			MountOptionTest(nodelalloc)
+		</Code>
+	</Test>
+	<Test Name="Mountmblk_io_submit" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'mblk_io_submit' mount option.</Description>
+		<Code>
+			MountOptionTest(mblk_io_submit)
+		</Code>
+	</Test>
+	<Test Name="Mountnomblk_io_submit" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'nomblk_io_submit' mount option.</Description>
+		<Code>
+			MountOptionTest(nomblk_io_submit)
+		</Code>
+	</Test>
+	<Test Name="Mountblock_validity" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'block_validity' mount option.</Description>
+		<Code>
+			MountOptionTest(block_validity)
+		</Code>
+	</Test>
+	<Test Name="Mountnoblock_validity" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'noblock_validity' mount option.</Description>
+		<Code>
+			MountOptionTest(noblock_validity)
+		</Code>
+	</Test>
+	<Test Name="Mountinode_readahead_blks_" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'inode_readahead_blks=%u' mount option.</Description>
+		<Code>
+			MountOptionTest(inode_readahead_blks=128)
+		</Code>
+	</Test>
+	<Test Name="Mountjournal_ioprio_" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'journal_ioprio=%u' mount option.</Description>
+		<Code>
+			MountOptionTest(journal_ioprio=5)
+		</Code>
+	</Test>
+	<Test Name="Mountauto_da_alloc_" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'auto_da_alloc=%u' mount option.</Description>
+		<Code>
+			MountOptionTest(auto_da_alloc=200)
+		</Code>
+	</Test>
+	<Test Name="Mountauto_da_alloc" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'auto_da_alloc' mount option.</Description>
+		<Code>
+			MountOptionTest(auto_da_alloc)
+		</Code>
+	</Test>
+	<Test Name="Mountnoauto_da_alloc" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'noauto_da_alloc' mount option.</Description>
+		<Code>
+			MountOptionTest(noauto_da_alloc)
+		</Code>
+	</Test>
+	<Test Name="Mountdioread_nolock" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'dioread_nolock' mount option.</Description>
+		<Code>
+			MountOptionTest(dioread_nolock)
+		</Code>
+	</Test>
+	<Test Name="Mountdioread_lock" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'dioread_lock' mount option.</Description>
+		<Code>
+			MountOptionTest(dioread_lock)
+		</Code>
+	</Test>
+	<Test Name="Mountdiscard" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'discard' mount option.</Description>
+		<Code>
+			MountOptionTest(discard)
+		</Code>
+	</Test>
+	<Test Name="Mountnodiscard" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'nodiscard' mount option.</Description>
+		<Code>
+			MountOptionTest(nodiscard)
+		</Code>
+	</Test>
+	<Test Name="Mountinit_itable_" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'init_itable=%u' mount option.</Description>
+		<Code>
+			MountOptionTest(init_itable=100)
+		</Code>
+	</Test>
+	<Test Name="Mountinit_itable" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'init_itable' mount option.</Description>
+		<Code>
+			MountOptionTest(init_itable)
+		</Code>
+	</Test>
+	<Test Name="Mountnoinit_itable" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'noinit_itable' mount option.</Description>
+		<Code>
+			MountOptionTest(noinit_itable)
+		</Code>
+	</Test>
+	<!-- Must be the last test in the testset :) -->
+	<!--Test Name="MountAbort" FaultSimulationReady="true">
+		<Description>Trying to mount the device with 'abort' mount option.</Description>
+		<Code>
+			int status = Success;
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			Unres(chdir("/") == -1, "Cannot change surrent folder");
+			const char * path = "/tmp/Ext4Mount_dir";
+			Unres( mkdir(path, 0777) == -1, "Cannot make directory." );
+			if(mount( DeviceName, path, FileSystem, 0, 0) == -1)
+			{
+				Error("Mount failed");
+				status = Fail;
+			}
+			if(mount( DeviceName, path, FileSystem, MS_REMOUNT, "abort") == -1)
+			{
+				Error("Remount with option failed");
+				// status = Fail;
+			}
+			if(umount(path) == -1)
+			{
+				Error("could not unmount partition");
+				status = Fail;
+			}
+			rmdir(path);
+			
+			Fail ( status != Success, "Test failed");
+			return status;
+		</Code>
+	</Test-->
+</TestSet>

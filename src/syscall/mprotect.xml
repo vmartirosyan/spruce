@@ -1,0 +1,134 @@
+<!--    mprotect.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Ruzanna Karakozova <r.karakozova@gmail.com>			
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+<TestSet Name="mprotect">
+	<Requires>sys/mman.h</Requires>
+	<Header>
+#undef MAP_FAILED
+#define MAP_FAILED reinterpret_cast<void*>(-1)
+	</Header>
+	<Test Name="MprotectNormal" FaultSimulationReady="true">
+		<Description>set protection on a region of memory</Description>
+		<File count="1"/>
+		<Code>
+			const string buff = "abc";
+			if(write(FDs[0], buff.c_str(), buff.size()) == -1)
+			{
+				Error("write failed", Unresolved);
+			}
+			
+			size_t length = buff.size();
+			int prot = PROT_READ;
+			int flags = MAP_PRIVATE;
+			off_t offset = 0;
+		
+			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);
+			}
+			EnableFaultSim();
+			//memory can not be accessed
+			if(mprotect(addr, length, PROT_NONE) == -1)
+			{
+				Error("System call mprotect failed", Fail);
+			}		
+		</Code>
+		<Footer>
+			return Success;
+		</Footer>
+	</Test>
+	<Test Name="MprotectErrAcces">
+		<Description>The memory cannot be given the specified access</Description>
+		<File count="1" mode="S_IRUSR | S_IWUSR" flags="O_RDONLY | O_CREAT"/>
+		<Code>
+			size_t length = 3;
+			int prot = PROT_READ;
+			int flags = MAP_SHARED;
+			off_t offset = 0;
+		
+			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);
+			}
+			
+			ErrorTest(mprotect(addr, length, PROT_WRITE), -1, EACCES);
+		</Code>
+		<Footer>
+			return Success;
+		</Footer>
+	</Test>
+	<Test Name="MprotectErrInval">
+		<Description>addr is not a valid pointer, or not a multiple of the system page size</Description>
+		<File count="1"/>
+		<Header>
+			int status = Success;
+		</Header>
+		<Code>
+			int length = 3;	
+			void * addr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);
+			}
+			
+			if(mprotect(static_cast<char *>(addr) + 1, length, PROT_NONE) != -1 || errno != EINVAL)
+			{
+				Error("EINVAL error expected: memory was not mapped");
+				status = Fail;
+			}
+			
+			if(mprotect(reinterpret_cast<void*>(-1), 3, PROT_NONE) != -1 || errno != EINVAL)
+			{
+				Error("EINVAL error expected: addr is not a valid pointer");
+				status = Fail;
+			}
+
+		</Code>
+		<Footer>
+			return status;
+		</Footer>
+	</Test>
+	<Test Name="MprotectErrNomem">
+		<Description>addr is not a valid pointer, or not a multiple of the system page size</Description>
+		<File count="1"/>
+		<Code>
+			int length = 3;	
+			void * addr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0);
+			if(addr == MAP_FAILED)
+			{
+				Error("System call mmap failed", Unresolved);
+			}
+			
+			if(munmap(addr, length) == -1)
+			{
+				Error("System call munmap failed", Unresolved);
+			}
+			
+			ErrorTest(mprotect(addr, length, PROT_NONE), -1, ENOMEM);
+		</Code>
+		<Footer>
+			return Success;
+		</Footer>
+	</Test>
+</TestSet>
