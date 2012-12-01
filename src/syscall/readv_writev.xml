@@ -55,7 +55,7 @@
 				Error("Different values were written and read.", Fail);
 			}
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="ReadvBadFile1">
@@ -183,7 +183,7 @@
 		<File count="1"/>
 		<Header>
 #if __WORDSIZE==64	
-	Error("EINVAL error cannot be simulated on x86-64 architecture.", Unsupported);	
+	Unsupp("EINVAL error cannot be simulated on x86-64 architecture.");	
 #else
 		</Header>
 		<Code>
@@ -203,7 +203,7 @@
 		<File count="1"/>
 		<Header>
 #if __WORDSIZE==64	
-	Error("EINVAL error cannot be simulated on x86-64 architecture.", Unsupported);	
+	Unsupp("EINVAL error cannot be simulated on x86-64 architecture.");	
 #else
 		</Header>
 		<Code>

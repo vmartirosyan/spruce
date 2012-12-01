@@ -13,14 +13,14 @@
 			}
 		</Code>
 		<Footer>
-			return Success;
+			Return(Success);
 		</Footer>
 	</Test>
 	<Test Name="ReadaheadErrBadF">
 		<Description>fd is not a valid file descriptor or is not open for reading</Description>
 		<File count="1" flags="O_WRONLY | O_CREAT" mode="S_IRWXU"/>
 		<Header>
-			int status = Success;
+			Status status = Success;
 		</Header>
 		<Code>
 			if(readahead(FDs[0], 0, getpagesize()) != -1 || errno != EBADF)
@@ -42,7 +42,7 @@
 			}
 		</Code>
 		<Footer>
-			return status;
+			Return(status);
 		</Footer>
 	</Test>
 </TestSet>

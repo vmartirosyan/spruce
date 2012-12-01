@@ -61,7 +61,7 @@
 				Error("Lchown failed : lchown should chenge group  from root to nobody but it does not.",  Fail);
 			}
 		
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="LchownSymlink" FaultSimulationReady="true">
@@ -82,7 +82,7 @@
 			{
 				Error("Owner of the original file was changed.", Fail);
 			}
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="LchownIsNotDirectory">

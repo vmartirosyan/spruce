@@ -37,25 +37,29 @@
 			char * opts = NULL;
 			opts = getenv("MountOpts");
 			string strOpts = opts;
+			string QuotaFile = MountPoint;
+			int cmd_on;
+			int cmd_off;
+			UnixCommand* quotacheck;
+			ProcessResult * res;
+			vector<string> args;
 			if ( opts != NULL )
 			{
 				if ( strOpts.find("quota") == string::npos || PartitionManager::IsOptionEnabled("noquota"))
-					Error("quota mount option is not provided.", Unsupported);
+					Unsupp("quota mount option is not provided.");
 				if ( strOpts.find("vfsold") != string::npos )
-					Error("vfsold quota format not supported yet.", Unresolved);
+					Unsupp("vfsold quota format not supported.");
 			}
 			else
-				Error("quota mount option is not provided.", Unsupported);
+				Unsupp("quota mount option is not provided.");
 				
-			Unres( strcmp(FileSystem, "") == 0, "No file system name is provided." );
-			if ( ! strcmp(FileSystem, "xfs") )
-				Error("Quota tests for XFS are implemented in XFS-specifiec module.", Unsupported);
-			
+				
 			Unres( strcmp(DeviceName, "") == 0, "No device name is provided." );
 			Unres( strcmp(MountPoint, "") == 0, "No mount point is provided." );
-			int cmd_on;
-			int cmd_off;
-		
+			Unres( strcmp(FileSystem, "") == 0, "No file system name is provided." );
+			if ( ! strcmp(FileSystem, "xfs") )
+				Unsupp("Quota tests for XFS are implemented in XFS-specifiec module.");
+			
 			if( PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") || 
 						strOpts.find("usrjquota") != string::npos )
 			{
@@ -69,8 +73,8 @@
 			}
 			
 			// Create the quota files
-			UnixCommand* quotacheck = new UnixCommand(QUOTACHECK_PATH);
-			vector<string> args;
+			quotacheck = new UnixCommand(QUOTACHECK_PATH);
+			
 			args.push_back("-c");
 			args.push_back("-u");
 			args.push_back("-g");
@@ -78,12 +82,12 @@
 		//	args.push_back("vfsold");
 			args.push_back(MountPoint);
 			
-			ProcessResult * res = quotacheck->Execute(args);
+			res = quotacheck->Execute(args);
 			delete quotacheck;
 			Unres( res == NULL, "Cannot execute 'quotacheck' command to create the quota file." );
 		//	Unres( res->GetStatus() != Success, "Error executing 'quotacheck'. " + res->GetOutput() );
 			
-			string QuotaFile = MountPoint;
+			
 			
 			if( PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") ||
 						strOpts.find("usrjquota") != string::npos )
@@ -103,7 +107,7 @@
 			
 			Fail( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot disable quotas V0." );
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="QuotactlGetSetQuota" FaultSimulationReady="true">
@@ -140,7 +144,7 @@
 			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1)
 				cerr << "Cannot disable quotas V0.";
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="QuotactlGetSetQuotaInfo" FaultSimulationReady="true">
@@ -177,7 +181,7 @@
 			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1)
 				cerr << "Cannot disable quotas V0.";
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="QuotactlGetFormat" FaultSimulationReady="true">
@@ -203,7 +207,7 @@
 			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1)
 				cerr << "Cannot disable quotas V0.";
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="QuotactlSync" FaultSimulationReady="true">
@@ -218,7 +222,7 @@
 			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1)
 				cerr << "Cannot disable quotas V0.";
 			
-			return Shallow;
+			Return(Shallow);
 		</Code>
 	</Test>
 	<GlobalFooter>

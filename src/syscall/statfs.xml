@@ -39,7 +39,7 @@
 			
 			Fail ( buf.f_type != FileSystemTypesMap[FileSystem] , "statfs returned wrong FS type.");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="StatfsNoAccess">

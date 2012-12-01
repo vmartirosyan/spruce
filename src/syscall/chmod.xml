@@ -25,32 +25,24 @@
 <TestSet Name="chmod">
 	<Test Name="ChmodNormal" FaultSimulationReady="true">
 		<Description>Change permissions of a file.</Description>
+		<File count="1" />
 		<Code>
-			vector<mode_t> PermissionsToTest;
-			PermissionsToTest.push_back(S_IRWXU);
-			PermissionsToTest.push_back(S_IRUSR);
-			PermissionsToTest.push_back(S_IWUSR);
-			PermissionsToTest.push_back(S_IXUSR);
+			int ret_chmod;
+			struct stat mode;
+			mode_t open_mode = S_IRUSR;
+				
+			EnableFaultSim();
+			ret_chmod = chmod(FilePaths[0].c_str(), open_mode);
 			
-			PermissionsToTest.push_back(S_IRWXG);
-			PermissionsToTest.push_back(S_IRGRP);
-			PermissionsToTest.push_back(S_IWGRP);
-			PermissionsToTest.push_back(S_IXGRP);
+			Fail (ret_chmod == -1, "Chmod  failed: Aborting test.");
 			
-			PermissionsToTest.push_back(S_IRWXO);
-			PermissionsToTest.push_back(S_IROTH);
-			PermissionsToTest.push_back(S_IWOTH);
-			PermissionsToTest.push_back(S_IXOTH);
+			int ret = fstat(FDs[0], &mode);
 			
-			PermissionsToTest.push_back(S_ISUID);
+			Unres( ret == -1, "stat failed: Aborting test.");
 			
-			int status = Success;
-			for ( unsigned int i = 0; i < PermissionsToTest.size() && !status; ++i )
-			{
-				status |= PermissionsTest(PermissionsToTest[i]);
-			}			
-			
-			return status;
+			Fail((mode.st_mode & 4095) !=  open_mode,  "Chmod failed.");
+						
+			Return(Success);
 		</Code>	
 	</Test>
 	<Test Name="ChmodIsNotDirectory">
@@ -72,43 +64,6 @@
 			ErrorTest(chmod("non_existing_file", 0777), -1, ENOENT);
 		</Code>
 	</Test>
-	<Internal>
-	Status PermissionsTest(mode_t open_mode)
-	{
-		//DisableFaultSim();
 
-		const char *path="chmodTest.txt";
-		int ret_chmod;
-		struct stat mode;
-			
-		try
-		{
-			File file(path, open_mode);
-
-			//EnableFaultSim();
-			ret_chmod = chmod(path, open_mode);
-			
-			Fail (ret_chmod == -1, "Chmod  failed: Aborting test.");
-			
-			int ret = stat(path, &mode);
-			
-			Unres( ret == -1, "stat failed: Aborting test.");
-			
-			if((mode.st_mode & 4095) !=  open_mode)
-			{
-				Error("Chmod failed.", Fail);
-			}	
-		
-		//	DisableFaultSim();
-			return Success;
-
-		}
-		catch (Exception ex)
-		{
-			Error("Exception was throws. ", ex.GetMessage(), Unresolved);
-		}
-	}
-
-	</Internal>
 	
 </TestSet>

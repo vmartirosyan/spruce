@@ -41,7 +41,7 @@
 				Error("getcwd returned wrong directory.", Fail);
 			}
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 <!--

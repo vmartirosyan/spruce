@@ -22,71 +22,27 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="fchmod">
-	<Internal>
-	Status PermissionsTest(mode_t open_mode)
-	{
-		const char *path="FchmodTest.txt";
-		int ret_fchmod;
-		struct stat mode;
-		int fd;
-			
-		try
-		{
-			File file(path, open_mode);
-
-			fd = file.GetFileDescriptor();
-			
-			ret_fchmod = fchmod(fd, open_mode);
-			
-			Fail(ret_fchmod == -1, "Fchmod  failed: Aborting test.");
-			
-			int ret = stat(path, &mode);
-			
-			Unres(ret == -1, "stat failed: Aborting test.");
-			
-			if((mode.st_mode & 4095) !=  open_mode)
-			{
-				Error("Chmod failed.", Fail);
-			}
-			return Success;
-		}
-		catch (Exception ex)
-		{
-			Fail(true, ex.GetMessage());
-		}
-	}
-	</Internal>
+<TestSet Name="fchmod">	
 	<Test Name="FchmodNormal" FaultSimulationReady="true">
 		<Description>access()  checks  whether the calling process can access the file pathname.</Description>
 		<File count="1" />
 		<Code>
-			vector<mode_t> PermissionsToTest;
-			PermissionsToTest.push_back(S_IRWXU);
-			PermissionsToTest.push_back(S_IRUSR);
-			PermissionsToTest.push_back(S_IWUSR);
-			PermissionsToTest.push_back(S_IXUSR);
-			
-			PermissionsToTest.push_back(S_IRWXG);
-			PermissionsToTest.push_back(S_IRGRP);
-			PermissionsToTest.push_back(S_IWGRP);
-			PermissionsToTest.push_back(S_IXGRP);
-			
-			PermissionsToTest.push_back(S_IRWXO);
-			PermissionsToTest.push_back(S_IROTH);
-			PermissionsToTest.push_back(S_IWOTH);
-			PermissionsToTest.push_back(S_IXOTH);
-			
-			PermissionsToTest.push_back(S_ISUID);
-			
+			int ret_chmod;
+			struct stat mode;
+			mode_t open_mode = S_IRUSR;
+				
 			EnableFaultSim();
-			int status = Success;
-			for ( unsigned int i = 0; i < PermissionsToTest.size() && !status; ++i )
-			{
-				status |= PermissionsTest(PermissionsToTest[i]);
-			}
+			ret_chmod = fchmod(FDs[0], open_mode);
 			
-			return status;
+			Fail (ret_chmod == -1, "Chmod  failed: Aborting test.");
+			
+			int ret = fstat(FDs[0], &mode);
+			
+			Unres( ret == -1, "stat failed: Aborting test.");
+			
+			Fail((mode.st_mode & 4095) !=  open_mode,  "Chmod failed.");
+						
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="FchmodBadFileDesc">

@@ -54,7 +54,7 @@
 			}		
 		</Code>
 		<Footer>
-			return Success;
+			Return(Success);
 		</Footer>
 	</Test>
 	<Test Name="MprotectErrAcces">
@@ -75,14 +75,14 @@
 			ErrorTest(mprotect(addr, length, PROT_WRITE), -1, EACCES);
 		</Code>
 		<Footer>
-			return Success;
+			Return(Success);
 		</Footer>
 	</Test>
 	<Test Name="MprotectErrInval">
 		<Description>addr is not a valid pointer, or not a multiple of the system page size</Description>
 		<File count="1"/>
 		<Header>
-			int status = Success;
+			Status status = Success;
 		</Header>
 		<Code>
 			int length = 3;	
@@ -106,7 +106,7 @@
 
 		</Code>
 		<Footer>
-			return status;
+			Return(status);
 		</Footer>
 	</Test>
 	<Test Name="MprotectErrNomem">
@@ -128,7 +128,7 @@
 			ErrorTest(mprotect(addr, length, PROT_NONE), -1, ENOMEM);
 		</Code>
 		<Footer>
-			return Success;
+			Return(Success);
 		</Footer>
 	</Test>
 </TestSet>

@@ -51,7 +51,7 @@
 			{
 				Error("fdatasync updated last modification time of the file", Fail);
 			}
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="FdatasyncErrBadFD">

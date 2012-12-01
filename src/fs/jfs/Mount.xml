@@ -9,7 +9,7 @@
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize" ) == -1, "Remount-resize failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test-->
 	<Test Name="RemountIntegrity" FaultSimulationReady="true">
@@ -21,7 +21,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "integrity" ) == -1, "Remount-integrity failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>	
 	<Test Name="RemountNoIntegrity" FaultSimulationReady="true">
@@ -33,7 +33,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "nointegrity" ) == -1, "Remount-nointegrity failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="RemountIOCharset" FaultSimulationReady="true">
@@ -45,7 +45,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=utf8" ) == -1, "Remount-iocharset failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="RemountErrorsContinue" FaultSimulationReady="true">
@@ -57,7 +57,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=continue" ) == -1, "Remount-errors=continue failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>	
 	<Test Name="RemountErrorsRemountRO" FaultSimulationReady="true">
@@ -69,7 +69,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=remount-ro" ) == -1, "Remount-errors=remount-ro failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>	
 	<Test Name="RemountErrorsPanic" FaultSimulationReady="true">
@@ -81,7 +81,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=panic" ) == -1, "Remount-errors=panic failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>	
 	<Test Name="RemountNoQuota" FaultSimulationReady="true">
@@ -93,7 +93,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "noquota" ) == -1, "Remount-noquota failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>	
 	<Test Name="RemountQuota" FaultSimulationReady="true">
@@ -105,7 +105,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "quota" ) == -1, "Remount-quota failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>	
 	<Test Name="RemountUsrquota" FaultSimulationReady="true">
@@ -117,7 +117,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "usrquota" ) == -1, "Remount-usrquota failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>	
 	<Test Name="RemountGrpquota" FaultSimulationReady="true">
@@ -129,7 +129,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "grpquota" ) == -1, "Remount-grpquota failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>	
 	<Test Name="RemountUID" FaultSimulationReady="true">
@@ -141,7 +141,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "uid=0" ) == -1, "Remount-uid failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>	
 	<Test Name="RemountGID" FaultSimulationReady="true">
@@ -153,7 +153,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "gid=0" ) == -1, "Remount-gid failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>	
 	<Test Name="RemountUmask" FaultSimulationReady="true">
@@ -165,7 +165,7 @@
 			EnableFaultSim();
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "umask=777" ) == -1, "Remount-umask failed");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>	
 </TestSet>

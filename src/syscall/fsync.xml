@@ -52,7 +52,7 @@
 			{
 				Error("fdatasync updated last modification time of the file", Fail);
 			}
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="FsyncDir" FaultSimulationReady="true">
@@ -66,7 +66,7 @@
 				Error("fsync failed.", Fail);
 			}
 			
-			return Shallow;
+			Return(Shallow);
 		</Code>
 	</Test>
 	<Test Name="FsyncErrBadFD">

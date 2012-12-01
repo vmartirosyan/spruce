@@ -43,7 +43,7 @@
 			
 			Fail ( stat_buf.st_atime != cur_time, "Wrong access time was set.");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="UtimeNormalNull" FaultSimulationReady="true">
@@ -61,7 +61,7 @@
 			
 			Fail ( stat_buf.st_atime != cur_time, "Wrong access time was set.");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="UtimeNoAccess">

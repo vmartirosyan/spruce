@@ -29,7 +29,7 @@
 
 #define MountOptionTest2(opt, mount_opt)\
 {\
-			int status = Success;\
+			Status status = Success;\
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");\
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");\
 			Unres(chdir("/") == -1, "Cannot change surrent folder");\
@@ -53,7 +53,7 @@
 			}\
 			rmdir(path);\
 			Fail ( status != Success, "Test failed");\
-			return status;\
+			Return(status);\
 }
 	</GlobalHeader>
 	<Test Name="MountBsddf" FaultSimulationReady="true">
@@ -468,7 +468,7 @@
 	<!--Test Name="MountAbort" FaultSimulationReady="true">
 		<Description>Trying to mount the device with 'abort' mount option.</Description>
 		<Code>
-			int status = Success;
+			Status status = Success;
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(chdir("/") == -1, "Cannot change surrent folder");
@@ -492,7 +492,7 @@
 			rmdir(path);
 			
 			Fail ( status != Success, "Test failed");
-			return status;
+			Return(status);
 		</Code>
 	</Test-->
 </TestSet>

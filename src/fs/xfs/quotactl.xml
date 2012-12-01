@@ -61,7 +61,7 @@
 			// In case if there is nothing to do, quotactl returns EEXIST error code on XFS.
 			Fail( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot enable quotas V0." );
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="QuotactlXSetGetQuota" FaultSimulationReady="true">
@@ -86,7 +86,7 @@
 			cerr << "quota2.d_blk_hardlimit=" << quota2.d_blk_hardlimit << endl;
 			Fail ( quota.d_blk_hardlimit != quota2.d_blk_hardlimit, "Different values after set-get operations." );
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="QuotactlXQstat" FaultSimulationReady="true">
@@ -100,7 +100,7 @@
 			
 			Fail( quotactl(cmd_xqstat, DeviceName, 0, reinterpret_cast<caddr_t>( &quota_stat )) == -1, "Cannot get quota stat." );
 			
-			return Shallow;
+			Return(Shallow);
 		</Code>
 	</Test>
 	<Test Name="QuotactlXQuotaOff" FaultSimulationReady="true">
@@ -111,7 +111,7 @@
 			
 			Fail( quotactl(cmd_off, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot disable quota." );
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<!-- Must be called after QuotactlXQuotaOff -->
@@ -123,7 +123,7 @@
 			
 			Fail( quotactl(cmd_rm, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1, "Cannot remove quotas." );
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<GlobalFooter>

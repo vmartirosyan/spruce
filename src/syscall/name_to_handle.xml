@@ -73,7 +73,7 @@
 			{
 				Error("open_by_handle_at failed", Fail);
 			}
-			return Shallow;
+			Return(Shallow);
 		</Code>
 	</Test>
 	<Test Name="NameToHandleNormalForDirectory" FaultSimulationReady="true">
@@ -102,7 +102,7 @@
 			{
 				Error("open_by_handle_at failed", Fail);
 			}
-			return Shallow;
+			Return(Shallow);
 		</Code>
 	</Test>
 	<GlobalFooter>

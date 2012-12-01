@@ -134,7 +134,7 @@
 		<Description>dup() duplicates a file descriptor</Description>
 		<File count="1"/>
 		<Code>
-			int status = Success;
+			Status status = Success;
 			EnableFaultSim();
 			int newFd = dup(FDs[0]);
 					
@@ -193,14 +193,14 @@
 				status = Fail;
 			}
 			
-			return status;
+			Return(status);
 		</Code>
 	</Test>
 	<Test Name="Dup2Normal">
 		<Description>dup2() duplicates a file descriptor</Description>
 		<File count="1"/>
 		<Code>
-			int status = Success;
+			Status status = Success;
 			int newFd = 7;
 			
 			if(dup2(FDs[0], newFd) == -1)
@@ -270,14 +270,14 @@
 				Error("System call dup2 failed: second argument fd was not returned");
 				status = Fail;				
 			}
-			return status;		
+			Return(status);		
 		</Code>
 	</Test>
 	<Test Name="Dup3Normal">
 		<Description>dup3() duplicates a file descriptor</Description>
 		<File count="1"/>
 		<Code>
-			int status = Success;
+			Status status = Success;
 			int newFd = 7;
 			
 			if(dup3(FDs[0], newFd, O_CLOEXEC) == -1)
@@ -334,7 +334,7 @@
 				Error("System call dup3 failed: first and second arguments fd's offsets are not equal");
 				status = Fail;
 			}		
-			return status;
+			Return(status);
 		</Code>
 	</Test>
 	<Test Name="DupErrBadF">
@@ -353,7 +353,7 @@
 		<Description>oldfd  isn't  an  open  file  descriptor</Description>
 		<File count ="1"/>
 		<Code>			
-			int status = Success;
+			Status status = Success;
 			int newFd = -2;
 	
 			if(dup3(-1, newFd, 0) != -1 || errno != EBADF)
@@ -370,14 +370,14 @@
 				status = Fail;
 			}
 		
-			return status;
+			Return(status);
 		</Code>
 	</Test>
 	<Test Name="Dup3ErrInval">
 	<Description>flags contain an invalid value.  Or, oldfd was equal to newfd</Description>
 	<File count="1"/>
 	<Code>
-		int status = Success;
+		Status status = Success;
 		int newFd = FDs[0];
 		if(dup3(FDs[0], newFd, 0) != -1 || errno != EINVAL)
 		{
@@ -392,7 +392,7 @@
 			status = Fail;
 		}
 	
-		return status;
+		Return(status);
 	</Code>
 	</Test>
 </TestSet>

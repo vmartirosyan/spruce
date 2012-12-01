@@ -24,7 +24,7 @@
 	<Requires>sys/mount.h</Requires>
 	<Test Name="MountDegraded" FaultSimulationReady="true">
 		<Description>Trying to mount the device with Degraded mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -49,11 +49,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="Mountsubvol" FaultSimulationReady="true">
 		<Description>Trying to mount the device with subvol mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -78,11 +78,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="Mountsubvol2" FaultSimulationReady="true">
 		<Description>Trying to mount the device with subvol mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -102,11 +102,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="Mountsubvolid" FaultSimulationReady="true">
 		<Description>Trying to mount the device with subvolID mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -131,11 +131,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="Mountdevice" FaultSimulationReady="true">
 		<Description>Trying to mount the device with subvolID mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -160,11 +160,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="MountNoDatasum" FaultSimulationReady="true">
 		<Description>Trying to mount the device with Nodatasum mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -189,11 +189,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="MountNoDatacow" FaultSimulationReady="true">
 		<Description>Trying to mount the device with NoDatacow mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -218,11 +218,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="MountNoBarrier" FaultSimulationReady="true">
 		<Description>Trying to mount the device with nobarrier mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -247,11 +247,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="MountMax_inline" FaultSimulationReady="true">
 		<Description>Trying to mount the device with max_inline mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -276,11 +276,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 		<Test Name="MountAlloc_start" FaultSimulationReady="true">
 		<Description>Trying to mount the device with alloc_start mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -305,11 +305,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MountThread_pool" FaultSimulationReady="true">
 		<Description>Trying to mount the device with thread_pool mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -334,11 +334,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 		<Test Name="MountCompress" FaultSimulationReady="true">
 		<Description>Trying to mount the device with Compress mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -363,11 +363,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MountCompress2" FaultSimulationReady="true">
 		<Description>Trying to mount the device with Compress=%s mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -392,11 +392,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MountCompressForce" FaultSimulationReady="true">
 		<Description>Trying to mount the device with compress-force mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -421,11 +421,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MountCompressForce2" FaultSimulationReady="true">
 		<Description>Trying to mount the device with compress-force=%s mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -450,11 +450,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MountSSD" FaultSimulationReady="true">
 		<Description>Trying to mount the device with SSD mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -479,11 +479,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="Mountssd_spread" FaultSimulationReady="true">
 		<Description>Trying to mount the device with ssd_spread mount option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -508,11 +508,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="MountNossd" FaultSimulationReady="true">
 		<Description>Trying to mount the device with No_ssd option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -537,11 +537,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="MountNoacl" FaultSimulationReady="true">
 		<Description>Trying to mount the device with noacl option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -566,11 +566,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="Mountnotreelog" FaultSimulationReady="true">
 		<Description>Trying to mount the device with notreelog option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -595,11 +595,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="Mountflushoncommit" FaultSimulationReady="true">
 		<Description>Trying to mount the device with flushoncommit option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -624,11 +624,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="MountMetadata_ratio" FaultSimulationReady="true">
 		<Description>Trying to mount the device with metadata_ratio=%d option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -653,11 +653,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="MountDiscard" FaultSimulationReady="true">
 		<Description>Trying to mount the device with discard option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -682,11 +682,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="MountSpace_cache" FaultSimulationReady="true">
 		<Description>Trying to mount the device with space_cache option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -711,11 +711,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>	
 	<Test Name="MountClear_cache" FaultSimulationReady="true">
 		<Description>Trying to mount the device with clear_cache option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -740,11 +740,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MountUser_subvol_rm_allowed" FaultSimulationReady="true">
 		<Description>Trying to mount the device with user_subvol_rm_allowed option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -769,11 +769,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MountEnospc_debug" FaultSimulationReady="true">
 		<Description>Trying to mount the device with enospc_debug option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -798,11 +798,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MountSubvolrootid" FaultSimulationReady="true">
 		<Description>Trying to mount the device with subvolrootid=%d option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -827,11 +827,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MountAutodefrag" FaultSimulationReady="true">
 		<Description>Trying to mount the device with autodefrag option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -856,11 +856,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MounInode_cache" FaultSimulationReady="true">
 		<Description>Trying to mount the device with inode_cache option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -885,11 +885,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MounNospace_cache" FaultSimulationReady="true">
 		<Description>Trying to mount the device with nospace_cache option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -914,11 +914,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MounRecovery" FaultSimulationReady="true">
 		<Description>Trying to mount the device with recovery option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -943,11 +943,11 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="MounNULL" FaultSimulationReady="true">
 		<Description>Trying to mount the device with NULL option.</Description>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>
 			chdir("/");
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -972,6 +972,6 @@
 			}
 			Unres( rmdir(path) == -1, "Cannot delete directory." );
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>					
 </TestSet>

@@ -48,7 +48,7 @@
 				Error("Different values were written and read.", Fail);
 			}
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
@@ -82,7 +82,7 @@
 				Error("Different values were written and read.", Fail);
 			}
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="ReadBadFile1">

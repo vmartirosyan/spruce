@@ -25,7 +25,7 @@
 <TestSet Name="readdir">
 	<Header>
 #if __WORDSIZE==64		
-	Error("readdir is not supported on x86-64 architecture.", Unsupported);		
+	Unsupp("readdir is not supported on x86-64 architecture.");		
 #else
 struct old_linux_dirent {
 	long           d_ino;
@@ -52,7 +52,7 @@ struct old_linux_dirent {
 				Error("Wrong data is returned by readdir: " + static_cast<string>(dir.d_name), Fail);
 			}
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="ReaddirBadFile1">
