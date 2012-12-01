@@ -54,7 +54,7 @@
 			{
 				Error("After truncation file was not filled with NULLs.", Fail);
 			}
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="FtruncateNormalDecrease" FaultSimulationReady="true">
@@ -79,7 +79,7 @@
 			{
 				Error("Different file size after truncate.", Fail);
 			}
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="FtruncateBadFile">
@@ -98,7 +98,7 @@
 			{
 				Error("ftruncate should return EBADF or EINVAL but it did not.", Fail);
 			}
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="FtruncateInval2">

@@ -259,9 +259,14 @@ public:
 	}
 	<xsl:for-each select="Test">
 	int <xsl:value-of select="@Name" />Func(vector&lt;string>)
-	{		
+	{
+		Status _TestStatus = Unknown;
+		bool _InFooter = false;	
+		if ( _InFooter == true )
+			_InFooter = false;
 		<xsl:value-of select="/TestSet/Header" />
-		<xsl:value-of select="Header" />
+			
+		<xsl:value-of select="Header" />		
 		cerr &lt;&lt; "Description: " &lt;&lt; "<xsl:value-of select="Description" />" &lt;&lt; endl;
 		try
 		{
@@ -328,16 +333,19 @@ public:
 			</xsl:if>
 			
 			<xsl:value-of select="Code" />
-			
+			// This code should always be called!
+			// Not allowed to use "return" statement in &lt;Code> segment.
+			// Use Return(status) macro instead
 		}
 		catch (Exception e)
 		{
 			Error("Exception was thrown: ", e.GetMessage(), Unresolved);
 		}
-		
+Footer: 
+		_InFooter = true;
 		<xsl:value-of select="Footer" />
 		<xsl:value-of select="/TestSet/Footer" />	
-
+		return _TestStatus;
 	}
 	</xsl:for-each>
 protected:

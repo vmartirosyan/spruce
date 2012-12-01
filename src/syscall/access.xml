@@ -28,7 +28,7 @@
 		<Requires>sys/vfs.h</Requires>
 		<Description>access()  checks  whether the calling process can access the file pathname.</Description>
 		<File count="1"/>
-		<Header>int status = Success;</Header>
+		<Header>Status status = Success;</Header>
 		<Code>	
 			if( PartitionManager::IsOptionEnabled("umask=777") )
 			{
@@ -80,7 +80,7 @@
 			}
 			
 		</Code>
-		<Footer>return status;</Footer>
+		<Footer>Return(status);</Footer>
 	</Test>
 	<Test Name="AccessFileExists" FaultSimulationReady="true">
 		<Description>the existence test (F_OK)</Description>
@@ -91,7 +91,7 @@
 				Error("The file exists but access returns error. ", Fail);
 			}
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="AccessErrAccess">
@@ -108,7 +108,7 @@
 				Error("access should return EACCES error code but it did not.", Fail);
 			}
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="AccessErrLoop">

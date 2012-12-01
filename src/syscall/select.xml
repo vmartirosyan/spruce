@@ -45,7 +45,7 @@
 						
 			Fail ( ready != 1, "Select failed.");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="SelectBadFile">

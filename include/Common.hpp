@@ -79,6 +79,18 @@ struct FSimInfo
 
 #define MY_WEXITSTATUS(stat) (((*(static_cast<int *>( &(stat)))) >> 8) & 0xff)
 
+#define Return(st) \
+{\
+	if ( _InFooter )\
+	{\
+		return st;\
+	}\
+	else\
+	{\
+		_TestStatus = st;\
+		goto Footer;\
+	}\
+}\
 
 #define EnableFaultSim() \
 {\
@@ -104,16 +116,19 @@ struct FSimInfo
 	_fault_count = KedrIntegrator::GetTimes( _fsim_point); 
 	
 #define ERROR_3_ARGS(message, add_msg, status)\
+{\
 	cerr << message << add_msg;\
 	if ( errno && status != Unsupported) cerr << "\nError: " << strerror(errno) << endl;\
-	if( ((errno == ENOTSUP) || (errno == ENOTTY)) && (status != -1)) return Unsupported;\
-	if (status != -1) return status;
+	if( ((errno == ENOTSUP) || (errno == ENOTTY)) && (status != -1)) return Unsupported; /* Temporary solution: Unsupported tests will not need the footer at all. */\
+	if ( status != -1 && status != Unsupported ) Return(status);\
+	if ( status == Unsupported ) return Unsupported;\
+}\
 
 #define ERROR_2_ARGS(message, status)\
 	ERROR_3_ARGS(message, "", status)
 
 #define ERROR_1_ARGS(message)\
-	ERROR_3_ARGS(message, "", -1)
+	ERROR_3_ARGS(message, "", Unknown)
 
 #define GET_4TH_ARG(arg1, arg2, arg3, arg4, ...) arg4
 #define ERROR_MACRO_CHOOSER(...) \
@@ -128,6 +143,9 @@ struct FSimInfo
 #define Unres(cond, message)\
 	if ( (cond) )\
 	{ Error(message, Unresolved) }
+	
+#define Unsupp(message)\
+	{ cerr << message << endl; return Unsupported; }
 
 #define ELoopTest(func_call, error_val)\
 {\
@@ -142,7 +160,7 @@ struct FSimInfo
 	{\
 		Error("Function should return '" + static_cast<string>(strerror(ELOOP)) +  "' error code but it did not.", Fail);\
 	}\
-	return Success;\
+	Return(Success);\
 }\
 
 #define ELoopDirTest(func_call, error_val)\
@@ -205,7 +223,7 @@ struct FSimInfo
 	}\
 	int status;\
 	wait(&status);\
-	return MY_WEXITSTATUS(status);\
+	Return( (Status)WEXITSTATUS(status) );\
 }\
 
 #define EMaxFilesOpenTest(func_call, error_val)\
@@ -248,7 +266,7 @@ struct FSimInfo
 		Error("Function should return '" + static_cast<string>(strerror(EMFILE)) +  "' error but it did not.", Fail);\
 	}\
 	closedir(fdDir);\
-	return Success;\
+	Return(Success);\
 }\
 
 #define ErrorTest(func_call, error_val, error_code)\
@@ -265,7 +283,7 @@ struct FSimInfo
 			Error("Function should return '" + static_cast<string>(strerror(error_code)) +  "' error but it did not.", Fail);\
 		}\
 	}\
-	return Success;\
+	Return(Success);\
 }\
 
 #define EmptyTestSet(module_name, test_set_name, status, message)\

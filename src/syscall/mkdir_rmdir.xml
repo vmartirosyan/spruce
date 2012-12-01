@@ -54,7 +54,7 @@
 				Error("The directory should be deleted but it is not.", Fail);
 			}
 
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<!-- mkdir error cases -->

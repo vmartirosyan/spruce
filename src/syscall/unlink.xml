@@ -42,7 +42,7 @@
 			 // Check if file exists
 			Fail ( access( FilePaths[0].c_str(), F_OK ) == 0, "Error: unlinked file still exists.");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="UnlinkNormal2" FaultSimulationReady="true">
@@ -60,7 +60,7 @@
 			// The original file must be there
 			Fail ( access ( FilePaths[0].c_str(), F_OK ) == -1, "Unlink failed. The original file was deleted.");
 						
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="UnlinkNameTooLong">

@@ -53,7 +53,7 @@
 				Error("Error in unlinking node.");
 			}
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="MknodNormal2" FaultSimulationReady="true">
@@ -116,7 +116,7 @@
 					cerr << "Error in unlinking node: "<<strerror(errno);					
 				}
 			}
-			return status;
+			Return(status);
 		</Code>
 	</Test>
 	<Test Name="MknodPathExists">

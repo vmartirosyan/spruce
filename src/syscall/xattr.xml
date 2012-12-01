@@ -55,7 +55,7 @@
 			
 			Fail ( strncmp(ValueSet, ValueGot, ValueLen ), static_cast<string>("Different xattr values: ") + ValueSet + " : " + ValueGot );
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="XattrList" FaultSimulationReady="true">
@@ -85,7 +85,7 @@
 			
 			Fail( XattrList.find(AttrName) == string::npos, "The attribute name is not listed." );			
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<GlobalFooter>

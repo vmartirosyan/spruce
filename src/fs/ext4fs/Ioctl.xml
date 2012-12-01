@@ -29,7 +29,7 @@
 			// Compare them
 			Fail ( get_flags != set_flags, "Set and Get flags mismatch");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="ClearExtentsFlags">
@@ -45,7 +45,7 @@
 			// Try to set the non-permitted flag
 			Fail( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &non_permitted_flags ) == 0, "It was permitted to set non-permitted flag!.");
 			
-			return Success;						
+			Return(Success);						
 		</Code>
 	</Test>
 	<Test Name="SetFlagsNotOwner">
@@ -79,14 +79,14 @@
 			
 			// Compare them
 			Fail ( get_version != set_version, "Set and Get version mismatch");
-			return Success;				
+			Return(Success);				
 		</Code>
 	</Test>
 	<!-- This commang is removed in newer kernels... -->
 	<Test Name="WaitForReadonly" FaultSimulationReady="true">
 		<Header>
 #if  LINUX_VERSION_CODE > KERNEL_VERSION(3,1,0)
-		Error("Wait for read only operation is unsupported in Linux 3.1+ versions.", Unsupported);
+		Unsupp("Wait for read only operation is unsupported in Linux 3.1+ versions.");
 #else
 #ifndef EXT4_IOC_WAIT_FOR_READONLY
 #define EXT4_IOC_WAIT_FOR_READONLY	_IOR('f', 99, long)
@@ -107,7 +107,7 @@
 					Error("Error waiting for readonly.", Fail);
 				}
 			}
-			return Shallow;
+			Return(Shallow);
 		</Code>
 		<Footer>
 #endif
@@ -124,7 +124,7 @@
 			int NewPartitionSizeInBlocks = 210000;
 			ioctl(FDs[0], EXT2_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks);
 			
-			return Shallow;
+			Return(Shallow);
 			
 			//Status status;
 			
@@ -132,19 +132,19 @@
 			if ( ioctl(FDs[0], EXT2_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1 )
 			{
 				cerr << "Error during online resize. " << strerror(errno);
-				return Failure;
+				Return(Fail)ure;
 			}
 			else
 			{
 				cerr << "Online resize was successful. " << endl;
-				return Success;
+				Return(Success);
 			}*/
 		</Code>
 	</Test>
 	<Test Name="ResizeFS" FaultSimulationReady="true">
 		<Header>
 #if  LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
-		Error("Resize FS operation is unsupported in earlier versions than Linux 3.3.", Unsupported);
+		Unsupp("Resize FS operation is unsupported in earlier versions than Linux 3.3.");
 #else
 #ifndef EXT4_IOC_RESIZE_FS
 #	define EXT4_IOC_RESIZE_FS              _IOW('f', 16, __u64)
@@ -175,7 +175,7 @@
 			__u64 BlockCount = DeviceSize / 4096;
 			Fail(ioctl(FDs[0], EXT4_IOC_RESIZE_FS, &BlockCount) == -1, "Resize FS failed");
 			
-			return Shallow;
+			Return(Shallow);
 		</Code>
 		<Footer>
 #endif
@@ -216,7 +216,7 @@ struct move_extent {
 			
 			
 			Fail ( ioctl(FDs[1], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="GroupAdd" FaultSimulationReady="true">
@@ -243,7 +243,7 @@ struct ext4_new_group_data {
 						
 			ioctl(FDs[0], EXT4_IOC_GROUP_ADD, &input);
 			
-			return Shallow;
+			Return(Shallow);
 		</Code>
 	</Test>
 	<Test Name="Migrate" FaultSimulationReady="true">
@@ -296,7 +296,7 @@ struct ext4_new_group_data {
 				result = Success;
 				goto finally;
 			}
-			return Success;
+			Return(Success);
 		</Code>
 		<Footer>
 			finally:
@@ -324,7 +324,7 @@ struct ext4_new_group_data {
 		<File count="1"/>
 		<Code>
 			Fail ( ioctl(FDs[0], EXT4_IOC_ALLOC_DA_BLKS, 0) == -1, "Error during delayed allocation of blocks.");
-			return Shallow;
+			Return(Shallow);
 			
 		</Code>
 	</Test>
@@ -337,11 +337,11 @@ struct ext4_new_group_data {
 		<Code>
 			struct fstrim_range arg;
 			Fail ( ioctl(FDs[0], FITRIM, &arg) == -1 , "Error FITRIM.");
-			return Shallow;				
+			Return(Shallow);				
 		</Code>
 		<Footer>
 #else
-	Error("FITRIM is not supported", Unsupported);
+	Unsupp("FITRIM is not supported");
 #endif
 		</Footer>
 	</Test>

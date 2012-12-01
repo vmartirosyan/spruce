@@ -44,7 +44,7 @@
 			
 			Fail ( buf_read != '\0', "After truncation file was not filled with NULLs.");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="TruncateNormalDecrease" FaultSimulationReady="true">
@@ -64,7 +64,7 @@
 			
 			Fail ( stat_buf.st_size != length_after_truncate, "Wrong file size after truncate.");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="TruncateNoAccess">

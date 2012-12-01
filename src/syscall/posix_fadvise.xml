@@ -4,7 +4,7 @@
 	<Test Name="Posix_fadviseNormal" FaultSimulationReady="true">
 		<File count="1"/>
 		<Header>
-			int status = Success;
+			Status status = Success;
 			int errNum = 0;
 		</Header>
 		<Code>
@@ -46,12 +46,12 @@
 			}		
 		</Code>
 		<Footer>
-			return status;
+			Return(status);
 		</Footer>
 	</Test>
 	<Test Name="Posix_fadviseErrBadF">
 		<Header>
-			int status = Success;
+			Status status = Success;
 			int fd = -1;
 		</Header>
 		<Code>
@@ -92,13 +92,13 @@
 			}		
 		</Code>
 		<Footer>
-			return status;
+			Return(status);
 		</Footer>
 	</Test>
 	<Test Name="Posix_fadviseErrInval">
 		<File count="1"/>
 		<Header>
-			int status = Success;
+			Status status = Success;
 		</Header>
 		<Code>
 			int fds[2];
@@ -123,7 +123,7 @@
 			}			
 		</Code>
 		<Footer>
-			return status;
+			Return(status);
 		</Footer>
 	</Test>
 </TestSet>

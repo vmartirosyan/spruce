@@ -37,7 +37,7 @@
 			
 			Fail ( st.st_size < NewSize, "File size is less than offset+len.");			
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="FallocateNormalPunchHole" FaultSimulationReady="true">
@@ -58,11 +58,11 @@
 			
 			Fail ( st.st_size != strlen(buf), "File size is changed.");			
 			
-			return Success;
+			Return(Success);
 		</Code>
 		<Footer>
 #else
-	Error("FALLOC_FL_PUNCH_HOLE is not supported by the system.", Unsupported);
+	Unsupp("FALLOC_FL_PUNCH_HOLE is not supported by the system.");
 #endif
 	</Footer>
 	</Test>

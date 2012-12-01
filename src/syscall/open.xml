@@ -37,7 +37,7 @@
 			close(ret_val);
 			unlink(filename);
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="OpenDirect" FaultSimulationReady="true">
@@ -58,7 +58,7 @@
 			close(ret_val);
 			unlink(filename);
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="OpenNameTooLong">

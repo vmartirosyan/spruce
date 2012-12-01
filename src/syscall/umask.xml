@@ -59,7 +59,7 @@
 				retMask = umask( setMask );
 			
 			}
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 </TestSet>

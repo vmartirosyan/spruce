@@ -34,7 +34,7 @@
 			Fail(st.st_uid != getuid(), "User IDs do not match.");
 			Fail((st.st_mode & 0777) != S_IRUSR, "File permissions do not match.");
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="StatNoAccess">

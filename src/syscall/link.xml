@@ -45,7 +45,7 @@
 				Error("Different data was retrieved from the new file.", Fail);
 			}
 			
-			return Success;
+			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="LinkNameTooLong">

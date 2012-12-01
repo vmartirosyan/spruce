@@ -36,7 +36,7 @@
 			}
 			close(ret_val);
 			unlink(filename);
-			return Success;			
+			Return(Success);			
 		</Code>
 	</Test>
 	<Test Name="CreatTooLongPath">
