@@ -57,22 +57,29 @@
 					<td>
 						<xsl:value-of select="."/>
 					</td>
-					<xsl:for-each select="//Modules/Module">						
+					<xsl:for-each select="//Modules/Module">
 						<td>
 							<xsl:variable name="LogFile"><xsl:value-of select="$LogFolder"/>/<xsl:value-of select="/SpruceDashboard/@FS"/>_<xsl:value-of select="."/>_<xsl:value-of select="$MountOptions"/>_log.xml</xsl:variable>
 							<xsl:variable name="LogFileHtml"><xsl:value-of select="$LogFolder"/>/<xsl:value-of select="/SpruceDashboard/@FS"/>_<xsl:value-of select="."/>_<xsl:value-of select="$MountOptions"/>_log.html</xsl:variable>
-							<a>
-								<xsl:attribute name="href"><xsl:value-of select="$LogFileHtml"/></xsl:attribute>
-								<span class="Success">
-									<xsl:value-of select="count(document($LogFile)//Item[Status='Success' or Status='Shallow' or Status='FSimFail'])" /> 
-								</span> / 
-								<span class="Failed">
-									<xsl:value-of select="count(document($LogFile)//Item[Status='Fatal' or Status='Failed' or Status='Signaled' or Status='Timeout' or Status='FSimSuccess'])" /> 
-								</span> / 
-								<span class="Unresolved">
-									<xsl:value-of select="count(document($LogFile)//Item[Status='Unresolved' or Status='Unsupported' or Status='Skipped'])" />
-								</span>
-							</a>
+							<xsl:choose>
+								<xsl:when test="document($LogFile)">
+									<a>
+										<xsl:attribute name="href"><xsl:value-of select="$LogFileHtml"/></xsl:attribute>
+										<span class="Success">
+											<xsl:value-of select="count(document($LogFile)//Item[Status='Success' or Status='Shallow' or Status='FSimFail'])" /> 
+										</span> / 
+										<span class="Failed">
+											<xsl:value-of select="count(document($LogFile)//Item[Status='Fatal' or Status='Failed' or Status='Signaled' or Status='Timeout' or Status='FSimSuccess'])" /> 
+										</span> / 
+										<span class="Unresolved">
+											<xsl:value-of select="count(document($LogFile)//Item[Status='Unresolved' or Status='Unsupported' or Status='Skipped'])" />
+										</span>
+									</a>
+								</xsl:when>
+								<xsl:otherwise>
+									-
+								</xsl:otherwise>
+							</xsl:choose>
 						</td>
 					</xsl:for-each>
 				</tr>
