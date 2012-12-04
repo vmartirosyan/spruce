@@ -1,0 +1,112 @@
+<!--    readdir.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Ani Tumanyan <ani.tumanyan92@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="readdir">
+	<Header>
+#if __WORDSIZE==64		
+	Unsupp("readdir is not supported on x86-64 architecture.");		
+#else
+struct old_linux_dirent {
+	long           d_ino;
+	off_t          d_off;
+	unsigned short d_reclen;
+	char           d_name[NAME_MAX + 1];
+	};	
+	</Header>
+	<Requires>sys/syscall.h</Requires>
+	<Test Name="ReaddirNormal" FaultSimulationReady="true">
+		<Description>Read directory entry.</Description>
+		<Dir count="1"/>
+		<Code>
+			old_linux_dirent dir;
+			
+			EnableFaultSim();
+			if (syscall(SYS_readdir, DirDs[0], &dir, 0) == -1)
+			{
+				Error("Readdir failed.", Fail);
+			}			
+			
+			if ( strstr(dir.d_name, ".") != dir.d_name )
+			{
+				Error("Wrong data is returned by readdir: " + static_cast<string>(dir.d_name), Fail);
+			}
+			
+			Return(Success);
+		</Code>
+	</Test>
+	<Test Name="ReaddirBadFile1">
+		<Description>Bad file descriptor.</Description>
+		<Code>
+			old_linux_dirent dir;
+			ErrorTest( syscall(SYS_readdir, -1, &dir, 0), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="ReaddirBadFile2">
+		<Description>Bad file descriptor.</Description>
+		<Dir count="1"/>
+		<Code>
+			close(DirDs[0]);
+			old_linux_dirent dir;
+			ErrorTest( syscall(SYS_readdir, DirDs[0], &dir, 0), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="ReaddirNotDir">
+		<Description>dirfd does not refer to a directory.</Description>
+		<Code>
+			old_linux_dirent dir;
+			ErrorTest( syscall(SYS_readdir, 0, &dir, 0), -1, ENOTDIR);
+		</Code>
+	</Test>
+	<Test Name="ReaddirFault1">
+		<Description>Argument points outside the calling process's address space (negative address).</Description>
+		<Dir count="1"/>
+		<Code>
+			ErrorTest( syscall(SYS_readdir, DirDs[0], -1, 0), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="ReaddirFault2">
+		<Description>Argument points outside the calling process's address space (NULL address).</Description>
+		<Dir count="1"/>
+		<Code>
+			ErrorTest( syscall(SYS_readdir, DirDs[0], 0, 0), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="ReaddirNoEnt">
+		<Description>No such directory.</Description>
+		<Dir count="1"/>
+		<Code>
+			old_linux_dirent dir;
+			Unres(rmdir(DirPaths[0].c_str()) == -1, "Cannot remove directory.");
+			ErrorTest( syscall(SYS_readdir, DirDs[0], &dir, 0), -1, ENOENT);
+		</Code>
+	</Test>
+	<Footer>
+#endif
+	</Footer>
+	<FaultSimulation>
+		<Simulate point="kmalloc" count="1" />
+		<Simulate point="copy_to_user" count="1" />		
+	</FaultSimulation>
+
+</TestSet>

@@ -1,0 +1,144 @@
+<!--    pread_pwrite.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+// 			Tigran Piloyan <tigran.piloyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="pread_pwrite">	
+	<Requires>sys/timerfd.h</Requires>
+	<Test Name="PreadPwriteNormal" FaultSimulationReady="true">
+		<Description>Read from or write to a file descriptor at a given offset.</Description>
+		<File count="1"/>
+		<Code>
+			const char * WriteBuf = "012345";
+			char ReadBuf[10];
+			off_t Offset = 2;
+			Unres( write(FDs[0], WriteBuf, strlen(WriteBuf)) != static_cast<int>(strlen(WriteBuf)), "Cannot write initial data to file." );
+			EnableFaultSim();
+			if ( pwrite(FDs[0], WriteBuf, strlen(WriteBuf), Offset) != static_cast<int>(strlen(WriteBuf)) )
+			{
+				Error("Cannot write to file using pwrite().", Fail);
+			}
+			
+			if ( pread(FDs[0], ReadBuf, 1, Offset) != 1 )
+			{
+				Error("Cannot read from file using pread().", Fail);
+			}
+			
+			if ( ReadBuf[0] != WriteBuf[0] )
+			{
+				Error("Different values were written and read.", Fail);
+			}
+			
+			Return(Success);
+		</Code>
+	</Test>
+	<Test Name="PreadBadFile">
+		<Description>pread: Bad file descriptor.</Description>
+		<Code>
+			char buf[10];
+			ErrorTest(pread(-1, buf, 10, 0), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="PwriteBadFile">
+		<Description>pwrite: Bad file descriptor.</Description>
+		<Code>
+			char buf[10];
+			ErrorTest(pwrite(-1, buf, 10, 0), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="PreadInvalid">
+		<Description>pread: The resulting file offset would be negative.</Description>
+		<File count="1"/>
+		<Code>
+			char buf[10];
+			ErrorTest(pread(FDs[0], buf, 1, -1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="PwriteInvalid">
+		<Description>pwrite: The resulting file offset would be negative.</Description>
+		<File count="1"/>
+		<Code>
+			char buf[10];
+			ErrorTest(pwrite(FDs[0], buf, 1, -1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="PreadPipe">
+		<Description>pread: Fd is associated with a pipe, socket, or FIFO.</Description>
+		<Code>
+			int fds[2];
+			
+			Unres(pipe(fds) == -1, "Cannot create pipe.");
+			char buf[10];
+			ErrorTest(pread(fds[0], buf, 10, 1), -1, ESPIPE);
+		</Code>
+	</Test>
+	<Test Name="PwritePipe">
+		<Description>pwrite: Fd is associated with a pipe, socket, or FIFO.</Description>
+		<Code>
+			int fds[2];
+			
+			Unres(pipe(fds) == -1, "Cannot create pipe.");
+			char buf[10];
+			ErrorTest(pwrite(fds[0], buf, 10, 1), -1, ESPIPE);
+		</Code>
+	</Test>
+	<Test Name="PreadBadFile2">
+		<Description>pread: File is not open for reading.</Description>
+		<File count="1" flags="O_CREAT | O_WRONLY"/>
+		<Code>
+			char buf[10];
+			ErrorTest(pread(FDs[0], buf, 10, 0), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="PwriteBadFile2">
+		<Description>pwrite: File is not open for writing.</Description>
+		<File count="1" flags="O_CREAT | O_RDONLY"/>
+		<Code>
+			char buf[10];
+			ErrorTest(pwrite(FDs[0], buf, 10, 0), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="PreadIsDir">
+		<Description>pread: fd refers to a directory.</Description>
+		<Dir count="1"/>
+		<Code>
+			char buf[10];
+			ErrorTest(pread(DirDs[0], buf, 0, 0), -1, EISDIR);
+		</Code>
+	</Test>
+	<Test Name="PreadFault">
+		<Description>pread: buf is outside your accessible address space.</Description>
+		<File count="1"/>
+		<Code>
+			const char * WriteBuf = "012345";
+			Unres( write(FDs[0], WriteBuf, strlen(WriteBuf)) != static_cast<int>(strlen(WriteBuf)), "Cannot write initial data to file." );
+			ErrorTest(pread(FDs[0], reinterpret_cast<void*>(-1), 1, 1), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="PwriteFault">
+		<Description>pwrite: buf is outside your accessible address space.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(pwrite(FDs[0], reinterpret_cast<void*>(-1), 1, 1), -1, EFAULT);
+		</Code>
+	</Test>
+</TestSet>
