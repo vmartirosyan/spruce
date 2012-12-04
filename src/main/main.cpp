@@ -415,6 +415,7 @@ int main(int argc, char ** argv)
 				PartitionStatus PS = PS_Done;
 				do
 				{
+					MountOptions.push_back(pm.GetCurrentMountOptions());
 					PS = pm.PreparePartition();					
 					if ( PS == PS_Fatal  )
 					{
@@ -466,7 +467,7 @@ int main(int argc, char ** argv)
 					
 					module_args.push_back(FileName);
 					//XMLFilesToProcess.push_back(FileName);
-					MountOptions.push_back(pm.GetCurrentMountOptions());
+					
 					// Find out which tests should be excluded in current module
 					vector<string> ExcludeModuleTests;					
 					for ( vector<string>::iterator it = TestsToExclude.begin(); it != TestsToExclude.end(); ++it )
