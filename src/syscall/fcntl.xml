@@ -102,7 +102,11 @@
 			}
 			
 			// set File Descriptor Flags
-			set_flags =  O_APPEND | O_DIRECT | O_NOATIME | O_NONBLOCK ;
+			set_flags =  O_APPEND | O_NOATIME | O_NONBLOCK ;
+			if( !PartitionManager::IsOptionEnabled("data=journal") )
+			{
+				set_flags |= O_DIRECT;
+			}
 			if ( fcntl(FDs[0], F_SETFL, set_flags) == -1 )
 			{
 				Error("Error in fcntl. Cannot set flags.", Fail);
