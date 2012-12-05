@@ -62,8 +62,8 @@ public:
 		_fsim_tests(),
 		_fault_count(0),
 		_fsim_info_vec(),
-		DirPrefix("<xsl:value-of select="$TestClassName" />_dir_"),
-		FilePrefix("<xsl:value-of select="$TestClassName" />_file_")		
+		DirPrefix("<xsl:value-of select="$TestClassName" />_<xsl:value-of select="@Name"/>_dir_"),
+		FilePrefix("<xsl:value-of select="$TestClassName" />_<xsl:value-of select="@Name"/>_file_")
 		//_testCount(<xsl:value-of select="count(Test)"/>),
 		//_fsim_testCount(<xsl:value-of select="count(Test[@FaultSimulationReady='true'])"/>)		
 	{	
@@ -260,7 +260,7 @@ public:
 	<xsl:for-each select="Test">
 	int <xsl:value-of select="@Name" />Func(vector&lt;string>)
 	{
-		Status _TestStatus = Unknown;
+		Status _TestStatus = Success;
 		bool _InFooter = false;	
 		if ( _InFooter == true )
 			_InFooter = false;
