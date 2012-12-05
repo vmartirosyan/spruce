@@ -105,7 +105,7 @@ class File
 			}
 			catch (Exception e)
 			{
-				cerr << "Cannot remove file " << _pathname << ". Error : " << e.GetMessage() << endl;				
+				cerr << "Error : " << e.GetMessage() << endl;				
 			}
 		}
 		string GetPathname() const 
