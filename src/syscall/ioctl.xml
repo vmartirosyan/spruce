@@ -127,6 +127,8 @@
 		<Description>Ioctl FIBMAP.</Description>
 		<File count="1"/>
 		<Code>
+			if ( ! strcmp(FileSystem, "btrfs") )
+				Unsupp("FIBMAP not supported in btrfs.");
 			int Block = 1;
 			EnableFaultSim();
 			Fail( ioctl(FDs[0], FIBMAP, &Block) == -1, "FIBMAP operation failed." );			
