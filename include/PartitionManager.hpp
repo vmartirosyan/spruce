@@ -181,6 +181,16 @@ class PartitionManager
 			cout<<  "Mount options: " << _CurrentMountOptions << ". " << _Index << " of " << _AdditionalMountOptions[_FSIndex].size() << endl;
 			if( !Mount(_DeviceName,_MountPoint,_FileSystem,_CurrentMountOptions) )
 				return PS_Skip;
+			
+			// Change the owner to the 'nobody' user. Makes some tests (like Access) to cleanup correctly
+			struct passwd * nobody = getpwnam("nobody");
+			
+			if ( nobody != NULL )
+			{
+				cerr << "Changing owner of mount point...	";
+				if ( chown( _MountPoint.c_str(), nobody->pw_uid, nobody->pw_gid) == 0 )
+					cerr << "Success" << endl;
+			}
 			return PS_Success;
 		}
 		
