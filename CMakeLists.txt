@@ -170,15 +170,18 @@ SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY
  "Directory for all Binaries"
  )
  
-message("-- Copying source files to build folder")
 execute_process(COMMAND mkdir ${CMAKE_BINARY_DIR}/include/ -p )
-#execute_process(COMMAND bash -c "cp -r ${CMAKE_SOURCE_DIR}/include/*.hpp ${CMAKE_BINARY_DIR}/include/ ") 
+execute_process(COMMAND bash -c "hg heads | grep changeset | tr -d '\n'"
+				WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+				RESULT_VARIABLE HG_STATUS
+				OUTPUT_VARIABLE HG_REV)
+IF ( ${HG_STATUS} )
+	set(HG_REV, "No revision")
+ENDIF ( ${HG_STATUS} )
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/include")
 
-# Changing the source directory to point to the binary directory
-#SET(CMAKE_SOURCE_DIR, ${CMAKE_BINARY_DIR})
 
 add_subdirectory (src/utils)
 add_subdirectory (engine)
