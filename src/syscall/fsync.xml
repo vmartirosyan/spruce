@@ -52,21 +52,20 @@
 			{
 				Error("fdatasync updated last modification time of the file", Fail);
 			}
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FsyncDir" FaultSimulationReady="true">
 		<Description>Synchronize a directory's in-core state with storage device.</Description>
 		<Dir count="1" />
 		<Code>
+			_TestStatus = Shallow;
 			int  ret = fsync (DirDs[0]);
 			
 			if (ret != 0)
 			{
 				Error("fsync failed.", Fail);
 			}
-			
-			Return(Shallow);
 		</Code>
 	</Test>
 	<Test Name="FsyncErrBadFD">

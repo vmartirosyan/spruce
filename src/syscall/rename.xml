@@ -46,7 +46,7 @@
 				Error("The old file is still there.", Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="RenameNormal2" FaultSimulationReady="true">
@@ -68,7 +68,7 @@
 			{
 				Error("The old file is still there.", Fail);
 			}
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="RenameNormalHardLink" FaultSimulationReady="true">
@@ -91,7 +91,7 @@
 			}
 			unlink(Link1);
 			unlink(Link2);
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="RenameNormalSoftLink1" FaultSimulationReady="true">
@@ -121,7 +121,7 @@
 				Error("The old file is still there.", Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="RenameNormalSoftLink2" FaultSimulationReady="true">
@@ -148,7 +148,7 @@
 				Error("The old file is still there.", Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="RenameFault1">
@@ -227,7 +227,7 @@
 			{
 				Error("Function should return EEXIST or ENOTEMPTY errors but it did not.", Fail);	
 			}
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="RenameXDev">

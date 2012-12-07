@@ -42,7 +42,7 @@
 			
 			Fail (stat_buf.st_mtime < time_before || stat_buf.st_mtime > time_after, "sync hasn't updated last modification time of the file.");
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>	
 </TestSet>

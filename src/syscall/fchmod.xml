@@ -42,7 +42,7 @@
 			
 			Fail((mode.st_mode & 4095) !=  open_mode,  "Chmod failed.");
 						
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FchmodBadFileDesc">

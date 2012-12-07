@@ -25,7 +25,7 @@
 			
 			// Compare them
 			Fail ( get_flags != set_flags, "Set and Get flags mismatch");
-			Return(Success);			
+			;			
 		</Code>
 	</Test>	
 	<Test Name="SetFlagsNotOwner">

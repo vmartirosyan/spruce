@@ -60,7 +60,7 @@
 			{
 				Error( "Chown failed :chown should chenge group  from root to nobody but it does not", Fail);	
 			}
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FchownBadFile">

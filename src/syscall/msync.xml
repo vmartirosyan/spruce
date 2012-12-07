@@ -28,8 +28,7 @@
 	</Header>
 	<Test Name="MsyncNormal" FaultSimulationReady="true">
 		<Description>set protection on a region of memory</Description>
-		<File count="1"/>
-		<Header>Status status = Success;</Header>
+		<File count="1"/>		
 		<Code>
 			const string buff = "abc";
 			if(write(FDs[0], buff.c_str(), buff.size()) == -1)
@@ -46,27 +45,25 @@
 			if(msync(addr, buff.size(), MS_INVALIDATE | MS_SYNC) == -1)
 			{
 				Error("System call msync failed");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 			
 			char readBuff[10];
 			if(read(FDs[0], readBuff, buff.size()) == -1)
 			{
 				Error("System call read failed");
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			}
 			else if(!strncmp(buff.c_str(), readBuff, buff.size()))
 			{
 				Error("System call msync failed: file was not synchronized");
-				status = Fail;
+				_TestStatus = Fail;
 			}
-		</Code>
-		<Footer>Return(status);</Footer>
+		</Code>		
 	</Test>
 	<Test Name="MsyncErrInval">
 		<Description>addr is not a multiple of PAGESIZE; or any bit other than MS_ASYNC | MS_INVALIDATE | MS_SYNC is set in flags; or both MS_SYNC and MS_ASYNC are set in flags</Description>
-		<File count="1"/>
-		<Header>Status status = Success;</Header>
+		<File count="1"/>		
 		<Code>
 			const string buff = "abc";
 			if(write(FDs[0], buff.c_str(), buff.size()) == -1)
@@ -83,22 +80,21 @@
 			if(msync(addr, buff.size(), MS_ASYNC | MS_INVALIDATE | MS_SYNC) != -1 || errno != EINVAL)
 			{
 				Error("EINVAL error expected: flags contain invalid value");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 			
 			if(msync(addr, buff.size(), MS_ASYNC | MS_SYNC) != -1 || errno != EINVAL)
 			{
 				Error("EINVAL error expected: flags contain invalid value");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 			
 			if(msync(reinterpret_cast<void*>(~PAGE_MASK), buff.size(), MS_INVALIDATE | MS_SYNC) != -1 || errno != EINVAL)
 			{
 				Error("EINVAL error expected: address contains invalid value");
-				status = Fail;			
+				_TestStatus = Fail;			
 			}
-		</Code>
-		<Footer>Return(status);</Footer>
+		</Code>		
 	</Test>
 	<Test Name="MsyncErrNomem">
 		<Description>The indicated memory (or part of it) was not mapped</Description>
@@ -116,7 +112,6 @@
 				Error("System call munmap failed", Unresolved);
 			}
 			ErrorTest(msync(addr, length, MS_SYNC | MS_INVALIDATE), -1, ENOMEM);
-		</Code>
-		<Footer>Return(Success);</Footer>
+		</Code>		
 	</Test>
 </TestSet>

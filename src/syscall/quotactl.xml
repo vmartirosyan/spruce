@@ -107,7 +107,7 @@
 			
 			Fail( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot disable quotas V0." );
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="QuotactlGetSetQuota" FaultSimulationReady="true">
@@ -144,7 +144,7 @@
 			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1)
 				cerr << "Cannot disable quotas V0.";
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="QuotactlGetSetQuotaInfo" FaultSimulationReady="true">
@@ -181,7 +181,7 @@
 			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1)
 				cerr << "Cannot disable quotas V0.";
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="QuotactlGetFormat" FaultSimulationReady="true">
@@ -207,12 +207,12 @@
 			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1)
 				cerr << "Cannot disable quotas V0.";
 			
-			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="QuotactlSync" FaultSimulationReady="true">
 		<Description>Update the on-disk copy of quota usages for a file system.</Description>		
 		<Code>
+			_TestStatus = Shallow;
 			int cmd_sync = QCMD(Q_SYNC, USRQUOTA);
 			EnableFaultSim();
 			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );
@@ -222,7 +222,6 @@
 			if ( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1)
 				cerr << "Cannot disable quotas V0.";
 			
-			Return(Shallow);
 		</Code>
 	</Test>
 	<GlobalFooter>

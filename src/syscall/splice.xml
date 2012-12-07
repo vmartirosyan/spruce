@@ -44,7 +44,7 @@
 			
 			Fail ( strncmp(buf.c_str(), buf2, buf.size()) != 0, "Data corruption" );
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="SpliceNormal2" FaultSimulationReady="true">
@@ -68,7 +68,7 @@
 			
 			Fail ( strncmp(buf.c_str(), buf2, buf.size()) != 0, "Data corruption" );
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="SpliceMove" FaultSimulationReady="true">
@@ -91,7 +91,7 @@
 			
 			Fail ( strncmp(buf.c_str(), buf2, buf.size()) != 0, "Data corruption" );
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<FaultSimulation>
