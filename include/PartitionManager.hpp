@@ -186,8 +186,7 @@ class PartitionManager
 			struct passwd * nobody = getpwnam("nobody");
 			
 			if ( nobody != NULL )
-			{
-				cerr << "Changing owner of mount point...	";
+			{				
 				if ( chown( _MountPoint.c_str(), nobody->pw_uid, nobody->pw_gid) == 0 )
 					cerr << "Success" << endl;
 			}

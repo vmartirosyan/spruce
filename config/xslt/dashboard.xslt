@@ -44,6 +44,7 @@
 		<h1 style="text-align:center">Spruce dashboard for filesystem <b><xsl:value-of select="@FS" /></b></h1>
 		<h2 style="text-align:center">Start: <xsl:value-of select="Start" /></h2>
 		<h2 style="text-align:center">Duration: <xsl:value-of select="Duration" />s</h2>
+		<h2 style="text-align:center">Revision: <xsl:value-of select="Rev" />s</h2>
 		<table border="1" cellspacing="0" align="center">
 			<tr>
 				<th>MountOptions</th>

@@ -35,5 +35,6 @@
 #define KEDR_INSTALLED 1 // non-optional at the moment
 #define QUOTA_ENABLED 1 // non-optional at the moment
 #define QUOTACHECK_PATH "${QUOTACHECK_PATH}"
+#define HG_REV "${HG_REV}"
 
 #endif

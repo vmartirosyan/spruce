@@ -589,7 +589,7 @@ int main(int argc, char ** argv)
 			// Unload the KEDR framework
 			try
 			{
-				if ( kedr.IsRunning() )
+				if ( ( PerformFaultSimulation || PerformLeakCheck ) && kedr.IsRunning() )
 				{
 					if(kedr.UnloadKEDR())
 						cout << "KEDR is successfully unloaded." << endl;
@@ -614,6 +614,7 @@ int main(int argc, char ** argv)
 			fs_xml << "<SpruceDashboard FS=\"" + *fs + "\">\n";
 			fs_xml << "\t<Start>" + strFSStartTime + "</Start>\n";
 			fs_xml << "\t<Duration>" + str.str() + "</Duration>\n";
+			fs_xml << "\t<Rev>" HG_REV "</Rev>\n";
 			fs_xml << "\t<MountOptions>\n";
 			for ( unsigned int i = 0; i < MountOptions.size(); ++i )
 				fs_xml << "\t\t<Option>" + MountOptions[i] + "</Option>\n";
