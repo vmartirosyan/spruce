@@ -34,32 +34,22 @@ IF( UNIX )
 ENDIF ( UNIX )
 
 # Check if xsltproc is there
-Message("-- Looking for 'xsltproc' executable.")
-IF ( XSLTPROC_PATH AND NOT EXISTS ${XSLTPROC_PATH} )
-	Message(FATAL_ERROR "${XSLTPROC_PATH} cannot be executed. Set XSLTPROC_PATH to correct path of 'xsltproc' executable.")
-
-
-	execute_process( COMMAND ${XSLTPROC_PATH} -V 
-					RESULT_VARIABLE XSLTPROC_STATUS
-					OUTPUT_QUIET
-					ERROR_QUIET)
-					
-	IF ( ${XSLTPROC_STATUS} )
-		Message(FATAL_ERROR "Cannot get xsltproc version via '${XSLTPROC_PATH} -V'. Set XSLTPROC_PATH to correct path of 'xsltproc' executable.")
-	ENDIF ( ${XSLTPROC_STATUS} )
-
-ELSE ( XSLTPROC_PATH AND NOT EXISTS ${XSLTPROC_PATH} )
-
-	find_program(XSLTPROC_PATH xsltproc 
-		PATHS /usr/bin)
-
-	IF ( NOT XSLTPROC_PATH )
-		MESSAGE(FATAL_ERROR "'xsltproc' executable wasn't found. "
-		"\nIf xsltproc is installed into a non-default directory, set XSLTPROC_PATH to the path of 'xsltproc' executable. ")
-	ENDIF ( NOT XSLTPROC_PATH )
-
-ENDIF ( XSLTPROC_PATH AND NOT EXISTS ${XSLTPROC_PATH} )
-Message("-- Looking for 'xsltproc' executable - found.")
+Message("-- Looking for 'xsltproc' executable")
+IF ( NOT EXISTS ${XSLTPROC_PATH} )
+	Message("   The XSLTPROC_PATH wasn't set, looking for it ...")
+	find_program(XSLTPROC_PATH xsltproc)
+	IF ( NOT EXISTS ${XSLTPROC_PATH} )
+		Message(FATAL_ERROR "xsltproc cannot be executed. Set correct path of 'xsltproc' executable.")
+	ENDIF ( NOT EXISTS ${XSLTPROC_PATH} )
+ENDIF ( NOT EXISTS ${XSLTPROC_PATH} )
+execute_process(COMMAND ${XSLTPROC_PATH} -V
+				RESULT_VARIABLE XSLTPROC_STATUS
+				OUTPUT_QUIET
+				ERROR_QUIET)
+IF ( ${XSLTPROC_STATUS} )
+	Message(FATAL_ERROR "Cannot get 'xsltproc' via '${XSLTPROC_PATH} -V'. Set ${XSLTPROC_PATH} to correct path of 'xsltproc' executable.")
+ENDIF( ${XSLTPROC_STATUS} )
+Message("-- Looking for 'xsltproc' executable - found")
 
 # By default install Spruce to /opt/spruce
 IF (NOT CMAKE_INSTALL_PREFIX)
@@ -80,51 +70,38 @@ ENDIF (NOT FIFO_PATH)
 
 # Check if KEDR framework is there
 Message("-- Looking for 'kedr' executable.")
-IF ( KEDR_PATH AND NOT EXISTS ${KEDR_PATH} )
-	Message(FATAL_ERROR "${KEDR_PATH} cannot be executed. Set KEDR_PATH to correct path of 'kedr' executable.")
-
-	execute_process( COMMAND ${KEDR_PATH} status 
+IF ( NOT EXISTS ${KEDR_PATH} )
+	Message("   The KEDR_PATH wasn't set, looking for it ...")
+	find_program(KEDR_PATH kedr)
+	IF ( NOT EXISTS ${KEDR_PATH} )
+		Message(FATAL_ERROR "kedr cannot be executed. Set correct path of 'kedr' executable.")
+	ENDIF ( NOT EXISTS ${KEDR_PATH} )
+ENDIF ( NOT EXISTS ${KEDR_PATH} )
+execute_process(COMMAND ${KEDR_PATH} status
 				RESULT_VARIABLE KEDR_STATUS
 				OUTPUT_QUIET
 				ERROR_QUIET)
-				
-	IF ( ${KEDR_STATUS} )
-		Message(FATAL_ERROR "Cannot get KEDR status via '${KEDR_PATH} status'. Set KEDR_PATH to correct path of 'kedr' executable.")
-	ENDIF ( ${KEDR_STATUS} )
-ELSE ( KEDR_PATH AND NOT EXISTS ${KEDR_PATH} )
-
-	find_program(KEDR_PATH kedr
-		PATHS /usr/local/bin)
-	IF (NOT KEDR_PATH)
-		Message(FATAL_ERROR "'kedr' executable wasn't found. "
-		"\nIf KEDR is installed into a non-default directory, set KEDR_PATH to the path of 'kedr' executable. ")	
-	ENDIF (NOT KEDR_PATH)
-ENDIF ( KEDR_PATH AND NOT EXISTS ${KEDR_PATH} )
+IF ( ${KEDR_STATUS} )
+	Message(FATAL_ERROR "Cannot get 'kedr' via '${KEDR_PATH} status'. Set ${KEDR_PATH} to correct path of 'kedr' executable.")
+ENDIF( ${KEDR_STATUS} )
 Message("-- Looking for 'kedr' executable - found.")
 
 # Check if quotacheck is there
 Message("-- Looking for 'quotacheck' executable.")
-IF ( QUOTACHECK_PATH AND NOT EXISTS ${QUOTACHECK_PATH} )
-	Message(FATAL_ERROR "${QUOTACHECK_PATH} cannot be executed. Set QUOTACHECK_PATH to correct path of 'quotacheck' executable.")
-
-	execute_process( COMMAND ${QUOTACHECK_PATH} -V 
+IF ( NOT EXISTS ${QUOTACHECK_PATH} )
+	Message("   The QUOTACHECK_ wasn't set, looking for it ...")
+	find_program(QUOTACHECK_PATH quotacheck)
+	IF ( NOT EXISTS ${QUOTACHECK_PATH} )
+		Message(FATAL_ERROR "quotacheck cannot be executed. Set correct path of 'quotacheck' executable.")
+	ENDIF ( NOT EXISTS ${QUOTACHECK_PATH} )
+ENDIF ( NOT EXISTS ${QUOTACHECK_PATH} )
+execute_process(COMMAND ${QUOTACHECK_PATH} -V
 				RESULT_VARIABLE QUOTACHECK_STATUS
 				OUTPUT_QUIET
 				ERROR_QUIET)
-				
-	IF ( ${QUOTACHECK_STATUS} )
-		Message(FATAL_ERROR "Cannot get quotacheck version via '${QUOTACHECK_PATH} -V'. Set QUOTACHECK_PATH to correct path of 'quotacheck' executable.")
-	ENDIF ( ${QUOTACHECK_STATUS} )
-	
-ELSE ( QUOTACHECK_PATH AND NOT EXISTS ${QUOTACHECK_PATH} )
-
-	find_program(QUOTACHECK_PATH quotacheck
-		PATHS /usr/sbin /sbin)
-	IF (NOT QUOTACHECK_PATH)
-		Message(FATAL_ERROR "'quotacheck' executable wasn't found. "
-		"\nIf quotacheck is installed into a non-default directory, set QUOTACHECK_PATH to the path of 'quotacheck' executable. ")	
-	ENDIF (NOT QUOTACHECK_PATH)
-ENDIF ( QUOTACHECK_PATH AND NOT EXISTS ${QUOTACHECK_PATH} )
+IF ( ${QUOTACHECK_STATUS} )
+	Message(FATAL_ERROR "Cannot get 'kedr' via '${QUOTACHECK_PATH} -V'. Set ${QUOTACHECK_PATH} to correct path of 'quotacheck' executable.")
+ENDIF( ${QUOTACHECK_STATUS} )
 Message("-- Looking for 'quotacheck' executable - found.")
 
 
