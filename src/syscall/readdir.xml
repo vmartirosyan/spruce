@@ -52,7 +52,7 @@ struct old_linux_dirent {
 				Error("Wrong data is returned by readdir: " + static_cast<string>(dir.d_name), Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="ReaddirBadFile1">

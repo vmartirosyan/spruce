@@ -57,7 +57,7 @@
 			{				
 				Error("Returned wrong file descriptor", Fail);
 			}
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FcntlGetSetFileStatusFlagsIgnore" FaultSimulationReady="true">
@@ -86,7 +86,7 @@
 				Error("The flags should be ignored.", Fail);
 			}
  	
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FcntlGetSetFileStatusFlags" FaultSimulationReady="true">
@@ -122,7 +122,7 @@
 				Error("Can't get right file descriptor flags! ", Fail);
 			}
  	
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FcntlGetSetFileDescriptorFlags" FaultSimulationReady="true">
@@ -144,7 +144,7 @@
 
 			if( FD_CLOEXEC == get_flags )
 			{
-				Return(Success);
+				;
 			}
 			else
 			{
@@ -178,7 +178,7 @@
 			{
 				Error("Incompatible locks prevent this lock.", Fail);
 			}
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FcntlFDSetLock" FaultSimulationReady="true">
@@ -212,7 +212,7 @@
 				Error("Cannot unlock.", Fail);
 			}
 				
-			Return(Success);  
+			;  
 		</Code>
 	</Test>
 	<Test Name="FcntlFDSetLockWithWait" FaultSimulationReady="true">
@@ -246,7 +246,7 @@
 				Error("Cannot unlock.", Fail);
 			}
 				
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FcntlFDNoteDir" FaultSimulationReady="true">
@@ -262,14 +262,14 @@
 			
 			if ( fcntl( dirfd, F_NOTIFY,  DN_CREATE ) == -1 )
 			{
-				Error("Must Return(Success) because directory has been created and opened.", Fail);
+				Error("Must  because directory has been created and opened.", Fail);
 			}
 			
 			//DN_ATTRIB
 			Unres ( chmod( dirname , 0000 ) == -1, "Error in chmod.");
 			if ( fcntl ( dirfd, F_NOTIFY, DN_ATTRIB ) == -1 )
 			{
-				Error("Must Return(Success) because permission set has been changed by chmod system call.", Fail);
+				Error("Must  because permission set has been changed by chmod system call.", Fail);
 			}
 			
 			//DN_DELETE
@@ -277,10 +277,10 @@
 			
 			if ( fcntl ( dirfd, F_NOTIFY, DN_DELETE ) == -1 )
 			{
-				Error("Must Return(Success) because directory has been removed.", Fail);
+				Error("Must  because directory has been removed.", Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FcntlFDNoteFile" FaultSimulationReady="true">
@@ -303,14 +303,14 @@
 			
 			if ( fcntl ( dirfd, F_NOTIFY, DN_CREATE ) == -1 )
 			{
-				Error("fcntl must Return(Success) because directory and file in that directory have been created and opened.", Fail);
+				Error("fcntl must  because directory and file in that directory have been created and opened.", Fail);
 			}
 			//DN_ATTRIB
 			Unres ( chmod( file, 0700 ) == -1, "Error in chmod.");
 			
 			if ( fcntl ( dirfd, F_NOTIFY, DN_ATTRIB ) == -1 )
 			{
-				Error("fcntl must Return(Success) because permissions of the file in directory with descriptor eqaul to dirfd has been changed.", Fail);
+				Error("fcntl must  because permissions of the file in directory with descriptor eqaul to dirfd has been changed.", Fail);
 			}
 			
 			//DN_RENAME
@@ -318,7 +318,7 @@
 			
 			if ( fcntl ( dirfd, F_NOTIFY, DN_RENAME ) == -1 )
 			{
-				Error("fcntl must Return(Success) because the file in derectory with directory descriptor equal to dirfd has been renamed.", Fail);
+				Error("fcntl must  because the file in derectory with directory descriptor equal to dirfd has been renamed.", Fail);
 			}
 			
 			//DN_MODIFY
@@ -326,7 +326,7 @@
 			
 			if ( fcntl ( dirfd, F_NOTIFY, DN_MODIFY ) == -1 )
 			{
-				Error("fcntl must Return(Success) because the file in directory with directory descriptor equal to dirfd has been modified by write system call.", Fail);
+				Error("fcntl must  because the file in directory with directory descriptor equal to dirfd has been modified by write system call.", Fail);
 			}
 			
 			//DN_ACCESS
@@ -334,7 +334,7 @@
 			
 			if ( fcntl ( dirfd, F_NOTIFY, DN_ACCESS ) == -1 )
 			{
-				Error("fcntl must Return(Success) because file in directory with directory descriptor equal to dirfd has been accessed by read system call.", Fail);
+				Error("fcntl must  because file in directory with directory descriptor equal to dirfd has been accessed by read system call.", Fail);
 			}
 
 			//DN_DELETE
@@ -342,12 +342,12 @@
 			
 			if ( fcntl ( dirfd, F_NOTIFY, DN_DELETE ) == -1 )
 			{
-				Error("fcntl must Return(Success) because file in directory with directory descriptor equal to dirfd has been unlinked.", Fail);
+				Error("fcntl must  because file in directory with directory descriptor equal to dirfd has been unlinked.", Fail);
 			}
 			close(fd);
 			close(dirfd);
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetLease" FaultSimulationReady="true">
@@ -392,7 +392,6 @@
 				Error("Get-set lease failed for remove lease.", Fail);		
 			}
 			
-			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetOwn" FaultSimulationReady="true">
@@ -407,7 +406,7 @@
 			{
 				Error("Get-set owner failed.", Fail);
 			}
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetSig" FaultSimulationReady="true">
@@ -422,7 +421,6 @@
 			{
 				Error("Get-set signal failed.", Fail);
 			}
-			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetOwn_Ex" FaultSimulationReady="true">
@@ -447,7 +445,6 @@
 			{
 				Error("Get-set owner_ex failed.", Fail);
 			}
-			Return(Success);
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetPipeSize" FaultSimulationReady="true">
@@ -475,7 +472,6 @@
 			{
 				Error("Get-set pipe size failed", Fail);
 			}
-			Return(Success);
 		</Code>
 		<Footer>
 #endif 
@@ -498,7 +494,6 @@
 			{
 				Error("Setting the close-on-exec flag for the  duplicate  descriptor failed.", Fail);       
 			}
-			Return(Success);
 		</Code>
 	</Test>
 	<!-- Error tests -->
@@ -598,7 +593,7 @@
 				//parent process waits for child process termination
 				wait(0);
 			}
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<!--Test Name="FcntlFDNoLock">
@@ -634,7 +629,7 @@
 				Error("flock failed with success or wrong error code.", Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test-->
 	<Test Name="FcntlFDCapAboveLimit">
@@ -666,7 +661,7 @@
 			
 			ErrorTest ( fcntl ( pipefd[1], F_SETPIPE_SZ, pipe_max_size + 10 ), -1, EPERM);
 						
-			Return(Success);
+			;
 		</Code>
 		<Footer>
 #endif
@@ -701,57 +696,16 @@
 				{
 					Error("returhvns 0 in case of system call was interrupted.", Fail);
 				}
-				if ( errno != EINTR )
-				{
-					cerr << "Incorrect error set in errno in case of "
-					  "interrupted system call: "<<strerror(errno);
-					Return(Fail);  
-				}
+				Fail ( errno != EINTR , "Incorrect error set in errno in case of interrupted system call.");
 			} 
 			else
 			{
 				//wait(0);
 			}
 
-			Return(Success);
+			;
 		</Code>
-	</Test>
-	<!--Test Name="">
-		<Description></Description>
-		<Code></Code>
-	</Test>
-	<Test Name="">
-		<Description></Description>
-		<Code></Code>
-	</Test>
-	<Test Name="">
-		<Description></Description>
-		<Code></Code>
-	</Test>
-	<Test Name="">
-		<Description></Description>
-		<Code></Code>
-	</Test>
-	<Test Name="">
-		<Description></Description>
-		<Code></Code>
-	</Test>
-	<Test Name="">
-		<Description></Description>
-		<Code></Code>
-	</Test>
-	<Test Name="">
-		<Description></Description>
-		<Code></Code>
-	</Test>
-	<Test Name="">
-		<Description></Description>
-		<Code></Code>
-	</Test>
-	<Test Name="">
-		<Description></Description>
-		<Code></Code>
-	</Test-->
+	</Test>	
 	<FaultSimulation>
 		<Simulate point="kmalloc" />
 		<Simulate point="copy_to_user"/>

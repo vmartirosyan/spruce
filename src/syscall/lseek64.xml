@@ -45,7 +45,7 @@
 				Error("lseek did not seek to the correct position.", Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="LseekNormal2" FaultSimulationReady="true">
@@ -76,7 +76,7 @@
 				Error("lseek did not seek to the correct position.", Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="LseekNormal3" FaultSimulationReady="true">
@@ -99,7 +99,7 @@
 				Error("Should not be able read after seek to end of file.", Fail );
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="LseekBadFile">

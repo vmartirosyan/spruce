@@ -37,7 +37,7 @@
 			
 			Fail ( st.st_size < NewSize, "File size is less than offset+len.");			
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FallocateNormalPunchHole" FaultSimulationReady="true">
@@ -58,7 +58,7 @@
 			
 			Fail ( st.st_size != strlen(buf), "File size is changed.");			
 			
-			Return(Success);
+			;
 		</Code>
 		<Footer>
 #else

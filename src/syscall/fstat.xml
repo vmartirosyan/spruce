@@ -43,7 +43,7 @@
 				Error("fstat returned another file mode.", Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FstatBadFile">

@@ -44,7 +44,7 @@
 			{
 				Error("fstatfs returned wrong FS type: " + buf.f_type, Fail);
 			}
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="FstatfsBadFile">

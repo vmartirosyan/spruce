@@ -67,7 +67,7 @@
 				Error("Set and got versions do not match", Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 <Test Name="IoctlFITRIM" FaultSimulationReady="true">
@@ -76,7 +76,8 @@
 		<Header>
 		#ifdef FITRIM
 		</Header>
-		<Code>				
+		<Code>
+			_TestStatus = Shallow;
 			struct fstrim_range arg;
 			arg.start = 0;
 			arg.len = 10;
@@ -91,8 +92,7 @@
 				{
 					Error("FITRIM operation failed.", Fail);
 				}
-			}
-			Return(Shallow);
+			}			
 		</Code>
 		<Footer>
 		#else
@@ -104,6 +104,7 @@
 		<Description>Ioctl FIEMAP.</Description>
 		<File count="1"/>
 		<Code>
+			_TestStatus = Shallow;
 			struct fiemap arg;
 			memset(&arg, 0, sizeof(arg));
 			arg.fm_length = 1;
@@ -118,8 +119,7 @@
 				{
 					Error("FIEMAP operation failed.", Fail);
 				}
-			}		
-			Return(Shallow);
+			}			
 		</Code>
 	</Test>
 	
@@ -127,12 +127,12 @@
 		<Description>Ioctl FIBMAP.</Description>
 		<File count="1"/>
 		<Code>
+			_TestStatus = Shallow;
 			if ( ! strcmp(FileSystem, "btrfs") )
 				Unsupp("FIBMAP not supported in btrfs.");
 			int Block = 1;
 			EnableFaultSim();
-			Fail( ioctl(FDs[0], FIBMAP, &Block) == -1, "FIBMAP operation failed." );			
-			Return(Shallow);
+			Fail( ioctl(FDs[0], FIBMAP, &Block) == -1, "FIBMAP operation failed." );
 		</Code>
 	</Test>
 	
@@ -163,7 +163,7 @@
 					Error("FITHAW operation failed.", Fail);
 				}
 			}
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="IoctlBadFile">

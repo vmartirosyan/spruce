@@ -53,7 +53,7 @@
 				Error("Error in unlinking node.");
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="MknodNormal2" FaultSimulationReady="true">
@@ -76,7 +76,6 @@
 			
 			const char *node_name = "node_name";
 			struct stat st;
-			Status status = Success;
 			
 			int n = sizeof(Test)/sizeof(test_cases);
 			
@@ -86,7 +85,7 @@
 				if ( mknod( node_name, Test[i].mode, 0 ) == -1 )
 				{
 					cerr << "For "<<Test[i].msg.c_str() << "mknod failed with error: "<<strerror(errno);
-					status = Fail;
+					_TestStatus = Fail;
 					continue;
 				}
 				
@@ -96,19 +95,19 @@
 				if ( st.st_uid != getuid() )
 				{
 					cerr << "For "<<Test[i].msg.c_str()<<" mknod failed. "; 
-					status = Fail;
+					_TestStatus = Fail;
 				}
 				
 				if( (st.st_mode & Test[i].mode)  == 0 )
 				{
 					cerr << "For "<<Test[i].msg.c_str() << " mknod failed. ";
-					status = Fail;
+					_TestStatus = Fail;
 				}
 				
 				if ( st.st_nlink != 1 )
 				{
 					cerr << "For "<<Test[i].msg.c_str() << " mknod failed. ";
-					status = Fail;
+					_TestStatus = Fail;
 				}
 
 				if ( unlink( node_name ) == -1 )
@@ -116,7 +115,6 @@
 					cerr << "Error in unlinking node: "<<strerror(errno);					
 				}
 			}
-			Return(status);
 		</Code>
 	</Test>
 	<Test Name="MknodPathExists">

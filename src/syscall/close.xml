@@ -34,7 +34,7 @@
 				Error("Cannot close file.", Fail);
 			}
 			DisableFaultSim();
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="CloseCorrectDescriptorUnlinkTest" FaultSimulationReady="true">
@@ -53,9 +53,9 @@
 				Error("File was not deleted.", Fail);
 			}
 			
-			Return(Success);
+			;
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="CloseBadFileDescriptorTest">

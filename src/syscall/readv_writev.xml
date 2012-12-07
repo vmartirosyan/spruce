@@ -55,7 +55,7 @@
 				Error("Different values were written and read.", Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="ReadvBadFile1">

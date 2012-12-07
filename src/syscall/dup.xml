@@ -133,8 +133,7 @@
 	<Test Name="DupNormal" FaultSimulationReady="true">
 		<Description>dup() duplicates a file descriptor</Description>
 		<File count="1"/>
-		<Code>
-			Status status = Success;
+		<Code>			
 			EnableFaultSim();
 			int newFd = dup(FDs[0]);
 					
@@ -147,24 +146,24 @@
 			if(fstat(FDs[0], &oldFileStat) == -1 || fstat(newFd, &newFileStat) == -1)
 			{
 				Error("System call fstat failed");
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			}
 			else if(!statsEqual(oldFileStat, newFileStat))
 			{
 				Error("System call dup failed: first and second arguments fd's stats are not equal");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 			
 			int newFlag = fcntl(FDs[0], F_GETFD);
 			if(newFlag < 0)
 			{
 				Error("System call fcntl failed")
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			}	
 			else if(!cloexecFlagOff(newFlag))
 			{
 				Error("System call dup failed: O_CLOEXEC flag isn't off");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 			
 			int statusFlag = fcntl(FDs[0], F_GETFL);
@@ -172,12 +171,12 @@
 			if(statusFlag < 0 || newStatusFlag < 0)
 			{
 				Error("System call fcntl failed");
-				status = Unresolved;		
+				_TestStatus = Unresolved;		
 			}
 			else if(!statusFlagsEqual(statusFlag, newStatusFlag))
 			{
 				Error("System call dup failed: first and second arguments fd's status flags are not equal");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 			
 			int fdOffset = lseek(FDs[0], 0, SEEK_CUR);
@@ -185,22 +184,19 @@
 			if(fdOffset == -1 || newFdOffset == -1)
 			{
 				Error("System call lseek failed");
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			} 
 			else if(fdOffset != newFdOffset)
 			{
 				Error("System call dup failed: first and second arguments fd's offsets are not equal");
-				status = Fail;
-			}
-			
-			Return(status);
+				_TestStatus = Fail;
+			}			
 		</Code>
 	</Test>
 	<Test Name="Dup2Normal">
 		<Description>dup2() duplicates a file descriptor</Description>
 		<File count="1"/>
 		<Code>
-			Status status = Success;
 			int newFd = 7;
 			
 			if(dup2(FDs[0], newFd) == -1)
@@ -212,24 +208,24 @@
 			if(fstat(FDs[0], &oldFileStat) == -1 || fstat(newFd, &newFileStat) == -1)
 			{
 				Error("System call fstat failed: ");
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			}
 			else if(!statsEqual(oldFileStat, newFileStat))
 			{
 				Error("System call dup2 failed: first and second arguments fd's stats are not equal");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 			
 			int newFlag = fcntl(FDs[0], F_GETFD);
 			if(newFlag < 0)
 			{
 				Error("System call fcntl failed");
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			}
 			else if(!cloexecFlagOff(newFlag))
 			{
 				Error("System call dup2 failed: O_CLOEXEC flag isn't off");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 			
 			int statusFlag = fcntl(FDs[0], F_GETFL);
@@ -237,12 +233,12 @@
 			if(statusFlag < 0 || newStatusFlag < 0)
 			{
 				Error("System call fcntl failed: first and second arguments fd's status flags are not equal");
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			}
 			else if(!statusFlagsEqual(statusFlag, newStatusFlag))
 			{
 				Error("System call dup2 failed");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 
 			int fdOffset = lseek(FDs[0], 0, SEEK_CUR);
@@ -250,12 +246,12 @@
 			if(fdOffset == -1 || newFdOffset == -1)
 			{
 				Error("System call lseek failed");
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			}
 			else if(fdOffset != newFdOffset)
 			{
 				Error("System call dup2 failed: first and second arguments fd's offsets are not equal");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 					
 			newFd = FDs[0];
@@ -263,21 +259,19 @@
 			if(res == -1)	
 			{
 				Error("System call dup2 failed");
-				status = Fail; 
+				_TestStatus = Fail; 
 			}
 			else if(res != newFd)
 			{
 				Error("System call dup2 failed: second argument fd was not returned");
-				status = Fail;				
-			}
-			Return(status);		
+				_TestStatus = Fail;				
+			}			
 		</Code>
 	</Test>
 	<Test Name="Dup3Normal">
 		<Description>dup3() duplicates a file descriptor</Description>
 		<File count="1"/>
 		<Code>
-			Status status = Success;
 			int newFd = 7;
 			
 			if(dup3(FDs[0], newFd, O_CLOEXEC) == -1)
@@ -289,24 +283,24 @@
 			if(fstat(FDs[0], &oldFileStat) == -1 || fstat(newFd, &newFileStat) == -1)
 			{
 				Error("System call fstat failed");
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			}
 			else if(!statsEqual(oldFileStat, newFileStat))
 			{
 				Error("System call dup3 failed: first and second arguments fd's stats are not equal");
-				status = Fail;		
+				_TestStatus = Fail;		
 			}
 			
 			int newFlag = fcntl(FDs[0], F_GETFD);
 			if(newFlag < 0)
 			{
 				Error("System call fcntl failed");
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			}
 			else if(!cloexecFlagOff(newFlag))
 			{
 				Error("System call dup3 failed: O_CLOEXEC flag isn't off");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 			
 			int statusFlag = fcntl(FDs[0], F_GETFL);
@@ -314,12 +308,12 @@
 			if(statusFlag < 0 || newStatusFlag < 0)
 			{
 				Error("System call fcntl failed");
-				status = Unresolved;		
+				_TestStatus = Unresolved;		
 			}
 			else if(!statusFlagsEqual(statusFlag, newStatusFlag))
 			{
 				Error("System call dup failed: first and second arguments fd's status flags are not equal");
-				status = Fail;
+				_TestStatus = Fail;
 			}	
 			
 			int fdOffset = lseek(FDs[0], 0, SEEK_CUR);
@@ -327,14 +321,13 @@
 			if(fdOffset == -1 || newFdOffset == -1)
 			{
 				Error("System call lseek failed");
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			}
 			else if(fdOffset != newFdOffset)
 			{
 				Error("System call dup3 failed: first and second arguments fd's offsets are not equal");
-				status = Fail;
-			}		
-			Return(status);
+				_TestStatus = Fail;
+			}			
 		</Code>
 	</Test>
 	<Test Name="DupErrBadF">
@@ -353,13 +346,12 @@
 		<Description>oldfd  isn't  an  open  file  descriptor</Description>
 		<File count ="1"/>
 		<Code>			
-			Status status = Success;
 			int newFd = -2;
 	
 			if(dup3(-1, newFd, 0) != -1 || errno != EBADF)
 			{
 				Error("EBADF error expected: first argument fd is not an open fd. Error code");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 	
 			newFd = -1;
@@ -367,32 +359,28 @@
 			if(dup3(FDs[0], newFd, 0) != -1 || errno != EBADF)
 			{
 				Error("EBADF error expected: second argument fd is out of the allowed range for fds");
-				status = Fail;
-			}
-		
-			Return(status);
+				_TestStatus = Fail;
+			}			
 		</Code>
 	</Test>
 	<Test Name="Dup3ErrInval">
 	<Description>flags contain an invalid value.  Or, oldfd was equal to newfd</Description>
 	<File count="1"/>
 	<Code>
-		Status status = Success;
 		int newFd = FDs[0];
 		if(dup3(FDs[0], newFd, 0) != -1 || errno != EINVAL)
 		{
 			Error("EINVAL error expected: first and second arguments fds are equal");
-			status = Fail;
+			_TestStatus = Fail;
 		}
 		
 		newFd = -1;
 		if(dup3(FDs[0], newFd, 1) != -1 || errno != EINVAL)
 		{
 			Error("EINVAL error expected: flags contain invalid value");
-			status = Fail;
+			_TestStatus = Fail;
 		}
 	
-		Return(status);
 	</Code>
 	</Test>
 </TestSet>

@@ -53,8 +53,7 @@
 		{
 			Error("System call mlock failed", Fail);
 		}
-		</Code>
-		<Footer>Return(Success);</Footer>
+		</Code>		
 	</Test>
 	<Test Name="MlockErrInval">
 		<Description>the result of the addition start+len was less than start</Description>
@@ -71,18 +70,16 @@
 				Error("System call mmap failed", Unresolved);
 			}
 			ErrorTest(mlock(addr, -1), -1, EINVAL);
-		</Code>
-		<Footer>Return(Success);</Footer>
+		</Code>		
 	</Test>
 	<Test Name="MlockErrNomem">
 		<Description>some of the specified address range does not correspond to mapped pages in the address space of the process</Description>
 		<File count="1"/>
-		<Header>
-			Status status = Success;
+		<Header>			
 			if(mlock(0, 3) != -1 || errno != ENOMEM)
 			{
 				Error("ENOMEM error expected: address range doesn't correspond to mapped pages");
-				status = Fail;
+				_TestStatus = Fail;
 			}
 			
 			#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,9)
@@ -92,7 +89,7 @@
 			if(getrlimit(RLIMIT_MEMLOCK, &rlim) == -1)
 			{
 				Error("System call getrlimit failed");
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			}
 			
 			struct rlimit rlimOld = rlim; 
@@ -101,7 +98,7 @@
 			if(setrlimit(RLIMIT_MEMLOCK, &rlim) == -1)
 			{
 				Error("System call setrlimit failed");
-				status = Unresolved;
+				_TestStatus = Unresolved;
 			}
 			
 			size_t length = 3;
@@ -112,23 +109,22 @@
 			if(addr == MAP_FAILED)
 			{
 				Error("System call mmap failed");
-				status = Unresolved;	
+				_TestStatus = Unresolved;	
 			}
 			if(mlock(addr, 5) != -1 || errno != ENOMEM)
 			{
 				Error("ENOMEM error expected: RLIMIT_MEMLOCK is set");
-				status = Fail;
+				_TestStatus = Fail;
 			}	 
 
 			if(setrlimit(RLIMIT_MEMLOCK, &rlimOld) == -1)
 			{
 				Error("System call setrlimit failed");
-				status = Unresolved;		
+				_TestStatus = Unresolved;		
 			}
 		</Code>
 		<Footer>
 			#endif
-			Return(status);
 		</Footer>
 	</Test>
 	<Test Name="MunlockNormal">
@@ -150,8 +146,7 @@
 		{
 			Error("System call munlock failed", Fail);
 		}
-		</Code>
-		<Footer>Return(Success);</Footer>
+		</Code>		
 	</Test>
 	<Test Name="MunlockErrInval">
 		<Description>The result of the addition start+len was less than start</Description>
@@ -169,15 +164,13 @@
 			}
 			
 			ErrorTest(munlock(addr, -1), -1, EINVAL);
-		</Code>
-		<Footer>Return(Success);</Footer>
+		</Code>		
 	</Test>
 	<Test Name="MunlockErrNomem">
 		<Description>some of the specified address range does not correspond to mapped pages in the address space of the process</Description>
 		<Code>
 			ErrorTest(munlock(0, 3), -1, ENOMEM);
-		</Code>
-		<Footer>Return(Success);</Footer>
+		</Code>		
 	</Test>
 	<Test Name="MlockallNormal">
 		<Description>lock all of the calling process's virtual address space</Description>
@@ -204,8 +197,7 @@
 			{
 				Error("System call mlockall failed", Fail);
 			}
-		</Code>
-		<Footer>Return(Success);</Footer>
+		</Code>		
 	</Test>
 	<Test Name="MlockallErrInval">
 		<Description>The result of the addition start+len was less than start</Description>
@@ -224,7 +216,6 @@
 			
 			ErrorTest(mlockall(MCL_FUTURE & MCL_CURRENT), -1, EINVAL);
 		</Code>
-		<Footer>Return(Success);</Footer>
 	</Test>
 	<Test Name="MunlockallNormal">
 		<Description>unlock all of the calling process's virtual address space</Description>
@@ -246,6 +237,5 @@
 				Error("System call munlockall failed", Fail);
 			}
 		</Code>
-		<Footer>Return(Success);</Footer>
 	</Test>
 </TestSet>

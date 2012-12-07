@@ -38,7 +38,7 @@
 				Error("Chroot does not change the working directory.", Fail);
 			}	
 		
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="ChrootIsNotDirectory">

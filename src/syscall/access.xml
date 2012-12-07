@@ -83,7 +83,7 @@
 				Error("The file exists but access returns error. ", Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="AccessErrAccess">
@@ -100,7 +100,7 @@
 				Error("access should return EACCES error code but it did not.", Fail);
 			}
 			
-			Return(Success);
+			;
 		</Code>
 	</Test>
 	<Test Name="AccessErrLoop">
