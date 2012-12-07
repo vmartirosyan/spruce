@@ -96,7 +96,7 @@
 		</Code>
 		<Footer>
 		#else
-		Unsup("FITRIM is not supported");
+		Unsupp("FITRIM is not supported");
 		#endif
 		</Footer>
 	</Test>
