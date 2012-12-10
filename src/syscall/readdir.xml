@@ -52,7 +52,29 @@ struct old_linux_dirent {
 				Error("Wrong data is returned by readdir: " + static_cast<string>(dir.d_name), Fail);
 			}
 			
-			;
+
+		</Code>
+	</Test>
+	<Test Name="ReaddirNormalNotEmpty" FaultSimulationReady="true">
+		<Description>Read not empty directory entry.</Description>
+		<Dir count="1">
+			<File count="1"/>
+		</Dir>
+						
+		<Code>
+			old_linux_dirent dir;
+			
+			EnableFaultSim();
+			if (syscall(SYS_readdir, DirDs[0], &dir, 0) == -1)
+			{
+				Error("Readdir failed.", Fail);
+			}			
+			
+			if ( strstr(dir.d_name, ".") != dir.d_name )
+			{
+				Error("Wrong data is returned by readdir: " + static_cast<string>(dir.d_name), Fail);
+			}
+			
 		</Code>
 	</Test>
 	<Test Name="ReaddirBadFile1">
