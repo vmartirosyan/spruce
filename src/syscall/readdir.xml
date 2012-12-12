@@ -60,21 +60,26 @@ struct old_linux_dirent {
 		<Dir count="1">
 			<File count="1"/>
 		</Dir>
-						
 		<Code>
 			old_linux_dirent dir;
 			
 			EnableFaultSim();
-			if (syscall(SYS_readdir, DirDs[0], &dir, 0) == -1)
+			int res = syscall(SYS_readdir, DirDs[0], &dir, 0);		
+	
+			int i = 0;
+			while(res != 0)
 			{
-				Error("Readdir failed.", Fail);
-			}			
-			
-			if ( strstr(dir.d_name, ".") != dir.d_name )
-			{
-				Error("Wrong data is returned by readdir: " + static_cast<string>(dir.d_name), Fail);
+				if (res == -1)
+				{
+					Error("Readdir failed.", Fail);
+				}	
+				i++;
+				res = syscall(SYS_readdir, DirDs[0], &dir, 0);
 			}
-			
+			if(i != 3)
+			{
+				Error("Wrong number of entries read.", Fail);
+			}
 		</Code>
 	</Test>
 	<Test Name="ReaddirBadFile1">
