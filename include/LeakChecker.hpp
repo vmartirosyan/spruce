@@ -4,7 +4,8 @@
 //                          of the Russian Academy of Sciences (ISPRAS)
 //      Author:
 //			Vahram Martirosyan <vmartirosyan@gmail.com>
-//      
+//      	Ruzanna Karakozova <r.karakozova@gmail.com>
+//
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
 //      the Free Software Foundation; either version 2 of the License, or
@@ -37,8 +38,9 @@ public:
 	{
 		MountDebugFS();
 	}
-	bool ProcessLeakCheckerOutput()
+	void ProcessLeakCheckerOutput()
 	{
+		int status = Success;
 		try
 		{
 			int fd = -1;
@@ -69,6 +71,7 @@ public:
 			{					
 				if ( line.find("Address:") == string::npos )
 				{
+					status = Fail;
 					getline(in_file, line);
 					continue;
 				}
@@ -105,6 +108,7 @@ public:
 			{					
 				if ( line.find("Address:") == string::npos )
 				{
+					status = Fail;
 					getline(in_file, line);
 					continue;
 				}
@@ -133,7 +137,10 @@ public:
 				of << Data << "</Output>\n\t</Item>";
 			}
 			in_file.close();
-			
+			if (status == Success)
+			{
+				of << "\t<Item Name=\"LeakChecker\" Id=\"" << rand() << "\">\n\t\t<Status>Success</Status><Output>No leaks or unallocated frees were found</Output></Item>";
+			}
 			of << "</Module>";
 			of.close();
 			
@@ -141,9 +148,8 @@ public:
 		catch(exception& err)
 		{
 			cerr << "Exception is thrown." << err.what() << endl;
-			return false;
+			return;
 		}
-		return true;
 	}
 protected:
 	string DebugFSPath;
