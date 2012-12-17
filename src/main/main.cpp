@@ -522,11 +522,7 @@ int main(int argc, char ** argv)
 						if(PartitionManager:: ReleasePartition(MountAt) && kedr.UnloadModule(*fs)) 
 						{
 							LeakChecker leak_check(FileName);
-							if(!leak_check.ProcessLeakCheckerOutput())
-							{
-								cerr << "Leak Check: Bad input file" << endl;
-								//XMLFilesToProcess.push_back(FileName);
-							}
+							leak_check.ProcessLeakCheckerOutput();
 						}
 					}
 					
