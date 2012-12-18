@@ -175,33 +175,33 @@ public:
 		}
 		return res;
 	}
-		virtual TestResultCollection RunFaultyTests()
+	virtual TestResultCollection RunFaultyTests()
 	{
 		cerr &lt;&lt; "Running faulty tests:  <xsl:value-of select="$TestSetName" />: " &lt;&lt; _fsim_info_vec.size() &lt;&lt; endl;
 		_fsim_enabled = true;
 		TestResultCollection res;
+		string log;
+		<xsl:value-of select="$ModuleName"/>TestResult * tr;
 	
 		for ( unsigned int i = 0; i &lt; _fsim_info_vec.size(); ++i )
 		{
 			_fsim_point = _fsim_info_vec[i].Point;
 			_fsim_expression = "0";
-			//KedrIntegrator::SetIndicator(_fsim_point, "common", _fsim_expression);	
 			
-			 TestMap::iterator it = _fsim_tests.begin();
-			 cerr &lt;&lt; "\033[1;31mCalling: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
-				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
-				//if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
-						//pr->SetStatus(Success);
-					cerr &lt;&lt; "\033[1;31mCalled: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
-					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
-					delete pr;
-					res.AddResult( tr );
-					
-					if ( tr->GetStatus() == Signaled )
-					{
-						DisableFaultSim();
-						return res;
-					}
+			TestMap::iterator it = _fsim_tests.begin();
+			cerr &lt;&lt; "\033[1;31mCalling: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
+			ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
+			
+			cerr &lt;&lt; "\033[1;31mCalled: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
+			<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
+			delete pr;
+			res.AddResult( tr );
+			
+			if ( tr->GetStatus() == Signaled )
+			{
+				DisableFaultSim();
+				return res;
+			}
 			
 			_fsim_info_vec[i].Count = KedrIntegrator::GetTimes(_fsim_point);
 			KedrIntegrator:: ResetTimes(_fsim_point);
@@ -227,27 +227,36 @@ public:
 					_fsim_expression = "times="+(string)buf;
 					
 				}
-				//for ( unsigned int k = 0; k &lt; _fsim_testCount; ++k)
+				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
 				
-					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
-					//if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
-						//pr->SetStatus(Success);
-					if( _fsim_info_vec[i].Count > 0 &amp;&amp;  pr->GetStatus() == Success )
-					{
-						pr->SetStatus(FSimSuccess);
-						pr->ModOutput("Test returned Success instead of Fail. Fault Simulation failed.");	
-					}
-					if( _fsim_info_vec[i].Count > 0 &amp;&amp; pr->GetStatus() == Fail )
-						pr->SetStatus(FSimFail);
-					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
-					delete pr;
-					res.AddResult( tr );
-					// If one of the tests makes the process to get a signal, then the driver probably is not functional any more.
-					if ( tr->GetStatus() == Signaled )
-					{
-						DisableFaultSim();
-						return res;
-					}
+				if( _fsim_info_vec[i].Count > 0 &amp;&amp;  pr->GetStatus() == Success )
+				{
+					pr->SetStatus(FSimSuccess);
+					pr->ModOutput("Test returned Success instead of Fail. Fault Simulation failed.");	
+				}
+				if( _fsim_info_vec[i].Count > 0 &amp;&amp; pr->GetStatus() == Fail )
+					pr->SetStatus(FSimFail);
+				
+				Status oopsStatus = OopsChecker(log); // log is an output parameter
+				if(oopsStatus != Success) 
+				{	
+					//so we have an emergency situation...
+					cerr&lt;&lt;"Oops Checker is activated: \n";
+					log = "Status: " + StatusMessages[oopsStatus] + "\nTest output: \n" + pr->GetOutput() + "\nSystem log message: \n" + log;
+					tr = new <xsl:value-of select="$ModuleName"/>TestResult(new ProcessResult(Fatal, log),"<xsl:value-of select="$TestSetName" />", it->first);
+				}
+				if ( tr->GetStatus() == Fatal )
+					break;
+					
+				tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
+				delete pr;
+				res.AddResult( tr );
+				// If one of the tests makes the process to get a signal, then the driver probably is not functional any more.
+				if ( tr->GetStatus() == Signaled )
+				{
+					DisableFaultSim();
+					return res;
+				}
 				
 				//DisableFaultSim();
 			}
