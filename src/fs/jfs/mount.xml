@@ -1,0 +1,13 @@
+<TestSet Name="mount">
+        <Requires>sys/mount.h</Requires>
+        <!-- Kernel bug in generic_make_request_check brings to a BUG dirung resize.-->
+        <!--Test Name="RemountResize" FaultSimulationReady="true">
+                <Description>Resize.</Description>              
+                <Code>
+                        Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+                        Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+                        Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+                        Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize" ) == -1, "Remount-resize failed");                                                
+                </Code>
+        </Test-->
+</TestSet>
