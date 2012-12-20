@@ -29,10 +29,10 @@
 	<Requires>fcntl.h</Requires>
 	<Requires>btrfs.hpp</Requires>
 	<Header>
-		char buf[2];
+		/*char buf[2];
 		buf[1] = '1';
 		if (buf[1] != '1')
-			buf[1] = '1';
+			buf[1] = '1';*/
 	</Header>
 	
 	<Test Name="SetGetFlags_Empty" FaultSimulationReady="true">
@@ -206,37 +206,58 @@
 
 	<Test Name="BTRFS_IOC_SNAP_DESTROY">
 		<Description>BTRFS_IOC_SNAP_DESTROY.</Description>
-		<File count="1"/>
+		<Dir count="1"/>
 		<Code>
 			_TestStatus = Shallow;
 			btrfs_ioctl_vol_args arg;
-			Fail( ioctl( FDs[0], BTRFS_IOC_SNAP_DESTROY, &arg) == -1,"Cannot destroy snapshot" );
+			strcpy(arg.name, "subvol");
+			arg.fd = DirDs[0];
+			Unres ( ioctl( DirDs[0], BTRFS_IOC_SUBVOL_CREATE, &arg ) == -1, "Cannot create subvolume." );
+			
+			btrfs_ioctl_vol_args destroy_arg;
+			strcpy(destroy_arg.name, "subvol");
+			destroy_arg.fd = DirDs[0];
+			Fail ( ioctl( DirDs[0], BTRFS_IOC_SNAP_DESTROY, &destroy_arg ) == -1, "Cannot destroy snapshot");
 		</Code>
 	</Test>
 	
 	<Test Name="BTRFS_IOC_SUBVOL_GETFLAGS">
 		<Description>BTRFS_IOC_SUBVOL_GETFLAGS.</Description>
-		<File count="1"/>
+		<Dir count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			__u64 arg = 0;
-			int status = ioctl( FDs[0], BTRFS_IOC_SUBVOL_GETFLAGS, &arg);
-			Fail(status == -1, "Cannot get subvolume flags");
+			btrfs_ioctl_vol_args arg;
+			strcpy(arg.name, "subvol");
+			arg.fd = DirDs[0];
+			Unres ( ioctl( DirDs[0], BTRFS_IOC_SUBVOL_CREATE, &arg ) == -1, "Cannot create subvolume." );
 			
+			__u64 flags = 0;
+			int status = ioctl( DirDs[0], BTRFS_IOC_SUBVOL_GETFLAGS, &flags);
+			
+			btrfs_ioctl_vol_args destroy_arg;
+			strcpy(destroy_arg.name, "subvol");
+			destroy_arg.fd = DirDs[0];
+			if ( ioctl( DirDs[0], BTRFS_IOC_SNAP_DESTROY, &destroy_arg ) == -1 )
+				Error("Cannot destroy snapshot");
+			
+			Fail(status == -1, "Cannot get subvolume flags");
 		</Code>
 	</Test>
 		
-	<Test Name="BTRFS_IOC_SUBVOL_SETFLAGS">
+	<!-- Test Name="BTRFS_IOC_SUBVOL_SETFLAGS">
 		<Description>BTRFS_IOC_SUBVOL_SETFLAGS.</Description>
 		<Dir count="1"/>		
 		<Code>
 			_TestStatus = Shallow;
 			btrfs_ioctl_vol_args subvol_arg;
 			strcpy(subvol_arg.name, "subvol");
-			subvol_arg.fd = DirDs[0];
+			subvol_arg.fd = DirDs[0];			
 			Unres ( ioctl( DirDs[0], BTRFS_IOC_SUBVOL_CREATE, &subvol_arg ) == -1, "Cannot create subvolume." );
 			
-			__u64 arg = BTRFS_SUBVOL_RDONLY;
+			btrfs_ioctl_get_set_flags_args arg;
+			arg.flags = BTRFS_SUBVOL_RDONLY;
+			arg.objectid = 0;
+			
 			int status = ioctl( DirDs[0], BTRFS_IOC_SUBVOL_SETFLAGS, &arg);
 						
 			btrfs_ioctl_vol_args destroy_arg;
@@ -248,13 +269,13 @@
 			Fail(status == -1, "Cannot set subvolume flags");
 			
 		</Code>
-	</Test>
+	</Test-->
 	
 	<Test Name="BTRFS_IOC_DEFAULT_SUBVOL">
 		<Description>BTRFS_IOC_DEFAULT_SUBVOL.</Description>
 		<File count="1"/>
 		<Code>
-			_TestStatus = Shallow;
+			
 			__u64 arg = 0;
 			Fail( ioctl( FDs[0], BTRFS_IOC_DEFAULT_SUBVOL, &arg) == -1, "Cannot set default subvolume");
 		</Code>
@@ -275,11 +296,20 @@
 				"Btrfs_ioctl_Defrag_2",
 				"Btrfs_ioctl_Defrag_3" };
 				
-			const int FreeSpace = 1024*1024*1024;
+			uint64_t FreeSpace = 1024*1024*1024;
 			
-			File file0(FileNames[0]);
-			Unres( fallocate(file0.GetFileDescriptor(), 0, 0, DeviceSize - FreeSpace ) == -1, "Cannot allocate space for pad file");
-			close(file0.GetFileDescriptor());	
+			if ( FreeSpace >= DeviceSize )
+			{
+				// No need in pad file in this case.
+				FreeSpace = DeviceSize;
+			}
+			else
+			{	
+				
+				File file0(FileNames[0]);
+				Unres( fallocate(file0.GetFileDescriptor(), 0, 0, DeviceSize - FreeSpace ) == -1, "Cannot allocate space for pad file");
+				close(file0.GetFileDescriptor());	
+			}
 			
 			
 			File file1(FileNames[1]);
@@ -317,7 +347,8 @@
 		<Dir count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			btrfs_ioctl_defrag_range_args arg;
+			btrfs_ioctl_defrag_range_args arg;			
+			arg.flags = BTRFS_DEFRAG_RANGE_COMPRESS;
 			Fail( ioctl( DirDs[0], BTRFS_IOC_DEFRAG, &arg) == -1, "Cannot defragment directory");
 		</Code>
 	</Test>
@@ -347,13 +378,15 @@
 		</Code>
 	</Test>
 
-	<Test Name="BTRFS_IOC_ADD_DEV">
+	<!--Test Name="BTRFS_IOC_ADD_DEV">
 		<Description>BTRFS_IOC_ADD_DEV.</Description>
-		<File count="1"/>
+		<Dir count="1"/>
 		<Code>	
 			_TestStatus = Shallow;
-			btrfs_ioctl_vol_args arg;
-			Fail( ioctl( FDs[0], BTRFS_IOC_ADD_DEV, &arg) == -1, "Cannot add a device");
+			btrfs_ioctl_vol_args arg;			
+			strcpy(arg.name, "device");
+			arg.fd = DirDs[0];
+			Fail( ioctl( DirDs[0], BTRFS_IOC_ADD_DEV, &arg) == -1, "Cannot add a device");
 		</Code>
 	</Test>
 
@@ -365,7 +398,7 @@
 			btrfs_ioctl_vol_args arg;
 			Fail( ioctl( FDs[0], BTRFS_IOC_RM_DEV, &arg) == -1, "Cannot remove a device");
 		</Code>
-	</Test>
+	</Test-->
 
 	<Test Name="BTRFS_IOC_FS_INFO">
 		<Description>BTRFS_IOC_FS_INFO.</Description>
@@ -377,7 +410,7 @@
 		</Code>
 	</Test>
 
-	<Test Name="BTRFS_IOC_DEV_INFO">
+	<!--Test Name="BTRFS_IOC_DEV_INFO">
 		<Description>BTRFS_IOC_DEV_INFO.</Description>
 		<File count="1"/>
 		<Code>
@@ -385,14 +418,14 @@
 			btrfs_ioctl_dev_info_args arg;
 			Fail( ioctl( FDs[0], BTRFS_IOC_DEV_INFO, &arg) == -1, "Cannot get device information");
 		</Code>
-	</Test>
+	</Test-->
 
 	<Test Name="BTRFS_IOC_BALANCE">
 		<Description>BTRFS_IOC_BALANCE.</Description>
-		<File count="1"/>
+		<File count="1" />
 		<Code>
 			_TestStatus = Shallow;
-			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE, buf) == -1, "Cannot balance filesystem chunks");
+			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE, NULL) == -1, "Cannot balance filesystem chunks");			
 		</Code>
 	</Test>
 
@@ -419,21 +452,14 @@
 		</Code>
 	</Test>
 
-	<Test Name="BTRFS_IOC_TRANS_START">
+	<Test Name="BTRFS_IOC_TRANS_START_END">
 		<Description>BTRFS_IOC_TRANS_START.</Description>
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			Fail( ioctl( FDs[0], BTRFS_IOC_TRANS_START, buf) == -1, "Cannot start a transaction");
-		</Code>
-	</Test>
-
-	<Test Name="BTRFS_IOC_TRANS_END">
-		<Description>BTRFS_IOC_TRANS_END.</Description>
-		<File count="1"/>
-		<Code>
-			_TestStatus = Shallow;
-			Fail( ioctl( FDs[0], BTRFS_IOC_TRANS_END, buf) == -1, "Cannot end a transaction");
+			Fail( ioctl( FDs[0], BTRFS_IOC_TRANS_START, NULL) == -1, "Cannot start a transaction");
+			
+			Fail( ioctl( FDs[0], BTRFS_IOC_TRANS_END, NULL) == -1, "Cannot end a transaction");
 		</Code>
 	</Test>
 
@@ -447,23 +473,42 @@
 		</Code>
 	</Test>
 
-	<Test Name="BTRFS_IOC_INO_LOOKUP">
+	<!--Test Name="BTRFS_IOC_INO_LOOKUP">
 		<Description>BTRFS_IOC_INO_LOOKUP.</Description>
-		<File count="1"/>
+		<Dir count="1"/>
 		<Code>
+			btrfs_ioctl_vol_args subvol_arg;
+			strcpy(subvol_arg.name, "INO_LOOKUP");
+			subvol_arg.fd = DirDs[0];
+			Fail ( ioctl( DirDs[0], BTRFS_IOC_SUBVOL_CREATE, &subvol_arg ) == -1, "Cannot create subvolume." );
+						
 			_TestStatus = Shallow;
 			btrfs_ioctl_ino_lookup_args arg;
-			Fail( ioctl( FDs[0], BTRFS_IOC_INO_LOOKUP, &arg) == -1, "Inode lookup failed.");
+			memset(&arg, 0, sizeof(arg));
+			strcpy(arg.name, DirPaths[0].c_str());
+			arg.objectid = DirDs[0];
+			int st = ioctl( DirDs[0], BTRFS_IOC_INO_LOOKUP, &arg);
+			
+			btrfs_ioctl_vol_args destroy_arg;
+			strcpy(destroy_arg.name, "INO_LOOKUP");
+			destroy_arg.fd = DirDs[0];
+			if ( ioctl( DirDs[0], BTRFS_IOC_SNAP_DESTROY, &destroy_arg ) == -1 )
+				Error("Cannot destroy snapshot");
+				
+			Fail ( st == -1, "Inode lookup failed.");
 		</Code>
 	</Test>
 	
 	<Test Name="BTRFS_IOC_INO_PATHS">
 		<Description>BTRFS_IOC_INO_PATHS.</Description>
-		<File count="1"/>
+		<Dir count="1"/>
 		<Code>
 			_TestStatus = Shallow;
 			btrfs_ioctl_ino_path_args arg;
-			Fail( ioctl( FDs[0], BTRFS_IOC_INO_PATHS, &arg) == -1, "Cannot get inode paths.");
+			arg.inum = 1;
+			arg.size = 4096;
+			arg.fspath = (__u64)malloc(4096);
+			Fail( ioctl( DirDs[0], BTRFS_IOC_INO_PATHS, &arg) == -1, "Cannot get inode paths.");
 		</Code>
 	</Test>
 	
@@ -473,9 +518,12 @@
 		<Code>
 			_TestStatus = Shallow;
 			btrfs_ioctl_logical_ino_args arg;
+			arg.logical = 0;
+			arg.size = 64*1024;
+			arg.inodes = 1;
 			Fail( ioctl( FDs[0], BTRFS_IOC_LOGICAL_INO, &arg) == -1, "Cannot get inodes of the logical address");
 		</Code>
-	</Test>
+	</Test-->
 	
 	<Test Name="BTRFS_IOC_SPACE_INFO">
 		<Description>BTRFS_IOC_SPACE_INFO.</Description>
@@ -496,7 +544,7 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			Fail( ioctl( FDs[0], BTRFS_IOC_SYNC, buf) == -1, "Cannot force sync on the filesystem");
+			Fail( ioctl( FDs[0], BTRFS_IOC_SYNC, NULL) == -1, "Cannot force sync on the filesystem");
 		</Code>
 	</Test>
 
@@ -513,7 +561,7 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			Fail( ioctl( FDs[0], BTRFS_IOC_START_SYNC, buf) == -1, "Cannot strat sync.");
+			Fail( ioctl( FDs[0], BTRFS_IOC_START_SYNC, NULL) == -1, "Cannot strat sync.");
 		</Code>
 		<Footer>
 #endif
@@ -533,14 +581,15 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			Fail( ioctl( FDs[0], BTRFS_IOC_WAIT_SYNC, buf) == -1, "Cannot syncronize wait");
+			Fail( ioctl( FDs[0], BTRFS_IOC_WAIT_SYNC, NULL) == -1, "Cannot syncronize wait");
 		</Code>
 		<Footer>
 #endif
 		</Footer>
 	</Test>
 	
-	<Test Name="BTRFS_IOC_SCRUB">
+	<!-- No support for scrub still -->
+	<!--Test Name="BTRFS_IOC_SCRUB">
 		<Description>BTRFS_IOC_SCRUB.</Description>
 		<File count="1"/>
 		<Code>
@@ -551,11 +600,11 @@
 	</Test>
 	
 	<Test Name="BTRFS_IOC_SCRUB_CANCEL">
-		<Description>BTRFS_IOC_SCRUB_CANCEL.</Description>
-		<File count="1"/>
+		<Description>BTRFS_IOC_SCRUB_CANCEL.</Description>		
+		<File count="1" />
 		<Code>
 			_TestStatus = Shallow;
-			Fail( ioctl( FDs[0], BTRFS_IOC_SCRUB_CANCEL, buf) == -1, "cannot cancel scrub.");
+			Fail( ioctl( FDs[0], BTRFS_IOC_SCRUB_CANCEL, NULL) == -1, "cannot cancel scrub.");
 		</Code>
 	</Test>
 	
@@ -567,52 +616,99 @@
 			btrfs_ioctl_scrub_args arg;
 			Fail( ioctl( FDs[0], BTRFS_IOC_SCRUB_PROGRESS, &arg) == -1, "Cannot get scrub progress.");
 		</Code>
-	</Test>
+	</Test-->
 	
 	<Test Name="BTRFS_IOC_BALANCE_V2">
+		<Header>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
+		Unsupp("BTRFS_IOC_BALANCE_V2 operation is not supported in Linux 3.2- versions.");
+#else
+		</Header>
 		<Description>BTRFS_IOC_BALANCE_V2.</Description>
-		<File count="1"/>
+		<File count="1" />
 		<Code>
 			_TestStatus = Shallow;
-			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE_V2, buf) == -1, "V2 balance failed.");
+			btrfs_ioctl_balance_args arg;
+			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE_V2, &arg) == -1, "V2 balance failed.");
 		</Code>
+		<Footer>
+#endif
+		</Footer>
 	</Test>
 	
-	<Test Name="BTRFS_IOC_BALANCE_CTL">
+	<!--Test Name="BTRFS_IOC_BALANCE_CTL">
 		<Description>BTRFS_IOC_BALANCE_CTL.</Description>
-		<File count="1"/>
+		<Header>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
+		Unsupp("BTRFS_IOC_BALANCE_CTL operation is not supported in Linux 3.2- versions.");
+#else
+		</Header>
+		<File count="1" />
 		<Code>
 			_TestStatus = Shallow;
-			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE_CTL, buf), "Balance control failed.");
+			Unres( ioctl( FDs[0], BTRFS_IOC_BALANCE, NULL) == -1, "Cannot balance filesystem chunks");
+			
+			int cmd = BTRFS_BALANCE_CTL_PAUSE;
+			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE_CTL, cmd), "Balance control failed.");
 		</Code>
+		<Footer>
+#endif
+		</Footer>
 	</Test>
 	
 	<Test Name="BTRFS_IOC_BALANCE_PROGRESS">
+		<Header>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
+		Unsupp("BTRFS_IOC_BALANCE_PROGRESS operation is not supported in Linux 3.2- versions.");
+#else
+		</Header>
 		<Description>BTRFS_IOC_BALANCE_PROGRESS.</Description>
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE_PROGRESS, buf) == -1, "Cannot get balance progress.");
+			btrfs_ioctl_balance_args arg;
+			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE_PROGRESS, &arg) == -1, "Cannot get balance progress.");
 		</Code>
-	</Test>
+		<Footer>
+#endif
+		</Footer>
+	</Test-->
 	
-	<Test Name="BTRFS_IOC_SET_RECEIVED_SUBVOL">
+	<!--Test Name="BTRFS_IOC_SET_RECEIVED_SUBVOL">
+		<Header>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,6,0)
+		Unsupp("BTRFS_IOC_SET_RECEIVED_SUBVOL operation is not supported in Linux 3.5- versions.");
+#else
+		</Header>
 		<Description>BTRFS_IOC_SET_RECEIVED_SUBVOL.</Description>
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			Fail(ioctl( FDs[0], BTRFS_IOC_SET_RECEIVED_SUBVOL, buf) == -1, "Cannot set received subvolume.");
+			btrfs_ioctl_received_subvol_args arg;
+			Fail(ioctl( FDs[0], BTRFS_IOC_SET_RECEIVED_SUBVOL, &arg) == -1, "Cannot set received subvolume.");
 		</Code>
-	</Test>
+		<Footer>
+#endif
+		</Footer>
+	</Test-->
 		
-	<Test Name="BTRFS_IOC_SEND">
+	<!--Test Name="BTRFS_IOC_SEND">
 		<Description>BTRFS_IOC_SEND.</Description>
+		<Header>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,6,0)
+		Unsupp("BTRFS_IOC_SEND operation is not supported in Linux 3.5- versions.");
+#else
+		</Header>
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			Fail( ioctl( FDs[0], BTRFS_IOC_SEND, buf) == -1, "Send failed.");
+			btrfs_ioctl_send_args arg;
+			Fail( ioctl( FDs[0], BTRFS_IOC_SEND, &arg) == -1, "Send failed.");
 		</Code>
-	</Test>
+		<Footer>
+#endif
+		</Footer>
+	</Test-->
 
 	<Test Name="BTRFS_IOC_GET_DEV_STATS">
 		<Header>
@@ -634,7 +730,8 @@ struct btrfs_ioctl_get_dev_stats {
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			Fail( ioctl( FDs[0], BTRFS_IOC_GET_DEV_STATS, buf) == -1, "Cannot get device stats.");
+			btrfs_ioctl_get_dev_stats arg;
+			Fail( ioctl( FDs[0], BTRFS_IOC_GET_DEV_STATS, &arg) == -1, "Cannot get device stats.");
 		</Code>
 		<Footer>
 #endif
