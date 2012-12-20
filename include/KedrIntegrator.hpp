@@ -89,7 +89,11 @@ public:
 		KEDRProfiles.push_back("fsim.conf");
 		return true;
 	}
-	
+	bool EnableCallMonitoring()
+	{
+		KEDRProfiles.push_back("callm.conf");
+		return true;
+	}
 	// The process ID is set to the curent PID
 	static bool SetIndicator(string point, string indicator, string expression)
 	{

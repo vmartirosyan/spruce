@@ -25,6 +25,7 @@ Include_Directories("${CMAKE_SOURCE_DIR}/src/fs/btrfs")
 ADD_EXECUTABLE(fault_sim ${CMAKE_CURRENT_BINARY_DIR}/module.cpp )
 
 TARGET_LINK_LIBRARIES(fault_sim utils)
+TARGET_LINK_LIBRARIES(fault_sim acl)
 #TARGET_LINK_LIBRARIES(fault_sim rt)
 
 install (	FILES "${CMAKE_BINARY_DIR}/bin/fault_sim"
