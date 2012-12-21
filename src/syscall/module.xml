@@ -1,0 +1,79 @@
+<!--    module.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<Module Name="syscall">
+	<TestSet Name="access"/>
+	<TestSet Name="acl"/>
+	<TestSet Name="chdir"/>
+	<TestSet Name="chmod"/>
+	<TestSet Name="chown"/>
+	<TestSet Name="chroot"/>
+	<TestSet Name="close"/>
+	<TestSet Name="creat"/>
+	<TestSet Name="dup"/>
+	<TestSet Name="fallocate"/>
+	<TestSet Name="fchmod"/>
+	<TestSet Name="fchown"/>
+	<TestSet Name="fcntl"/>
+	<TestSet Name="fdatasync"/>
+	<TestSet Name="fstat"/>
+	<TestSet Name="fstatfs"/>
+	<TestSet Name="fsync"/>
+	<TestSet Name="ftruncate"/>
+	<TestSet Name="getcwd"/>
+	<TestSet Name="ioctl"/>
+	<TestSet Name="lchown"/>
+	<TestSet Name="link"/>
+	<TestSet Name="linkat"/>
+	<TestSet Name="lseek"/>
+	<TestSet Name="lseek64"/>
+	<TestSet Name="mkdir_rmdir"/>
+	<TestSet Name="mknod"/>
+	<TestSet Name="mlock"/>
+	<TestSet Name="mmap"/>
+	<TestSet Name="mount_umount"/>
+	<TestSet Name="mprotect"/>
+	<TestSet Name="msync"/>
+	<TestSet Name="open"/>
+	<TestSet Name="openat"/>
+	<TestSet Name="quotactl"/>
+	<TestSet Name="pread_pwrite"/>
+	<TestSet Name="posix_fadvise"/>
+	<TestSet Name="readahead"/>
+	<TestSet Name="read_write"/>
+	<TestSet Name="readdir"/>
+	<TestSet Name="readv_writev"/>
+	<TestSet Name="rename"/>
+	<TestSet Name="select"/>
+	<TestSet Name="splice"/>
+	<TestSet Name="stat"/>
+	<TestSet Name="statfs"/>
+	<TestSet Name="sync"/>
+	<TestSet Name="truncate"/>
+	<TestSet Name="umask"/>
+	<TestSet Name="unlink"/>
+	<TestSet Name="unlinkat"/>
+	<TestSet Name="utime"/>
+	<TestSet Name="xattr"/>	
+	<TestSet Name="name_to_handle"/>
+</Module>
