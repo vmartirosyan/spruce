@@ -70,7 +70,9 @@
 	<Test Name="GetSetDefaultACL" FaultSimulationReady="true">
 		<Description>Get file's default ACL and its entries.</Description>		
 		<Dir count="1" />
-		<Code>				
+		<Code>
+			if ( strcmp(FileSystem, "jfs") )
+				Unsupp("Default ACLs are supported only on JFS");
 			EnableFaultSim();
 			acl_t acl = acl_init(1);
 			acl_entry_t entry;
