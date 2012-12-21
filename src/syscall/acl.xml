@@ -158,7 +158,7 @@
 			Unres( nobody == NULL, "Cannot obtain nobody user information.");
 			uid_t *uidp;
 			Unres(acl == NULL, "Cannot initialize ACL working storage.");
-			for(int i = 0; i < 3; i++)
+			for(int i = 0; i < 4; i++)
 			{
 				Unres( acl_create_entry(&acl, &entry) == -1, "Cannot create ACL entry." );
 				Fail( acl_get_permset(entry, &perms) == -1, "Cannot get permition set" ); 
