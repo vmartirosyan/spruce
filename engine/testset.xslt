@@ -175,33 +175,33 @@ public:
 		}
 		return res;
 	}
-	virtual TestResultCollection RunFaultyTests()
+		virtual TestResultCollection RunFaultyTests()
 	{
 		cerr &lt;&lt; "Running faulty tests:  <xsl:value-of select="$TestSetName" />: " &lt;&lt; _fsim_info_vec.size() &lt;&lt; endl;
 		_fsim_enabled = true;
 		TestResultCollection res;
-		string log;
-		<xsl:value-of select="$ModuleName"/>TestResult * tr;
 	
 		for ( unsigned int i = 0; i &lt; _fsim_info_vec.size(); ++i )
 		{
 			_fsim_point = _fsim_info_vec[i].Point;
 			_fsim_expression = "0";
+			//KedrIntegrator::SetIndicator(_fsim_point, "common", _fsim_expression);	
 			
-			TestMap::iterator it = _fsim_tests.begin();
-			cerr &lt;&lt; "\033[1;31mCalling: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
-			ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
-			
-			cerr &lt;&lt; "\033[1;31mCalled: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
-			<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
-			delete pr;
-			res.AddResult( tr );
-			
-			if ( tr->GetStatus() == Signaled )
-			{
-				DisableFaultSim();
-				return res;
-			}
+			 TestMap::iterator it = _fsim_tests.begin();
+			 cerr &lt;&lt; "\033[1;31mCalling: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
+				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
+				//if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
+						//pr->SetStatus(Success);
+					cerr &lt;&lt; "\033[1;31mCalled: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
+					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
+					delete pr;
+					res.AddResult( tr );
+					
+					if ( tr->GetStatus() == Signaled )
+					{
+						DisableFaultSim();
+						return res;
+					}
 			
 			_fsim_info_vec[i].Count = KedrIntegrator::GetTimes(_fsim_point);
 			KedrIntegrator:: ResetTimes(_fsim_point);
@@ -227,36 +227,27 @@ public:
 					_fsim_expression = "times="+(string)buf;
 					
 				}
-				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
+				//for ( unsigned int k = 0; k &lt; _fsim_testCount; ++k)
 				
-				if( _fsim_info_vec[i].Count > 0 &amp;&amp;  pr->GetStatus() == Success )
-				{
-					pr->SetStatus(FSimSuccess);
-					pr->ModOutput("Test returned Success instead of Fail. Fault Simulation failed.");	
-				}
-				if( _fsim_info_vec[i].Count > 0 &amp;&amp; pr->GetStatus() == Fail )
-					pr->SetStatus(FSimFail);
-				
-				Status oopsStatus = OopsChecker(log); // log is an output parameter
-				if(oopsStatus != Success) 
-				{	
-					//so we have an emergency situation...
-					cerr&lt;&lt;"Oops Checker is activated: \n";
-					log = "Status: " + StatusMessages[oopsStatus] + "\nTest output: \n" + pr->GetOutput() + "\nSystem log message: \n" + log;
-					tr = new <xsl:value-of select="$ModuleName"/>TestResult(new ProcessResult(Fatal, log),"<xsl:value-of select="$TestSetName" />", it->first);
-				}
-				if ( tr->GetStatus() == Fatal )
-					break;
-					
-				tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
-				delete pr;
-				res.AddResult( tr );
-				// If one of the tests makes the process to get a signal, then the driver probably is not functional any more.
-				if ( tr->GetStatus() == Signaled )
-				{
-					DisableFaultSim();
-					return res;
-				}
+					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
+					//if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
+						//pr->SetStatus(Success);
+					if( _fsim_info_vec[i].Count > 0 &amp;&amp;  pr->GetStatus() == Success )
+					{
+						pr->SetStatus(FSimSuccess);
+						pr->ModOutput("Test returned Success instead of Fail. Fault Simulation failed.");	
+					}
+					if( _fsim_info_vec[i].Count > 0 &amp;&amp; pr->GetStatus() == Fail )
+						pr->SetStatus(FSimFail);
+					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
+					delete pr;
+					res.AddResult( tr );
+					// If one of the tests makes the process to get a signal, then the driver probably is not functional any more.
+					if ( tr->GetStatus() == Signaled )
+					{
+						DisableFaultSim();
+						return res;
+					}
 				
 				//DisableFaultSim();
 			}
@@ -290,6 +281,14 @@ public:
 			File DirFiles[DirFileCount];
 			int DirFDs[DirFileCount];
 			</xsl:if>
+			<xsl:if test="Dir/Dir">
+			const int DirDirCount = <xsl:value-of select="Dir/Dir/@count"/>;
+			string DirDirPaths[DirDirCount];
+			Directory DirDirs[DirDirCount];
+			int DirDDs[DirDirCount];
+			</xsl:if>
+			
+			
 			for ( int i = 0 ; i &lt; DirCount; ++i )
 			{
 				char buf[2];
@@ -300,21 +299,39 @@ public:
 				{
 					throw Exception("Directory descriptor is not valid.");
 				}
-				<xsl:if test="Dir/File">
-				for ( int i = 0 ; i &lt; DirFileCount; ++i )
-				{
-					char buf[2];
-					sprintf(buf, "%d", i);
-					DirFilePaths[i] = DirPaths[i] + "/" + FilePrefix + buf;
-					DirFDs[i] = DirFiles[i].Open(DirFilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
-					if ( DirFDs[i] == -1 )
-					{
-						throw Exception("File descriptor is not valid.");
-					}
-				}	
-				</xsl:if>
 			}
+			
+			<xsl:if test="Dir/File">
+			for ( int i = 0 ; i &lt; DirFileCount; ++i )
+			{
+				char buf[2];
+				sprintf(buf, "%d", i);
+				DirFilePaths[i] = DirPaths[0] + "/" + FilePrefix + buf;
+				DirFDs[i] = DirFiles[i].Open(DirFilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
+				if ( DirFDs[i] == -1 )
+				{
+					throw Exception("File descriptor is not valid.");
+				}
+			}	
 			</xsl:if>
+			
+			<xsl:if test="Dir/Dir">
+			for ( int i = 0 ; i &lt; DirDirCount; ++i )
+			{
+				char buf[2];
+				sprintf(buf, "%d", i);
+				DirDirPaths[i] = DirPaths[0] + "/" + DirPrefix + buf;
+				DirDDs[i] = DirDirs[i].Open(DirDirPaths[i], S_IRWXU);
+				if ( DirDDs[i] == -1 )
+				{
+					throw Exception("Dir descriptor is not valid.");
+				}
+			}	
+			</xsl:if>
+			
+			</xsl:if>
+			
+			
 			<xsl:if test="File">
 			const int FileCount = <xsl:value-of select="File/@count"/>;
 			int FileFlags = O_CREAT | O_RDWR;
