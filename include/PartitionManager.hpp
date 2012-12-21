@@ -158,7 +158,7 @@ class PartitionManager
 				return PS_Fatal;
 			}
 			
-			if ( !CreateFilesystem(_FileSystem, _DeviceName,true) )
+			if ( !CreateFilesystem(_FileSystem, _DeviceName) )
 			{				
 				_Index = 0;
 				return PS_Done;
