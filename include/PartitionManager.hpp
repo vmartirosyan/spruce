@@ -158,7 +158,7 @@ class PartitionManager
 				return PS_Fatal;
 			}
 			
-			if ( !CreateFilesystem(_FileSystem, _DeviceName) )
+			if ( !CreateFilesystem(_FileSystem, _DeviceName,true) )
 			{				
 				_Index = 0;
 				return PS_Done;
@@ -194,13 +194,13 @@ class PartitionManager
 		}
 		
 		// Try to re-create the file system and mount it with the precious mount options.		
-		static PartitionStatus RestorePartition(string DeviceName, string MountPoint, string FileSystem, bool RecreateFilesystem = false)
+		static PartitionStatus RestorePartition(string DeviceName, string MountPoint, string FileSystem, bool RecreateFilesystem = false, bool resizeFlag = false)
 		{
 			if( !getenv("MountOpts"))
 				return PS_Fatal;
 			if( !ReleasePartition(MountPoint))
 				return PS_Skip;
-			if( RecreateFilesystem && !CreateFilesystem(FileSystem, DeviceName))
+			if( RecreateFilesystem && !CreateFilesystem(FileSystem, DeviceName,resizeFlag))
 				return PS_Fatal;
 			if( !Mount(DeviceName,MountPoint,FileSystem,getenv("MountOpts")) )
 				return PS_Skip;
@@ -451,7 +451,7 @@ retry:
 			return result;
 		}
 		
-		static bool CreateFilesystem(string fs, string partition)
+		static bool CreateFilesystem(string fs, string partition, bool resizeFlag = false)
 		{
 			uint64_t DeviceSize = GetDeviceSize(partition);
 			
@@ -475,7 +475,14 @@ retry:
 			
 			stringstream s2;
 			string PartitionSize;
-			s2 << ((DeviceSize / BlockSize) - 1000);
+			if ( !resizeFlag )
+			{
+				s2 << ((DeviceSize / BlockSize) );
+			}
+			else
+			{
+				s2 << ((DeviceSize / BlockSize) - 10000);
+			}
 			PartitionSize = s2.str();
 			
 			if ( fs == "ext4" )
@@ -495,7 +502,7 @@ retry:
 			if ( fs == "btrfs" )
 			{
 				stringstream s3;
-				s3 << (DeviceSize - 1000*4096);
+				s3 << (DeviceSize);
 				string SizeInBlocks = s3.str();
 				
 				args.push_back("-b");
