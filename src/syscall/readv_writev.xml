@@ -142,21 +142,6 @@
 			ErrorTest(readv(DirDs[0], ReadVec, BufCount), -1, EISDIR);
 		</Code>
 	</Test>
-	<Test Name="ReadvFault">
-		<Description>readv: Argument is outside your accessible address space.</Description>
-		<File count="1"/>
-		<Code>
-			const int BufCount = 2;
-			const string WriteBuf1 = "012345";
-			const string WriteBuf2 = "abcd";
-			
-			const struct iovec WriteVec[BufCount] = { {static_cast<void*>(const_cast<char*>(WriteBuf1.c_str())), WriteBuf1.size()}, {static_cast<void*>(const_cast<char*>(WriteBuf2.c_str())), WriteBuf2.size()}};
-					
-			Unres(writev(FDs[0], WriteVec, BufCount) == -1, "Cannot write to file.");
-			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
-			ErrorTest(readv(FDs[0], reinterpret_cast<const struct iovec*>(-1), 1), -1, EFAULT);
-		</Code>
-	</Test>
 	<Test Name="ReadvErrAgain">
 		<Description>readv: The  file descriptor fd refers to a file other than a socket and has been marked nonblocking (O_NONBLOCK),  and  the  readv  would block.</Description>
 		<Code>
@@ -177,48 +162,7 @@
 		<Code>
 			ErrorTest(write(1, reinterpret_cast<const struct iovec*>(-1), 1), -1, EFAULT);
 		</Code>
-	</Test>
-	<Test Name="ReadvInval1">
-		<Description>readv: The sum of the iov_len values overflows an ssize_t value.</Description>
-		<File count="1"/>
-		<Header>
-#if __WORDSIZE==64	
-	Unsupp("EINVAL error cannot be simulated on x86-64 architecture.");	
-#else
-		</Header>
-		<Code>
-			const int BufCount = 2;
-			char * ReadBuf1 = new char[10];
-			char * ReadBuf2 = new char[10];
-			
-			struct iovec ReadVec[BufCount] = { {ReadBuf1, SSIZE_MAX / 2 + 1}, {ReadBuf2, SSIZE_MAX / 2 + 1}};
-			ErrorTest(readv(FDs[0], ReadVec, BufCount), -1, EINVAL);
-		</Code>
-		<Footer>
-#endif
-		</Footer>
-	</Test>
-	<Test Name="WritevInval1">
-		<Description>writev: The sum of the iov_len values overflows an ssize_t value.</Description>
-		<File count="1"/>
-		<Header>
-#if __WORDSIZE==64	
-	Unsupp("EINVAL error cannot be simulated on x86-64 architecture.");	
-#else
-		</Header>
-		<Code>
-			const int BufCount = 2;
-			char * WriteBuf1 = new char[10];
-			char * WriteBuf2 = new char[10];
-			
-			const struct iovec WriteVec[BufCount] = { {WriteBuf1, SSIZE_MAX / 2 + 1}, {WriteBuf2, SSIZE_MAX / 2 + 1}};
-			
-			ErrorTest(writev(FDs[0], WriteVec, BufCount), -1, EINVAL);
-		</Code>
-		<Footer>
-#endif
-		</Footer>
-	</Test>
+	</Test>	
 	<Test Name="ReadvInval2">
 		<Description>readv: The  vector  count  iovcnt is less than zero.</Description>
 		<File count="1"/>
