@@ -35,7 +35,7 @@
 		<Code>
 			_TestStatus = Shallow;
 			int rv = ioctl(FDs[0], -100, 0);
-			if(rv != 0) 
+			if(rv == 0) 
 				Fail(1, "ioctl returns 0 on unsupported operation.");
 			
 			Fail(! ( errno == ENOTTY || errno == EINVAL ), "ioctl returns incorrect errno.");
