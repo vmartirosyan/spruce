@@ -28,12 +28,7 @@
 	<Requires>linux/version.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>btrfs.hpp</Requires>
-	<Header>
-		/*char buf[2];
-		buf[1] = '1';
-		if (buf[1] != '1')
-			buf[1] = '1';*/
-	</Header>
+
 	
 	<Test Name="SetGetFlags_Empty" FaultSimulationReady="true">
 		<Description>Try to set and get flag values. </Description>
@@ -222,6 +217,11 @@
 	</Test>
 	
 	<Test Name="BTRFS_IOC_SUBVOL_GETFLAGS">
+		<Header>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38)
+		Unsupp("BTRFS_IOC_SUBVOL_GETFLAGS operation is not supported in Linux 2.6.37- versions.");
+#else
+		</Header>
 		<Description>BTRFS_IOC_SUBVOL_GETFLAGS.</Description>
 		<Dir count="1"/>
 		<Code>
@@ -242,10 +242,18 @@
 			
 			Fail(status == -1, "Cannot get subvolume flags");
 		</Code>
+		<Footer>
+#endif
+		</Footer>
 	</Test>
 		
 	<!-- Test Name="BTRFS_IOC_SUBVOL_SETFLAGS">
 		<Description>BTRFS_IOC_SUBVOL_SETFLAGS.</Description>
+		<Header>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38)
+		Unsupp("BTRFS_IOC_SUBVOL_SETFLAGS operation is not supported in Linux 2.6.37- versions.");
+#else
+		</Header>
 		<Dir count="1"/>		
 		<Code>
 			_TestStatus = Shallow;
@@ -269,6 +277,9 @@
 			Fail(status == -1, "Cannot set subvolume flags");
 			
 		</Code>
+		<Footer>
+#endif
+		</Footer>
 	</Test-->
 	
 	<Test Name="BTRFS_IOC_DEFAULT_SUBVOL">
