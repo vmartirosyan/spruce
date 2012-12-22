@@ -33,7 +33,7 @@
 			int old_version = 0;
 			if ( ioctl(FDs[0], FS_IOC_GETVERSION, &old_version ) == -1 )
 			{
-				if ( errno == ENOTTY )
+				if ( errno == ENOTTY || errno == EINVAL )
 				{
 					Error("Get/set verion is not supported.", Unsupported);
 				}
@@ -48,7 +48,7 @@
 			EnableFaultSim();
 			if ( ioctl(FDs[0], FS_IOC_SETVERSION, &set_version ) == -1)
 			{
-				if ( errno == ENOTTY )
+				if ( errno == ENOTTY || errno == EINVAL )
 				{
 					Error("Set verion is not supported.", Unsupported);
 				}
@@ -84,7 +84,7 @@
 			EnableFaultSim();
 			if ( ioctl(FDs[0], FITRIM, &arg) == -1 )
 			{
-				if ( errno == ENOTTY )
+				if ( errno == ENOTTY || errno == EINVAL )
 				{
 					Error("FITRIM is not supported.", Unsupported);
 				}
@@ -111,7 +111,7 @@
 			EnableFaultSim();
 			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
 			{
-				if ( errno == ENOTTY )
+				if ( errno == ENOTTY || errno == EINVAL )
 				{
 					Error("FIEMAP is not supported by Btrfs.", Unsupported);
 				}
@@ -143,9 +143,9 @@
 			EnableFaultSim();
 			if ( ioctl(FDs[0], FIFREEZE, 0) == -1 )
 			{
-				if ( errno == ENOTTY )
+				if ( errno == ENOTTY || errno == EINVAL )
 				{
-					Error("FIFREEZE is not supported by Btrfs.", Unsupported);
+					Error("FIFREEZE is not supported.", Unsupported);
 				}
 				else
 				{
@@ -154,9 +154,9 @@
 			}
 			if ( ioctl(FDs[0], FITHAW, 0) == -1 )
 			{
-				if ( errno == ENOTTY )
+				if ( errno == ENOTTY || errno == EINVAL)
 				{
-					Error("FITHAW is not supported by Btrfs.", Unsupported);
+					Error("FITHAW is not supported.", Unsupported);
 				}
 				else
 				{
