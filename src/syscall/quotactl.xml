@@ -85,8 +85,7 @@
 			res = quotacheck->Execute(args);
 			delete quotacheck;
 			Unres( res == NULL, "Cannot execute 'quotacheck' command to create the quota file." );
-		//	Unres( res->GetStatus() != Success, "Error executing 'quotacheck'. " + res->GetOutput() );
-			
+			Unres( res->GetStatus() != Success, "Error executing 'quotacheck'. " + res->GetOutput() );
 			
 			
 			if( PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") ||
