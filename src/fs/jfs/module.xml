@@ -1,0 +1,4 @@
+<Module Name="jfs">
+	<TestSet Name="Ioctl" />
+	<TestSet Name="mount" />
+</Module>
