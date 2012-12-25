@@ -5,6 +5,9 @@ ADD_CUSTOM_COMMAND(
    COMMAND ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/engine
    DEPENDS ${CMAKE_BINARY_DIR}/bin/engine ${CMAKE_SOURCE_DIR}/engine/module.xslt ${CMAKE_SOURCE_DIR}/engine/testset.xslt ${CMAKE_CURRENT_SOURCE_DIR}/module.xml ${CMAKE_CURRENT_SOURCE_DIR}/Ioctl.xml mount.xml
    )
+   
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
+
 IF ( ${OS_32_BITS} OR NOT ${HAVE_MULTILIB})	
 ADD_EXECUTABLE(jfs ${CMAKE_CURRENT_BINARY_DIR}/module.cpp )
 
