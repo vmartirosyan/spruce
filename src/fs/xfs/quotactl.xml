@@ -44,7 +44,9 @@
 			if ( (opts = getenv("MountOpts")) != NULL )
 			{
 				string strOpts = opts;
-				if ( strOpts.find("quota") == string::npos )
+				if ( ( strOpts.find("quota") == string::npos &&
+				 strOpts.find("qnoenforce") == string::npos)
+				|| PartitionManager::IsOptionEnabled("noquota") )
 					Error("quota mount option is not provided.", Unsupported);
 			}
 			else
