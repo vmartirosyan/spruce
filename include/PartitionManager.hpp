@@ -502,7 +502,7 @@ retry:
 			if ( fs == "btrfs" )
 			{
 				stringstream s3;
-				s3 << (DeviceSize);
+				s3 << (DeviceSize - 512*1000);
 				string SizeInBlocks = s3.str();
 				
 				args.push_back("-b");
@@ -523,8 +523,7 @@ retry:
 		}
 
 		static bool Mount(string DeviceName,string MountPoint,string FileSystem,string Options)
-		{
-			Logger::LogWarn("Mount: Options: " + Options);
+		{			
 			UnixCommand * mnt = new UnixCommand("mount");
 			vector<string> mnt_args;
 			mnt_args.push_back(DeviceName);
@@ -545,8 +544,8 @@ retry:
 				return false;
 			}
 			
-			cout << "Device " << DeviceName << " was mounted on folder ";
-			cout << MountPoint << "(opts=" << Options << ") "<< endl;
+			Logger::LogInfo( "Device " + DeviceName + " was mounted on folder " 
+					+ MountPoint + "(opts=" + Options + ") ");
 			
 			// Now change current dir to the newly mounted partition folder
 			if ( chdir(MountPoint.c_str()) != 0 )

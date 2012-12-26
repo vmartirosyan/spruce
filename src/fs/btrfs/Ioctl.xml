@@ -380,12 +380,48 @@
 
 	<Test Name="BTRFS_IOC_RESIZE">
 		<Description>BTRFS_IOC_RESIZE.</Description>
-		<File count="1"/>
 		<Code>
-			_TestStatus = Shallow;
+			chdir("/");
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			
+			// Remount the partition changing it's size
+			int res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+			if( res != PS_Success )
+			{
+				Unres( res == PS_Fatal, "Device too small.");
+				Unres(true, "Partition mount or umount failed");				
+			}			
+						
+			int fd = open(MountPoint, O_DIRECTORY);
+			Unres ( fd == -1, "Cannot open MountPoint descriptor." );
+			
 			btrfs_ioctl_vol_args arg;
-			strcpy(arg.name, "+10240");
-			Fail( ioctl( FDs[0], BTRFS_IOC_RESIZE, &arg) == -1, "Cannot resize file");			
+			strcpy(arg.name, "+1");
+			res = ioctl( fd, BTRFS_IOC_RESIZE, &arg);
+			int my_errno = errno;
+			
+			close(fd);
+			
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+			{
+				Error("Mount failed!");
+				_TestStatus = Fatal;
+			}
+			if( res == -1 )
+			{
+				if( PartitionManager::IsOptionEnabled("ro") )
+				{
+					_TestStatus = Shallow;
+				}
+				else
+				{
+					errno = my_errno;
+					Fail(true, "Cannot resize partition.");
+				}
+			}
+			
 		</Code>
 	</Test>
 
