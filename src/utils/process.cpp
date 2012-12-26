@@ -36,12 +36,12 @@ string StatusMessages[] = {
 	"Failed",	
 	"Timeout",
 	"Signaled",
+	"FSimSuccess",
+	"FSimFail",
 	"Fatal",		
 	"Oops",
 	"Bug",
 	"Panic",
-	"FSimSuccess",
-	"FSimFail",
 		
 	"Unknown" // Must be the last status
 	
