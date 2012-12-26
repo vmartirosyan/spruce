@@ -291,7 +291,7 @@ public:
 			
 			for ( int i = 0 ; i &lt; DirCount; ++i )
 			{
-				char buf[2];
+				char buf[5];
 				sprintf(buf, "%d", i);
 				DirPaths[i] = DirPrefix + buf;
 				DirDs[i] = Dirs[i].Open(DirPaths[i], S_IRWXU);
@@ -304,7 +304,7 @@ public:
 			<xsl:if test="Dir/File">
 			for ( int i = 0 ; i &lt; DirFileCount; ++i )
 			{
-				char buf[2];
+				char buf[5];
 				sprintf(buf, "%d", i);
 				DirFilePaths[i] = DirPaths[0] + "/" + FilePrefix + buf;
 				DirFDs[i] = DirFiles[i].Open(DirFilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
@@ -318,7 +318,7 @@ public:
 			<xsl:if test="Dir/Dir">
 			for ( int i = 0 ; i &lt; DirDirCount; ++i )
 			{
-				char buf[2];
+				char buf[5];
 				sprintf(buf, "%d", i);
 				DirDirPaths[i] = DirPaths[0] + "/" + DirPrefix + buf;
 				DirDDs[i] = DirDirs[i].Open(DirDirPaths[i], S_IRWXU);

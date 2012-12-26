@@ -55,12 +55,12 @@ enum Status
 	Fail,
 	Timeout,
 	Signaled,
-	Fatal,	
+	FSimSuccess,
+	FSimFail,
+	Fatal,	// Any error coming after this one is counted as Fatal!
 	Oops,
 	Bug,
 	Panic,
-	FSimSuccess,
-	FSimFail,
 	
 	Unknown	 // Must be the last status
 };
