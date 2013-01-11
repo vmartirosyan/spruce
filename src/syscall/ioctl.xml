@@ -122,7 +122,29 @@
 			}			
 		</Code>
 	</Test>
-	
+	<Test Name="IoctlFIEMAPWithXattrFlag" FaultSimulationReady="true">
+		<Description>Ioctl FIEMAP test with FIEMAP_FLAG_XATTR flag set.</Description>
+		<File count="1"/>
+		<Code>
+			_TestStatus = Shallow;
+			struct fiemap arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.fm_length = 1;
+			arg.fm_flags = FIEMAP_FLAG_XATTR;
+			EnableFaultSim();
+			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Error("FIEMAP is not supported by Btrfs.", Unsupported);
+				}
+				else
+				{
+					Error("FIEMAP operation with FIEMAP_FLAG_XATTR flag failed.", Fail);
+				}
+			}			
+		</Code>
+	</Test>
 	<Test Name="IoctlFIBMAP" FaultSimulationReady="true">
 		<Description>Ioctl FIBMAP.</Description>
 		<File count="1"/>
