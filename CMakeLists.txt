@@ -117,6 +117,11 @@ IF (NOT HAVE_EXT2_FS_H)
 	#SET(HAVE_EXT2_FS_H 0)
 ENDIF (NOT HAVE_EXT2_FS_H)
 
+CHECK_INCLUDE_FILES ("sys/acl.h" HAVE_ACL_H)
+IF (NOT HAVE_ACL_H)
+	Message(FATAL_ERROR "'sys/acl.h' header file wasn't found. Please install the 'libacl1-dev' package.")
+	#SET(HAVE_ACL_H 0)
+ENDIF (NOT HAVE_ACL_H)
 
 CHECK_INCLUDE_FILES ("xfs/xfs.h" HAVE_XFS_H)
 IF (NOT HAVE_XFS_H)
