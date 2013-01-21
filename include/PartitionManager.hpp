@@ -477,7 +477,10 @@ retry:
 			string PartitionSize;
 			if ( !resizeFlag )
 			{
-				s2 << ((DeviceSize / BlockSize) );
+				if(fs != "ext4")
+					s2 << ((DeviceSize / BlockSize) );
+				else
+					s2 << ((DeviceSize / BlockSize) - 100000);
 			}
 			else
 			{
