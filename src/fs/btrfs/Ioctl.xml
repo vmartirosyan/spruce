@@ -229,7 +229,7 @@
 			btrfs_ioctl_vol_args arg;
 			strcpy(arg.name, "subvol");
 			arg.fd = DirDs[0];
-			strcpy(arg.name, DirPaths[0].c_str());
+		//	strcpy(arg.name, DirPaths[0].c_str());
 			Unres ( ioctl( DirDs[0], BTRFS_IOC_SUBVOL_CREATE, &arg ) == -1, "Cannot create subvolume." );
 			
 			__u64 flags = 0;
