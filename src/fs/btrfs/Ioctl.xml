@@ -398,9 +398,12 @@
 			int fd = open(MountPoint, O_DIRECTORY);
 			Unres ( fd == -1, "Cannot open MountPoint descriptor." );
 			
-			btrfs_ioctl_vol_args arg;
-			strcpy(arg.name, "+10000");
+			btrfs_ioctl_vol_args arg, arg1;
+			int res2;
+			strcpy(arg.name, "max");
+			strcpy(arg1.name, "-20m");
 			res = ioctl( fd, BTRFS_IOC_RESIZE, &arg);
+			res2 = ioctl( fd, BTRFS_IOC_RESIZE, &arg1);
 			int my_errno = errno;
 			
 			close(fd);
@@ -410,7 +413,7 @@
 				Error("Mount failed!");
 				_TestStatus = Fatal;
 			}
-			if( res == -1 )
+			if( res == -1 || res2 == -1)
 			{
 				if( PartitionManager::IsOptionEnabled("ro") )
 				{
@@ -422,6 +425,7 @@
 					Fail(true, "Cannot resize partition.");
 				}
 			}
+			
 			
 		</Code>
 	</Test>
