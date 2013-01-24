@@ -23,7 +23,8 @@
 
 <TestSet Name="fallocate">
 	<Requires>fcntl.h</Requires>
-	<Requires>linux/falloc.h</Requires>	
+	<Requires>linux/falloc.h</Requires>
+	<Requires>linux/version.h</Requires>
 	<Test Name="FallocateNormalAlloc" FaultSimulationReady="true">
 		<Description>fallocate() allocates and initializes to zero the disk space within the range specified by offset and len.</Description>
 		<File count="1"/>
@@ -45,6 +46,7 @@
 		<Description>Specifying  the  FALLOC_FL_PUNCH_HOLE flag in mode deallocates space (i.e., creates a hole) in the byte range starting at offset and continuing for len bytes</Description>
 		<File count="1"/>
 		<Code>
+			#if  LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)
 			const string buf = "1234";
 			Unres( write(FDs[0], buf.c_str(), buf.size()) == -1, "Cannot write to file." );
 			
@@ -54,7 +56,10 @@
 			
 			Unres( fstat(FDs[0], &st) == -1, "Cannot stat file." );
 			
-			Fail ( st.st_size != (int)buf.size(), "File size is changed.");			
+			Fail ( st.st_size != (int)buf.size(), "File size is changed.");		
+			#else
+			Unsupp("Kernel version doesn't support this operation.");	
+			#endif
 		</Code>
 	</Test>
 	<FaultSimulation>
