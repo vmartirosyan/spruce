@@ -38,11 +38,12 @@ public:
 	{
 		MountDebugFS();
 	}
-	void ProcessLeakCheckerOutput()
+	void ProcessLeakCheckerOutput(string fs)
 	{
-		int status = Success;
+		//int status = Success;
 		try
 		{
+			/*
 			int fd = -1;
 			if((fd = open(LogFilePath.c_str(), O_RDWR)) == -1)
 			{
@@ -60,88 +61,88 @@ public:
 				throw Exception(string("ftruncate failed"));
 			}
 			
-			close(fd);
+			close(fd);*/
 			
 			ofstream of(LogFilePath.c_str(), ios_base::app);
-			// First process the possible leaks
-			ifstream in_file((DebugFSPath + "/kedr_leak_check/possible_leaks").c_str());
-			string line;
-			getline(in_file, line);
-			while (in_file.good() && !in_file.eof())
-			{					
-				if ( line.find("Address:") == string::npos )
-				{
-					status = Fail;
-					getline(in_file, line);
-					continue;
-				}
-
-				cerr << "Leak checker. Adding item." << endl;
-				of << "\t<Item Name=\"PossibleLeak\" Id=\"" << rand() << "\">\n\t\t<Status>Failed</Status><Output>";
-
-				string Data;
-				do
-				{
-					//process line to valid xml
-					//cerr << "Line: " << line << endl;
-					size_t pos = 0;
-					while ( ( pos = line.find("<", pos ) ) != string::npos )
-					{
-						line = line.replace(pos, 1, "&lt;");
-					}
-					
-					Data += line + "\n";
-					
-					getline(in_file, line);
-				}
-				while(line.find("Address:") == string::npos && !in_file.eof());
-				
-				// Write data
-				of << Data << "</Output>\n\t</Item>";				
-			}
-			in_file.close();	
 			
-			// Then the unallocated frees will come
-			in_file.open((DebugFSPath + "/kedr_leak_check/unallocated_frees").c_str());
-			getline(in_file, line);
-			while (in_file.good() && !in_file.eof())
-			{					
-				if ( line.find("Address:") == string::npos )
-				{
-					status = Fail;
-					getline(in_file, line);
-					continue;
-				}
+			UnixCommand grep("grep");
+			vector<string> grepArgs;
+			
+			grepArgs.push_back("-E");
+			grepArgs.push_back("Possible leaks:[[:space:]]+[1-9][0-9]*");
+			grepArgs.push_back(DebugFSPath + string("/kedr_leak_check/") + fs + "/info");
 
-				cerr << "Leak checker. Adding item." << endl;
-				of << "\t<Item Name=\"UnallocatedFree\" Id=\"" << rand() << "\">\n\t\t<Status>Failed</Status><Output>";
-
-				string Data;
-				do
-				{
-					//process line to valid xml
-					//cerr << "Line: " << line << endl;
-					size_t pos = 0;
-					while ( ( pos = line.find("<", pos ) ) != string::npos )
-					{
-						line = line.replace(pos, 1, "&lt;");
-					}
-					
-					Data += line + "\n";
-					
-					getline(in_file, line);
-				}
-				while(line.find("Address:") == string::npos && !in_file.eof());
-				
-				// Write data
-				of << Data << "</Output>\n\t</Item>";
-			}
-			in_file.close();
-			if (status == Success)
+			ProcessResult * resPosLeaks = grep.Execute(grepArgs);
+			
+			grepArgs.clear();
+			grepArgs.push_back("-E");
+			grepArgs.push_back("Unallocated frees:[[:space:]]+[1-9][0-9]*");
+			grepArgs.push_back(DebugFSPath + string("/kedr_leak_check/") + fs + "/info");
+			ProcessResult * resUnallocFrees = grep.Execute(grepArgs);
+			
+			if(resPosLeaks->GetStatus() == 0 || resUnallocFrees->GetStatus() == 0)
 			{
-				of << "\t<Item Name=\"LeakChecker\" Id=\"" << rand() << "\">\n\t\t<Status>Success</Status><Output>No leaks or unallocated frees were found</Output></Item>";
+				of << "\t<Item Name=\"PossibleLeak\" Id=\"" << rand() << "\">\n\t\t<Status>Failed</Status><Output>";
 			}
-			of << "</Module>";
+			else
+			{
+				of << "\t<Item Name=\"PossibleLeak\" Id=\"" << rand() << "\">\n\t\t<Status>Success</Status><Output>";		
+			}
+
+			UnixCommand cat("cat");
+			vector<string> catArgs;
+			catArgs.push_back(DebugFSPath + string("/kedr_leak_check/") + fs + "/info");
+			ProcessResult * res = cat.Execute(catArgs);
+			if (res->GetStatus() == Success)
+			{
+				string resOut = res->GetOutput();
+				processXml(resOut);
+				of << resOut << endl;
+			}
+			//string str = res.GetOutput();
+			//string num = str.substr(string("Possible leaks: ").length(), str.length() - string("Possible leaks: ").length());
+
+			if(resPosLeaks->GetStatus() == 0) //
+			{
+				catArgs.clear();
+				catArgs.push_back(DebugFSPath + string("/kedr_leak_check/") + fs + "/possible_leaks");
+				delete res;
+				res = cat.Execute(catArgs);
+				string resOut = res->GetOutput();
+				processXml(resOut);
+				of << resOut << endl;
+				
+				if(res->GetStatus() == Success)
+				{
+					string resOut = res->GetOutput();
+					processXml(resOut);
+					of << resOut << "\n";
+				}
+				else
+				{
+					
+				}
+			}
+			
+
+			if(resUnallocFrees->GetStatus() == 0)
+			{
+				catArgs.clear();
+				catArgs.push_back(DebugFSPath + string("/kedr_leak_check/") + fs + "/unallocated_frees");
+				delete res;
+				res = cat.Execute(catArgs);
+				if(resUnallocFrees->GetStatus() == Success)
+				{
+					string resOut = resUnallocFrees->GetOutput();
+					processXml(resOut);
+					of << resOut << "\n";
+				}
+				else
+				{
+				}
+			}
+			of << "</Output></Item></Module>" << endl;
+			
 			of.close();
 			
 		}
@@ -186,5 +187,27 @@ protected:
 			throw Exception("Error executing mount. " + (res ? res->GetOutput() : ""));
 			
 		return true;
+	}
+	
+	void replaceXmlEl(string &str, string val1, string val2)
+	{
+		size_t pos = -1;
+		while ( true )
+		{
+			pos = str.find(val1.c_str(), pos + 1);
+			if ( pos == string::npos )
+				break;
+				//cout<<"first  "<<pos<<endl;
+			str.replace(pos, 1, val2.c_str());
+		}	
+	}
+	void processXml(string &str)
+	{
+		replaceXmlEl(str, "&", "&amp;");
+		replaceXmlEl(str, "<", "&lt;");
+		replaceXmlEl(str, ">", "&gt;");
+		replaceXmlEl(str, "'", "&apos;");
+		replaceXmlEl(str, "\"", "&quot;");
+		
 	}
 };
