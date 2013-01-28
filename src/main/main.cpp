@@ -416,7 +416,12 @@ int main(int argc, char ** argv)
 				do
 				{
 					MountOptions.push_back(pm.GetCurrentMountOptions());
-					PS = pm.PreparePartition();					
+					
+					vector<string> mkfsArgs;
+					if((*fs).compare("ext4") == 0)
+						mkfsArgs.push_back("-O mmp");
+					
+					PS = pm.PreparePartition();				
 					if ( PS == PS_Fatal  )
 					{
 						cerr << "Fatal error raised while preparing partition." << endl;
@@ -450,8 +455,6 @@ int main(int argc, char ** argv)
 						continue;
 					}
 					UnixCommand * command = new UnixCommand((INSTALL_PREFIX"/bin/" + ModuleBin).c_str());
-					
-					
 					
 					string FileName = logfolder + "/" + *fs + "_" + *module + "_" + pm.GetCurrentMountOptions() + "_log.xml";
 					
@@ -519,10 +522,38 @@ int main(int argc, char ** argv)
 					// Process the memory leak checker output
 					if ( PerformLeakCheck && kedr.IsRunning() )
 					{
+						int fd = -1;
+						if((fd = open(FileName.c_str(), O_RDWR)) == -1)
+						{
+							throw Exception(string("open log file failed"));
+						}
+						
+						struct stat sb;
+						if(fstat(fd, &sb) == -1)
+						{
+							throw Exception(string("stat failed"));
+						}
+						
+						if(ftruncate(fd, sb.st_size - 9) == -1)
+						{
+							throw Exception(string("ftruncate failed"));
+						}
+						
+						close(fd);
+						
 						if(PartitionManager:: ReleasePartition(MountAt) && kedr.UnloadModule(*fs)) 
 						{
 							LeakChecker leak_check(FileName);
-							leak_check.ProcessLeakCheckerOutput();
+							leak_check.ProcessLeakCheckerOutput(*fs);
+						}
+						else
+						{
+							/*of.open(FileName.c_str(), ios_base::app);
+							of << "\t<Item Name=\"PossibleLeak\" Id=\"" << rand() << "\">\n\t\t<Status>Failed</Status>" << endl;
+							of << "<Output>";
+							of << "";
+							of << "</Output>" << endl;
+							of.close();*/
 						}
 					}
 					
