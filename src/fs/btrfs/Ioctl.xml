@@ -358,7 +358,7 @@
              unlink(FileNames[1].c_str());
             
             int fd = open(FileNames[3].c_str(), O_RDWR);
-            syncfs(fd);
+            sync();
             
             int status = ioctl( fd, BTRFS_IOC_DEFRAG, NULL);
              close(fd);
