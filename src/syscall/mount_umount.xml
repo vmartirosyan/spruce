@@ -405,16 +405,25 @@
 		</Code>
 	</Test>
 	<Test Name="MountInval1">
+		<Header>
+			const char * tmp_mount_dir = "/tmp/spruce_test_mount_dir";
+			Unres (mkdir(tmp_mount_dir, 0777) == -1, "Cannot create a mount point"); 
+		</Header>		
 		<Description>Mount: a  remount  (MS_REMOUNT) was  attempted,  but  source  was not already mounted on target.</Description>
 		<Code>
 			Unres(! strcmp(DeviceName, ""), "No device name is provided.");		
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			// sets MS_RDONLY flags for read-only mounted device just in case
 			int rdonlyflag = 0;
+			system("mount");
 			if(PartitionManager::IsOptionEnabled("ro"))
 				rdonlyflag |= MS_RDONLY;
-			ErrorTest(mount( DeviceName, "/tmp", FileSystem, MS_REMOUNT | rdonlyflag, 0 ), -1, EINVAL);
+			
+			ErrorTest(mount( DeviceName, tmp_mount_dir, FileSystem, MS_REMOUNT | rdonlyflag, 0 ), -1, EINVAL);
 		</Code>
+		<Footer>
+			rmdir(tmp_mount_dir);
+		</Footer>
 	</Test>
 	<Test Name="MountInval2">
 		<Description>Mount: a move (MS_MOVE) was attempted, but source was not  a  mount point.</Description>

@@ -149,6 +149,8 @@ struct FSimInfo
 
 #define ELoopTest(func_call, error_val)\
 {\
+	if ( PartitionManager::IsOptionEnabled("ro") )\
+		Unsupp("Read-only file system.");\
 	const char * Link = (FilePaths[0] + "_link").c_str();\
 	Unres( symlink(FilePaths[0].c_str(), Link) == -1, "Cannot create symlink on old file.");\
 	Unres( unlink(FilePaths[0].c_str()) == -1, "Cannot remove old_file. ");\
@@ -165,6 +167,8 @@ struct FSimInfo
 
 #define ELoopDirTest(func_call, error_val)\
 {\
+	if ( PartitionManager::IsOptionEnabled("ro") )\
+		Unsupp("Read-only file system.");\
     string dirPath = "TestDirectory/";\
     string link1 = "link1";\
     string link2 = "link2";\
@@ -228,6 +232,8 @@ struct FSimInfo
 
 #define EMaxFilesOpenTest(func_call, error_val)\
 {\
+	if ( PartitionManager::IsOptionEnabled("ro") )\
+		Unsupp("Read-only file system.");\
 	long max_files_open=sysconf(_SC_OPEN_MAX);\
 	char path[50];\
 	sprintf(path, "%s", "max_files_test");\

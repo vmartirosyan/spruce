@@ -260,6 +260,10 @@ public:
 	<xsl:for-each select="Test">
 	int <xsl:value-of select="@Name" />Func(vector&lt;string>)
 	{
+		<xsl:if test="@FaultSimulationReady='true'">
+		if ( PartitionManager::IsOptionEnabled("ro") )
+			Unsupp("Read-only file system.");
+		</xsl:if>
 		Status _TestStatus = Success;
 		bool _InFooter = false;	
 		if ( _InFooter == true )
@@ -365,6 +369,9 @@ public:
 		}
 		catch (Exception e)
 		{
+			if ( PartitionManager::IsOptionEnabled("ro") &amp;&amp; e.GetErrno() == EROFS )
+				Unsupp("Read only file system.");
+			
 			Error("Exception was thrown: ", e.GetMessage(), Unresolved);
 		}
 Footer: 

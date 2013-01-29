@@ -48,6 +48,8 @@
 	<Test Name="CreatMaxProcessFilesOpen">
 		<Description>The process already has the maximum number of files open.</Description>			
 		<Code>
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
 			EMaxFilesOpenTest(creat(path, S_IRUSR), -1);
 		</Code>
 	</Test>
