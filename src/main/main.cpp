@@ -303,7 +303,7 @@ int main(int argc, char ** argv)
 		UnixCommand lsb_release("lsb_release");		
 		args.clear();
 		args.push_back("-si");
-		res = uname.Execute(args);
+		res = lsb_release.Execute(args);
 		if ( res == NULL || res->GetStatus() )
 		{
 			cerr << "Cannot obtain distribution name." << endl;
@@ -314,7 +314,7 @@ int main(int argc, char ** argv)
 		
 		args.clear();
 		args.push_back("-sr");
-		res = uname.Execute(args);
+		res = lsb_release.Execute(args);
 		if ( res == NULL || res->GetStatus() )
 		{
 			cerr << "Cannot obtain distribution version." << endl;
