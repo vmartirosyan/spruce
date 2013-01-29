@@ -110,6 +110,8 @@
 	<Test Name="OpenAtENXIO1">
 		<Description> O_NONBLOCK | O_WRONLY is set, the named file is a  FIFO  and  no process has the file open for reading.</Description>
 		<Code>
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
 			const char * FileName = "OpenAtNoDev_FIFO";
 			Unres( mkfifo(FileName, 0666) == -1, "Cannot create FIFO.");
 			Directory d(".");
@@ -118,7 +120,9 @@
 	</Test>
 	<Test Name="OpenAtENXIO2">
 		<Description>pathname  refers  to  a device special file and no corresponding device exists.</Description>
-		<Code>			
+		<Code>
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
 			if( PartitionManager::IsOptionEnabled("nodev") )
 			{
 				Error("Device files not supported", Unsupported);

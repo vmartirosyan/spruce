@@ -22,21 +22,27 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
+#include <errno.h>
 #include <string>
 using std::string;
 
 class Exception 
 {
 public:
-	Exception(string message) : _message(message) {}
-	Exception(Exception const & other) : _message(other._message) {}
+	Exception(string message) : _message(message), _errno(errno)  {}
+	Exception(Exception const & other) : _message(other._message), _errno(other._errno) {}
 	virtual ~Exception() {}
 		
 	virtual string GetMessage() const 
 	{
 		return _message;
 	}	
+	virtual int GetErrno() const 
+	{
+		return _errno;
+	}	
 private:
 	string _message;
+	int _errno;
 };
 #endif /* EXCEPTION_H */

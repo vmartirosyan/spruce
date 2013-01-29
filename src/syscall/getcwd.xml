@@ -77,6 +77,8 @@
 	<Test Name="GetcwdErrNoEnt">
 		<Description>The current working directory has been unlinked.</Description>		
 		<Code>
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
 			const char * path = "getcwdtestdir";
 			Unres (mkdir(path, 0777) != 0, "Can not make directore.");
 			
