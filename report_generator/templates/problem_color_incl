@@ -1,0 +1,1 @@
+<TMPL_IF severity_harmless>gray</TMPL_IF><TMPL_IF severity_failed>red</TMPL_IF><TMPL_IF severity_warning>yellow</TMPL_IF><TMPL_IF severity_fip>green</TMPL_IF><TMPL_IF severity_notice>grey</TMPL_IF>
