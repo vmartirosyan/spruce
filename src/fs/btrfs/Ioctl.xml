@@ -24,6 +24,7 @@
 <TestSet Name="Ioctl">
 	<Requires>sys/ioctl.h</Requires>
 	<Requires>sys/types.h</Requires>
+	<Requires>sys/statvfs.h</Requires>
 	<Requires>linux/fs.h</Requires>
 	<Requires>linux/version.h</Requires>
 	<Requires>fcntl.h</Requires>
@@ -294,66 +295,84 @@
 	</Test>
 	
 	<Test Name="DefragFile">
-		<Description>Defragment file.</Description>
-		<Code>
-			_TestStatus = Shallow;
-			uint64_t DeviceSize = 0;
-			Unres ( (DeviceSize = PartitionManager::GetDeviceSize(DeviceName)) == 0, "Cannot get device size");
-			
-			Unres ( system("rm -rf *") != 0, "Cannot clear partition");
-			
-			const string FileNames[] = {
-				"Btrfs_ioctl_Defrag_pad",
-				"Btrfs_ioctl_Defrag_1",
-				"Btrfs_ioctl_Defrag_2",
-				"Btrfs_ioctl_Defrag_3" };
-				
-			uint64_t FreeSpace = 1024*1024*1024;
-			
-			if ( FreeSpace >= DeviceSize )
-			{
-				// No need in pad file in this case.
-				FreeSpace = DeviceSize;
-			}
-			else
-			{	
-				
-				File file0(FileNames[0]);
-				Unres( fallocate(file0.GetFileDescriptor(), 0, 0, DeviceSize - FreeSpace ) == -1, "Cannot allocate space for pad file");
-				close(file0.GetFileDescriptor());	
-			}
-			
-			
-			File file1(FileNames[1]);
-			Unres( fallocate(file1.GetFileDescriptor(), 0, 0, FreeSpace / 3) == -1, "Cannot allocate space for 1st file");
-			close(file1.GetFileDescriptor());			
-			
-			File file2(FileNames[2]);
-			Unres( fallocate(file2.GetFileDescriptor(), 0, 0, FreeSpace / 3) == -1, "Cannot allocate space for 2nd file");
-			close(file2.GetFileDescriptor());			
-			
-			Unres (unlink(FileNames[1].c_str()) == -1, "Cannot remove file1.");
-						
-			char * buf = new char[FreeSpace / 3 + 1024];
-			File file3(FileNames[3]);
-			write(file3.GetFileDescriptor(), buf, FreeSpace / 3 + 1024 );
-			delete buf;
-			fsync(file3.GetFileDescriptor());
-			close(file3.GetFileDescriptor());
-			
-			Unres (unlink(FileNames[2].c_str()) == -1, "Cannot remove file2.");
-						
-			int fd = open(FileNames[3].c_str(), O_RDWR);
-			btrfs_ioctl_defrag_range_args arg;
-			arg.flags = BTRFS_DEFRAG_RANGE_COMPRESS;
-			int status = ioctl( fd, BTRFS_IOC_DEFRAG, &arg);
-			close(fd);
-			unlink(FileNames[3].c_str());
-			
-			Fail ( status == -1, "Cannot defragment file." );				
-			
-		</Code>
-	</Test>
+        <Description>Defragment file.</Description>
+        <Code>
+            uint64_t DeviceSize = 0;
+            // Get the real free space.
+            struct statvfs stat;
+             Unres ( statvfs(".", &stat ) == -1, "Cannot obtain free space." );
+            DeviceSize = stat.f_bavail * stat.f_bsize;
+            //Unres ( (DeviceSize = PartitionManager::GetDeviceSize(DeviceName)) == 0, "Cannot get device size");
+             
+            Unres ( system("rm -rf *") != 0, "Cannot clear partition");
+            
+            const string FileNames[] = {
+                "Btrfs_ioctl_Defrag_pad",
+                 "Btrfs_ioctl_Defrag_1",
+                "Btrfs_ioctl_Defrag_2",
+                "Btrfs_ioctl_Defrag_3" };
+                
+            uint64_t FreeSpace = 1024*1024*1024;
+             File file0(FileNames[0]);
+            
+            
+            if ( FreeSpace >= DeviceSize )
+            {
+                // No need in pad file in this case.
+                FreeSpace = DeviceSize;
+             }
+            else
+            {    
+                Unres( fallocate(file0.GetFileDescriptor(), 0, 0, DeviceSize - FreeSpace ) == -1, "Cannot allocate space for pad file");
+                fsync(file0.GetFileDescriptor());
+                 close(file0.GetFileDescriptor());    
+            }
+            
+            
+            File file1(FileNames[1]);
+            Unres( fallocate(file1.GetFileDescriptor(), 0, 0, FreeSpace / 3) == -1, "Cannot allocate space for 1st file");
+             fsync(file1.GetFileDescriptor());
+            close(file1.GetFileDescriptor());            
+            
+            File file2(FileNames[2]);
+            Unres( fallocate(file2.GetFileDescriptor(), 0, 0, FreeSpace / 3) == -1, "Cannot allocate space for 2nd file");
+             fsync(file2.GetFileDescriptor());
+            close(file2.GetFileDescriptor());            
+            
+            Unres (unlink(FileNames[1].c_str()) == -1, "Cannot remove file1.");
+                        
+             char * buf = new char[FreeSpace / 3 + 1024];
+            Unres(buf == NULL, "Cannot allocate memory.");
+            File file3(FileNames[3]);
+            write(file3.GetFileDescriptor(), buf, FreeSpace / 3 + 1024 );
+             delete buf;
+            fsync(file3.GetFileDescriptor());
+            close(file3.GetFileDescriptor());
+            
+            Unres (unlink(FileNames[2].c_str()) == -1, "Cannot remove file2.");
+             
+            // Try to allocate space more than (FreeSpace / 3).
+            // As the filesystem if fragmented it must not be possible.
+            File file10(FileNames[1]);
+            Unres( fallocate(file10.GetFileDescriptor(), 0, 0, FreeSpace / 3 + 1024) == 0, "It was possible to allocate space before defragmentation.");
+             unlink(FileNames[1].c_str());
+            
+            int fd = open(FileNames[3].c_str(), O_RDWR);
+            syncfs(fd);
+            
+            int status = ioctl( fd, BTRFS_IOC_DEFRAG, NULL);
+             close(fd);
+            unlink(FileNames[3].c_str());
+            
+            // Try to allocate space more than (FreeSpace / 3).
+            // It must be possible as the filesystem is fragmented.
+             File file11(FileNames[1]);
+            Unres( fallocate(file11.GetFileDescriptor(), 0, 0, FreeSpace / 3 + 1024) == -1, "It was not possible to allocate space after defragmentation.");
+            
+             Fail ( status == -1, "Cannot defragment file." );                
+            
+        </Code>
+    </Test>
 	<Test Name="DefragDirectory">
 		<Description>Defragment the entire b-tree under the directory.</Description>
 		<Dir count="1"/>
