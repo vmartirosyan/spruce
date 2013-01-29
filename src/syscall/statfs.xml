@@ -1,0 +1,102 @@
+<!--    statfs.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="statfs">	
+	<Test Name="StatfsNormal" FaultSimulationReady="true">
+		<Description>Get file system statistics.</Description>
+		<File count="1"/>
+		<Code>	
+			Unres ( !strcmp(MountPoint, "") || !strcmp(FileSystem, "") , "Either MountPoint or FileSystem variables are not defined");
+			
+			if ( FileSystemTypesMap[FileSystem] == -1 )
+			{
+				Error("statfs is not supported by " + static_cast<string>(FileSystem), Unsupported);
+			}
+			
+			struct statfs buf;
+			EnableFaultSim();
+			Fail ( statfs(MountPoint, &buf) != 0 , "statfs failed.");
+			
+			Fail ( buf.f_type != FileSystemTypesMap[FileSystem] , "statfs returned wrong FS type.");
+			
+			;
+		</Code>
+	</Test>
+	<Test Name="StatfsNoAccess">
+		<Description>Search permission is denied for one of the directories in the path prefix of path.</Description>
+		<Dir count="1">
+			<File count="1"/>
+		</Dir>
+		<Code>
+			struct statfs st;
+			Unres( chmod(DirPaths[0].c_str(), 0000)==-1, "Cannot change directory permissions." );
+			
+			ENoAccessTest( statfs( DirFilePaths[0].c_str(), &st ), -1 );
+		</Code>
+	</Test>
+	<Test Name="StatfsFault">
+		<Description>Bad address.</Description>
+		<Code>
+			ErrorTest( statfs( ".", reinterpret_cast<struct statfs*>(-1) ), -1, EFAULT );
+		</Code>
+	</Test>
+	<Test Name="StatfsLoop">
+		<Description>Too many symbolic links encountered while traversing the path.</Description>
+		<File count="1"/>
+		<Code>
+			struct statfs st;
+			ELoopTest( statfs( FilePaths[0].c_str(), &st ), -1 );
+		</Code>
+	</Test>
+	<Test Name="StatfsNameTooLong">
+		<Description>File name too long.</Description>
+		<File count="1"/>
+		<Code>
+			struct statfs st;
+			ENameTooLongTest( statfs( path, &st ), -1 );
+		</Code>
+	</Test>
+	<Test Name="StatfsNoEnt1">
+		<Description>A component of path does not exist.</Description>
+		<Code>
+			struct statfs st;
+			ErrorTest( statfs( "non_existing_file", &st ), -1, ENOENT );
+		</Code>
+	</Test>
+	<Test Name="StatfsNoEnt2">
+		<Description>Path is an empty string.</Description>
+		<Code>
+			struct statfs st;
+			ErrorTest( statfs( "", &st ), -1, ENOENT );
+		</Code>
+	</Test>
+	<Test Name="StatfsNotDir">
+		<Description>A component of the path prefix of path is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+			struct statfs st;
+			ENotDirTest( statfs( path, &st ), -1 );
+		</Code>
+	</Test>
+
+</TestSet>
