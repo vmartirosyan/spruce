@@ -268,6 +268,71 @@ int main(int argc, char ** argv)
 			return FAULT;
 		}
 		
+		// Generate the main log file. 
+		// It should contain the distribution name, version and the kernel version.
+		ofstream main_xml((logfolder + "/main.xml").c_str());
+		
+		string arch = "Unknown";
+		string distro = "Unknown";
+		string distro_ver = "Unknown";
+		string kernel = "Unknown";
+		
+		UnixCommand uname("uname");
+		vector<string> args;
+		args.push_back("-m");
+		ProcessResult * res = uname.Execute(args);
+		if ( res == NULL || res->GetStatus() )
+		{
+			cerr << "Cannot obtain architecture." << endl;
+		}
+		else
+			arch = res->GetOutput();
+		delete res;
+		
+		args.clear();
+		args.push_back("-r");
+		res = uname.Execute(args);
+		if ( res == NULL || res->GetStatus() )
+		{
+			cerr << "Cannot obtain kernel version." << endl;
+		}
+		else
+			kernel = res->GetOutput();
+		delete res;
+		
+		UnixCommand lsb_release("lsb_release");		
+		args.clear();
+		args.push_back("-si");
+		res = uname.Execute(args);
+		if ( res == NULL || res->GetStatus() )
+		{
+			cerr << "Cannot obtain distribution name." << endl;
+		}
+		else
+			distro = res->GetOutput();
+		delete res;
+		
+		args.clear();
+		args.push_back("-sr");
+		res = uname.Execute(args);
+		if ( res == NULL || res->GetStatus() )
+		{
+			cerr << "Cannot obtain distribution version." << endl;
+		}
+		else
+			distro_ver = res->GetOutput();
+		delete res;
+				
+		
+		main_xml << "<Main>\n" 
+				<< "\t<Distribution>" + distro + "</Distribution>\n"
+				<< "\t<DistroVersion>" + distro_ver + "</DistroVersion>\n"
+				<< "\t<Arch>" + arch + "</Arch>\n"
+				<< "\t<Kernel>" + kernel + "</Kernel>\n"
+				<< "</Main>";
+				
+		main_xml.close();
+		
 		// Determine the log level
 		string loglevel = "warning";
 		if ( configValues.find("loglevel") != configValues.end() )
@@ -305,7 +370,7 @@ int main(int argc, char ** argv)
 		
 		// A small hack for firefox to overcome a security problem
 		// Copy the transformation file to the log folder
-		vector<string> args;
+		args.clear();
 		
 		args.push_back("cp");
 		args.push_back("-r");
