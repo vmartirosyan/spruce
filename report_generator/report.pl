@@ -1346,7 +1346,9 @@ sub spruce_report_parse_error($$)
 # Map of some Spruce test statuses into severity strings.
 my %spruce_status_severity_map = (
     "Success" => "Passed",
-    "Shallow" => "Passed"
+    "Shallow" => "Passed",
+    "Timeout" => "Time expired",
+    "Unknown" => "Unresolved"
 );
 
 # Parse one Spruce log file
@@ -1436,7 +1438,7 @@ sub spruce_parse_log_file($$)
     #
     # Detect _32 suffix from filename and interpret it as 32-bit tests on 64-bit arch.
     my $test_32_on_64 = 0;
-    if(index ($filename_base, "${fs}_${test_suite}_32") == 0)
+    if(index ($filename_base, "32_${mount_opts}_log") > 0)
     {
         $test_32_on_64 = 1;
         
