@@ -61,7 +61,7 @@
 					<xsl:for-each select="//Modules/Module">
 						<td>
 							<xsl:variable name="LogFile"><xsl:value-of select="$LogFolder"/>/<xsl:value-of select="/SpruceDashboard/@FS"/>_<xsl:value-of select="."/>_<xsl:value-of select="$MountOptions"/>_log.xml</xsl:variable>
-							<xsl:variable name="LogFileHtml"><xsl:value-of select="$LogFolder"/>/<xsl:value-of select="/SpruceDashboard/@FS"/>_<xsl:value-of select="."/>_<xsl:value-of select="$MountOptions"/>_log.html</xsl:variable>
+							<xsl:variable name="LogFileHtml"><xsl:value-of select="/SpruceDashboard/@FS"/>_<xsl:value-of select="."/>_<xsl:value-of select="$MountOptions"/>_log.html</xsl:variable>
 							<xsl:choose>
 								<xsl:when test="document($LogFile)">
 									<a>
