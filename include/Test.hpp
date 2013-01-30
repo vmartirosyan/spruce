@@ -133,6 +133,7 @@ private:
 	vector<TestResult*> _results;
 };
 
+/*
 class Test : public Process
 {
 public:	
@@ -181,5 +182,5 @@ public:
 private:
 	vector<Test *> _tests;
 };
-
+*/
 #endif /* TEST_BASE_H */

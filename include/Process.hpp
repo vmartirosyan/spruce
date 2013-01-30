@@ -38,6 +38,7 @@ enum ProcessMode
 #include <unistd.h>
 #include <fcntl.h>
 #include <fstream>
+#include <stdlib.h>
 using namespace std;
 
 class ProcessResult
@@ -96,7 +97,15 @@ public:
 	virtual ProcessResult * Execute( int (Process::* func) (vector<string>), vector<string> args = vector<string>() );
 	
 	Process():
-		EnableAlarm(false)
+		EnableAlarm(false),
+		_Timeout(0)
+	{
+		
+	}
+	
+	Process(int timeout):
+		EnableAlarm(true),
+		_Timeout(timeout)
 	{
 		
 	}
@@ -108,7 +117,8 @@ public:
 protected:
 	bool EnableAlarm;
 	static int Level;
-	virtual int Main(vector<string>) { cerr << "Main not imeplemented."; return Unsupported; }
+	int _Timeout;
+	virtual int Main(vector<string>) { cerr << "Main not implemented."; return Unsupported; }
 };
 
 class BackgroundProcess : public Process
