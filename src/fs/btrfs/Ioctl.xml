@@ -786,8 +786,8 @@ struct btrfs_ioctl_get_dev_stats {
 			_TestStatus = Shallow;
 			btrfs_ioctl_get_dev_stats arg;
 			Fail( ioctl( FDs[0], BTRFS_IOC_GET_DEV_STATS, &arg) == -1, "Cannot get device stats.");
-		</Code>
 #endif
+		</Code>
 	</Test>
 	
  <!-- Only supported for 3.5 kernel-->
