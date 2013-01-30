@@ -53,14 +53,14 @@ end
 test read_write ReadWriteDirect
 expected test_suite syscall
 expected fs btrfs
-expected arch x86_64
+version l kernel_version 2.6.35
 
 expected severity Failed
 
 matched test_messages Error: Invalid argument
 
 attribute comment [comment required]
-
+# The Read syscall with O_DIRECT option is not supported in kenels version less than 2.6.35
 # Currently, ReadWriteDirect2 test has same things but with different alignment.
 # Perhaps, it was created for debugging and should be removed.
 # TODO: fix Spruce.
