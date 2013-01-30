@@ -470,8 +470,8 @@
 			{
 				Error("Get-set pipe size failed", Fail);
 			}
+#endif
 		</Code>
-#endif 		
 	</Test>
 	<Test Name="FcntlFDDupWithClExFlag" FaultSimulationReady="true">
 		<Description>.</Description>
