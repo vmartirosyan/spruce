@@ -170,7 +170,7 @@ int main(int argc, char ** argv)
 		
 			ofstream of(argv[1], ios_base::app);
 			
-			of &lt;&lt; "&lt;Module Name=\"<xsl:value-of select="@Name"/>\">\n" &lt;&lt; Results.ToXML() &lt;&lt; "&lt;/Module>";
+			of &lt;&lt; "&lt;Module Name=\"" &lt;&lt; argv[0] &lt;&lt; "\">\n" &lt;&lt; Results.ToXML() &lt;&lt; "&lt;/Module>";
 			
 			of.close();
 			

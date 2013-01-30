@@ -259,15 +259,17 @@ public:
 	}
 	<xsl:for-each select="Test">
 	int <xsl:value-of select="@Name" />Func(vector&lt;string>)
-	{
-		<xsl:if test="@FaultSimulationReady='true'">
-		if ( PartitionManager::IsOptionEnabled("ro") )
-			Unsupp("Read-only file system.");
-		</xsl:if>
+	{		
 		Status _TestStatus = Success;
 		bool _InFooter = false;	
 		if ( _InFooter == true )
 			_InFooter = false;
+			
+		<xsl:if test="@FaultSimulationReady='true'">
+		if ( PartitionManager::IsOptionEnabled("ro") )
+			Unsupp("Read-only file system.");
+		</xsl:if>
+		
 		<xsl:value-of select="/TestSet/Header" />
 			
 		<xsl:value-of select="Header" />		
@@ -297,7 +299,7 @@ public:
 			{
 				char buf[5];
 				sprintf(buf, "%d", i);
-				DirPaths[i] = DirPrefix + buf;
+				DirPaths[i] = DirPrefix + "<xsl:value-of select="@Name" />_" +  buf;
 				DirDs[i] = Dirs[i].Open(DirPaths[i], S_IRWXU);
 				if ( DirDs[i] == -1 )
 				{
@@ -310,7 +312,7 @@ public:
 			{
 				char buf[5];
 				sprintf(buf, "%d", i);
-				DirFilePaths[i] = DirPaths[0] + "/" + FilePrefix + buf;
+				DirFilePaths[i] = DirPaths[0] + "/" + FilePrefix + "<xsl:value-of select="@Name" />_" + buf;
 				DirFDs[i] = DirFiles[i].Open(DirFilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
 				if ( DirFDs[i] == -1 )
 				{
@@ -324,7 +326,7 @@ public:
 			{
 				char buf[5];
 				sprintf(buf, "%d", i);
-				DirDirPaths[i] = DirPaths[0] + "/" + DirPrefix + buf;
+				DirDirPaths[i] = DirPaths[0] + "/" + DirPrefix + "<xsl:value-of select="@Name" />_" + buf;
 				DirDDs[i] = DirDirs[i].Open(DirDirPaths[i], S_IRWXU);
 				if ( DirDDs[i] == -1 )
 				{
@@ -353,7 +355,7 @@ public:
 			{
 				char buf[2];
 				sprintf(buf, "%d", i);
-				FilePaths[i] = FilePrefix + buf;
+				FilePaths[i] = FilePrefix + "<xsl:value-of select="@Name" />_" + buf;
 				FDs[i] = Files[i].Open(FilePaths[i], FileMode, FileFlags);
 				if ( FDs[i] == -1 )
 				{

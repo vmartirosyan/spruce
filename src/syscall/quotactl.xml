@@ -25,7 +25,8 @@
 	<GlobalHeader>
 #if QUOTA_ENABLED != 1
 	EmptyTestSet(syscall, quotactl, Unsupported, "quota-tools are not installed.")
-#else	
+#else
+	
 	</GlobalHeader>
 	<Requires>sys/quota.h</Requires>	
 	<Header>
@@ -34,34 +35,25 @@
 #ifndef QFMT_VFS_V0
 #define QFMT_VFS_V0 2
 #endif	
-			char * opts = NULL;
-			opts = getenv("MountOpts");
-			string strOpts = opts;
-			string QuotaFile = MountPoint;
-			int cmd_on;
-			int cmd_off;
+	if ( !PartitionManager::IsOptionEnabled("quota") || PartitionManager::IsOptionEnabled("noquota"))
+		Unsupp("quota mount option is not provided.");
+	if ( PartitionManager::IsOptionEnabled("vfsold") )
+		Unsupp("vfsold quota format not supported.");
+	if ( ! strcmp(FileSystem, "xfs") )
+		Unsupp("Quota tests for XFS are implemented in XFS-specifiec module.");	
+	</Header>
+	<Internal>
+		bool Prepare(string& QuotaFile, int& cmd_on, int& cmd_off )
+		{
+			QuotaFile = MountPoint;
+			
 			UnixCommand* quotacheck;
 			ProcessResult * res;
 			vector<string> args;
-			if ( opts != NULL )
-			{
-				if ( strOpts.find("quota") == string::npos || PartitionManager::IsOptionEnabled("noquota"))
-					Unsupp("quota mount option is not provided.");
-				if ( strOpts.find("vfsold") != string::npos )
-					Unsupp("vfsold quota format not supported.");
-			}
-			else
-				Unsupp("quota mount option is not provided.");
-				
-				
-			Unres( strcmp(DeviceName, "") == 0, "No device name is provided." );
-			Unres( strcmp(MountPoint, "") == 0, "No mount point is provided." );
-			Unres( strcmp(FileSystem, "") == 0, "No file system name is provided." );
-			if ( ! strcmp(FileSystem, "xfs") )
-				Unsupp("Quota tests for XFS are implemented in XFS-specifiec module.");
+			
 			
 			if( PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") || 
-						strOpts.find("usrjquota") != string::npos )
+						!PartitionManager::IsOptionEnabled("usrjquota") )
 			{
 				cmd_on = QCMD(Q_QUOTAON, USRQUOTA);
 				cmd_off = QCMD(Q_QUOTAOFF, USRQUOTA);
@@ -84,12 +76,15 @@
 			
 			res = quotacheck->Execute(args);
 			delete quotacheck;
-			Unres( res == NULL, "Cannot execute 'quotacheck' command to create the quota file." );
-			Unres( res->GetStatus() != Success, "Error executing 'quotacheck'. " + res->GetOutput() );
+			if( res == NULL || res->GetStatus() != Success)
+			{
+				Error("Cannot execute 'quotacheck' command to create the quota file." );
+				return false;
+			}
 			
-			
+		
 			if( PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") ||
-						strOpts.find("usrjquota") != string::npos )
+						!PartitionManager::IsOptionEnabled("usrjquota")  )
 			{
 				QuotaFile += "/aquota.user";
 			}
@@ -97,16 +92,21 @@
 			{
 				QuotaFile += "/aquota.group";
 			}
-	</Header>
+			return true;
+		}
+	</Internal>
 	<Test Name="QuotactlQuotaOnOff" FaultSimulationReady="true">
 		<Description>Turn on and off quotas for a file system.</Description>		
 		<Code>
+			string QuotaFile;
+			int cmd_on, cmd_off;
+			Unres ( Prepare(QuotaFile, cmd_on, cmd_off) == false, "");
+			
 			EnableFaultSim();
 			Fail( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );
 			
 			Fail( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot disable quotas V0." );
 			
-			;
 		</Code>
 	</Test>
 	<Test Name="QuotactlGetSetQuota" FaultSimulationReady="true">
@@ -114,8 +114,13 @@
 		<Code>
 			int cmd_get_quota;
 			int cmd_set_quota;
+			
+			string QuotaFile;
+			int cmd_on, cmd_off;
+			Unres ( Prepare(QuotaFile, cmd_on, cmd_off) == false, "");
+			
 			if(PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") ||
-						strOpts.find("usrjquota") != string::npos )
+						!PartitionManager::IsOptionEnabled("usrjquota") )
 			{
 				cmd_get_quota = QCMD(Q_GETQUOTA, USRQUOTA);
 				cmd_set_quota = QCMD(Q_SETQUOTA, USRQUOTA);
@@ -151,8 +156,13 @@
 		<Code>	
 			int cmd_get_info;
 			int cmd_set_info;
+			
+			string QuotaFile;
+			int cmd_on, cmd_off;
+			Unres ( Prepare(QuotaFile, cmd_on, cmd_off) == false, "");
+			
 			if(PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") || 
-						strOpts.find("usrjquota") != string::npos )
+						!PartitionManager::IsOptionEnabled("usrjquota") )
 			{
 				cmd_get_info = QCMD(Q_GETINFO, USRQUOTA);
 				cmd_set_info = QCMD(Q_SETINFO, USRQUOTA);
@@ -188,8 +198,13 @@
 		<Code>
 			int cmd_get_format;
 			int format;
+			
+			string QuotaFile;
+			int cmd_on, cmd_off;
+			Unres ( Prepare(QuotaFile, cmd_on, cmd_off) == false, "");
+			
 			if(PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") || 
-						strOpts.find("usrjquota") != string::npos )
+						!PartitionManager::IsOptionEnabled("usrjquota") )
 			{
 				cmd_get_format = QCMD(Q_GETFMT, USRQUOTA);
 			}
@@ -210,8 +225,13 @@
 	</Test>
 	<Test Name="QuotactlSync" FaultSimulationReady="true">
 		<Description>Update the on-disk copy of quota usages for a file system.</Description>		
-		<Code>
+		<Code>			
 			_TestStatus = Shallow;
+			
+			string QuotaFile;
+			int cmd_on, cmd_off;
+			Unres ( Prepare(QuotaFile, cmd_on, cmd_off) == false, "");
+			
 			int cmd_sync = QCMD(Q_SYNC, USRQUOTA);
 			EnableFaultSim();
 			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );

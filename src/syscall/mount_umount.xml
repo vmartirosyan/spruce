@@ -37,17 +37,15 @@
 			system(buf);
 			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
 				
-			if(mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1)
-			{
-				Error("Mount failed");
-				_TestStatus = Fail;
-			}
+			Fail (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");
+			
+		</Code>		
+		<Footer>
 			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("Mount failed!");
-				_TestStatus = Fatal;
+				Error("Mount failed!", Fatal);				
 			}
-		</Code>		
+		</Footer>
 	</Test>
 		<Test Name="RemountGeneral" FaultSimulationReady="true">
 		<Description>Trying to remount the device to the same partition(with MS_REMOUNT flag activated)</Description>
@@ -69,13 +67,13 @@
 				Return(Fail);
 			}
 			
-			
+		</Code>
+		<Footer>
 			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("Mount failed!");
-				Return(Fatal);
+				Error("Mount failed!", Fatal);				
 			}
-		</Code>
+		</Footer>
 	</Test>
 		<Test Name="NoATimeGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_NOATIME flag attempted.</Description>
@@ -85,23 +83,17 @@
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			EnableFaultSim();
-			if( !PartitionManager::ReleasePartition(MountPoint) )
-			{
-				Error("Unmount failed!");
-				_TestStatus = Fail;
-			}
-			if(mount( DeviceName, MountPoint, FileSystem, MS_NOATIME, 0) == -1)
-			{
-				Error("Mount with MS_NOATIME flag attempted failed");
-				_TestStatus = Fail;
-			}
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Unmount failed!");
+				
+			Fail(mount( DeviceName, MountPoint, FileSystem, MS_NOATIME, 0) == -1, "Mount with MS_NOATIME flag attempted failed");
+			
+		</Code>
+		<Footer>
 			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("Mount failed!");
-				_TestStatus = Fatal;
+				Error("Mount failed!", Fatal);				
 			}
-		</Code>
-		
+		</Footer>
 	</Test>
 		<Test Name="NoDevGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_NODEV flag attempted.</Description>
@@ -113,19 +105,15 @@
 			EnableFaultSim();
 			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
 			
-	    	if(mount( DeviceName, MountPoint, FileSystem, MS_NODEV, 0) == -1)
-			{
-				Error("Mount with MS_NODEV flag attempted failed");
-				_TestStatus = Fail;
-			}
-			
+	    	Fail (mount( DeviceName, MountPoint, FileSystem, MS_NODEV, 0) == -1,
+				"Mount with MS_NODEV flag attempted failed");
+		</Code>
+		<Footer>
 			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("Mount failed!");
-				_TestStatus = Fatal;
+				Error("Mount failed!", Fatal);
 			}
-		</Code>
-		
+		</Footer>
 	</Test>
 		<Test Name="NoDirATimeGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_NODIRATIME flag attempted.</Description>
@@ -137,18 +125,15 @@
 			EnableFaultSim();
 			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
 			
-			if(mount( DeviceName, MountPoint, FileSystem, MS_NODIRATIME, 0) == -1)
-			{
-				Error("Mount with MS_NODIRATIME flag attempted failed");
-				_TestStatus = Fail;
-			}
+			Fail (mount( DeviceName, MountPoint, FileSystem, MS_NODIRATIME, 0) == -1, "Mount with MS_NODIRATIME flag attempted failed");
+			
+		</Code>
+		<Footer>
 			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 			{
-				Error("Mount failed!");
-				_TestStatus = Fatal;
+				Error("Mount failed!", Fatal);
 			}
-		</Code>
-		
+		</Footer>		
 	</Test>
 	<Test Name="NoExecGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_NOEXEC flag attempted.</Description>

@@ -61,17 +61,16 @@
 	<Test Name="SetGetFlags_All" FaultSimulationReady="true">
 		<Description>Try to set and get flag values. </Description>
 		<File count="1"/>
-		<Header>
+		<Code>
+			_TestStatus = Shallow;
+			int  get_flags, flags;
+			
 			int  set_flags = FS_SYNC_FL | FS_APPEND_FL | FS_IMMUTABLE_FL 
 						| FS_NODUMP_FL | FS_NOATIME_FL | FS_DIRSYNC_FL;
 #if LINUX_VERSION_CODE > KERNEL_VERSION(2,6,38)
 
 			set_flags |= FS_NOCOW_FL | FS_COMPR_FL;
 #endif
-		</Header>
-		<Code>
-			_TestStatus = Shallow;
-			int  get_flags, flags;
 			
 			// get flag initial values
 			Unres( ioctl(FDs[0], FS_IOC_GETFLAGS, &flags ) == -1 , "Error getting flag initial value. ");

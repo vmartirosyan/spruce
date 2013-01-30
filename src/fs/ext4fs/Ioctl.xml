@@ -84,17 +84,16 @@
 	</Test>
 	<!-- This commang is removed in newer kernels... -->
 	<Test Name="WaitForReadonly" FaultSimulationReady="true">
-		<Header>
+
+		<Description>Wait for read only.</Description>
+		<File count="1"/>
+		<Code>
 #if  LINUX_VERSION_CODE > KERNEL_VERSION(3,1,0)
 		Unsupp("Wait for read only operation is unsupported in Linux 3.1+ versions.");
 #else
 #ifndef EXT4_IOC_WAIT_FOR_READONLY
 #define EXT4_IOC_WAIT_FOR_READONLY	_IOR('f', 99, long)
 #endif
-		</Header>
-		<Description>Wait for read only.</Description>
-		<File count="1"/>
-		<Code>
 			_TestStatus = Shallow;
 			EnableFaultSim();
 			if ( ioctl(FDs[0], EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1 )
@@ -108,10 +107,8 @@
 					Error("Error waiting for readonly.", Fail);
 				}
 			}
-		</Code>
-		<Footer>
 #endif
-		</Footer>
+		</Code>		
 	</Test>
 	<Test Name="GroupExtend" FaultSimulationReady="true">
 		<Description>Group extend.</Description>
