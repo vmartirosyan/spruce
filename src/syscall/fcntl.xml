@@ -449,15 +449,13 @@
 	</Test>
 	<Test Name="FcntlFDGetSetPipeSize" FaultSimulationReady="true">
 		<Description>F_SETPIPE_SZ and F_GETPIPE_SZ (since Linux 2.6.35). Changing the capacity of a pipe.</Description>
-		<Header>
+		<Code>
 #if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
 	Unsupp("Kernel version doesn't support this operation.");
 #endif
 #ifndef F_SETPIPE_SZ
 	Unsupp("Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined.");
 #else
-		</Header>
-		<Code>
 			int pipefd[2];
 
 			Unres ( pipe ( pipefd ) == -1, "Error in creating pipe.");
@@ -473,9 +471,7 @@
 				Error("Get-set pipe size failed", Fail);
 			}
 		</Code>
-		<Footer>
-#endif 
-		</Footer>
+#endif 		
 	</Test>
 	<Test Name="FcntlFDDupWithClExFlag" FaultSimulationReady="true">
 		<Description>.</Description>
@@ -637,15 +633,14 @@
 	<Test Name="FcntlFDCapAboveLimit">
 		<Description></Description>
 		<File count="1"/>
-		<Header>
+		<Code>
 #if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,35)
 	Unsupp("Kernel version doesn't support this operation.");
 #endif
 #ifndef F_SETPIPE_SZ
 	Unsupp("Symbols  F_SETPIPE_SZ and F_GETPIPE_SZ are not defined.");
 #else
-		</Header>
-		<Code>
+
 			struct passwd pw;
 			int pipe_max_size, fd;
 			char buf[1024];
@@ -663,11 +658,8 @@
 			
 			ErrorTest ( fcntl ( pipefd[1], F_SETPIPE_SZ, pipe_max_size + 10 ), -1, EPERM);
 						
-			;
-		</Code>
-		<Footer>
 #endif
-		</Footer>
+		</Code>
 	</Test>
 	<Test Name="FcntlFDIntrSysCall">
 		<Description>For  F_SETLKW,  the command was interrupted by a signal.</Description>
