@@ -52,6 +52,7 @@ class <xsl:value-of select="$TestClassName" /> : public Process
 	typedef map&lt;string, int (<xsl:value-of select="$TestClassName" />::*)(vector&lt;string>)> TestMap;
 public:
 	<xsl:value-of select="$TestClassName" />():
+		Process(TEST_TIMEOUT),
 		_tests_to_run(),
 		_tests_to_exclude(),
 		_name("<xsl:value-of select="$TestClassName" />"),
@@ -66,8 +67,7 @@ public:
 		FilePrefix("<xsl:value-of select="$TestClassName" />_<xsl:value-of select="@Name"/>_file_")
 		//_testCount(<xsl:value-of select="count(Test)"/>),
 		//_fsim_testCount(<xsl:value-of select="count(Test[@FaultSimulationReady='true'])"/>)		
-	{	
-		Process::EnableAlarm = true;
+	{			
 	<xsl:value-of select="StartUp"/>
 	<xsl:for-each select="Test">
 		_tests["<xsl:value-of select="@Name"/>"] = &amp;<xsl:value-of select="$TestClassName" />::<xsl:value-of select="@Name" />Func;

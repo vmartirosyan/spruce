@@ -41,7 +41,8 @@ void  SignalHandler(int signum)
 			break;
 	}
 }
-	
+
+/*	
 ProcessResult * Test::Execute(vector<string> args)
 {
 	struct sigaction sa;
@@ -108,7 +109,7 @@ TestResultCollection TestCollection::Run()
 	
 	return Results;
 }
-
+*/
 
 
 string TestResult::ToXML()

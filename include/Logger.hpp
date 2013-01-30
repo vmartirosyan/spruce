@@ -73,7 +73,7 @@ private:
 		// Well the log level is ok. Print it!
 		try
 		{
-			ofstream of(_LogFile.c_str(), ios_base::app);
+			ofstream of(_LogFile.c_str(), std::ios_base::app);
 			of << MsgInternal << endl;
 			of.close();
 			if ( level >= LOG_Warn )

@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#include <KedrIntegrator.hpp>
+//#include <KedrIntegrator.hpp>
 #include <Logger.hpp>
 #include <Process.hpp>
 #include <signal.h>
@@ -93,6 +93,15 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	{
 		return new ProcessResult(Unresolved, "Cannot create pipe. " + static_cast<string>(strerror(errno)));
 	}
+	
+	// Make the pipe non-blocking to be able to read via select+read 
+	if ( fcntl(fds[0], F_SETFL, O_NONBLOCK) == -1 )
+	{
+		close(fds[0]);
+		close(fds[1]);
+		return new ProcessResult(Unresolved, "Cannot make the pipe non-blocking. " + static_cast<string>(strerror(errno)));
+	}
+	
 	char * MountPoint = NULL;
 	if ( getenv("MountAt") )
 	{
@@ -138,10 +147,12 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 			_exit(Unresolved);
 		}
 		//cerr << " ";
+		
 		int status = (*this.*func)(args);
 		close(1);
 		close(2);
 		close(fds[1]);
+		system("echo 'Exiting' > child_out");
 		_exit(status);
 	}
 	//Freeing the mount point (have to set the CWD back after)
@@ -150,7 +161,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	// Parent process...
 	close(fds[1]);
 	
-	if (EnableAlarm)
+	/*if (EnableAlarm)
 	{
 		struct sigaction sa;
 		bzero(&sa, sizeof(sa));
@@ -161,7 +172,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 			return new ProcessResult(Unresolved, "Cannot set signal handler. " + static_cast<string>(strerror(errno)));
 		}
 	
-		alarm(TEST_TIMEOUT);
+		alarm(_Timeout);
 	}
 	
 	int status;
@@ -179,34 +190,77 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 			return new ProcessResult(Timeout, "Child process has timed out.");
 		else
 			return new ProcessResult(Signaled, "Child process has been signalled.");
+	}*/
+	
+	
+	
+	fd_set read_fds;
+	FD_ZERO(&read_fds);
+	FD_SET(fds[0], &read_fds);
+	
+	struct timeval * timeout = NULL;
+	if ( EnableAlarm )
+	{	
+		timeout = new timeval;
+		timeout->tv_sec = _Timeout;
+		timeout->tv_usec = 0;
 	}
 	
-	// In case of normal end of process. Let's collect the result;
+	int select_res = 0;
+	
 	string Output = "";
-	if ( wait_res != -1 )
+	while ( true )
 	{
-				
-		char buf[1000];
-		int bytes;
-		while ( true )
-		{
-			bytes = read( fds[0], buf, 999 );
-
-			if ( bytes == -1 )
-				break;
-			buf[bytes] = 0;
+		select_res = select(fds[0] + 1, &read_fds, NULL , NULL, timeout);
 		
-			Output += static_cast<string>(buf);
+		if ( select_res == -1 && errno == EINTR )
+			continue;
+		
+		if ( select_res <= 0 )
+			break;
 			
-			if (bytes < 999)
-				break;
+		char buf[1000];
+		int bytes = read( fds[0], buf, 999 );
+		
+		if ( bytes == -1 && errno == EAGAIN )
+			continue;
+			
+		if ( bytes <= 0 )
+		{
+			break;
 		}
+		
+		Output.append(buf, bytes);		
 	}
-	// Kill the child. Just in case.
-	kill(ChildId, SIGKILL);
-	
-	
+	delete timeout;
 	close(fds[0]);
+	
+	if ( select_res == 0 )
+	{
+		kill(ChildId, SIGKILL);
+		return new ProcessResult(Timeout, "Child process has timed out.\nOutput: " + Output);
+	}
+	
+	int status;
+	
+	
+	int wait_res;
+	while (true)
+	{
+		wait_res = waitpid(ChildId, &status, WUNTRACED);
+		if ( wait_res == 0 || errno != EINTR )
+			break;
+	}
+	
+	if ( WIFSIGNALED(status) )
+	{
+		int signum = WTERMSIG(status);
+		char buf[10];
+		sprintf(buf, "%d", signum);
+		Output = static_cast<string>("Signal number: ") + buf + "\n" + Output;
+		return new ProcessResult(Signaled, Output);
+	}
+	
 	return new ProcessResult(static_cast<Status>(WEXITSTATUS(status)), Output);
 }
 
