@@ -125,11 +125,14 @@
 	</Test>
 	<Test Name="XFS_IOC_ZERO_RANGE">
 		<Header>
-#ifdef XFS_IOC_ZERO_RANGE
+
 		</Header>
 		<Description>XFS_IOC_ZERO_RANGE</Description>
 		<File count="1"/>
 		<Code>
+#ifndef XFS_IOC_ZERO_RANGE
+	Unsupp("The XFS_IOC_ZERO_RANGE value is not defined.");
+#else
 			_TestStatus = Shallow;
 			xfs_flock64_t arg;
 			memset(&arg, 0, sizeof(arg));
@@ -137,12 +140,8 @@
 			Unres ( ioctl(FDs[0], XFS_IOC_RESVSP, &arg) == -1, "Cannot reserve space");
 			
 			Fail ( ioctl(FDs[0], XFS_IOC_ZERO_RANGE, &arg) == -1, "Ioctl failed");
-		</Code>
-		<Footer>
-#else
-			Unsupp("The XFS_IOC_ZERO_RANGE value is not defined.");
 #endif
-		</Footer>
+		</Code>		
 	</Test>
 	<Test Name="XFS_IOC_DIOINFO">
 		<Description>XFS_IOC_DIOINFO</Description>
