@@ -14,9 +14,6 @@
 	<Requires>xfs/xfs_fs.h</Requires>	
 	<Header>
 		char buf[2];
-		if(buf[0] == 0)
-		{
-		}
 		#ifndef BMV_IF_DELALLOC
 		#define BMV_IF_DELALLOC		0x8
 		#endif 	
@@ -48,7 +45,9 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_ALLOCSP, buf);
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			Fail(ioctl(FDs[0], XFS_IOC_ALLOCSP, &arg) == -1, "Ioctl failed");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_FREESP">
@@ -56,7 +55,9 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_FREESP, buf);
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			Fail (ioctl(FDs[0], XFS_IOC_FREESP, &arg) == -1, "Ioctl failed");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_RESVSP">
@@ -64,7 +65,10 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_RESVSP, buf);
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.l_len = 100;
+			Fail ( ioctl(FDs[0], XFS_IOC_RESVSP, &arg) == -1, "Ioctl failed");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_UNRESVSP">
@@ -72,7 +76,10 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_UNRESVSP, buf);
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.l_len = 100;
+			Fail (ioctl(FDs[0], XFS_IOC_UNRESVSP, &arg) == -1, "Ioctl failed");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_ALLOCSP64">
@@ -80,7 +87,9 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_ALLOCSP64, buf);
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			Fail (ioctl(FDs[0], XFS_IOC_ALLOCSP64, &arg) == -1, "Ioctl failed");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_FREESP64">
@@ -88,7 +97,9 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_FREESP64, buf);
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			Fail (ioctl(FDs[0], XFS_IOC_FREESP64, &arg) == -1, "Ioctl failed");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_RESVSP64">
@@ -96,7 +107,10 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_RESVSP64, buf);
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.l_len = 100;
+			Fail (ioctl(FDs[0], XFS_IOC_RESVSP64, &arg) == -1, "Ioctl failed");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_UNRESVSP64">
@@ -104,7 +118,9 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_UNRESVSP64, buf);
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			Fail (ioctl(FDs[0], XFS_IOC_UNRESVSP64, &arg) == -1, "Ioctl failed");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_ZERO_RANGE">
@@ -115,7 +131,12 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_ZERO_RANGE, buf);
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.l_len = 100;
+			Unres ( ioctl(FDs[0], XFS_IOC_RESVSP, &arg) == -1, "Cannot reserve space");
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_ZERO_RANGE, &arg) == -1, "Ioctl failed");
 		</Code>
 		<Footer>
 #else
@@ -137,7 +158,17 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_FSBULKSTAT_SINGLE, buf);
+			xfs_fsop_bulkreq_t arg;
+			memset(&arg, 0, sizeof(arg));
+			int out_count;
+			__u64 ip = 0;
+			
+			arg.lastip = &ip;
+			arg.icount = 1;
+			arg.ubuffer = malloc(sizeof(xfs_bstat_t) * arg.icount);
+			arg.ocount = &out_count;
+			
+			Fail (ioctl(FDs[0], XFS_IOC_FSBULKSTAT_SINGLE, &arg) == -1, "Ioctl failed.");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_FSBULKSTAT">
@@ -145,7 +176,17 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_FSBULKSTAT, buf);
+			xfs_fsop_bulkreq_t arg;
+			memset(&arg, 0, sizeof(arg));
+			int out_count;
+			__u64 ip = 3;
+			
+			arg.lastip = &ip;
+			arg.icount = 3;
+			arg.ubuffer = malloc(sizeof(xfs_bstat_t) * arg.icount);
+			arg.ocount = &out_count;
+			
+			Fail (ioctl(FDs[0], XFS_IOC_FSBULKSTAT, &arg) == -1, "Ioctl failed.");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_FSINUMBERS">
@@ -153,7 +194,17 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_FSINUMBERS, buf);
+			xfs_fsop_bulkreq_t arg;
+			memset(&arg, 0, sizeof(arg));
+			int out_count;
+			__u64 ip = 0;
+			
+			arg.lastip = &ip;
+			arg.icount = 3;
+			arg.ubuffer = malloc(sizeof(xfs_inogrp_t) * arg.icount);
+			arg.ocount = &out_count;
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_FSINUMBERS, &arg) == -1, "Ioctl failed.");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_FSGEOMETRY_V1">
@@ -162,7 +213,7 @@
 		<Code>
 			_TestStatus = Shallow;
 			xfs_fsop_geom_t arg;
-			ioctl(FDs[0], XFS_IOC_FSGEOMETRY_V1, &arg);
+			Fail ( ioctl(FDs[0], XFS_IOC_FSGEOMETRY_V1, &arg) == -1, "Ioctl failed.");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_FSGEOMETRY">
@@ -171,7 +222,7 @@
 		<Code>
 			_TestStatus = Shallow;
 			xfs_fsop_geom_t arg;
-			ioctl(FDs[0], XFS_IOC_FSGEOMETRY, &arg);
+			Fail (ioctl(FDs[0], XFS_IOC_FSGEOMETRY, &arg) == -1, "Ioctl failed");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_GETVERSION">
@@ -179,47 +230,72 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_GETVERSION, buf);
+			int version;
+			Fail (ioctl(FDs[0], XFS_IOC_GETVERSION, &version) == -1, "Ioctl failed.");
 		</Code>
 	</Test>
-	<Test Name="XFS_IOC_FSGETXATTR">
-		<Description>XFS_IOC_FSGETXATTR</Description>
+	<Test Name="XFS_IOC_FSGET_SETXATTR">
+		<Description>XFS_IOC_FSGETXATTR and XFS_IOC_FSSETXATTR</Description>
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_FSGETXATTR, buf);
+			struct fsxattr old_attr, set_attr, get_attr;
+			memset(&old_attr, 0, sizeof(fsxattr));
+			memset(&set_attr, 0, sizeof(fsxattr));
+			memset(&get_attr, 0, sizeof(fsxattr));
+			
+			Unres ( ioctl(FDs[0], XFS_IOC_FSGETXATTR, &old_attr) == -1, "Cannot get original attributes.");
+			
+			set_attr.fsx_xflags = old_attr.fsx_xflags | XFS_XFLAG_NODEFRAG;
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_FSSETXATTR, &set_attr) == -1, "Cannot set new xattrs.");
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_FSGETXATTR, &get_attr) == -1, "Cannot get new xattrs.");
+			
+			Unres ( ioctl(FDs[0], XFS_IOC_FSSETXATTR, &old_attr) == -1, "Cannot restore old xattrs.");
+			
+			Fail( set_attr.fsx_xflags != get_attr.fsx_xflags, "Xattrs are different." );
 		</Code>
 	</Test>
-	<Test Name="XFS_IOC_FSGETXATTRA">
-		<Description>XFS_IOC_FSGETXATTRA</Description>
+	<Test Name="XFS_IOC_FSGET_SETXATTRA">
+		<Description>XFS_IOC_FSGETXATTRA and XFS_IOC_FSSETXATTR</Description>
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_FSGETXATTRA, buf);
+			struct fsxattr old_attr, set_attr, get_attr;
+			memset(&old_attr, 0, sizeof(fsxattr));
+			memset(&set_attr, 0, sizeof(fsxattr));
+			memset(&get_attr, 0, sizeof(fsxattr));
+			
+			Unres ( ioctl(FDs[0], XFS_IOC_FSGETXATTRA, &old_attr) == -1, "Cannot get original attributes.");
+			
+			set_attr.fsx_xflags = XFS_XFLAG_NODEFRAG;
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_FSSETXATTR, &set_attr) == -1, "Cannot set new xattrs.");
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_FSGETXATTRA, &get_attr) == -1, "Cannot get new xattrs.");
+			
+			Unres ( ioctl(FDs[0], XFS_IOC_FSSETXATTR, &old_attr) == -1, "Cannot restore old xattrs.");
+			
+			Fail( set_attr.fsx_xflags != get_attr.fsx_xflags, "Xattrs are different." );
 		</Code>
 	</Test>
-	<Test Name="XFS_IOC_FSSETXATTR">
-		<Description>XFS_IOC_FSSETXATTR</Description>
-		<File count="1"/>
-		<Code>
-			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_FSSETXATTR, buf);
-		</Code>
-	</Test>
-	<Test Name="XFS_IOC_GETXFLAGS">
+	<Test Name="XFS_IOC_GET_SETXFLAGS">
 		<Description>XFS_IOC_GETXFLAGS</Description>
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_GETXFLAGS, buf);
-		</Code>
-	</Test>
-	<Test Name="XFS_IOC_SETXFLAGS">
-		<Description>XFS_IOC_SETXFLAGS</Description>
-		<File count="1"/>
-		<Code>
-			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_SETXFLAGS, buf);
+			unsigned int old_flags, set_flags = FS_SYNC_FL, get_flags;
+			
+			Unres (ioctl(FDs[0], XFS_IOC_GETXFLAGS, &old_flags) == -1, "Cannot get old flags.");
+			
+			Fail (ioctl(FDs[0], XFS_IOC_SETXFLAGS, &set_flags) == -1, "Cannot set new flags");
+			
+			Fail (ioctl(FDs[0], XFS_IOC_GETXFLAGS, &get_flags) == -1, "Cannot get new flags");
+			
+			Unres (ioctl(FDs[0], XFS_IOC_SETXFLAGS, &old_flags) == -1, "Cannot restore old flags.");
+			
+			Fail( set_flags != get_flags, "Flag values are different." );
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_FSSETDM">
@@ -227,7 +303,26 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_FSSETDM, buf);
+			
+			xfs_fsop_bulkreq_t arg;
+			memset(&arg, 0, sizeof(arg));
+			int out_count;
+			__u64 ip = 1;
+			
+			arg.lastip = &ip;
+			arg.icount = 1;
+			arg.ubuffer = malloc(sizeof(xfs_bstat_t) * arg.icount);
+			arg.ocount = &out_count;
+			
+			Unres (ioctl(FDs[0], XFS_IOC_FSBULKSTAT, &arg) == -1, "Ioctl failed.");
+			
+			struct fsdmidata dmi_args;
+			memset(&dmi_args, 0, sizeof(struct fsdmidata));
+			
+			dmi_args.fsd_dmevmask = ((xfs_bstat_t*)arg.ubuffer)[0].bs_dmevmask;
+			dmi_args.fsd_dmstate = ((xfs_bstat_t*)arg.ubuffer)[0].bs_dmstate;
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_FSSETDM, &dmi_args) == -1, "Cannot set DMI data.");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_GETBMAP">
@@ -410,13 +505,13 @@
 			Fail(rv == -1, "Ioctl atrrlist by handle failed");
 		</Code>
 	</Test-->
-	<Test Name="XFS_IOC_ATTRMULTI_BY_HANDLE">
+	<!--Test Name="XFS_IOC_ATTRMULTI_BY_HANDLE">
 		<Description>XFS_IOC_ATTRMULTI_BY_HANDLE</Description>
 		<File count="1"/>
 		<Code>			
 			ioctl(FDs[0], XFS_IOC_ATTRMULTI_BY_HANDLE, buf);
 		</Code>
-	</Test>
+	</Test-->
 	<!--Test Name="XFS_IOC_SWAPEXT">
 		<Description>XFS_IOC_SWAPEXT</Description>
 		<File count="1"/>
@@ -431,23 +526,22 @@
 		<Code>
 			_TestStatus = Shallow;
 			xfs_fsop_counts_t arg;
-			ioctl(FDs[0], XFS_IOC_FSCOUNTS, &arg);
+			Fail (ioctl(FDs[0], XFS_IOC_FSCOUNTS, &arg) == -1, "Ioctl failed");
 		</Code>
 	</Test>
-	<Test Name="XFS_IOC_SET_RESBLKS">
+	<Test Name="XFS_IOC_SET_GET_RESBLKS">
 		<Description>XFS_IOC_SET_RESBLKS</Description>
 		<File count="1"/>
-		<Code>
-			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_SET_RESBLKS, buf);
-		</Code>
-	</Test>
-	<Test Name="XFS_IOC_GET_RESBLKS">
-		<Description>XFS_IOC_GET_RESBLKS</Description>
-		<File count="1"/>
-		<Code>
-			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_GET_RESBLKS, buf);
+		<Code>			
+			xfs_fsop_resblks_t arg;
+			xfs_fsop_resblks_t arg_out;
+			memset(&arg, 0, sizeof(arg));
+			arg.resblks = 10;
+			Fail (ioctl(FDs[0], XFS_IOC_SET_RESBLKS, &arg) == -1, "Cannot set reserved blocks");
+	
+			Fail ( ioctl(FDs[0], XFS_IOC_GET_RESBLKS, &arg_out) == -1, "Cannot get reserved blocks");
+			
+			Fail ( arg.resblks != arg_out.resblks, "Reserved block count differ." );
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_FSGROWFSDATA">
@@ -455,7 +549,11 @@
 		<File count="1"/>
 		<Code>
 			_TestStatus = Shallow;
-			ioctl(FDs[0], XFS_IOC_FSGROWFSDATA, buf);
+			xfs_growfs_data_t arg;
+			arg.newblocks = 1000;
+			arg.imaxpct = 5;
+			
+			Fail (ioctl(FDs[0], XFS_IOC_FSGROWFSDATA, &arg) == -1, "Ioctl failed.");
 		</Code>
 	</Test>
 	<Test Name="XFS_IOC_FSGROWFSLOG">

@@ -119,16 +119,16 @@ struct FSimInfo
 {\
 	cerr << message << add_msg;\
 	if ( errno && status != Unsupported) cerr << "\nError: " << strerror(errno) << endl;\
-	if( ((errno == ENOTSUP) || (errno == ENOTTY)) && (status != -1)) return Unsupported; /* Temporary solution: Unsupported tests will not need the footer at all. */\
+	if( ((errno == ENOTSUP) || (errno == ENOTTY)) && (status != -1)) Return(Unsupported);\
 	if ( status != -1 && status != Unsupported ) Return(status);\
-	if ( status == Unsupported ) return Unsupported;\
+	if ( status == Unsupported ) Return(Unsupported);\
 }\
 
 #define ERROR_2_ARGS(message, status)\
 	ERROR_3_ARGS(message, "", status)
 
 #define ERROR_1_ARGS(message)\
-	ERROR_3_ARGS(message, "", Unknown)
+	cerr << message << endl;\
 
 #define GET_4TH_ARG(arg1, arg2, arg3, arg4, ...) arg4
 #define ERROR_MACRO_CHOOSER(...) \
@@ -145,7 +145,7 @@ struct FSimInfo
 	{ Error(message, Unresolved) }
 	
 #define Unsupp(message)\
-	{ cerr << message << endl; return Unsupported; }
+	{ Error(message, Unsupported) }
 
 #define ELoopTest(func_call, error_val)\
 {\
@@ -227,7 +227,7 @@ struct FSimInfo
 	}\
 	int status;\
 	wait(&status);\
-	Return( (Status)WEXITSTATUS(status) );\
+	Return( static_cast<Status>(WEXITSTATUS(status)) );\
 }\
 
 #define EMaxFilesOpenTest(func_call, error_val)\

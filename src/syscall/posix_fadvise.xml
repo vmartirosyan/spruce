@@ -3,10 +3,8 @@
 	<Requires>unistd.h</Requires>
 	<Test Name="Posix_fadviseNormal" FaultSimulationReady="true">
 		<File count="1"/>
-		<Header>			
-			int errNum = 0;
-		</Header>
 		<Code>
+			int errNum = 0;
 			EnableFaultSim();
 			if((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_NORMAL)) != 0)
 			{
@@ -45,11 +43,9 @@
 			}		
 		</Code>
 	</Test>
-	<Test Name="Posix_fadviseErrBadF">
-		<Header>
-			int fd = -1;
-		</Header>
+	<Test Name="Posix_fadviseErrBadF">		
 		<Code>
+			int fd = -1;
 			if(posix_fadvise(fd, 0, getpagesize(), POSIX_FADV_NORMAL) != EBADF)
 			{
 				Error("posix_fadvise with POSIX_FADV_NORMAL advise failed");
