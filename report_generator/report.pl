@@ -1345,10 +1345,11 @@ sub spruce_report_parse_error($$)
 
 # Map of some Spruce test statuses into severity strings.
 my %spruce_status_severity_map = (
-    "Success" => "Passed",
-    "Shallow" => "Passed",
-    "Timeout" => "Time expired",
-    "Unknown" => "Unresolved"
+    "Shallow"  => "Passed",
+    "Signaled" => "Unresolved",
+    "Success"  => "Passed",
+    "Timeout"  => "Time expired",
+    "Unknown"  => "Unresolved",
 );
 
 # Parse one Spruce log file
