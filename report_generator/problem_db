@@ -61,10 +61,6 @@ matched test_messages Error: Invalid argument
 
 attribute comment [comment required]
 # The Read syscall with O_DIRECT option is not supported in kenels version less than 2.6.35
-# Currently, ReadWriteDirect2 test has same things but with different alignment.
-# Perhaps, it was created for debugging and should be removed.
-# TODO: fix Spruce.
-dup read_write ReadWriteDirect2
 
 end
 
@@ -106,5 +102,35 @@ expected severity Failed
 matched test_messages Error: Invalid argument
 
 attribute comment [comment required]
+
+end
+
+test read_write ReadWriteDirect
+expected test_suite syscall
+expected fs ext4
+expected mount_opts data=journal
+version l kernel_version 3.2.30
+
+expected severity Unresolved
+
+matched test_messages Error: Bad file descriptor
+
+attribute comment [comment required]
+# Direct IO is not supported with journalling on in ext4 for early kernel versions.
+
+end
+
+test open OpenDirect
+expected test_suite syscall
+expected fs ext4
+expected mount_opts data=journal
+version l kernel_version 3.2.30
+
+expected severity Failed
+
+matched test_messages Error: Invalid argument
+
+attribute comment [comment required]
+# Direct IO is not supported with journalling on in ext4 for early kernel versions.
 
 end
