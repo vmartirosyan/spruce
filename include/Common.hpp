@@ -217,11 +217,14 @@ struct FSimInfo
 		}\
 		errno = 0;\
 		if (func_call != error_val || ( ( errno != EACCES ) && ( errno != EPERM ) )) {\
-			Error("Function should return '" + static_cast<string>(strerror(EACCES)) +  "' or '" + static_cast<string>(strerror(EPERM)) +  "' when permission was denied but it did not.");\
 			if(errno == ENOTSUP || errno == ENOTTY) {\
+				Error("Functionality is not supported\n");\
 				_exit( Unsupported );\
 				}\
-			_exit( Fail );\
+			else {\
+				Error("Function should return '" + static_cast<string>(strerror(EACCES)) +  "' or '" + static_cast<string>(strerror(EPERM)) +  "' when permission was denied but it did not.");\
+				_exit( Fail );\
+			}\
 		}\
 		_exit(Success);\
 	}\
