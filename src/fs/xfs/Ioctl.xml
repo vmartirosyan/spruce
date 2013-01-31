@@ -13,7 +13,6 @@
 	<Requires>xfs/xfs.h</Requires>	
 	<Requires>xfs/xfs_fs.h</Requires>	
 	<Header>
-		char buf[2];
 		#ifndef BMV_IF_DELALLOC
 		#define BMV_IF_DELALLOC		0x8
 		#endif 	
@@ -451,6 +450,7 @@
 		<Description>XFS_IOC_FSSETDM_BY_HANDLE</Description>
 		<File count="1"/>
 		<Code>
+			char buf[2];
 			_TestStatus = Shallow;
 			ioctl(FDs[0], XFS_IOC_FSSETDM_BY_HANDLE, buf);
 		</Code>
@@ -458,7 +458,8 @@
 	<Test Name="XFS_IOC_READLINK_BY_HANDLE">
 		<Description>XFS_IOC_READLINK_BY_HANDLE</Description>
 		<File count="1"/>
-		<Code>			
+		<Code>
+			char buf[2];
 			_TestStatus = Shallow;
 			ioctl(FDs[0], XFS_IOC_READLINK_BY_HANDLE, buf);
 		</Code>
@@ -507,7 +508,8 @@
 	<!--Test Name="XFS_IOC_ATTRMULTI_BY_HANDLE">
 		<Description>XFS_IOC_ATTRMULTI_BY_HANDLE</Description>
 		<File count="1"/>
-		<Code>			
+		<Code>	
+			char buf[2];
 			ioctl(FDs[0], XFS_IOC_ATTRMULTI_BY_HANDLE, buf);
 		</Code>
 	</Test-->
@@ -515,6 +517,7 @@
 		<Description>XFS_IOC_SWAPEXT</Description>
 		<File count="1"/>
 		<Code>
+			char buf[2];
 			_TestStatus = Shallow;
 			ioctl(FDs[0], XFS_IOC_SWAPEXT, buf);
 		</Code>
@@ -559,6 +562,7 @@
 		<Description>XFS_IOC_FSGROWFSLOG</Description>
 		<File count="1"/>
 		<Code>
+			char buf[2];
 			_TestStatus = Shallow;
 			ioctl(FDs[0], XFS_IOC_FSGROWFSLOG, buf);
 		</Code>
@@ -567,6 +571,7 @@
 		<Description>XFS_IOC_FSGROWFSRT</Description>
 		<File count="1"/>
 		<Code>
+			char buf[2];
 			_TestStatus = Shallow;
 			ioctl(FDs[0], XFS_IOC_FSGROWFSRT, buf);
 		</Code>
@@ -575,6 +580,7 @@
 		<Description>XFS_IOC_GOINGDOWN</Description>
 		<File count="1"/>
 		<Code>
+			char buf[2];
 			_TestStatus = Shallow;
 			ioctl(FDs[0], XFS_IOC_GOINGDOWN, buf);
 		</Code>
@@ -583,6 +589,7 @@
 		<Description>XFS_IOC_ERROR_INJECTION</Description>
 		<File count="1"/>
 		<Code>
+			char buf[2];
 			_TestStatus = Shallow;
 			ioctl(FDs[0], XFS_IOC_ERROR_INJECTION, buf);
 		</Code>
@@ -591,6 +598,7 @@
 		<Description>XFS_IOC_ERROR_CLEARALL</Description>
 		<File count="1"/>
 		<Code>
+			char buf[2];
 			_TestStatus = Shallow;
 			ioctl(FDs[0], XFS_IOC_ERROR_CLEARALL, buf);
 		</Code>
