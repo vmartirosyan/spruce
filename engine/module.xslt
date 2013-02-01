@@ -41,7 +41,8 @@
 #include &lt;Directory.hpp>
 #include &lt;map>
 #include &lt;sys/vfs.h>
-
+#include &lt;XmlSpruceLog.hpp>
+#include &lt;vector>
 using namespace std;
 
 		<xsl:variable name="ModuleName" select="@Name" />		
@@ -50,20 +51,27 @@ class <xsl:value-of select="$ModuleName"/>TestResult : public TestResult
 	public:
 		
 		<xsl:value-of select="$ModuleName"/>TestResult(ProcessResult* pr, string spec, string oper) :	
-		TestResult(ProcessResult(*pr), "", ""), _spec(spec), _operation(oper)
+		TestResult(ProcessResult(*pr), "", spec, oper)
 		{						
 		}
 		virtual string ToXML()
-		{
-			
+		{			
 			stringstream str;
 			str &lt;&lt; rand();
-			
-			return "&lt;Item Name=\"" + _spec + "\" Id=\"" + str.str() + " \">" + "\n\t&lt;Operation>" + _operation + "&lt;/Operation>\n\t&lt;Status>" + StatusToString() + "&lt;/Status>\n\t&lt;Output>" +	_output +  "&lt;/Output>\n\t&lt;Arguments>" + "" + "&lt;/Arguments>" + "\n\t" +  "&lt;/Item>";
+			string s = "";
+			s += string("&lt;Item Name=\"");
+			s += _spec;
+			s += string("\" Id=\"");
+			s += str.str();
+			s += string(" \">\n\t&lt;Operation>");
+			s += _operation;
+			s += string("&lt;/Operation>\n\t&lt;Status>");
+			s += StatusToString();
+			s += string("&lt;/Status>\n\t&lt;Output>");
+			s += _output;
+			s +=  string("&lt;/Output>\n\t&lt;Arguments>&lt;/Arguments>\n\t&lt;/Item>");
+			return s;
 		}
-	protected:
-		string _spec;
-		string _operation;
 };
 
 
@@ -113,7 +121,8 @@ int main(int argc, char ** argv)
 	FileSystemTypesMap["btrfs"] = -1; // does not support?
 	FileSystemTypesMap["xfs"] = 0x58465342; //XFS_SUPER_MAGIC;
 	FileSystemTypesMap["jfs"] = 0x3153464a; //JFS_SUPER_MAGIC
-		
+	
+	ModuleLog moduleLog(argv[1]);
 	TestResultCollection Results;
 	try
 	{
@@ -167,13 +176,17 @@ int main(int argc, char ** argv)
 			</xsl:choose>
 			}
 		</xsl:for-each>
-		
-			ofstream of(argv[1], ios_base::app);
 			
-			of &lt;&lt; "&lt;Module Name=\"" &lt;&lt; argv[0] &lt;&lt; "\">\n" &lt;&lt; Results.ToXML() &lt;&lt; "&lt;/Module>";
+			//ofstream of(argv[1], ios_base::app);
+			//of &lt;&lt; "&lt;Module Name=\"" &lt;&lt; argv[0] &lt;&lt; "\">\n" &lt;&lt; Results.ToXML() &lt;&lt; "&lt;/Module>";
+			//of.close();
 			
-			of.close();
-			
+			vector&lt;TestResult*> items = Results.GetResults();
+			vector&lt;TestResult*>::iterator i;
+			for( i = items.begin(); i != items.end(); i++)
+			{
+				moduleLog.addItem(Item((*i)->GetSpec(), (*i)->GetStrOperation(), (*i)->StatusToString(), (*i)->GetOutput(), (*i)->GetArguments()));
+			}
 			return Results.GetStatus();
 	}
 	catch (Exception ex)
@@ -194,6 +207,7 @@ int main(int argc, char ** argv)
 #include &lt;Directory.hpp>
 #include &lt;map>
 #include &lt;sys/vfs.h>
+#include &lt;XmlSpruceLog.hpp>
 
 using namespace std;
 
@@ -284,11 +298,17 @@ int main(int argc, char ** argv)
 		
 		if ( argc == 2 )
 		{
-			ofstream of(argv[1], ios_base::app);
-			
-			of &lt;&lt; "&lt;Module Name=\"<xsl:value-of select="@Name"/>\">\n" &lt;&lt; Results.ToXML() &lt;&lt; "&lt;/Module>";
-			
-			of.close();
+			//ofstream of(argv[1], ios_base::app);
+			//of &lt;&lt; "&lt;Module Name=\"<xsl:value-of select="@Name"/>\">\n" &lt;&lt; Results.ToXML() &lt;&lt; "&lt;/Module>";
+			//of.close();
+			ModuleLog moduleLog(argv[1]);
+			vector&lt;TestResult*> items = Results.GetResults();
+			vector&lt;TestResult*>::iterator i;
+			for( i = items.begin(); i != items.end(); i++)
+			{
+				moduleLog.addItem(Item((*i)->GetSpec(), (*i)->GetStrOperation(), (*i)->StatusToString(), (*i)->GetOutput(), (*i)->GetArguments()));
+			}
+			return Results.GetStatus();
 		}
 		return Results.GetStatus();
 	}

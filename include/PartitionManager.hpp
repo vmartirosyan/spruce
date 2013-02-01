@@ -208,7 +208,7 @@ class PartitionManager
 		}
 		
 		
-		static bool ReleasePartition(string MountPoint)
+		static bool ReleasePartition(string MountPoint, string* output = NULL)
 		{
 			Logger::LogInfo((string)"Unmounting partition " + MountPoint);
 			if ( chdir("/") == -1)				
@@ -237,6 +237,10 @@ retry:
 					goto retry;
 				}
 			}
+			
+			if(output != NULL)
+				*output = string("Cannot unmount partition ") + MountPoint + string(". ") + strerror(errno);
+			
 			cerr << "Cannot unmount partition " << MountPoint << ". " << strerror(errno) << endl;
 			return false;
 		}

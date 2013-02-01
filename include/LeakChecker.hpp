@@ -25,6 +25,7 @@
 #include <UnixCommand.hpp>
 #include <sys/utsname.h>
 #include <algorithm>
+#include <XmlSpruceLog.hpp>
 
 using namespace std;
 
@@ -38,33 +39,12 @@ public:
 	{
 		MountDebugFS();
 	}
-	void ProcessLeakCheckerOutput(string fs)
+
+	Item ProcessLeakCheckerOutput(string fs)
 	{
-		//int status = Success;
+		Item item("Possible leaks, Unallocated frees", "");
 		try
-		{
-			/*
-			int fd = -1;
-			if((fd = open(LogFilePath.c_str(), O_RDWR)) == -1)
-			{
-				throw Exception(string("open log file failed"));
-			}
-			
-			struct stat sb;
-			if(fstat(fd, &sb) == -1)
-			{
-				throw Exception(string("stat failed"));
-			}
-			
-			if(ftruncate(fd, sb.st_size - 9) == -1)
-			{
-				throw Exception(string("ftruncate failed"));
-			}
-			
-			close(fd);*/
-			
-			ofstream of(LogFilePath.c_str(), ios_base::app);
-			
+		{			
 			UnixCommand grep("grep");
 			vector<string> grepArgs;
 			
@@ -82,11 +62,15 @@ public:
 			
 			if(resPosLeaks->GetStatus() == 0 || resUnallocFrees->GetStatus() == 0)
 			{
-				of << "\t<Item Name=\"PossibleLeak\" Id=\"" << rand() << "\">\n\t\t<Status>Failed</Status><Output>";
+
+				item.setStatus("Failed");
+				
+				//str += "\t<Item Name=\"PossibleLeak\" Id=\"" + 123 + "\">\n\t\t<Status>Failed</Status><Output>";
 			}
 			else
 			{
-				of << "\t<Item Name=\"PossibleLeak\" Id=\"" << rand() << "\">\n\t\t<Status>Success</Status><Output>";		
+				item.setStatus("Success");
+				//of << "\t<Item Name=\"PossibleLeak\" Id=\"" << rand() << "\">\n\t\t<Status>Success</Status><Output>";
 			}
 
 			UnixCommand cat("cat");
@@ -95,9 +79,7 @@ public:
 			ProcessResult * res = cat.Execute(catArgs);
 			if (res->GetStatus() == Success)
 			{
-				string resOut = res->GetOutput();
-				processXml(resOut);
-				of << resOut << endl;
+				item.appendOutput(res->GetOutput());
 			}
 			//string str = res.GetOutput();
 			//string num = str.substr(string("Possible leaks: ").length(), str.length() - string("Possible leaks: ").length());
@@ -108,15 +90,10 @@ public:
 				catArgs.push_back(DebugFSPath + string("/kedr_leak_check/") + fs + "/possible_leaks");
 				delete res;
 				res = cat.Execute(catArgs);
-				string resOut = res->GetOutput();
-				processXml(resOut);
-				of << resOut << endl;
 				
 				if(res->GetStatus() == Success)
 				{
-					string resOut = res->GetOutput();
-					processXml(resOut);
-					of << resOut << "\n";
+					item.appendOutput(res->GetOutput());
 				}
 				else
 				{
@@ -133,25 +110,28 @@ public:
 				res = cat.Execute(catArgs);
 				if(resUnallocFrees->GetStatus() == Success)
 				{
-					string resOut = resUnallocFrees->GetOutput();
-					processXml(resOut);
-					of << resOut << "\n";
+					item.appendOutput(resUnallocFrees->GetOutput());
 				}
 				else
 				{
 				}
 			}
-			of << "</Output></Item></Module>" << endl;
+			//of << "</Output></Item></Module>" << endl;
 			
-			of.close();
+			//of.close();
 			
 		}
 		catch(exception& err)
 		{
 			cerr << "Exception is thrown." << err.what() << endl;
-			return;
+			item.setStatus("Unresolved");
+			item.setOutput(err.what());
+			return item;
 		}
+		
+		return item;
 	}
+	
 protected:
 	string DebugFSPath;
 	string LogFilePath;
