@@ -25,6 +25,7 @@
 
 #include "Common.hpp"
 #include "Process.hpp"
+#include <stdlib.h>
 #include <sstream>
 #include <fstream>
 using namespace std;
@@ -36,44 +37,70 @@ public:
 		ProcessResult(Unknown, "No output"),
 		_operation(0),
 		_arguments("No arguments provided") {}*/
-	TestResult(ProcessResult pr, int op, string args):
+	TestResult(ProcessResult pr, int op, string args, string spec = "", string stroper = ""):
 		ProcessResult(pr),
+		_spec(spec),
 		_operation(op),
-		_stroperation(OperationToString()),
+		_stroperation(stroper),
 		_arguments(args) {}
+	
+	TestResult(ProcessResult pr, string args, string spec, string stroper):
+		ProcessResult(pr),
+		_spec(spec),
+		_operation(0),		
+		_stroperation(stroper),
+		_arguments(args) {}
+		
 	TestResult(Status s, string output, int op, string args):
 		ProcessResult(s, output),
+		_spec(""),
 		_operation(op),
 		_stroperation(OperationToString()),
 		_arguments(args) {}
 	TestResult(ProcessResult pr, string op, string args):
 		ProcessResult(pr),
+		_spec(""),
 		_operation(0),
 		_stroperation(op),		
 		_arguments(args)
 		 {}
 	TestResult(Status s, string output, string op, string args):
 		ProcessResult(s, output),
+		_spec(""),
 		_operation(0),
 		_stroperation(op),
 		_arguments(args) {}
 	TestResult(TestResult const & tr) : 
 		ProcessResult(tr),
+		_spec(tr._spec),
 		_operation(tr._operation),
 		_stroperation(tr._stroperation),
 		_arguments(tr._arguments) {}
 	 	 	 
-	virtual string ToXML();
+	//virtual string ToXML();
 	virtual string OperationToString()
 	{
 		return "Unknown";
 		//return Operation::ToString((Operations)_operation);
 	}
+	string GetStrOperation() const
+	{
+		return _stroperation;
+	}
+	string GetArguments() const
+	{
+		return _arguments;
+	}
+	virtual string ToXML();
+	string GetSpec() const
+	{
+		return _spec;
+	}
 protected:
+	string _spec;
 	int _operation;
 	string _stroperation;
 	string _arguments;
-
 };
 
 class TestResultCollection 
@@ -128,6 +155,10 @@ public:
 	{
 		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
 			delete (*i);
+	}
+	const vector<TestResult*>& GetResults() const
+	{
+		return _results;
 	}
 private:
 	vector<TestResult*> _results;

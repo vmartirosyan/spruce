@@ -62,6 +62,7 @@ public:
 	{
 		return _status;
 	}
+	
 	void SetStatus(Status st)
 	{
 		if (st < 0 || st > Unknown)
@@ -82,11 +83,11 @@ public:
 		return _output;
 	}
 		
-	
+	string StatusToString();
 protected:
 	Status _status;
 	string _output;
-	string StatusToString();
+	
 	
 };
 

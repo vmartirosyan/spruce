@@ -255,7 +255,7 @@ public:
 		return false;
 	}
 	
-	bool UnloadModule(string module)
+	bool UnloadModule(string module, string* output = NULL)
 	{
 		UnixCommand rmmod("rmmod");
 		vector<string> args;
@@ -267,6 +267,11 @@ public:
 		if ( res == NULL || res->GetStatus() != Success )
 		{
 			//throw(Exception("Error executing rmmod. " + (res ? res->GetOutput() : "")));
+			if(output != NULL)
+			{
+				*output = string("Error executing rmmod: ");
+				*output += res->GetOutput();
+			}
 			cerr << "Error executing rmmod. " << (res ? res->GetOutput() : "") << endl;
 			return false;
 		}

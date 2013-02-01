@@ -440,6 +440,9 @@ int main(int argc, char ** argv)
 				continue;
 			}			
 			
+			// 
+			Item lcItem("Possible leaks, Unallocated frees");
+			
 			// Check if KEDR needs to be loaded			
 			if ( PerformLeakCheck || PerformFaultSimulation )
 			{
@@ -461,13 +464,15 @@ int main(int argc, char ** argv)
 					cerr << "Exception is thrown. " << e.GetMessage() << endl;
 					PerformFaultSimulation = false;
 					PerformLeakCheck = false;
+					lcItem.setStatus("Unresolved");
+					lcItem.setOutput(string("KEDR cannot be loaded: ") + e.GetMessage());
 				}
 			}
 			//PartitionManager * pm = ShmAllocator<PartitionManager>::GetInstance();
 			PartitionManager pm(INSTALL_PREFIX"/share/spruce/config/PartitionManager.cfg", partition, MountAt, *fs, MountOpts);
 			
 			for (vector<string>::iterator module = Modules.begin(); module != Modules.end() && ModuleStatus < Fatal; ++module)
-			{				
+			{			
 				string ModuleBin = (module->find("fs-spec") == string::npos ? *module : (*fs + module->substr(7, module->size())));
 				if ( *module == "fault-sim" )
 					ModuleBin = "fault_sim";
@@ -527,11 +532,11 @@ int main(int argc, char ** argv)
 					unlink(FileName.c_str());
 					
 					vector<string> module_args;
-					ofstream of(FileName.c_str());
-				
-					of << "<SpruceLog><FS Name=\"" << *fs << "\" MountOptions=\"" << pm.GetCurrentMountOptions() << "\">\n";
 					
-					of.close();
+					SpruceLog xmlSpruceLog(FileName, *fs, pm.GetCurrentMountOptions(), "", *module);
+					xmlSpruceLog.openTags();
+					ModuleLog moduleLog(FileName);
+					
 					
 					module_args.push_back(FileName);
 					//XMLFilesToProcess.push_back(FileName);
@@ -574,6 +579,7 @@ int main(int argc, char ** argv)
 							module_args.push_back(*it);
 						}
 					}
+					
 					cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
 					
 					time_t ItemStartTime = time(0);
@@ -584,54 +590,35 @@ int main(int argc, char ** argv)
 					stringstream str;
 					str << ItemDuration;
 					
+
+					
 					// Process the memory leak checker output
 					if ( PerformLeakCheck && kedr.IsRunning() )
-					{
-						int fd = -1;
-						if((fd = open(FileName.c_str(), O_RDWR)) == -1)
-						{
-							throw Exception(string("open log file failed"));
-						}
-						
-						struct stat sb;
-						if(fstat(fd, &sb) == -1)
-						{
-							throw Exception(string("stat failed"));
-						}
-						
-						if(ftruncate(fd, sb.st_size - 9) == -1)
-						{
-							throw Exception(string("ftruncate failed"));
-						}
-						
-						close(fd);
-						
-						if(PartitionManager:: ReleasePartition(MountAt) && kedr.UnloadModule(*fs)) 
+					{						
+						string relPartOutput = "";
+						string kedrUnloadModOutput = "";
+						if(PartitionManager:: ReleasePartition(MountAt, &relPartOutput) && kedr.UnloadModule(*fs, &kedrUnloadModOutput)) 
 						{
 							LeakChecker leak_check(FileName);
-							leak_check.ProcessLeakCheckerOutput(*fs);
+							lcItem = leak_check.ProcessLeakCheckerOutput(*fs);
 						}
 						else
 						{
-							/*of.open(FileName.c_str(), ios_base::app);
-							of << "\t<Item Name=\"PossibleLeak\" Id=\"" << rand() << "\">\n\t\t<Status>Failed</Status>" << endl;
-							of << "<Output>";
-							of << "";
-							of << "</Output>" << endl;
-							of.close();*/
+							lcItem.setStatus("Unresolved");
+							if(relPartOutput != "")
+							{
+								lcItem.appendOutput(relPartOutput + "\n");
+							}
+							if(kedrUnloadModOutput != "")
+							{
+								lcItem.appendOutput(kedrUnloadModOutput + "\n");
+							}
 						}
+						
 					}
 					
-					of.open(FileName.c_str(), ios_base::app);
-					of << "<Duration>" + str.str() + "</Duration>";
-					
-					of << "</FS></SpruceLog>";
-					
-					of.close();
-					
-					// cerr << "Module output: " << result->GetOutput() << endl;
-					
-					// Generate the HTML log file
+					moduleLog.addItem(lcItem);
+					xmlSpruceLog.closeTags();
 					UnixCommand xslt("xsltproc");
 					vector<string> xslt_args;
 					
@@ -663,6 +650,7 @@ int main(int argc, char ** argv)
 						break;
 					}
 					cout << endl;
+					
 				}
 				while ( PS != PS_Done );
 				
