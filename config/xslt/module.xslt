@@ -18,15 +18,17 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsFatal</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th width="20%">Name</th>
-				<th width="20%">Operation</th>
-				<th width="60%">Output</th>
+				<th width="15%">Name</th>
+				<th width="15%">Operation</th>
+				<th width="35%">Description</th>
+				<th width="35%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Fatal']" >				
 			<tr>
-				<td width="20%"><xsl:value-of select="@Name" /></td>
-				<td width="20%"><xsl:value-of select="Operation" /></td>
-				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="15%"><xsl:value-of select="@Name" /></td>
+				<td width="15%"><xsl:value-of select="Operation" /></td>
+				<td width="35%"><xsl:value-of select="Description" /></td>
+				<td width="35%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -39,15 +41,17 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsSignaled</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th width="20%">Name</th>
-				<th width="20%">Operation</th>
-				<th width="60%">Output</th>
+				<th width="15%">Name</th>
+				<th width="15%">Operation</th>
+				<th width="35%">Description</th>
+				<th width="35%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Signaled']" >				
 			<tr>
-				<td width="20%"><xsl:value-of select="@Name" /></td>
-				<td width="20%"><xsl:value-of select="Operation" /></td>
-				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="15%"><xsl:value-of select="@Name" /></td>
+				<td width="15%"><xsl:value-of select="Operation" /></td>
+				<td width="35%"><xsl:value-of select="Description" /></td>
+				<td width="35%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -60,15 +64,17 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsFailed</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th width="20%">Name</th>
-				<th width="20%">Operation</th>
-				<th width="60%">Output</th>
+				<th width="15%">Name</th>
+				<th width="15%">Operation</th>
+				<th width="35%">Description</th>
+				<th width="35%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Failed']" >				
 			<tr>
-				<td width="20%"><xsl:value-of select="@Name" /></td>
-				<td width="20%"><xsl:value-of select="Operation" /></td>
-				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="15%"><xsl:value-of select="@Name" /></td>
+				<td width="15%"><xsl:value-of select="Operation" /></td>
+				<td width="35%"><xsl:value-of select="Description" /></td>
+				<td width="35%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -81,15 +87,17 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsFaultSimFailed</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th width="20%">Name</th>
-				<th width="20%">Operation</th>
-				<th width="60%">Output</th>
+				<th width="15%">Name</th>
+				<th width="15%">Operation</th>
+				<th width="35%">Description</th>
+				<th width="35%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='FSimSuccess']" >				
 			<tr>
-				<td width="20%"><xsl:value-of select="@Name" /></td>
-				<td width="20%"><xsl:value-of select="Operation" /></td>
-				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="15%"><xsl:value-of select="@Name" /></td>
+				<td width="15%"><xsl:value-of select="Operation" /></td>
+				<td width="35%"><xsl:value-of select="Description" /></td>
+				<td width="35%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -102,15 +110,17 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsFaultSimPassed</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th width="20%">Name</th>
-				<th width="20%">Operation</th>
-				<th width="60%">Output</th>
+				<th width="15%">Name</th>
+				<th width="15%">Operation</th>
+				<th width="35%">Description</th>
+				<th width="35%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='FSimFail']" >				
 			<tr>
-				<td width="20%"><xsl:value-of select="@Name" /></td>
-				<td width="20%"><xsl:value-of select="Operation" /></td>
-				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="15%"><xsl:value-of select="@Name" /></td>
+				<td width="15%"><xsl:value-of select="Operation" /></td>
+				<td width="35%"><xsl:value-of select="Description" /></td>
+				<td width="35%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -123,15 +133,17 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsUnresolved</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th width="20%">Name</th>
-				<th width="20%">Operation</th>
-				<th width="60%">Output</th>
+				<th width="15%">Name</th>
+				<th width="15%">Operation</th>
+				<th width="35%">Description</th>
+				<th width="35%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Unresolved']" >				
 			<tr>
-				<td width="20%"><xsl:value-of select="@Name" /></td>
-				<td width="20%"><xsl:value-of select="Operation" /></td>
-				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="15%"><xsl:value-of select="@Name" /></td>
+				<td width="15%"><xsl:value-of select="Operation" /></td>
+				<td width="35%"><xsl:value-of select="Description" /></td>
+				<td width="35%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -144,15 +156,17 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsUnsupported</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th width="20%">Name</th>
-				<th width="20%">Operation</th>
-				<th width="60%">Output</th>
+				<th width="15%">Name</th>
+				<th width="15%">Operation</th>
+				<th width="35%">Description</th>
+				<th width="35%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Unsupported']" >				
 			<tr>
-				<td width="20%"><xsl:value-of select="@Name" /></td>
-				<td width="20%"><xsl:value-of select="Operation" /></td>
-				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="15%"><xsl:value-of select="@Name" /></td>
+				<td width="15%"><xsl:value-of select="Operation" /></td>
+				<td width="35%"><xsl:value-of select="Description" /></td>
+				<td width="35%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -165,15 +179,17 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsSkipped</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th width="20%">Name</th>
-				<th width="20%">Operation</th>
-				<th width="60%">Output</th>
+				<th width="15%">Name</th>
+				<th width="15%">Operation</th>
+				<th width="35%">Description</th>
+				<th width="35%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Skipped']" >				
 			<tr>
-				<td width="20%"><xsl:value-of select="@Name" /></td>
-				<td width="20%"><xsl:value-of select="Operation" /></td>
-				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="15%"><xsl:value-of select="@Name" /></td>
+				<td width="15%"><xsl:value-of select="Operation" /></td>
+				<td width="35%"><xsl:value-of select="Description" /></td>
+				<td width="35%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -186,15 +202,17 @@
 		<xsl:attribute name="Id"><xsl:value-of select="$Module" />TestsTimedOut</xsl:attribute>
 		<table width="100%">
 			<tr>
-				<th width="20%">Name</th>
-				<th width="20%">Operation</th>
-				<th width="60%">Output</th>
+				<th width="15%">Name</th>
+				<th width="15%">Operation</th>
+				<th width="35%">Description</th>
+				<th width="35%">Output</th>
 			</tr>
 		<xsl:for-each select="//Module[@Name=$Module]/Item[Status='Timeout']" >				
 			<tr>
-				<td width="20%"><xsl:value-of select="@Name" /></td>
-				<td width="20%"><xsl:value-of select="Operation" /></td>
-				<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+				<td width="15%"><xsl:value-of select="@Name" /></td>
+				<td width="15%"><xsl:value-of select="Operation" /></td>
+				<td width="35%"><xsl:value-of select="Description" /></td>
+				<td width="35%"><pre><xsl:value-of select="Output" /></pre></td>
 			</tr>
 		</xsl:for-each>
 		</table>
@@ -256,17 +274,19 @@
 			<hr />
 			<table width="100%">
 				<tr>
-					<th width="20%">Name</th>
-					<th width="20%">Operation</th>
-					<th width="60%">Output</th>
-				</tr>
+				<th width="15%">Name</th>
+				<th width="15%">Operation</th>
+				<th width="35%">Description</th>
+				<th width="35%">Output</th>
+			</tr>
 				<xsl:for-each select="//Module[@Name=$Module]/Item[@Name=$Item]">
 					<xsl:if test="Status!='Success' and Status!='Shallow'">
 						<tr>
 							<xsl:attribute name="class"><xsl:value-of select="Status" /></xsl:attribute>
-							<td width="20%"><xsl:value-of select="@Name" /></td>
-							<td width="20%"><xsl:value-of select="Operation" /></td>
-							<td width="60%"><pre><xsl:value-of select="Output" /></pre></td>
+							<td width="15%"><xsl:value-of select="@Name" /></td>
+							<td width="15%"><xsl:value-of select="Operation" /></td>
+							<td width="35%"><xsl:value-of select="Description" /></td>
+							<td width="35%"><pre><xsl:value-of select="Output" /></pre></td>
 						</tr>
 					</xsl:if>
 				</xsl:for-each>

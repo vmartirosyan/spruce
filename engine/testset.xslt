@@ -49,7 +49,17 @@ using std::string;
 	
 class <xsl:value-of select="$TestClassName" /> : public Process
 {
-	typedef map&lt;string, int (<xsl:value-of select="$TestClassName" />::*)(vector&lt;string>)> TestMap;
+	struct Test
+	{
+		Test(string desc = "", int (<xsl:value-of select="$TestClassName" />::*func)(vector&lt;string>) = NULL):
+			_description(desc),
+			_func(func)
+			{}
+		string _description;
+		int (<xsl:value-of select="$TestClassName" />::*_func)(vector&lt;string>);
+	};
+	
+	typedef map&lt;string, Test> TestMap;
 public:
 	<xsl:value-of select="$TestClassName" />():
 		Process(TEST_TIMEOUT),
@@ -70,10 +80,10 @@ public:
 	{			
 	<xsl:value-of select="StartUp"/>
 	<xsl:for-each select="Test">
-		_tests["<xsl:value-of select="@Name"/>"] = &amp;<xsl:value-of select="$TestClassName" />::<xsl:value-of select="@Name" />Func;
+		_tests["<xsl:value-of select="@Name"/>"] = Test( "<xsl:value-of select="Description"/>", &amp;<xsl:value-of select="$TestClassName" />::<xsl:value-of select="@Name" />Func);
 	</xsl:for-each>
 	<xsl:for-each select="Test[@FaultSimulationReady='true']">
-		_fsim_tests["<xsl:value-of select="@Name"/>"] = &amp;<xsl:value-of select="$TestClassName" />::<xsl:value-of select="@Name" />Func;
+		_fsim_tests["<xsl:value-of select="@Name"/>"] = Test("<xsl:value-of select="Description"/>", &amp;<xsl:value-of select="$TestClassName" />::<xsl:value-of select="@Name" />Func);
 	</xsl:for-each>
 	
 	struct FSimInfo info;
@@ -102,7 +112,7 @@ public:
 	string GetName() { return _name; }
 	void ExcludeTest(string test)
 	{
-		if ( _tests[test] != NULL )
+		if ( _tests[test]._func != NULL )
 		{
 			cerr &lt;&lt; "\n\t Test should be excluded: " &lt;&lt; test &lt;&lt; endl;
 			_tests_to_exclude.push_back(test);
@@ -112,7 +122,7 @@ public:
 	}
 	void RunTest(string test)
 	{
-		if ( _tests[test] != NULL )
+		if ( _tests[test]._func != NULL )
 			_tests_to_run.push_back(test);
 		else
 			throw Exception("Unknown test " + test);
@@ -137,26 +147,26 @@ public:
 				std::auto_ptr&lt;ProcessResult> pr;
 				if ( IsTestExcluded(it->first) )
 				{
-					tr = new <xsl:value-of select="$ModuleName"/>TestResult(new ProcessResult(Skipped, "Test was excluded"), "<xsl:value-of select="$TestSetName" />", it->first);
+					tr = new <xsl:value-of select="$ModuleName"/>TestResult(new ProcessResult(Skipped, "Test was excluded"), "<xsl:value-of select="$TestSetName" />", it->first, it->second._description);
 				}
 				else
 				{
 					Logger::LogInfo("Running test: " + it->first);
-					pr = std::auto_ptr&lt;ProcessResult>( Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(it->second)) );
+					pr = std::auto_ptr&lt;ProcessResult>( Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(it->second._func)) );
 					Logger::LogInfo("Test  " + it->first + " completed.");
-					tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr.get(), "<xsl:value-of select="$TestSetName" />", it->first);
+					tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr.get(), "<xsl:value-of select="$TestSetName" />", it->first, it->second._description);
 				
 				}
 
-				/*string log;
+				string log;
 				Status oopsStatus = OopsChecker(log); // log is an output parameter
 				if(oopsStatus != Success) 
 				{	
 					//so we have an emergency situation...
 					cerr&lt;&lt;"Oops Checker is activated: \n";
 					log = "Status: " + StatusMessages[oopsStatus] + "\nTest output: \n" + pr->GetOutput() + "\nSystem log message: \n" + log;
-					tr = new <xsl:value-of select="$ModuleName"/>TestResult(new ProcessResult(Fatal, log),"<xsl:value-of select="$TestSetName" />", it->first);
-				}*/
+					tr = new <xsl:value-of select="$ModuleName"/>TestResult(new ProcessResult(Fatal, log),"<xsl:value-of select="$TestSetName" />", it->first, it->second._description);
+				}
 			
 				res.AddResult( tr );
 				// If Fatal error has rised quit!
@@ -168,15 +178,17 @@ public:
 		{
 			for ( unsigned int i = 0; i &lt; _tests_to_run.size(); ++i )
 			{				
-				ProcessResult * pr = Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(_tests[_tests_to_run[i]]));
-				<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", _tests_to_run[i]);
+				ProcessResult * pr = Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(_tests[_tests_to_run[i]]._func));
+				<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", _tests_to_run[i], _tests[_tests_to_run[i]]._description);
 				delete pr;
 				res.AddResult( tr );
 			}
 		}
 		return res;
 	}
-		virtual TestResultCollection RunFaultyTests()
+	
+	
+	virtual TestResultCollection RunFaultyTests()
 	{
 		cerr &lt;&lt; "Running faulty tests:  <xsl:value-of select="$TestSetName" />: " &lt;&lt; _fsim_info_vec.size() &lt;&lt; endl;
 		_fsim_enabled = true;
@@ -190,11 +202,11 @@ public:
 			
 			 TestMap::iterator it = _fsim_tests.begin();
 			 cerr &lt;&lt; "\033[1;31mCalling: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
-				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
+				ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second._func);
 				//if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
 						//pr->SetStatus(Success);
 					cerr &lt;&lt; "\033[1;31mCalled: Test name: " &lt;&lt; it->first &lt;&lt; "\t. Parent pid: " &lt;&lt; getpid() &lt;&lt; ".\033[0m" &lt;&lt; endl;
-					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
+					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first, it->second._description);
 					delete pr;
 					res.AddResult( tr );
 					
@@ -230,7 +242,7 @@ public:
 				}
 				//for ( unsigned int k = 0; k &lt; _fsim_testCount; ++k)
 				
-					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second);
+					ProcessResult * pr = Execute((int (Process::*)(vector&lt;string>))it->second._func);
 					//if ( pr->GetStatus() >= Success &amp;&amp;  pr->GetStatus() &lt;= Fail )
 						//pr->SetStatus(Success);
 					if( _fsim_info_vec[i].Count > 0 &amp;&amp;  pr->GetStatus() == Success )
@@ -240,7 +252,7 @@ public:
 					}
 					if( _fsim_info_vec[i].Count > 0 &amp;&amp; pr->GetStatus() == Fail )
 						pr->SetStatus(FSimFail);
-					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first);
+					<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", it->first, it->second._description);
 					delete pr;
 					res.AddResult( tr );
 					// If one of the tests makes the process to get a signal, then the driver probably is not functional any more.
@@ -258,9 +270,9 @@ public:
 		DisableFaultSim();
 		return res;
 	}
-	<xsl:for-each select="Test">
+	<xsl:for-each select="Test">	
 	int <xsl:value-of select="@Name" />Func(vector&lt;string>)
-	{		
+	{	
 		Status _TestStatus = Success;
 		bool _InFooter = false;	
 		if ( _InFooter == true )
@@ -274,7 +286,7 @@ public:
 		<xsl:value-of select="/TestSet/Header" />
 			
 		<xsl:value-of select="Header" />		
-		cerr &lt;&lt; "Description: " &lt;&lt; "<xsl:value-of select="Description" />" &lt;&lt; endl;
+		//cerr &lt;&lt; "Description: " &lt;&lt; "<xsl:value-of select="Description" />" &lt;&lt; endl;
 		try
 		{
 			string DirPrefix = _DirPrefix;

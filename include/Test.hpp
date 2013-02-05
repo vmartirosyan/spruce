@@ -37,43 +37,49 @@ public:
 		ProcessResult(Unknown, "No output"),
 		_operation(0),
 		_arguments("No arguments provided") {}*/
-	TestResult(ProcessResult pr, int op, string args, string spec = "", string stroper = ""):
+	TestResult(ProcessResult pr, int op, string args, string desc, string spec = "", string stroper = ""):
 		ProcessResult(pr),
 		_spec(spec),
 		_operation(op),
+		_description(desc),
 		_stroperation(stroper),
 		_arguments(args) {}
 	
-	TestResult(ProcessResult pr, string args, string spec, string stroper):
+	TestResult(ProcessResult pr, string args, string spec, string stroper, string desc):
 		ProcessResult(pr),
 		_spec(spec),
-		_operation(0),		
+		_operation(0),
+		_description(desc),
 		_stroperation(stroper),
 		_arguments(args) {}
 		
-	TestResult(Status s, string output, int op, string args):
+	TestResult(Status s, string output, int op, string args, string desc):
 		ProcessResult(s, output),
 		_spec(""),
 		_operation(op),
+		_description(desc),
 		_stroperation(OperationToString()),
 		_arguments(args) {}
-	TestResult(ProcessResult pr, string op, string args):
+	TestResult(ProcessResult pr, string op, string args, string desc):
 		ProcessResult(pr),
 		_spec(""),
 		_operation(0),
+		_description(desc),
 		_stroperation(op),		
 		_arguments(args)
 		 {}
-	TestResult(Status s, string output, string op, string args):
+	TestResult(Status s, string output, string op, string args, string desc):
 		ProcessResult(s, output),
 		_spec(""),
 		_operation(0),
+		_description(desc),
 		_stroperation(op),
 		_arguments(args) {}
 	TestResult(TestResult const & tr) : 
 		ProcessResult(tr),
 		_spec(tr._spec),
 		_operation(tr._operation),
+		_description(tr._description),
 		_stroperation(tr._stroperation),
 		_arguments(tr._arguments) {}
 	 	 	 
@@ -91,6 +97,10 @@ public:
 	{
 		return _arguments;
 	}
+	string GetDescription() const
+	{
+		return _description;
+	}
 	virtual string ToXML();
 	string GetSpec() const
 	{
@@ -99,6 +109,7 @@ public:
 protected:
 	string _spec;
 	int _operation;
+	string _description;
 	string _stroperation;
 	string _arguments;
 };
@@ -109,9 +120,9 @@ public:
 	TestResultCollection():
 		_results()
 		{}
-	void AddResult(Status s, string output, int op, string args)
+	void AddResult(Status s, string output, int op, string args, string desc)
 	{
-		TestResult * tmp = new TestResult(s,output,op,args);
+		TestResult * tmp = new TestResult(s,output,op,args, desc);
 		_results.push_back(tmp);
 	}
 	void AddResult(TestResult * result)

@@ -10,14 +10,32 @@ using namespace std;
 class Item
 {
 public:
-	Item(string name = "", string operation = "", string status = "", string output = "", string arguments = ""): name_(name), id_(""), operation_(operation), status_(status), output_(output), arguments_(arguments), xml_(""), validXml_(false)
+	Item(string name = "", string operation = "", string description="", string status = "", string output = "", string arguments = ""):
+		name_(name),
+		id_(""),
+		operation_(operation),
+		status_(status),
+		output_(output),
+		arguments_(arguments),
+		description_(description),
+		xml_(""),
+		validXml_(false)
 	{
 		stringstream str;
 		str << rand();
 		id_ = str.str();
 	}
 	
-	Item(const Item &item): name_(item.getName()), id_(item.getId()), operation_(item.getOperation()), status_(item.getStatus()), output_(item.getOutput()), arguments_(item.getArguments()), xml_(""), validXml_(item.getValidXml())
+	Item(const Item &item):
+		name_(item.getName()),
+		id_(item.getId()),
+		operation_(item.getOperation()),		
+		status_(item.getStatus()),
+		output_(item.getOutput()),
+		arguments_(item.getArguments()),
+		description_(item.getDescription()),
+		xml_(""),
+		validXml_(item.getValidXml())
 	{	
 		
 	}
@@ -56,6 +74,11 @@ public:
 	{
 		return arguments_;
 	}
+	string getDescription() const
+	{
+		return description_;
+	}
+	
 	bool getValidXml() const
 	{
 		return validXml_;
@@ -92,6 +115,11 @@ public:
 		validXml_ = false;
 		arguments_ = arguments;
 	}
+	void setDescription(string description)
+	{
+		validXml_ = false;
+		description_ = description;
+	}
 	
 protected:
 	string name_;
@@ -100,6 +128,7 @@ protected:
 	string status_;
 	string output_;
 	string arguments_;
+	string description_;
 	
 	string xml_;
 	bool validXml_;
@@ -110,6 +139,7 @@ protected:
 		processValidTag(status_);
 		processValidTag(output_);
 		processValidTag(arguments_);
+		processValidTag(description_);
 	}
 	
 	void processValidTag(string& str)
@@ -141,6 +171,7 @@ protected:
 			xml_ = "";
 			xml_ += "\t\t<Item Name=\"" + name_ + "\"" + " Id=\"" + id_ + "\">\n";
 			xml_ += "\t\t\t<Operation>" + operation_ + "</Operation>\n";
+			xml_ += "\t\t\t<Description>" + description_ + "</Description>\n";
 			xml_ += "\t\t\t<Status>" + status_ + "</Status>\n";
 			xml_ += "\t\t\t<Output>" + output_ + "</Output>\n";
 			xml_ += "\t\t\t<Arguments>" + arguments_ + "</Arguments>\n";
@@ -181,7 +212,12 @@ public:
 	SpruceLog(string fileName = "", string fsName = "", string mountOptions = "", string duration = "", string moduleName = ""): fileName_(fileName), fsName_(fsName), mountOptions_(mountOptions), duration_(duration), moduleName_(moduleName)
 	{
 		
-	}	
+	}
+	
+	void setDuration(string duration)
+	{
+		duration_ = duration;
+	}
 	
 	virtual ~SpruceLog()
 	{

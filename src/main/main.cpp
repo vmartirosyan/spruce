@@ -595,7 +595,7 @@ int main(int argc, char ** argv)
 					stringstream str;
 					str << ItemDuration;
 					
-
+					xmlSpruceLog.setDuration(str.str());
 					
 					// Process the memory leak checker output
 					if ( PerformLeakCheck && kedr.IsRunning() )

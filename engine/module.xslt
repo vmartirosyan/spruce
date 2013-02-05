@@ -50,11 +50,11 @@ class <xsl:value-of select="$ModuleName"/>TestResult : public TestResult
 {
 	public:
 		
-		<xsl:value-of select="$ModuleName"/>TestResult(ProcessResult* pr, string spec, string oper) :	
-		TestResult(ProcessResult(*pr), "", spec, oper)
+		<xsl:value-of select="$ModuleName"/>TestResult(ProcessResult* pr, string spec, string oper, string desc) :	
+		TestResult(ProcessResult(*pr), "", spec, oper, desc)
 		{						
 		}
-		virtual string ToXML()
+		/*virtual string ToXML()
 		{			
 			stringstream str;
 			str &lt;&lt; rand();
@@ -71,7 +71,7 @@ class <xsl:value-of select="$ModuleName"/>TestResult : public TestResult
 			s += _output;
 			s +=  string("&lt;/Output>\n\t&lt;Arguments>&lt;/Arguments>\n\t&lt;/Item>");
 			return s;
-		}
+		}*/
 };
 
 
@@ -185,7 +185,7 @@ int main(int argc, char ** argv)
 			vector&lt;TestResult*>::iterator i;
 			for( i = items.begin(); i != items.end(); i++)
 			{
-				moduleLog.addItem(Item((*i)->GetSpec(), (*i)->GetStrOperation(), (*i)->StatusToString(), (*i)->GetOutput(), (*i)->GetArguments()));
+				moduleLog.addItem(Item((*i)->GetSpec(), (*i)->GetStrOperation(), (*i)->GetDescription(), (*i)->StatusToString(), (*i)->GetOutput(), (*i)->GetArguments()));
 			}
 			return Results.GetStatus();
 	}

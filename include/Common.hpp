@@ -305,7 +305,7 @@ public:\
 	{\
 		cerr << "EmptyTestSet" << endl;\
 		TestResultCollection res;\
-		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name, "None");\
+		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name, "None", "None");\
 		res.AddResult(tr);\
 		return res;\
 	}\
@@ -313,7 +313,7 @@ public:\
 	{\
 		cerr << "EmptyTestSet" << endl;\
 		TestResultCollection res;\
-		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name, "None");\
+		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name, "None", "None");\
 		res.AddResult(tr);\
 		return res;\
 	}\
