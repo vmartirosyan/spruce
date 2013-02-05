@@ -82,9 +82,10 @@ enum ErrorCodes
 	FAULT,
 	NOMODULES
 };
-
+void GenerateHtml(string logfolder, string fs);
 void OpenLogFiles(string browser, string logfolder, vector<string> XMLFilesToProcess);
 void OpenDashboard(string browser, string logfolder, string fs);
+
 
 int main(int argc, char ** argv)
 {
@@ -625,40 +626,43 @@ int main(int argc, char ** argv)
 						
 					}
 					
-					moduleLog.addItem(lcItem);
-					xmlSpruceLog.closeTags();
-					UnixCommand xslt("xsltproc");
-					vector<string> xslt_args;
 					
-					xslt_args.push_back("-o");
-					xslt_args.push_back(FileName.substr(0, FileName.size() - 3) + "html");
-					xslt_args.push_back("-novalid");			
-					xslt_args.push_back(logfolder + "/xslt/processor.xslt");
-					xslt_args.push_back(FileName);
-										
-					ProcessResult *res = xslt.Execute(xslt_args);
+					if ( ! ((configValues.find("genhtml") != configValues.end()) && (configValues["genhtml"] == "false")))
+					{					
+						moduleLog.addItem(lcItem);
+						xmlSpruceLog.closeTags();
+						UnixCommand xslt("xsltproc");
+						vector<string> xslt_args;
+						
+						xslt_args.push_back("-o");
+						xslt_args.push_back(FileName.substr(0, FileName.size() - 3) + "html");
+						xslt_args.push_back("-novalid");			
+						xslt_args.push_back(logfolder + "/xslt/processor.xslt");
+						xslt_args.push_back(FileName);
+											
+						ProcessResult *res = xslt.Execute(xslt_args);
 
-					if ( res == NULL )
-					{
-						cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;						
-					}
-					
-					if ( res->GetStatus() != Success )
-					{
-						cerr << res->GetOutput() << endl;
-					}			
-					
-					ModuleStatus = result->GetStatus();					
-					
-					SpruceStatus = static_cast<Status>(ModuleStatus | SpruceStatus);
-					cerr << "Module " << *module << " exits with status `" << StatusMessages[ModuleStatus] << "`" << endl;
-					if ( ModuleStatus >= Fatal )
-					{
-						cerr << "\033[1;31mSpruce: Fatal error has rised. Stopping system execution.\033[0m" << endl;						
-						break;
-					}
-					cout << endl;
-					
+						if ( res == NULL )
+						{
+							cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;						
+						}
+						
+						if ( res->GetStatus() != Success )
+						{
+							cerr << res->GetOutput() << endl;
+						}			
+						
+						ModuleStatus = result->GetStatus();					
+						
+						SpruceStatus = static_cast<Status>(ModuleStatus | SpruceStatus);
+						cerr << "Module " << *module << " exits with status `" << StatusMessages[ModuleStatus] << "`" << endl;
+						if ( ModuleStatus >= Fatal )
+						{
+							cerr << "\033[1;31mSpruce: Fatal error has rised. Stopping system execution.\033[0m" << endl;						
+							break;
+						}
+						cout << endl;
+					}						
 				}
 				while ( PS != PS_Done );
 				
@@ -717,13 +721,16 @@ int main(int argc, char ** argv)
 			fs_xml.close();
 			MountOptions.erase(MountOptions.begin(), MountOptions.end());
 			
-			// Open the log files in the selected browser
-			if ( browser != "" )
+			// we generate html's if it is in need, also if the browser is specified, open the log files in the selected browser.
+			if ( !( (configValues.find("genhtml") != configValues.end() ) && ( configValues["genhtml"] == "false") ) )
 			{
-				OpenDashboard(browser, logfolder, *fs);
-				//OpenLogFiles(browser, logfolder, XMLFilesToProcess);
-				//XMLFilesToProcess.erase(XMLFilesToProcess.begin(), XMLFilesToProcess.end());
+				GenerateHtml(logfolder, *fs);
+				if( browser != "" )
+				{
+					OpenDashboard(browser, logfolder, *fs);
+				}
 			}
+			//XMLFilesToProcess.erase(XMLFilesToProcess.begin(), XMLFilesToProcess.end());
 			if (  ModuleStatus >= Fatal )
 			{
 				break;
@@ -739,12 +746,9 @@ int main(int argc, char ** argv)
 	//return 0;
 }
 
-void OpenDashboard(string browser, string logfolder, string fs)
+
+void GenerateHtml(string logfolder, string fs)
 {
-	// The new process must be created to be able to execute the browser as non-privileged user.
-	if ( fork() == 0 )
-	{
-		cout << "Opening logfile in browser " << browser << endl;
 		ProcessResult * res = NULL;
 		// Process the dashboard file
 		// cout << "Processing file " << fs << ".xml ...";
@@ -773,11 +777,22 @@ void OpenDashboard(string browser, string logfolder, string fs)
 			cerr << res->GetOutput() << endl;
 			_exit(1);
 		}			
-		cout << endl;
-	
+}
+
+void OpenDashboard(string browser, string logfolder, string fs)
+{
+					
+	// The new process must be created to be able to execute the browser as non-privileged user.
+	int fork_ret = fork();
+	if ( fork_ret == -1 )
+	{
+		cerr << "Cannot create process for opening Dashboard in browser." << endl;
+		return;
+	}				
+	if(fork_ret == 0)
+	{	
 		
-		// Change the effective user id to real user id... browsers don't like ronning as root.
-		
+		// Change the effective user id to real user id... browsers don't like running as root.
 		char * UserName = getenv("SUDO_USER");
 		//char * UserName = "nobody";
 		
@@ -806,7 +821,7 @@ void OpenDashboard(string browser, string logfolder, string fs)
 		vector<string> browser_args;
 		browser_args.push_back(logfolder + "/" + fs + ".html");
 		
-		res = browser_cmd->Execute(browser_args);
+		ProcessResult * res = browser_cmd->Execute(browser_args);
 		delete browser_cmd;
 		
 		if ( res == NULL )
@@ -825,7 +840,11 @@ void OpenDashboard(string browser, string logfolder, string fs)
 	{
 		wait(0);
 	}
+	
+	
 }
+
+
 
 void OpenLogFiles(string browser, string logfolder, vector<string> XMLFilesToProcess)
 {
@@ -862,7 +881,7 @@ void OpenLogFiles(string browser, string logfolder, vector<string> XMLFilesToPro
 			cout << "Done" << endl;
 		}
 		
-		// Change the effective user id to real user id... browsers don't like ronning as root.
+		// Change the effective user id to real user id... browsers don't like running as root.
 		
 		char * UserName = getenv("SUDO_USER");
 		//char * UserName = "nobody";
