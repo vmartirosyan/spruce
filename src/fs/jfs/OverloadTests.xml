@@ -1,0 +1,182 @@
+<!--    OverloadTests.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Karen Tsirunyan <ktsirunyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="OverlaodTests">
+	<Test Name="DirectoriesInWidth" FaultSimulationReady="true">
+		<Description>Trying to create many directories</Description>
+		<Dir count="1000"/>
+		<Code>
+				// just creating 1000 directories
+		</Code>
+	</Test>	
+	
+	<Test Name="DirectoriesNames" FaultSimulationReady="true">
+		<Description>Trying to create directories with different names</Description>
+		<Code>
+		Directory dir[100] = {
+		static_cast<string>("asdsadabbbbbbbbbbbbbbbbbbbbd"),
+		static_cast<string>("bqwessdwwwsddddddbbbbbbffffffffffffffffffffffdrs"),
+		static_cast<string>("ceedqwbbnnhdddddddddddddddddddddddddddddddddddh"),
+		static_cast<string>("dasdsavvvvvvvvvvvvvvvvvvvvvvvvvvvvvdad"),
+		static_cast<string>("ebqwessdnwvddddddddddddddddddddwwwrrtttts"),
+		static_cast<string>("fceedqwbbsnngggggggggggggggggggdnnhh"),
+		static_cast<string>("gasdsadannnnnnnnnnnnnnnnnnnnnnnnnnnnnn"),
+		static_cast<string>("hqwessdwwwrcccccccccccccccccccccccrtttdtsrtyrtyrty"),
+		static_cast<string>("ieedqwbbnnccccccccccccccccccccccchhserser"),
+		static_cast<string>("jbqwessdwwxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxwrrtttts"),
+		static_cast<string>("pasadsdsadzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzbad"),
+		static_cast<string>("obqwefdssdbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbwwwrrtttts"),
+		static_cast<string>("iceedqvcwbbbfffffffffffffffffffffffebnnhh"),
+		static_cast<string>("udasdsagfeeeeeeeeeeeeeeeeeeeeeeeeeeedad"),
+		static_cast<string>("yebqwesslreeeeeeeeeeeeeeeellllllllllllllledwwwrrtttts"),
+		static_cast<string>("tfceedqwhhhhhhhhhbfffffffffffffffftrbnnhh"),
+		static_cast<string>("egasdsadlllllllllllllllllllllllllljkghfjhhhhhhhfdad"),
+		static_cast<string>("whqwessdwfdwwrrttttsrtyrtyrty"),
+		static_cast<string>("qieedqwbbndnnnnnnnnnnnnnnnnnnnnnnnnnnnfnhhserser"),
+		static_cast<string>("rjbqwessdwwfdwrrtttts"),
+		static_cast<string>("Aasdsadaswwnbbbbbbbbbbbbbbbbbbbbbbbbbbbwwdd"),
+		static_cast<string>("Abqwessderwsdssssssssasdwwrrtttts"),
+		static_cast<string>("Aceedqwdfbbnndddddddddddddddddddqqqqqqqqqqqqqqqqqqhh"),
+		static_cast<string>("Adasdsafdadsssssssssssssssssssssd"),
+		static_cast<string>("Aebqwesbsssqsqdddddddddddwewrewrwewerwedwwwrrtttts"),
+		static_cast<string>("Afceedqbewbbnnewqqqqqqqqqqqqjkllllllllllllllhh"),
+		static_cast<string>("Agasdsabdadsaaaaaaaaaaaaaauiiiiiiiiiiiiwdd"),
+		static_cast<string>("Ahqwessdwwwrrttaaaaaaaaaaaaaaaaaaabttsrtyrtyrty"),
+		static_cast<string>("Aieedqwbbnnhhsffffffffffffffffffffffffebrser"),
+		static_cast<string>("Ajbqwessdwweeeeeeeeeeeeeeeeeeewrrtbttts"),
+		static_cast<string>("asdsadaeeeeeeeeeeeeeeeeeeeeed"),
+		static_cast<string>("bqwesseeeeeeeeeeeeeeeeefffffffffffdwwwrrtttts"),
+		static_cast<string>("ceedqwddddddddddddddddddddkkkkkkkkkkkkkowwwwwwwwwwwbbnnhh"),
+		static_cast<string>("dasdsadnnnnnnnnnnnnnnnnnad"),
+		static_cast<string>("ebqwessdwbbbbbbbbbbbbbbbbbbbbbbbbbbbbbwwrrtttts"),
+		static_cast<string>("fceedqwbbnnnnnnnnnnnnnnnnnnnnnnnnnnnnnhh"),
+		static_cast<string>("gasdsabbbbbbbbbbbbbbbbbbbbbbbbbbdad"),
+		static_cast<string>("hqwessdwwfgggggggggggggggggggggggggwrrttttsrtyrtyrty"),
+		static_cast<string>("ieedqwbbrrrrrrrrrrrrrrrrrfgdferrrrrrennhhserser"),
+		static_cast<string>("jbqwessbbbbbbbbbbbbbbbbbbbbbdwwwrrtttts"),
+		static_cast<string>("Pasdsadabbbbbbbbbpoiuytrwsddsasbbbbbbbbbbbd"),
+		static_cast<string>("WEbqwessdwwwsddddddbbbbbbffffffffhsadgffffffffffffffdrs"),
+		static_cast<string>("Tceedqwbbnnhdddddddddddddddddddsghadddddddddddddddddh"),
+		static_cast<string>("TEasdsavvvvvvvvvvvvvvvvvvvvlkjhfdvvvvvvvvvdad"),
+		static_cast<string>("Kebqwessdnwvddddddddddddddddddgfdddwwwrrtttts"),
+		static_cast<string>("Tfceedqwbbsnnggggggggggggggggggfdfgdnnhh"),
+		static_cast<string>("Pgasdsadannnnnnnnnnnnnnnnnnnnnnnnntynnnnn"),
+		static_cast<string>("qhqwessdwwwrcccccccccccccccccccccccryutttdtsrtyrtyrty"),
+		static_cast<string>("Qieedqwbbnncccccccccccccccccccccccewqhhserser"),
+		static_cast<string>("QEWjbqwessdwwxxxxxxxxxxxxxxxxxxxsd_fxxxxxxxxxxxxxwrrtttts"),
+		static_cast<string>("ERpasadsdsadzzzzzzzzzzzzzzzzzzlk_zzzzzzzzzzzzzzzzzzzzzzzzzzbad"),
+		static_cast<string>("FoDSbqwefdssdbbbbbbbbbbbbbbbghbbbbbbbbbbbbbbbbbbbwwwrrtttts"),
+		static_cast<string>("Giceedqvcwbbbffffffffffffdfgffdffffffffffebnnhh"),
+		static_cast<string>("Gudasdsagfeeeeeeeeeeeeeeeeeeeeeeeeeeedad"),
+		static_cast<string>("Fyebqwesslreeeeeeeeeeeeeeeellczllllllllllllledwwwrrtttts"),
+		static_cast<string>("Btfceedqwhhhhhhhhhbffffffffasdffffffffftrbnnhh"),
+		static_cast<string>("Vegasdsadllllllllllllllllwqelllllllllljkghfjhhhhhhhfdad"),
+		static_cast<string>("KLNwhqwessdwfdwwrrttttsrtuyyrtyrty"),
+		static_cast<string>("Pqieedqwbbndnnnnnnnnnnnnoinnnnnnnnnnnnnnnfnhhserser"),
+		static_cast<string>("ZXCjbqwessdwwfdwrrttttoius"),
+		static_cast<string>("QWQasdsadaswwnbbbbbbbbbbbbbbbbpuibbbbbbbbbbbwwdd"),
+		static_cast<string>("Abqwessderwsdssssssssasdwwrrdsatttts"),
+		static_cast<string>("UIOAceedqwdfbbnndddddddddddsaddddddddqqqqqqqqqqqqqqqqqqhh"),
+		static_cast<string>("AOIUdasdsafdadssssssssssssfdsssssssssd"),
+		static_cast<string>("HJKAebqwesbsssqsqddddddddddddwewrewrwewerwedwwwrrtttts"),
+		static_cast<string>("POIAfceedqbewbbnnewqqqqqqqerqqqqqjkllllllllllllllhh"),
+		static_cast<string>("hjg123_Agasdsabdadsaaaaaaaeaaaaaaauiiiiiiiiiiiiwdd"),
+		static_cast<string>("_Ahqwessdwwwrrttaaaaaaaaaaaaaaaaaaabttsrtyrtyrty"),
+		static_cast<string>("asdAieedqwbbnnhhsfffffffffefffffffffffffffebrser"),
+		static_cast<string>("_xxsssAjbqwessdwweeeeeeeeeeeeeeeeeeeewrrtbttts"),
+		static_cast<string>("XXCsZdadasdsadaeeeeeeeeeeeeeeeeeeeeeed"),
+		static_cast<string>("ZIXHSDbqwesseeeeeeeeeeeeeeeeeefffffffffffdwwwrrtttts"),
+		static_cast<string>("SFDceedqwdddddddddddddddddderddkkkkkkkkkkkkkowwwwwwwwwwwbbnnhh"),
+		static_cast<string>("POdasdsadnnnnnnnnnnnnnnnnnarwed"),
+		static_cast<string>("ERTebqwessdwbbbbbbbbbbbbbbbbbbwbbbbbbbbbbbwwrrtttts"),
+		static_cast<string>("SDLKfceedqwbbnnnnnnnnnnnnnnnrewnnnnnnnnnnnnnnhh"),
+		static_cast<string>("FNDgasdsabbbbbbbbbbbbbbbbbrwebbbbbbbbbdad"),
+		static_cast<string>("Fhqwessdwwfggggggggggggsdafgggggggggggggwrrttttsrtyrtyrty"),
+		static_cast<string>("GFDGieedqwbbrrrrrrrbrbbrrrrrrrrrfgdferrrrrrennhhserser"),
+		static_cast<string>("DDFjbqwessbbbbbbbbbbbbbbbbbbbbbbbdwwwrrtttts")}	;
+		
+		dir[2] = static_cast<string>("I'm used variable");
+		
+		</Code>
+	</Test>	
+	
+	<Test Name="DirectoriesInDepth" FaultSimulationReady="true">
+		<Description>Trying to create many directories inserted</Description>
+		<Code>
+			
+			string Dirpath1;
+			string Dirpath;
+			string Dirpath2;
+			for(char c = 'a'; c < 'z'; ++c)
+			{
+				Dirpath = "dir";
+				Dirpath += c;
+				Unres(mkdir(Dirpath.c_str(), 0777) == -1, "Connot make a directory 1");
+				Dirpath1 = Dirpath;
+				Dirpath2 = Dirpath;
+				Dirpath1 += "/";
+				for(char c1 = 'a'; c1 < 'z'; ++c1)
+				{
+					
+					Dirpath1 += c1;
+					Dirpath2 += "/other";
+					Unres(mkdir(Dirpath1.c_str(), 0777) == -1, "cannot make a directory 2");
+					Dirpath1 += "/";
+					Unres(mkdir(Dirpath2.c_str(), 0777) == -1, "cannot make a directory 3");
+				}
+			}
+
+		</Code>
+	</Test>	
+	
+	<Test Name="ManyBigFiles" FaultSimulationReady="true">
+		<Description>Trying to create some big files</Description>
+		<File count = "500" />
+		<Code>
+		
+		
+			Unres ( system("rm -rf *") != 0, "Cannot clear partition");
+			const string fileName = "BigFileewoieqhasddddddddwwwwwwwwwwwwwwwwwwwwwwssssssssssssssssssssssssssssssq";		
+			const int fileSize = 3*1024;
+			char * data = new char[fileSize - 10];
+					
+			File file(fileName);
+			write(file.GetFileDescriptor(), data, fileSize - 10);
+			close(file.GetFileDescriptor());	
+						
+			Unres(mkdir("dir1", 0777) == -1, "cannot make a directory");	
+			const string fileName1 = "dir1/gggggggggggggeeeeeeeBigFile1";										
+			File file1(fileName1);
+			write(file1.GetFileDescriptor(), data, fileSize - 10);
+			close(file1.GetFileDescriptor());	
+			Unres(mkdir("newdir", 0777) == -1, "cannot make a directory");	
+			const string fileName2 = "newdir/ZASDdddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww";										
+			File file2(fileName2);
+			write(file2.GetFileDescriptor(), data, fileSize - 10);
+			close(file2.GetFileDescriptor());	
+			
+			delete data;
+		
+		</Code>
+	</Test>	
+</TestSet>

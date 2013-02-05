@@ -1,0 +1,161 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=koi8-r" />
+<style type="text/css">
+.ptl_gray { background: #E6E6E6;}
+.ptl_gray:hover { background: #D6D6F0;}
+.ptl_green { background: #CDFFCD;}
+.ptl_green:hover { background: #A0FFA0;}
+.ptl_yellow { background: #FFFFCD;}
+.ptl_yellow:hover { background: #FFFF90;}
+.ptl_red { background: #FFCDCD;}
+.ptl_red:hover { background: #FFA0A0;}
+.ptl_gray,.ptl_green,.ptl_yellow,.ptl_red { cursor: pointer; }
+.view_srv { display: none; }
+.view_as_is { display: none; }
+</style>
+</head>
+<body>
+<script language="javascript" type="text/javascript">
+// <![CDATA[
+function flip (message_box_id) {
+    msgbox = document.getElementById(message_box_id);
+    if (msgbox.style.display != 'none') {
+        msgbox.style.display = 'none';
+    }
+    else {
+        msgbox.style.display = '';
+    }
+}
+function bug_report(journal_path, test_suite, test_case) {
+    if (confirm('A new E-mail to khoroshilov\@ispras.ru will now be created.\nPlease, specify all the necessary details and attach the journal files:\n\n' +
+        journal_path + '\n\nContinue?'))
+    {
+        document.location = 'mailto:khoroshilov\@ispras.ru?Subject=Problem%20report:%20' + test_suite + '%20/%20' + test_case;
+    }
+}
+// ]]>
+</script>
+<h1><TMPL_IF test_system><!--TMPL_VAR test_system --> tests results<!--TMPL_ELSE-->Test results</TMPL_IF><TMPL_IF system_under_test> on <!--TMPL_VAR system_under_test --></TMPL_IF>.</h1>
+<TMPL_IF test_infos>
+<h3>Test Info</h3>
+<table>
+<TMPL_LOOP test_infos>
+<tr style="padding: 4px; margin: 4px;">
+<td style="background-color:rgb(200, 200, 200);"><!--TMPL_VAR title --></td>
+<td style="padding: 2px; margin: 2px; background-color:rgb(230, 230, 230)"><!--TMPL_VAR content --></td>
+</tr>
+</TMPL_LOOP>
+</table>
+</TMPL_IF>
+<h3>Tests executed</h3>
+<table border='0' cellpadding='2' cellspacing='1'>
+<TMPL_LOOP NAME=top_groups>
+<TMPL_IF top_group_name><tr><td colspan='4' style='background-color:#b0b0ff'>&nbsp;<b><!--TMPL_VAR top_group_name --></b></td></tr></TMPL_IF>
+    <TMPL_LOOP NAME=sub_groups>
+<TMPL_IF sub_group_name><tr><td colspan='4' style='background-color:#d0d0f0'>&nbsp;&nbsp;&nbsp;<b><!--TMPL_VAR sub_group_name --></b></td></tr></TMPL_IF>
+        <TMPL_LOOP journals>
+<tr style='background-color: rgb(230, 230, 230)'>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;
+    <b><a href='#<!--TMPL_VAR journal_anchor -->' title='Click here to proceed to details'><!--TMPL_VAR journal_title --></a></b>
+</td>
+<td>
+            <TMPL_IF NAME=test_version>
+&nbsp; <font size='-1' color='#555555'>v <!--TMPL_VAR test_version --></font>
+            </TMPL_IF>
+</td>
+<td style="background-color:<TMPL_INCLUDE journal_status_bg_color_incl>">
+    <!--TMPL_VAR status -->
+</td>
+<td>
+    <span style='color:black'>Passed: <!--TMPL_VAR stats_tests_passed --></span>
+</td>
+</tr>
+        </TMPL_LOOP>
+    </TMPL_LOOP>
+</TMPL_LOOP>
+</table>
+<TMPL_LOOP journals>
+<hr/>
+<h2><a name="<TMPL_VAR journal_anchor>"></a><font color="#336699"><!--TMPL_VAR journal_title --></font>
+    <TMPL_IF test_version>
+&nbsp; <font size='-1' color='#888888'>v <!--TMPL_VAR test_version --></font>
+    </TMPL_IF>
+</h2>
+<!--TMPL_INCLUDE general_info_incl -->
+<h4>Problem Summary</h4>
+    <TMPL_IF problems>
+<p>Click on lines in the table to see the details about each problem.</p>
+
+<table width="100%">
+<thead>
+<tr style="font-weight:bold; background-color:rgb(200, 200, 200);">
+<td>Test Name</td><td>Severity</td><td>Resolution</td>
+</tr>
+</thead>
+<tbody>
+    <TMPL_LOOP problems>
+<tr class="ptl_<TMPL_INCLUDE problem_color_incl>" title='Click here!' onclick="flip('msgbox<TMPL_VAR problem_id>');">
+<td>
+        <TMPL_IF test_name>
+<!--TMPL_INCLUDE problem_test_incl -->
+            <TMPL_IF test_point>
+<span style="color:rgb(0, 0, 128);"><!--TMPL_VAR test_point --></span>
+            </TMPL_IF>
+        <!--TMPL_ELSE-->
+(none)
+        </TMPL_IF>
+</td>
+<td><!--TMPL_VAR severity --></td>
+<td><!--TMPL_VAR resolution --></td>
+</tr>
+<!--
+    Print the detail block, which is initially hidden and unrolls when
+    the table row is clicked (via the javascript above).
+-->
+<tr id="msgbox<TMPL_VAR problem_id>" style="display:none;">
+<td colspan="3">
+<div style='padding-left:32px;'>
+Messages from the test
+<div style="color:rgb(64, 64, 64);padding-left:32px;">
+        <TMPL_IF test_messages>
+<p style='font-family:monospace; white-space: pre'><!--TMPL_VAR NAME=test_messages ESCAPE=HTML --></p>
+        <!--TMPL_ELSE-->
+(none)
+        </TMPL_IF>
+</div>
+        <TMPL_IF comment>
+Comment:
+<div style="color:rgb(64, 64, 64);padding-left:32px;">
+<!--TMPL_VAR comment -->
+</div>
+        </TMPL_IF>
+</div>
+        <TMPL_IF severity_failed>
+<div align="right">
+<input type="button" value="Report Bug in the Test"
+    onclick="javascript:bug_report('$result_dir/$output_file_name', <TMPL_VAR journal_title ESCAPE=URL>, <TMPL_VAR test_name ESCAPE=URL>%20<TMPL_VAR test_point ESCAPE=URL>);"
+    title="Press this button if you beleive the problem is in the test, not in your system."/>
+</div>
+        </TMPL_IF>
+</td>
+</tr>
+    </TMPL_LOOP>
+</tbody>
+</table>
+    <!--TMPL_ELSE-->
+<p><font color='#006600'><b>No problems were detected.</b></font></p>
+    </TMPL_IF>
+<table>
+<tbody>
+    <TMPL_LOOP infos>
+<tr style="padding: 4px; margin: 4px;">
+<td style="background-color:rgb(200, 200, 200);"><!--TMPL_VAR title --></td>
+<td style="padding: 2px; margin: 2px; text-align: right; <TMPL_INCLUDE info_color_incl>"><!--TMPL_VAR content --></td>
+</tr>
+    </TMPL_LOOP>
+</tbody>
+</table>
+</TMPL_LOOP>
+</body>
+</html>
