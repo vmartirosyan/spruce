@@ -8,14 +8,15 @@ isn't covered as mount options are parsed and checked in super.c-->
         <Test Name="RemountResize" FaultSimulationReady="true">
                 <Description>Resize.</Description>              
                 <Code>
-						if(strcmp("", getenv("MountOpts")) != 0)
+						if( getenv("MountData") != NULL && strcmp("", getenv("MountData")) != 0)
 						{
 							Return(Skipped);
 						}
                         Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
                         Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
                         Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-						int res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+                        int res;
+						res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
 						if( res!= PS_Success )
 						{
 							if( res == PS_Fatal )
@@ -28,6 +29,7 @@ isn't covered as mount options are parsed and checked in super.c-->
 						}
 						
                         res = mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") ;
+                        
                         
 						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 						{
