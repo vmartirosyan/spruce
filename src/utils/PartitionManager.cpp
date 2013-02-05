@@ -75,13 +75,14 @@ PartitionStatus PartitionManager::PreparePartition()
 // Try to re-create the file system and mount it with the precious mount options.		
 PartitionStatus PartitionManager::RestorePartition(string DeviceName, string MountPoint, string FileSystem, bool RecreateFilesystem, bool resizeFlag)
 {
-	if( !getenv("MountOpts"))
+	if( !getenv("MountFlags") || !getenv("MountData") || ( RecreateFilesystem && !getenv("MkfsOpts") ) )
 		return PS_Fatal;
 	if( !ReleasePartition(MountPoint))
 		return PS_Skip;
-	if( RecreateFilesystem && !CreateFilesystem(FileSystem, DeviceName,resizeFlag))
+	if( RecreateFilesystem && !CreateFilesystem(FileSystem, DeviceName,resizeFlag, getenv("MkfsOpts")))
 		return PS_Fatal;
-	if( !Mount(DeviceName,MountPoint,FileSystem,getenv("MountOpts")) )
+	
+	if( !Mount(DeviceName,MountPoint,FileSystem,getenv("MountData"), atoi(getenv("MountFlags"))) )
 		return PS_Skip;
 	return PS_Success;
 }
@@ -156,7 +157,7 @@ bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSyst
 	
 	mnt_args.push_back("-o");
 	mnt_args.push_back(Options);
-	setenv("MountOpts", Options.c_str(), 1);
+	
 				
 	ProcessResult * res = mnt->Execute(mnt_args);
 	delete mnt;
@@ -171,6 +172,13 @@ bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSyst
 		Options.erase(Options.begin() + Options.length() - 1);
 	//cerr << "Mounting " << DeviceName << " to " << MountPoint << " (" << FileSystem << ") \nFlags: "
 	//	<< Flags << ", Data: " << Options << endl;
+	
+	char buf[10];
+	sprintf(buf, "%lu", Flags);
+		
+	setenv("MountFlags", buf, 1);
+	setenv("MountData", Options.c_str(), 1);
+	
 	if ( mount(DeviceName.c_str(), MountPoint.c_str(), FileSystem.c_str(), Flags, Options.c_str()) == -1 )
 	{
 		Logger::LogError("Cannot mount device.");
@@ -509,10 +517,10 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 		cerr << "Error: " << res->GetOutput() << endl;
 		return false;
 	}
+	setenv("MkfsOpts", mkfs_opts.c_str(), 1);
 	Logger::LogInfo("Mkfs complete.");
 	return true;
 }
-
 
 FileSystems PartitionManager::GetFSNumber(string FSName)
 {
