@@ -63,8 +63,8 @@ public:
 		_fsim_tests(),
 		_fault_count(0),
 		_fsim_info_vec(),
-		DirPrefix("<xsl:value-of select="$TestClassName" />_<xsl:value-of select="@Name"/>_dir_"),
-		FilePrefix("<xsl:value-of select="$TestClassName" />_<xsl:value-of select="@Name"/>_file_")
+		_DirPrefix("<xsl:value-of select="$TestClassName" />_<xsl:value-of select="@Name"/>_dir_"),
+		_FilePrefix("<xsl:value-of select="$TestClassName" />_<xsl:value-of select="@Name"/>_file_")
 		//_testCount(<xsl:value-of select="count(Test)"/>),
 		//_fsim_testCount(<xsl:value-of select="count(Test[@FaultSimulationReady='true'])"/>)		
 	{			
@@ -125,6 +125,7 @@ public:
 	
 	virtual TestResultCollection RunNormalTests()
 	{
+		chdir(MountPoint);
 		TestResultCollection res;
 		//for ( unsigned int i  = 0; i &lt; _tests.size(); ++i)
 		if ( _tests_to_run.empty() )
@@ -147,7 +148,7 @@ public:
 				
 				}
 
-				string log;
+				/*string log;
 				Status oopsStatus = OopsChecker(log); // log is an output parameter
 				if(oopsStatus != Success) 
 				{	
@@ -155,7 +156,7 @@ public:
 					cerr&lt;&lt;"Oops Checker is activated: \n";
 					log = "Status: " + StatusMessages[oopsStatus] + "\nTest output: \n" + pr->GetOutput() + "\nSystem log message: \n" + log;
 					tr = new <xsl:value-of select="$ModuleName"/>TestResult(new ProcessResult(Fatal, log),"<xsl:value-of select="$TestSetName" />", it->first);
-				}
+				}*/
 			
 				res.AddResult( tr );
 				// If Fatal error has rised quit!
@@ -276,6 +277,10 @@ public:
 		cerr &lt;&lt; "Description: " &lt;&lt; "<xsl:value-of select="Description" />" &lt;&lt; endl;
 		try
 		{
+			string DirPrefix = _DirPrefix;
+			DirPrefix.append(static_cast&lt;string>("<xsl:value-of select="@Name" />_"));
+			string FilePrefix = _FilePrefix;
+			FilePrefix.append(static_cast&lt;string>("<xsl:value-of select="@Name" />_"));
 			<xsl:if test="Dir">
 			const int DirCount = <xsl:value-of select="Dir/@count"/>;
 			string DirPaths[DirCount];
@@ -299,7 +304,7 @@ public:
 			{
 				char buf[5];
 				sprintf(buf, "%d", i);
-				DirPaths[i] = DirPrefix + "<xsl:value-of select="@Name" />_" +  buf;
+				DirPaths[i] = DirPrefix + buf;
 				DirDs[i] = Dirs[i].Open(DirPaths[i], S_IRWXU);
 				if ( DirDs[i] == -1 )
 				{
@@ -312,7 +317,7 @@ public:
 			{
 				char buf[5];
 				sprintf(buf, "%d", i);
-				DirFilePaths[i] = DirPaths[0] + "/" + FilePrefix + "<xsl:value-of select="@Name" />_" + buf;
+				DirFilePaths[i] = DirPaths[0] + "/" + FilePrefix + buf;
 				DirFDs[i] = DirFiles[i].Open(DirFilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
 				if ( DirFDs[i] == -1 )
 				{
@@ -326,7 +331,7 @@ public:
 			{
 				char buf[5];
 				sprintf(buf, "%d", i);
-				DirDirPaths[i] = DirPaths[0] + "/" + DirPrefix + "<xsl:value-of select="@Name" />_" + buf;
+				DirDirPaths[i] = DirPaths[0] + "/" + DirPrefix + buf;
 				DirDDs[i] = DirDirs[i].Open(DirDirPaths[i], S_IRWXU);
 				if ( DirDDs[i] == -1 )
 				{
@@ -355,7 +360,7 @@ public:
 			{
 				char buf[2];
 				sprintf(buf, "%d", i);
-				FilePaths[i] = FilePrefix + "<xsl:value-of select="@Name" />_" + buf;
+				FilePaths[i] = FilePrefix + buf;
 				FDs[i] = Files[i].Open(FilePaths[i], FileMode, FileFlags);
 				if ( FDs[i] == -1 )
 				{
@@ -399,8 +404,8 @@ protected:
 	//int (<xsl:value-of select="@Name" />Tests::*_fsim_tests[<xsl:value-of select="count(Test)"/>])(vector&lt;string>);
 	vector&lt;FSimInfo> _fsim_info_vec;
 	<xsl:value-of select="/TestSet/Internal"/>
-	const string DirPrefix;
-	const string FilePrefix;
+	const string _DirPrefix;
+	const string _FilePrefix;
 	Status OopsChecker(string&amp; OutputLog)	
 	{
 		string mainMessage;
