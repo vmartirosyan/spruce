@@ -359,12 +359,12 @@ int main(int argc, char ** argv)
 		cerr << "Logger::Init(" << logfolder + "/spruce.log" << "," << nLogLevel << ")" << endl; 
 		Logger::Init(logfolder + "/spruce.log", nLogLevel);
 
-		// Prepare the log folder
+		/*Prepare the log folder
 		if ( mkdir( logfolder.c_str(), 0777 ) == -1 && errno != EEXIST )
 		{
 			cerr << "Cannot create log folder: " << strerror(errno) << endl;
 			return FAULT;
-		}
+		}*/
 
 		// Find out which browser must be used to view the log file
 		// If no browser name is specified, then the system will be executed in batch mode.
