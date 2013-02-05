@@ -83,7 +83,6 @@ enum ErrorCodes
 	NOMODULES
 };
 void GenerateHtml(string logfolder, string fs);
-void OpenLogFiles(string browser, string logfolder, vector<string> XMLFilesToProcess);
 void OpenDashboard(string browser, string logfolder, string fs);
 
 
@@ -842,114 +841,6 @@ void OpenDashboard(string browser, string logfolder, string fs)
 	}
 	
 	
-}
-
-
-
-void OpenLogFiles(string browser, string logfolder, vector<string> XMLFilesToProcess)
-{
-	// The new process must be created to be able to execute the browser as non-privileged user.
-	if ( fork() == 0 )
-	{
-		ProcessResult * res = NULL;
-		// Process the module log files
-		for ( unsigned int i = 0; i < XMLFilesToProcess.size(); ++i )
-		{
-			cout << "Processing file " << XMLFilesToProcess[i] << "... ";
-			UnixCommand xslt("xsltproc");
-			vector<string> xslt_args;
-			
-			xslt_args.push_back("-o");
-			xslt_args.push_back(XMLFilesToProcess[i].substr(0, XMLFilesToProcess[i].size() - 3) + "html");
-			xslt_args.push_back("-novalid");			
-			xslt_args.push_back(logfolder + "/xslt/processor.xslt");
-			xslt_args.push_back(XMLFilesToProcess[i]);
-			
-			res = xslt.Execute(xslt_args);
-
-			if ( res == NULL )
-			{
-				cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;
-				continue;
-			}
-			
-			if ( res->GetStatus() != Success )
-			{
-				cerr << res->GetOutput() << endl;
-				continue;
-			}			
-			cout << "Done" << endl;
-		}
-		
-		// Change the effective user id to real user id... browsers don't like running as root.
-		
-		char * UserName = getenv("SUDO_USER");
-		//char * UserName = "nobody";
-		
-		if ( UserName == NULL )
-		{
-			cerr << "Cannot obtain user name. " << strerror(errno) << endl;
-			return;
-		}
-		
-		cout << "Switching to user `" << UserName << "`" << endl;
-		
-		setenv("HOME", (static_cast<string>("/home/") + UserName).c_str(), 1);
-		
-		struct passwd * nobody = getpwnam(UserName);
-		if ( nobody == NULL )
-		{
-			cerr << "Cannot switch to user `" << UserName << "`. Browser won't start. " << strerror(errno) << endl;
-			return;
-		}
-			
-		if ( setuid(nobody->pw_uid) == -1 )
-		{
-			cerr << "Cannot switch to user `" << UserName << "`. Browser won't start. " << strerror(errno) << endl;
-			return;
-		}
-		
-		cerr << "UserId: " << getuid() << endl;
-		
-		
-		
-		cerr << "$HOME: " << getenv("HOME") << endl;
-		
-		for ( unsigned int i = 0; i < XMLFilesToProcess.size(); ++i )
-		{
-			// Hold on a while...
-			sleep(1);
-			
-			UnixCommand * browser_cmd = new UnixCommand(browser, ProcessBackground);
-			vector<string> browser_args;
-			browser_args.push_back(XMLFilesToProcess[i].substr(0, XMLFilesToProcess[i].size() - 3) + "html");
-			/*if ( browser.find("chrom") != string::npos )
-			{
-				//browser = "chromium";
-				browser_args.push_back("--allow-file-access-from-files");
-				browser_args.push_back("--user-data-dir");
-				browser_args.push_back("/tmp");
-			}*/
-			res = browser_cmd->Execute(browser_args);
-			delete browser_cmd;
-			
-			if ( res == NULL )
-			{
-				cerr << "Cannot execute the browser: " << browser << endl;
-				continue;
-			}
-			if ( res->GetStatus() != Success )
-			{
-				cerr << "Error executing " << browser << ". " << strerror(errno) << "\n Output: " << res->GetOutput() << endl;
-				continue;
-			}
-		}
-		_exit(0);
-	}
-	else
-	{
-		wait(0);
-	}
 }
 
 ConfigValues ParseOptions(int argc, char ** argv)
