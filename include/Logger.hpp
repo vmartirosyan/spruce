@@ -26,6 +26,8 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <string.h>
+#include <errno.h>
 using std::string;
 using std::ofstream;
 using std::cerr;
@@ -100,7 +102,8 @@ public:
 	}
 	static void LogError(const string & msg)
 	{
-		Log(LOG_Error, msg);
+		string str = msg + "\nError: " + strerror(errno);
+		Log(LOG_Error, str);
 	}
 	static void LogFatal(const string & msg)
 	{

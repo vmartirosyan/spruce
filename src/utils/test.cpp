@@ -30,7 +30,7 @@
 
 
 	
-bool Alarmed = false;
+/*bool Alarmed = false;
 
 void  SignalHandler(int signum)
 {
@@ -41,6 +41,7 @@ void  SignalHandler(int signum)
 			break;
 	}
 }
+*/
 
 /*	
 ProcessResult * Test::Execute(vector<string> args)

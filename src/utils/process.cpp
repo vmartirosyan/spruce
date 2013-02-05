@@ -25,6 +25,7 @@
 #include <Process.hpp>
 #include <signal.h>
 #include <fstream>
+#include <algorithm>
 using namespace std;
 
 string StatusMessages[] = {	
@@ -296,4 +297,33 @@ ProcessResult * BackgroundProcess::Execute(vector<string> args)
 	
 	// This is a background process. No need to wait for the child :)
 	return new ProcessResult(static_cast<Status>(WEXITSTATUS(status)), "Child process is executed.");
+}
+
+vector<string> SplitString(string str, char delim, vector<string> AllowedValues )
+{
+	vector<string> pieces;
+	size_t PrevPos = 0, CurPos;
+	if ( str.find( delim, PrevPos ) == string::npos)
+	{
+		if ( !str.empty() )
+			pieces.push_back(str);
+		return pieces;
+	}
+	
+	while ( ( CurPos = str.find( delim, PrevPos ) ) != string::npos )
+	{
+		string piece = str.substr(PrevPos, CurPos - PrevPos);		
+		if ( AllowedValues.empty() || std::find(AllowedValues.begin(), AllowedValues.end(), piece) != AllowedValues.end() )
+			pieces.push_back(piece);
+		PrevPos = CurPos + 1;
+	}
+	// If the last symbol is not a delimiter, then take the remaining string also
+	if ( str[str.size() - 1] != delim )
+	{
+		string piece = str.substr(PrevPos, string::npos);
+		if ( !piece.empty() && (AllowedValues.empty() || find(AllowedValues.begin(), AllowedValues.end(), piece) != AllowedValues.end() ) )
+			pieces.push_back(piece);
+	}
+	return pieces;
+	
 }
