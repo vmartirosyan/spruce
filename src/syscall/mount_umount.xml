@@ -27,14 +27,17 @@
 	<Test Name="MountGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device to another partition</Description>		
 		<Code>
-			chdir("/");
-			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			chdir("/");			
 		//	Directory dir(string("/tmp/MountNormal_dir"));
 			EnableFaultSim();
 			char buf[100];
 			sprintf(buf, "lsof -p %d", getpid());
 			system(buf);
+			
+			system("lsof /tmp/spruce_test");
+			
+			//system("ls -al /tmp/spruce_test");
+			
 			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
 				
 			Fail (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");

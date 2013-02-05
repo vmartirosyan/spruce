@@ -151,7 +151,7 @@
 			Fail(ioctl(FDs[0], XFS_IOC_DIOINFO, &arg) != 0, "dioinfo failed");
 		</Code>
 	</Test>
-	<Test Name="XFS_IOC_FSBULKSTAT_SINGLE">
+	<!-- Needs to be refactored Test Name="XFS_IOC_FSBULKSTAT_SINGLE">
 		<Description>XFS_IOC_FSBULKSTAT_SINGLE</Description>
 		<File count="1"/>
 		<Code>
@@ -168,7 +168,7 @@
 			
 			Fail (ioctl(FDs[0], XFS_IOC_FSBULKSTAT_SINGLE, &arg) == -1, "Ioctl failed.");
 		</Code>
-	</Test>
+	</Test-->
 	<Test Name="XFS_IOC_FSBULKSTAT">
 		<Description>XFS_IOC_FSBULKSTAT</Description>
 		<File count="1"/>
@@ -546,7 +546,7 @@
 			Fail ( arg.resblks != arg_out.resblks, "Reserved block count differ." );
 		</Code>
 	</Test>
-	<Test Name="XFS_IOC_FSGROWFSDATA">
+	<!-- Internal operations. Test Name="XFS_IOC_FSGROWFSDATA">
 		<Description>XFS_IOC_FSGROWFSDATA</Description>
 		<File count="1"/>
 		<Code>
@@ -602,7 +602,7 @@
 			_TestStatus = Shallow;
 			ioctl(FDs[0], XFS_IOC_ERROR_CLEARALL, buf);
 		</Code>
-	</Test>
+	</Test-->
 	<GlobalFooter>
 #endif
 	</GlobalFooter>
