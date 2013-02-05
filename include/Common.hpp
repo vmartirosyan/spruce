@@ -319,4 +319,6 @@ public:\
 	}\
 };
 
+vector<string> SplitString(string str, char delim, vector<string> AllowedValues );
+
 #endif /* COMMON_HPP */

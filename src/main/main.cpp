@@ -485,13 +485,16 @@ int main(int argc, char ** argv)
 				PartitionStatus PS = PS_Done;
 				do
 				{
-					MountOptions.push_back(pm.GetCurrentMountOptions());
+					MountOptions.push_back(pm.GetCurrentOptions());
 					
 					vector<string> mkfsArgs;
 					if((*fs).compare("ext4") == 0)
 						mkfsArgs.push_back("-O mmp");
 					
-					PS = pm.PreparePartition();				
+					PS = pm.PreparePartition();
+					
+					cerr << "Current options:  " << pm.GetCurrentOptions(false) << endl;
+					
 					if ( PS == PS_Fatal  )
 					{
 						cerr << "Fatal error raised while preparing partition." << endl;
@@ -509,11 +512,13 @@ int main(int argc, char ** argv)
 					}
 					ShowOutput = true;
 					
+					
+					
 					// Check if the module should be executed on this FS with these mount options.
 					bool ModuleShouldNotRun = (TestsToRun.size() > 0);
 					for ( vector<string>::iterator it = TestsToRun.begin(); it != TestsToRun.end(); ++it )
 					{
-						string prefix = *fs + "." + pm.GetCurrentMountOptions() + "." + *module;
+						string prefix = *fs + "." + pm.GetCurrentOptions() + "." + *module;
 						if ( (*it).find(prefix) != string::npos )
 						{							
 							ModuleShouldNotRun = false;
@@ -526,14 +531,14 @@ int main(int argc, char ** argv)
 					}
 					UnixCommand * command = new UnixCommand((INSTALL_PREFIX"/bin/" + ModuleBin).c_str());
 					
-					string FileName = logfolder + "/" + *fs + "_" + *module + "_" + pm.GetCurrentMountOptions() + "_log.xml";
+					string FileName = logfolder + "/" + *fs + "_" + *module + "_" + pm.GetCurrentOptions() + "_log.xml";
 					
 					// Ensure the file is removed.
 					unlink(FileName.c_str());
 					
 					vector<string> module_args;
 					
-					SpruceLog xmlSpruceLog(FileName, *fs, pm.GetCurrentMountOptions(), "", *module);
+					SpruceLog xmlSpruceLog(FileName, *fs, pm.GetCurrentOptions(), "", *module);
 					xmlSpruceLog.openTags();
 					ModuleLog moduleLog(FileName);
 					
@@ -545,7 +550,7 @@ int main(int argc, char ** argv)
 					vector<string> ExcludeModuleTests;					
 					for ( vector<string>::iterator it = TestsToExclude.begin(); it != TestsToExclude.end(); ++it )
 					{
-						string prefix = *fs + "." + pm.GetCurrentMountOptions() + "." + *module;
+						string prefix = *fs + "." + pm.GetCurrentOptions() + "." + *module;
 						if ( (*it).find(prefix) != string::npos )
 						{
 							ExcludeModuleTests.push_back(it->substr(prefix.size() + 1, it->size() - prefix.size()));
@@ -563,7 +568,7 @@ int main(int argc, char ** argv)
 					vector<string> RunModuleTests;					
 					for ( vector<string>::iterator it = TestsToRun.begin(); it != TestsToRun.end(); ++it )
 					{
-						string prefix = *fs + "." + pm.GetCurrentMountOptions() + "." + *module;
+						string prefix = *fs + "." + pm.GetCurrentOptions() + "." + *module;
 						
 						if ( (*it).find(prefix) != string::npos )
 						{							
@@ -663,7 +668,7 @@ int main(int argc, char ** argv)
 				}*/
 				
 				//ShmAllocator<PartitionManager>::Free(pm);
-				pm.ClearCurrentMountOptions();
+				pm.ClearCurrentOptions();
 			}
 
 			// Unload the KEDR framework
@@ -976,32 +981,5 @@ ConfigValues ParseConfigFile(string FilePath)
 	return vals;
 }
 
-vector<string> SplitString(string str, char delim, vector<string> AllowedValues )
-{
-	vector<string> pieces;
-	size_t PrevPos = 0, CurPos;
-	if ( str.find( delim, PrevPos ) == string::npos)
-	{
-		if ( !str.empty() )
-			pieces.push_back(str);
-		return pieces;
-	}
-	
-	while ( ( CurPos = str.find( delim, PrevPos ) ) != string::npos )
-	{
-		string piece = str.substr(PrevPos, CurPos - PrevPos);		
-		if ( AllowedValues.empty() || find(AllowedValues.begin(), AllowedValues.end(), piece) != AllowedValues.end() )
-			pieces.push_back(piece);
-		PrevPos = CurPos + 1;
-	}
-	// If the last symbol is not a delimiter, then take the remaining string also
-	if ( str[str.size() - 1] != delim )
-	{
-		string piece = str.substr(PrevPos, string::npos);
-		if ( !piece.empty() && (AllowedValues.empty() || find(AllowedValues.begin(), AllowedValues.end(), piece) != AllowedValues.end() ) )
-			pieces.push_back(piece);
-	}
-	return pieces;
-	
-}
+
 
