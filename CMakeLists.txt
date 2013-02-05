@@ -4,6 +4,38 @@ INCLUDE (CheckTypeSize)
 
 project (Spruce)
 
+function (check_include name HAVE_H type)
+	CHECK_INCLUDE_FILES ("${name}" ${HAVE_H})
+		IF (NOT ${HAVE_H})
+			Message(FATAL_ERROR "The '${name}' ${type} wasn't found. Please install it.")
+			#SET(HAVE_XFS_H 0)
+		ENDIF (NOT ${HAVE_H})
+endfunction()
+
+function (set_default var value)
+		IF (NOT ${var})
+		SET( ${var} "${value}")
+		ENDIF (NOT ${var})
+endfunction()
+
+function (check_executable name path)
+	Message("-- Looking for '${name}' executable")
+	IF ( NOT EXISTS ${${path}} )
+	Message("   The ${path} wasn't set, looking for it ...")
+	find_program(${path} ${name})
+	IF ( NOT EXISTS ${${path}} )
+		Message(FATAL_ERROR "'${name}' cannot be executed. Set correct path of '${name}' executable.")
+	ENDIF ( NOT EXISTS ${${path}} )
+	ENDIF ( NOT EXISTS ${${path}} )
+	execute_process(COMMAND ${${path}} -V
+				RESULT_VARIABLE STAT
+				OUTPUT_QUIET
+				ERROR_QUIET)
+	IF ( ${STAT} )
+	Message(FATAL_ERROR "Cannot get '${name}' via '${path} -V'. Set ${path} to correct path of '${name}' executable.")
+	ENDIF( ${STAT} )
+	Message("-- Looking for '${name}' executable - found")
+endfunction()
 
 IF( UNIX )
     EXECUTE_PROCESS( 
@@ -22,11 +54,7 @@ IF( UNIX )
     ENDIF( OS_ARCH MATCHES ".*Linux.*" )
     
     IF ( NOT ${OS_32_BITS} )		
-		CHECK_INCLUDE_FILES ("gnu/stubs-32.h" HAVE_MULTILIB)
-		IF (NOT HAVE_MULTILIB)
-			Message(FATAL_ERROR "The 'multilib' library wasn't found. Please install it.")
-			#SET(HAVE_XFS_H 0)
-		ENDIF (NOT HAVE_MULTILIB)
+		check_include ("gnu/stubs-32.h" HAVE_MULTILIB "library")
 	ELSE ( NOT ${OS_32_BITS} ) 
 		SET (HAVE_MULTILIB 0)
 	ENDIF ( NOT ${OS_32_BITS} )
@@ -34,100 +62,31 @@ IF( UNIX )
 ENDIF ( UNIX )
 
 # Check if xsltproc is there
-Message("-- Looking for 'xsltproc' executable")
-IF ( NOT EXISTS ${XSLTPROC_PATH} )
-	Message("   The XSLTPROC_PATH wasn't set, looking for it ...")
-	find_program(XSLTPROC_PATH xsltproc)
-	IF ( NOT EXISTS ${XSLTPROC_PATH} )
-		Message(FATAL_ERROR "xsltproc cannot be executed. Set correct path of 'xsltproc' executable.")
-	ENDIF ( NOT EXISTS ${XSLTPROC_PATH} )
-ENDIF ( NOT EXISTS ${XSLTPROC_PATH} )
-execute_process(COMMAND ${XSLTPROC_PATH} -V
-				RESULT_VARIABLE XSLTPROC_STATUS
-				OUTPUT_QUIET
-				ERROR_QUIET)
-IF ( ${XSLTPROC_STATUS} )
-	Message(FATAL_ERROR "Cannot get 'xsltproc' via '${XSLTPROC_PATH} -V'. Set ${XSLTPROC_PATH} to correct path of 'xsltproc' executable.")
-ENDIF( ${XSLTPROC_STATUS} )
-Message("-- Looking for 'xsltproc' executable - found")
+check_executable("xsltproc" XSLTPROC_PATH)
+
 
 # By default install Spruce to /opt/spruce
-IF (NOT CMAKE_INSTALL_PREFIX)
-	SET( CMAKE_INSTALL_PREFIX "/opt/spruce/")
-ENDIF (NOT CMAKE_INSTALL_PREFIX)
+set_default( CMAKE_INSTALL_PREFIX "/opt/spruce/")
 
-IF (NOT CMAKE_CXX_FLAGS)
-	SET( CMAKE_CXX_FLAGS "-Wall -pedantic -Wno-variadic-macros -Wextra -Weffc++ -fcheck-new -ffor-scope -Wabi -Wstrict-null-sentinel")
-ENDIF (NOT CMAKE_CXX_FLAGS)
+set_default( CMAKE_CXX_FLAGS "-Wall -pedantic -Wno-variadic-macros -Wextra -Weffc++ -fcheck-new -ffor-scope -Wabi -Wstrict-null-sentinel")
 
-IF (NOT TEST_TIMEOUT)
-	SET ( TEST_TIMEOUT 15 )
-ENDIF (NOT TEST_TIMEOUT)
+set_default( TEST_TIMEOUT 15 )
 
-IF (NOT FIFO_PATH)
-	SET ( FIFO_PATH "/tmp/spruce_fifo" )
-ENDIF (NOT FIFO_PATH)
+set_default( FIFO_PATH "/tmp/spruce_fifo" )
 
 # Check if KEDR framework is there
-Message("-- Looking for 'kedr' executable.")
-IF ( NOT EXISTS ${KEDR_PATH} )
-	Message("   The KEDR_PATH wasn't set, looking for it ...")
-	find_program(KEDR_PATH kedr)
-	IF ( NOT EXISTS ${KEDR_PATH} )
-		Message(FATAL_ERROR "kedr cannot be executed. Set correct path of 'kedr' executable.")
-	ENDIF ( NOT EXISTS ${KEDR_PATH} )
-ENDIF ( NOT EXISTS ${KEDR_PATH} )
-execute_process(COMMAND ${KEDR_PATH} status
-				RESULT_VARIABLE KEDR_STATUS
-				OUTPUT_QUIET
-				ERROR_QUIET)
-IF ( ${KEDR_STATUS} )
-	Message(FATAL_ERROR "Cannot get 'kedr' via '${KEDR_PATH} status'. Set ${KEDR_PATH} to correct path of 'kedr' executable.")
-ENDIF( ${KEDR_STATUS} )
-Message("-- Looking for 'kedr' executable - found.")
+check_executable("kedr" KEDR_PATH)
 
 # Check if quotacheck is there
-Message("-- Looking for 'quotacheck' executable.")
-IF ( NOT EXISTS ${QUOTACHECK_PATH} )
-	Message("   The QUOTACHECK_ wasn't set, looking for it ...")
-	find_program(QUOTACHECK_PATH quotacheck)
-	IF ( NOT EXISTS ${QUOTACHECK_PATH} )
-		Message(FATAL_ERROR "quotacheck cannot be executed. Set correct path of 'quotacheck' executable.")
-	ENDIF ( NOT EXISTS ${QUOTACHECK_PATH} )
-ENDIF ( NOT EXISTS ${QUOTACHECK_PATH} )
-execute_process(COMMAND ${QUOTACHECK_PATH} -V
-				RESULT_VARIABLE QUOTACHECK_STATUS
-				OUTPUT_QUIET
-				ERROR_QUIET)
-IF ( ${QUOTACHECK_STATUS} )
-	Message(FATAL_ERROR "Cannot get 'kedr' via '${QUOTACHECK_PATH} -V'. Set ${QUOTACHECK_PATH} to correct path of 'quotacheck' executable.")
-ENDIF( ${QUOTACHECK_STATUS} )
-Message("-- Looking for 'quotacheck' executable - found.")
+check_executable("quotacheck" QUOTACHECK_PATH)
 
+check_include ("sys/types.h;attr/xattr.h" HAVE_XATTR_H "header file")
 
-CHECK_INCLUDE_FILES ("sys/types.h;attr/xattr.h" HAVE_XATTR_H)
-IF (NOT HAVE_XATTR_H)
-	Message(FATAL_ERROR "'attr/xattr.h' header file wasn't found. Please install the 'attr' package.")
-	#SET(HAVE_XATTR_H 0)
-ENDIF (NOT HAVE_XATTR_H)
+check_include ("ext2fs/ext2_fs.h" HAVE_EXT2_FS_H "header file")
 
-CHECK_INCLUDE_FILES (ext2fs/ext2_fs.h HAVE_EXT2_FS_H)
-IF (NOT HAVE_EXT2_FS_H)
-	Message(FATAL_ERROR "'ext2fs/ext2_fs.h' header file wasn't found. Please install the 'e2fslibs' package.")
-	#SET(HAVE_EXT2_FS_H 0)
-ENDIF (NOT HAVE_EXT2_FS_H)
+check_include ("sys/acl.h" HAVE_ACL_H "header file")
 
-CHECK_INCLUDE_FILES ("sys/acl.h" HAVE_ACL_H)
-IF (NOT HAVE_ACL_H)
-	Message(FATAL_ERROR "'sys/acl.h' header file wasn't found. Please install the 'libacl1-dev' package.")
-	#SET(HAVE_ACL_H 0)
-ENDIF (NOT HAVE_ACL_H)
-
-CHECK_INCLUDE_FILES ("xfs/xfs.h" HAVE_XFS_H)
-IF (NOT HAVE_XFS_H)
-	Message(FATAL_ERROR "'xfs/xfs.h' header file wasn't found. Please install the 'xfslibs' package.")
-	#SET(HAVE_XFS_H 0)
-ENDIF (NOT HAVE_XFS_H)
+check_include ("xfs/xfs.h" HAVE_XFS_H "header file")
 
 SET( CMAKE_REQUIRED_DEFINITIONS "-D _GNU_SOURCE")
 SET(CMAKE_EXTRA_INCLUDE_FILES "fcntl.h")
