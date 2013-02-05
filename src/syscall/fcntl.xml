@@ -26,6 +26,13 @@
 <TestSet Name="fcntl">
 	<Requires>fcntl.h</Requires>
 	<Requires>linux/version.h</Requires>
+	<GlobalHeader>
+		int SignalNumber = 0;
+		void SignalHandler(int signum)
+		{			
+			SignalNumber = signum;			
+		}
+	</GlobalHeader>
 	<!-- Normal functionality tests -->
 	<Test Name="FcntlDupFileDescriptor" FaultSimulationReady="true">
 		<Description>F_DUPFD: Find the lowest numbered available file descriptor greater than or equal to arg and make it be a copy of fd.</Description>
@@ -57,7 +64,7 @@
 			{				
 				Error("Returned wrong file descriptor", Fail);
 			}
-			;
+			
 		</Code>
 	</Test>
 	<Test Name="FcntlGetSetFileStatusFlagsIgnore" FaultSimulationReady="true">
@@ -86,7 +93,7 @@
 				Error("The flags should be ignored.", Fail);
 			}
  	
-			;
+			
 		</Code>
 	</Test>
 	<Test Name="FcntlGetSetFileStatusFlags" FaultSimulationReady="true">
@@ -122,7 +129,7 @@
 				Error("Can't get right file descriptor flags! ", Fail);
 			}
  	
-			;
+			
 		</Code>
 	</Test>
 	<Test Name="FcntlGetSetFileDescriptorFlags" FaultSimulationReady="true">
@@ -144,7 +151,7 @@
 
 			if( FD_CLOEXEC == get_flags )
 			{
-				;
+				
 			}
 			else
 			{
@@ -178,7 +185,7 @@
 			{
 				Error("Incompatible locks prevent this lock.", Fail);
 			}
-			;
+			
 		</Code>
 	</Test>
 	<Test Name="FcntlFDSetLock" FaultSimulationReady="true">
@@ -212,7 +219,7 @@
 				Error("Cannot unlock.", Fail);
 			}
 				
-			;  
+			  
 		</Code>
 	</Test>
 	<Test Name="FcntlFDSetLockWithWait" FaultSimulationReady="true">
@@ -246,41 +253,39 @@
 				Error("Cannot unlock.", Fail);
 			}
 				
-			;
+			
 		</Code>
 	</Test>
 	<Test Name="FcntlFDNoteDir" FaultSimulationReady="true">
 		<Description>F_NOTIFY: Provide notification when the directory referred to by fd is changed.</Description>
 		<Code>
+			
+			Unres (signal(SIGIO, SignalHandler) == SIG_ERR, "Cannot set signal handler.");
+			
 			int  dirfd;
 			const char *dirname = "fcntl_directory";
 
-			//DN_CREATE
 			Unres ( mkdir( dirname, 0700 ) == -1, "Error in making directory.");
 			
 			Unres ( (dirfd= open( dirname, O_DIRECTORY )) == -1, "Error in opening directory.");
 			
-			if ( fcntl( dirfd, F_NOTIFY,  DN_CREATE ) == -1 )
-			{
-				Error("Must  because directory has been created and opened.", Fail);
-			}
+			//DN_ATTRIB			
+			SignalNumber = 0;
+			Fail ( fcntl ( dirfd, F_NOTIFY, DN_ATTRIB ) == -1, "Cannot set notification DN_ATTRIB.");
 			
-			//DN_ATTRIB
 			Unres ( chmod( dirname , 0000 ) == -1, "Error in chmod.");
-			if ( fcntl ( dirfd, F_NOTIFY, DN_ATTRIB ) == -1 )
-			{
-				Error("Must  because permission set has been changed by chmod system call.", Fail);
-			}
 			
-			//DN_DELETE
+			Fail ( SignalNumber != SIGIO, "The signal for DN_ATTRIB was not received." );
+			
+			//DN_DELETE		
+			SignalNumber = 0;
+			Fail ( fcntl ( dirfd, F_NOTIFY, DN_DELETE ) == -1, "Cannot set notification DN_DELETE.");
+			
 			Unres ( rmdir( dirname ) == -1, "Error in removing directory.");
 			
-			if ( fcntl ( dirfd, F_NOTIFY, DN_DELETE ) == -1 )
-			{
-				Error("Must  because directory has been removed.", Fail);
-			}
+			Fail ( SignalNumber != SIGIO, "The signal for DN_DELETE was not received." );
 			
-			;
+			
 		</Code>
 	</Test>
 	<Test Name="FcntlFDNoteFile" FaultSimulationReady="true">
@@ -290,64 +295,77 @@
 			char w_buffer_[5]="1234";
 			char r_buffer_[5];
 			const char *dir = "fcntl_directory_1";
-			const char *newfile = "fcntl_directory_1/fcntl_file_";
-			const char *file = "fcntl_directory_1/fcntl_newfile_";
+			const char *newfile = "fcntl_file_";
+			const char *file = "fcntl_newfile_";
 			
-
-			//DN_CREATE
-			Unres ( mkdir ( dir, 0700 ) == -1, "Error in making directory.");
-			
+			Unres ( mkdir ( dir, 0700 ) == -1, "Error in making directory.");			
 			Unres ( (dirfd = open ( dir, O_DIRECTORY )) == -1, "Error in opening directory.");
+			Unres ( chdir(dir) == -1, "Cannot change current directory.");
 			
-			Unres ( (fd = open ( file, O_CREAT | O_RDWR, 0777 )) == -1, "Error in opening file.");
+			Unres (signal(SIGIO, SignalHandler) == SIG_ERR, "Cannot set signal handler.");
 			
-			if ( fcntl ( dirfd, F_NOTIFY, DN_CREATE ) == -1 )
-			{
-				Error("fcntl must  because directory and file in that directory have been created and opened.", Fail);
-			}
+			sigset_t set;
+			Unres(sigemptyset(&set) == -1, "Cannot empty the signal set.");
+			Unres(sigaddset(&set, SIGIO) == -1, "Cannot add the SIGIO signal to the set.");
+			
+			SignalNumber = 0;
+
+			//DN_CREATE			
+			Fail ( fcntl ( dirfd, F_NOTIFY, DN_CREATE ) == -1, "Cannot set notification DN_CREATE.");
+			
+			Unres ( (fd = openat ( dirfd, file, O_CREAT | O_RDWR, 0777 )) == -1, "Error in opening file.");			
+			
+			Fail ( SignalNumber != SIGIO, "The signal for DN_CREATE was not received." );
+			
+			SignalNumber = 0;
+			
 			//DN_ATTRIB
-			Unres ( chmod( file, 0700 ) == -1, "Error in chmod.");
+			Fail ( fcntl ( dirfd, F_NOTIFY, DN_ATTRIB ) == -1, "Cannot set notification DN_ATTRIB.");
 			
-			if ( fcntl ( dirfd, F_NOTIFY, DN_ATTRIB ) == -1 )
-			{
-				Error("fcntl must  because permissions of the file in directory with descriptor eqaul to dirfd has been changed.", Fail);
-			}
+			Unres ( fchmod( fd, 0700 ) == -1, "Error in chmod.");
 			
-			//DN_RENAME
+			
+			Fail ( SignalNumber != SIGIO, "The signal for DN_ATTRIB was not received." );
+			
+			SignalNumber = 0;
+			
+			//DN_RENAME			
+			Fail ( fcntl ( dirfd, F_NOTIFY, DN_RENAME ) == -1, "Cannot set notification DN_RENAME.");
+			
 			Unres ( rename ( file, newfile ) == -1, "Error in renaming.");
 			
-			if ( fcntl ( dirfd, F_NOTIFY, DN_RENAME ) == -1 )
-			{
-				Error("fcntl must  because the file in derectory with directory descriptor equal to dirfd has been renamed.", Fail);
-			}
+			Fail ( SignalNumber != SIGIO, "The signal for DN_RENAME was not received." );
+			
+			SignalNumber = 0;
 			
 			//DN_MODIFY
+			Fail ( fcntl ( dirfd, F_NOTIFY, DN_MODIFY ) == -1, "Cannot set notification DN_MODIFY.");
+			
 			Unres ( write ( fd, w_buffer_, strlen(w_buffer_) ) == -1, "Error in writing to the file.");
 			
-			if ( fcntl ( dirfd, F_NOTIFY, DN_MODIFY ) == -1 )
-			{
-				Error("fcntl must  because the file in directory with directory descriptor equal to dirfd has been modified by write system call.", Fail);
-			}
+			Fail ( SignalNumber != SIGIO, "The signal for DN_MODIFY was not received." );
 			
-			//DN_ACCESS
-			Unres ( read ( fd, r_buffer_, 5 ) == -1, "Error in reading.");
+			SignalNumber = 0;
 			
-			if ( fcntl ( dirfd, F_NOTIFY, DN_ACCESS ) == -1 )
-			{
-				Error("fcntl must  because file in directory with directory descriptor equal to dirfd has been accessed by read system call.", Fail);
-			}
+			//DN_ACCESS			
+			Fail ( fcntl ( dirfd, F_NOTIFY, DN_ACCESS ) == -1, "Cannot set notification DN_ACCESS.");
+						
+			//Unres ( read ( fd, r_buffer_, 5 ) == -1, "Error in reading.");
+			Unres ( write ( fd, w_buffer_, strlen(w_buffer_) ) == -1, "Error in writing to the file.");
+			
+			Fail ( SignalNumber != SIGIO, "The signal for DN_ACCESS was not received." );			
+			
+			SignalNumber = 0;
 
 			//DN_DELETE
+			Fail ( fcntl ( dirfd, F_NOTIFY, DN_DELETE ) == -1, "Cannot set notification DN_DELETE.");
+			
 			Unres ( unlink( newfile ) == -1, "Error in unlinking file.");
 			
-			if ( fcntl ( dirfd, F_NOTIFY, DN_DELETE ) == -1 )
-			{
-				Error("fcntl must  because file in directory with directory descriptor equal to dirfd has been unlinked.", Fail);
-			}
+			Fail ( SignalNumber != SIGIO, "The signal for DN_DELETE was not received." );
+			
 			close(fd);
 			close(dirfd);
-			
-			;
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetLease" FaultSimulationReady="true">
@@ -682,22 +700,15 @@
 			
 			if ( pid == 0 )    /* child proccess*/
 			{
-				Unres ( fcntl( FDs[0],F_SETLKW, &fl) == -1, "Error in fcntl. Cannot set lock in child process.");
+				Fail ( fcntl( FDs[0],F_SETLKW, &fl) == 0 || errno != EINTR, "Error in fcntl");
 				
-				Unres ( kill ( getpid(), SIGINT ) == -1, "Cannot send signal.");
-				
-				if ( fcntl( FDs[0], F_SETLKW, &fl ) != -1 )
-				{
-					Error("returhvns 0 in case of system call was interrupted.", Fail);
-				}
-				Fail ( errno != EINTR , "Incorrect error set in errno in case of interrupted system call.");
 			} 
 			else
 			{
-				//wait(0);
-			}
-
-			;
+				sleep(1);
+				Unres ( kill ( pid, SIGINT ) == -1, "Cannot send signal.");
+				wait(0);
+			}			
 		</Code>
 	</Test>	
 	<FaultSimulation>
