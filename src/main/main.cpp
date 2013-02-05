@@ -247,12 +247,7 @@ int main(int argc, char ** argv)
 			cerr << "Notice. No log folder specified. Using " << logfolder << "." << endl;
 		}
 				
-		// Add the date and time to the log folder
-		time_t t = time(NULL);
-		struct tm * tm = localtime(&t);
-		char buf[25];
-		size_t bytes = strftime(buf, 25, "%F_%T", tm);
-		buf[bytes] = 0;
+		// making the logfolder directory
 		if ( mkdir(logfolder.c_str(), 0777) )
 		{
 			if(errno != EEXIST)
@@ -261,12 +256,27 @@ int main(int argc, char ** argv)
 				return FAULT;		
 			}	
 		} 
-		logfolder = logfolder + "/" + buf;
-		if ( mkdir(logfolder.c_str(), 0777) )
+		//If the subfolders config value is specified by value=false, then we don't need subfolders, and we will overwrite log file each time.		
+		if ( (configValues.find("subfolders") != configValues.end()) && (configValues["subfolders"] == "false" ))
 		{
-			cerr << "Cannot create log subfolder: " << logfolder << ". " << strerror(errno) << endl;
-			return FAULT;
+			cerr << "Notice. No subfolders will be created. The Log file will be overwritten." << endl;
 		}
+		else // by default subfolders are to be created
+		{
+			// Add the date and time to the log subfolder
+			time_t t = time(NULL);
+			struct tm * tm = localtime(&t);
+			char buf[25];
+			size_t bytes = strftime(buf, 25, "%F_%T", tm);
+			buf[bytes] = 0;
+			logfolder = logfolder + "/" + buf;
+			if ( mkdir(logfolder.c_str(), 0777) )
+			{
+				cerr << "Cannot create log subfolder: " << logfolder << ". " << strerror(errno) << endl;
+				return FAULT;
+			}
+		}	
+		
 		
 		// Generate the main log file. 
 		// It should contain the distribution name, version and the kernel version.
@@ -389,7 +399,7 @@ int main(int argc, char ** argv)
 		if ( configValues.find("exclude_tests") != configValues.end() &&
 			 configValues.find("run_tests") != configValues.end())
 		{
-			cerr << "Please provice either exclude_tests or run_tests values, not both." << endl;
+			cerr << "Please provide either exclude_tests or run_tests values, not both." << endl;
 			return FAULT;
 		}
 		
