@@ -26,6 +26,48 @@
 
 using std::merge;
 
+std::pair<std::string, unsigned long> map_data[] = {
+    std::make_pair("user", 0),
+    std::make_pair("atime", 0),
+    std::make_pair("dev", 0),
+    std::make_pair("diratime", 0),
+    std::make_pair("exec", 0),
+    std::make_pair("suid", 0),
+    std::make_pair("rw", 0),
+    std::make_pair("async", 0),
+    std::make_pair("_netdev", 0),
+    std::make_pair("auto", 0),
+    std::make_pair("noauto", 0),
+    std::make_pair("defaults", 0),
+    std::make_pair("group", 0),
+    std::make_pair("iversion", 0),
+    std::make_pair("noiversion", 0),
+    std::make_pair("loud", 0),
+    std::make_pair("nofail", 0),
+    std::make_pair("nomand", 0),
+    std::make_pair("nostrictatime", 0),
+    std::make_pair("nouser", 0),
+    std::make_pair("owner", 0),
+    std::make_pair("users", 0),
+    
+    std::make_pair("mand", MS_MANDLOCK),
+    std::make_pair("dirsync", MS_DIRSYNC),
+    std::make_pair("noatime", MS_NOATIME),
+    std::make_pair("nodev", MS_NODEV),
+    std::make_pair("nodiratime", MS_NODIRATIME),
+    std::make_pair("noexec", MS_NOEXEC),
+    std::make_pair("nosuid", MS_NOSUID),
+    std::make_pair("ro", MS_RDONLY),
+    std::make_pair("relatime", MS_RELATIME),
+    std::make_pair("remount", MS_REMOUNT),
+    std::make_pair("silent", MS_SILENT),
+    std::make_pair("strictatime", MS_STRICTATIME),
+    std::make_pair("sync", MS_SYNCHRONOUS)    
+};
+
+std::map<string, unsigned long> PartitionManager::MountFlagMap(map_data,
+    map_data + sizeof map_data / sizeof map_data[0]);
+
 PartitionStatus PartitionManager::PreparePartition()
 {
 	Logger::LogInfo((string)"Preparing partition " + _DeviceName);
@@ -233,11 +275,32 @@ void PartitionManager::ClearCurrentOptions()
 
 bool PartitionManager::IsOptionEnabled(string optionName)
 {
+	if ( IsFlag(optionName) )
+	{
+		return IsFlagEnabled(optionName);
+	}
 	if ( IsSpecialOption(optionName) )
 		return IsSpecialOptionEnabled(optionName);
 	return IsOptionEnabledInternal(optionName);
 }
 
+bool PartitionManager::IsFlag(string optionName)
+{
+	return ( MountFlagMap.find(optionName) != MountFlagMap.end() );
+}
+
+bool PartitionManager::IsFlagEnabled(string optionName)
+{
+	if ( getenv("MountFlags") == NULL )
+		return false;
+
+	char * buf = getenv("MountFlags");
+	unsigned long flags = atoi(buf);
+	
+	unsigned long flag = MountFlagMap[optionName];
+	
+	return ( ( flags & flag ) != 0 );
+}
 
 // Some options need to be processed differentelly. (e.g. noexec, nodev)		
 bool PartitionManager::IsSpecialOption(const string & opt)

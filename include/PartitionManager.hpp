@@ -97,8 +97,7 @@ public:
 		_MkfsOpts(""),
 		//_CurrentMkfsOptions(""),
 		_Index(0),
-		_FSIndex(FS_UNSUPPORTED),		
-		MountFlagMap()
+		_FSIndex(FS_UNSUPPORTED)		
 		{
 			
 		}		
@@ -113,8 +112,7 @@ public:
 		_MkfsOpts(""),
 		//_CurrentMkfsOptions(""),
 		_Index(0),
-		_FSIndex(FS_UNSUPPORTED),
-		MountFlagMap()
+		_FSIndex(FS_UNSUPPORTED)
 		{				
 			Initialize(ConfigFile, DeviceName, MountPoint, FileSystem, MountOpts);
 		}
@@ -146,45 +144,6 @@ public:
 		_FSIndex = FS_UNSUPPORTED;
 		if ( _MountOpts != "" && _MountOpts[_MountOpts.size() - 1] != ',' )
 			_MountOpts += ',';
-			
-		// Prepare the mount flags map;
-		MountFlagMap["user"] = 0;	
-		MountFlagMap["atime"] = 0;
-		MountFlagMap["dev"] = 0;
-		MountFlagMap["diratime"] = 0;
-		MountFlagMap["exec"] = 0;
-		MountFlagMap["suid"] = 0;
-		MountFlagMap["rw"] = 0;
-		MountFlagMap["async"] = 0;
-		MountFlagMap["_netdev"] = 0;
-		MountFlagMap["auto"] = 0;
-		MountFlagMap["noauto"] = 0;
-		MountFlagMap["defaults"] = 0;
-		MountFlagMap["group"] = 0;
-		MountFlagMap["iversion"] = 0;
-		MountFlagMap["noiversion"] = 0;
-		MountFlagMap["loud"] = 0;
-		MountFlagMap["nofail"] = 0;
-		MountFlagMap["nomand"] = 0;
-		MountFlagMap["nostrictatime"] = 0;
-		MountFlagMap["nouser"] = 0;
-		MountFlagMap["owner"] = 0;
-		MountFlagMap["users"] = 0;
-		
-		MountFlagMap["mand"] = MS_MANDLOCK;	
-		MountFlagMap["dirsync"] = MS_DIRSYNC;
-		MountFlagMap["noatime"] = MS_NOATIME;
-		MountFlagMap["nodev"] = MS_NODEV;
-		MountFlagMap["nodiratime"] = MS_NODIRATIME;
-		MountFlagMap["noexec"] = MS_NOEXEC;
-		MountFlagMap["nosuid"] = MS_NOSUID;
-		MountFlagMap["ro"] = MS_RDONLY;
-		MountFlagMap["relatime"] = MS_RELATIME;
-		MountFlagMap["remount"] = MS_REMOUNT;
-		MountFlagMap["silent"] = MS_SILENT;
-		MountFlagMap["strictatime"] = MS_STRICTATIME;
-		MountFlagMap["sync"] = MS_SYNCHRONOUS;
-		// All the others are default values.
 			
 		LoadConfiguration();
 		_FSIndex = GetFSNumber(_FileSystem);			
@@ -261,9 +220,10 @@ private:
 		static bool CreateFilesystem(string fs, string partition, bool resizeFlag = false, string mkfs_opts = "");
 		FileSystems GetFSNumber(string FSName);
 		
-		std::map<string, unsigned long> MountFlagMap;
+		static bool IsFlag(string optionName);
+		static bool IsFlagEnabled(string optionName);
 		
-		
+		static std::map<string, unsigned long> MountFlagMap;
 };
 
 #endif /* PARTITIONMANAGER_HPP */
