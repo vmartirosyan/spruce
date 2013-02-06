@@ -278,7 +278,8 @@ public:
 	// The test functions
 	<xsl:for-each select="Test">
 	int <xsl:value-of select="@Name" />Func(vector&lt;string>)
-	{			
+	{
+		
 		Status _TestStatus = Success;
 		<xsl:if test="@Shallow='true'" >
 		_TestStatus = Shallow;
@@ -286,6 +287,20 @@ public:
 		bool _InFooter = false;	
 		if ( _InFooter == true )
 			_InFooter = false;
+			
+<!-- Check if all the requirements are satisfied -->
+		<xsl:if test="Requires">
+			<xsl:if test="Requires/@KernelVersion!=''">
+#if LINUX_VERSION_CODE &lt; KERNEL_VERSION(<xsl:value-of select="Requires/@KernelVersion" />)
+		Unsupp("Kernel version should be at least <xsl:value-of select="Requires/@KernelVersion" />");
+#endif
+			</xsl:if>
+			<xsl:if test="Requires/@Defined!=''">
+#ifndef <xsl:value-of select="Requires/@Defined" />
+		Unsupp("The value of <xsl:value-of select="Requires/@Defined" /> is not defined.");
+#endif
+			</xsl:if>			
+		</xsl:if>
 			
 		<xsl:if test="@FaultSimulationReady='true'">
 		if ( PartitionManager::IsOptionEnabled("ro") )

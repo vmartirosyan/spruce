@@ -71,11 +71,9 @@
 		</Code>
 	</Test>
 <Test Name="IoctlFITRIM" FaultSimulationReady="true" Shallow="true">
+		<Requires Defined="FITRIM" />
 		<Description>Ioctl FITRIM.</Description>
 		<File count="1"/>
-		<Header>
-		#ifdef FITRIM
-		</Header>
 		<Code>
 			struct fstrim_range arg;
 			arg.start = 0;
@@ -92,12 +90,7 @@
 					Error("FITRIM operation failed.", Fail);
 				}
 			}			
-		</Code>
-		<Footer>
-		#else
-		Unsupp("FITRIM is not supported");
-		#endif
-		</Footer>
+		</Code>		
 	</Test>
 	<Test Name="IoctlFIEMAP" FaultSimulationReady="true" Shallow="true">
 		<Description>Ioctl FIEMAP.</Description>
