@@ -78,7 +78,7 @@ public:
 		//_testCount(<xsl:value-of select="count(Test)"/>),
 		//_fsim_testCount(<xsl:value-of select="count(Test[@FaultSimulationReady='true'])"/>)		
 	{			
-	<xsl:value-of select="StartUp"/>
+	
 	<xsl:for-each select="Test">
 		_tests["<xsl:value-of select="@Name"/>"] = Test( "<xsl:value-of select="Description"/>", &amp;<xsl:value-of select="$TestClassName" />::<xsl:value-of select="@Name" />Func);
 	</xsl:for-each>
@@ -86,28 +86,28 @@ public:
 		_fsim_tests["<xsl:value-of select="@Name"/>"] = Test("<xsl:value-of select="Description"/>", &amp;<xsl:value-of select="$TestClassName" />::<xsl:value-of select="@Name" />Func);
 	</xsl:for-each>
 	
-	struct FSimInfo info;
+		struct FSimInfo info;
 	<xsl:for-each select="FaultSimulation/Simulate">
 	<xsl:if test="@point">
-	info.Point = "<xsl:value-of select="@point" />";
+		info.Point = "<xsl:value-of select="@point" />";
 	</xsl:if>
 	<xsl:if test="@count">
-	info.Count = <xsl:value-of select="@count" />;
+		info.Count = <xsl:value-of select="@count" />;
 	</xsl:if>
 	<xsl:if test="@expression">
-	info.Expression = "<xsl:value-of select="@expression" />";
+		info.Expression = "<xsl:value-of select="@expression" />";
 	</xsl:if>
-	_fsim_info_vec.push_back(info);
-	</xsl:for-each>
-	if( _fsim_info_vec.empty() &amp;&amp;  !_fsim_tests.empty() )
-	{
-		info.Point = "kmalloc";
 		_fsim_info_vec.push_back(info);
-	}
+	</xsl:for-each>
+		if( _fsim_info_vec.empty() &amp;&amp;  !_fsim_tests.empty() )
+		{
+			info.Point = "kmalloc";
+			_fsim_info_vec.push_back(info);
+		}
 	}
 	~<xsl:value-of select="$TestClassName" />()
 	{
-		<xsl:value-of select="CleanUp"/>
+
 	}
 	string GetName() { return _name; }
 	void ExcludeTest(string test)
@@ -135,6 +135,7 @@ public:
 	
 	virtual TestResultCollection RunNormalTests()
 	{
+		<xsl:value-of select="StartUp"/>
 		chdir(MountPoint);
 		TestResultCollection res;
 		//for ( unsigned int i  = 0; i &lt; _tests.size(); ++i)
@@ -184,12 +185,14 @@ public:
 				res.AddResult( tr );
 			}
 		}
+		<xsl:value-of select="CleanUp"/>
 		return res;
 	}
 	
 	
 	virtual TestResultCollection RunFaultyTests()
 	{
+		<xsl:value-of select="StartUp"/>
 		cerr &lt;&lt; "Running faulty tests:  <xsl:value-of select="$TestSetName" />: " &lt;&lt; _fsim_info_vec.size() &lt;&lt; endl;
 		_fsim_enabled = true;
 		TestResultCollection res;
@@ -268,12 +271,18 @@ public:
 		}
 		
 		DisableFaultSim();
+		<xsl:value-of select="CleanUp"/>
 		return res;
 	}
-	<xsl:for-each select="Test">	
+	
+	// The test functions
+	<xsl:for-each select="Test">
 	int <xsl:value-of select="@Name" />Func(vector&lt;string>)
-	{	
+	{			
 		Status _TestStatus = Success;
+		<xsl:if test="@Shallow='true'" >
+		_TestStatus = Shallow;
+		</xsl:if>
 		bool _InFooter = false;	
 		if ( _InFooter == true )
 			_InFooter = false;
@@ -327,7 +336,7 @@ public:
 			<xsl:if test="Dir/File">
 			for ( int i = 0 ; i &lt; DirFileCount; ++i )
 			{
-				char buf[5];
+				char buf[10];
 				sprintf(buf, "%d", i);
 				DirFilePaths[i] = DirPaths[0] + "/" + FilePrefix + buf;
 				DirFDs[i] = DirFiles[i].Open(DirFilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
@@ -341,7 +350,7 @@ public:
 			<xsl:if test="Dir/Dir">
 			for ( int i = 0 ; i &lt; DirDirCount; ++i )
 			{
-				char buf[5];
+				char buf[10];
 				sprintf(buf, "%d", i);
 				DirDirPaths[i] = DirPaths[0] + "/" + DirPrefix + buf;
 				DirDDs[i] = DirDirs[i].Open(DirDirPaths[i], S_IRWXU);
@@ -370,7 +379,7 @@ public:
 			int FDs[FileCount];
 			for ( int i = 0 ; i &lt; FileCount; ++i )
 			{
-				char buf[2];
+				char buf[10];
 				sprintf(buf, "%d", i);
 				FilePaths[i] = FilePrefix + buf;
 				FDs[i] = Files[i].Open(FilePaths[i], FileMode, FileFlags);
