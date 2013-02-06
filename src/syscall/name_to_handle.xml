@@ -47,11 +47,10 @@
 	<Requires>fcntl.h</Requires>
 	<Requires>stdio.h</Requires>
 	<Requires>stdlib.h</Requires>
-	<Test Name="NameToHandleNormalForFile" FaultSimulationReady="true">
+	<Test Name="NameToHandleNormalForFile" FaultSimulationReady="true" Shallow="true">
 		<Description>name_to_handle_at: Convert name to handle and open_by_handle_at: Open the file handle</Description>
 		<File count="1"/>
 		<Code>
-			_TestStatus = Shallow;
 			struct file_handle *fh = static_cast<file_handle*>(malloc(sizeof(struct file_handle)));
 			fh->handle_bytes = 0;
 			int mnt_id; 
@@ -70,11 +69,10 @@
 			Fail(ret == -1, "open_by_handle_at failed");
 		</Code>
 	</Test>
-	<Test Name="NameToHandleNormalForDirectory" FaultSimulationReady="true">
+	<Test Name="NameToHandleNormalForDirectory" FaultSimulationReady="true" Shallow="true">
 		<Description>name_to_handle_at: Convert name to handle and open_by_handle_at: Open the file handle</Description>
 		<Dir count="1"/>
 		<Code>
-			_TestStatus = Shallow;
 			struct file_handle *fh = static_cast<file_handle*>(malloc(sizeof(struct file_handle)));
 			fh->handle_bytes = 0;
 			int mnt_id; 

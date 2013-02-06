@@ -83,7 +83,7 @@
 		</Code>
 	</Test>
 	<!-- This commang is removed in newer kernels... -->
-	<Test Name="WaitForReadonly" FaultSimulationReady="true">
+	<Test Name="WaitForReadonly" FaultSimulationReady="true" Shallow="true">
 
 		<Description>Wait for read only.</Description>
 		<File count="1"/>
@@ -94,7 +94,6 @@
 #ifndef EXT4_IOC_WAIT_FOR_READONLY
 #define EXT4_IOC_WAIT_FOR_READONLY	_IOR('f', 99, long)
 #endif
-			_TestStatus = Shallow;
 			EnableFaultSim();
 			if ( ioctl(FDs[0], EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1 )
 			{
@@ -110,15 +109,13 @@
 #endif
 		</Code>		
 	</Test>
-	<Test Name="GroupExtend" FaultSimulationReady="true">
+	<Test Name="GroupExtend" FaultSimulationReady="true" Shallow="true">
 		<Description>Group extend.</Description>
 		<File count="1"/>
 		<Code>
-_TestStatus = Shallow;
 			struct stat st;
 			Unres ( fstat (FDs[0], &st ) == -1, "Cannot stat file " + static_cast<string>(MountPoint));
 		
-			cerr << "Shallow test";
 			ioctl(FDs[0], EXT2_IOC_GROUP_EXTEND, 0);//covering code
 			int NewPartitionSizeInBlocks = PartitionManager::GetDeviceSize(DeviceName)/4096+50000;
 			if(ioctl(FDs[0], EXT2_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1)
@@ -141,7 +138,7 @@ _TestStatus = Shallow;
 			}*/
 		</Code>
 	</Test>
-	<Test Name="ResizeFS" FaultSimulationReady="true">
+	<Test Name="ResizeFS" FaultSimulationReady="true" Shallow="true">
 		<Description>Resize FS.</Description>
 		<File count="1"/>
 		<Code>
@@ -151,7 +148,6 @@ _TestStatus = Shallow;
 #ifndef EXT4_IOC_RESIZE_FS
 #	define EXT4_IOC_RESIZE_FS              _IOW('f', 16, __u64)
 #endif
-			_TestStatus = Shallow;
 			uint64_t DeviceSize;
 			struct stat st;
 			Unres ( stat(DeviceName, &st) == -1, "Cannot get file stats.");
@@ -177,7 +173,7 @@ _TestStatus = Shallow;
 #endif			
 		</Code>
 	</Test>
-	<Test Name="MoveExtent" FaultSimulationReady="true">
+	<Test Name="MoveExtent" FaultSimulationReady="true" Shallow="true">
 		<Description>Move extent.</Description>
 		<File count="2"/>
 		<Code>
@@ -192,7 +188,6 @@ struct move_extent {
 };
 #define EXT4_IOC_MOVE_EXT		_IOWR('f', 15, struct move_extent)
 #endif
-			_TestStatus = Shallow;
 			Unres (unlink(FilePaths[0].c_str()) == -1, "Cannot unlink the donor file.");
 			
 			Unres ( fallocate(FDs[0], 0, 0, 32*32*32*4096), "Cannot allocate space for donor file.");
@@ -214,7 +209,7 @@ struct move_extent {
 			
 		</Code>
 	</Test>
-	<Test Name="GroupAdd" FaultSimulationReady="true">
+	<Test Name="GroupAdd" FaultSimulationReady="true" Shallow="true">
 		<Description>Group add.</Description>
 		<File count="1"/>
 		<Code>
@@ -231,7 +226,6 @@ struct ext4_new_group_data {
 #ifndef EXT4_IOC_GROUP_ADD
 #define EXT4_IOC_GROUP_ADD		_IOW('f', 8, struct ext4_new_group_input)
 #endif
-			_TestStatus = Shallow;
 			struct ext4_new_group_input input;
 			memset(&input, 0, sizeof(input));			
 						
@@ -239,7 +233,7 @@ struct ext4_new_group_data {
 			
 		</Code>
 	</Test>
-	<!--Test Name="Migrate" FaultSimulationReady="true">
+	<!--Test Name="Migrate" FaultSimulationReady="true" Shallow="true">
 		<Description>Migrate an Ext3 partition to Ext4</Description>
 		<Header>
 #ifndef EXT4_IOC_MIGRATE
@@ -307,7 +301,7 @@ struct ext4_new_group_data {
 			return result;
 		</Footer>
 	</Test-->
-	<Test Name="AllocDABlocks" FaultSimulationReady="true">
+	<Test Name="AllocDABlocks" FaultSimulationReady="true" Shallow="true">
 		<Description>Allocate delayed-allocation blocks.</Description>
 		<File count="1"/>
 		<Code>
@@ -315,17 +309,15 @@ struct ext4_new_group_data {
 #define EXT4_IOC_ALLOC_DA_BLKS		_IO('f', 12)
 #endif
 
-			_TestStatus = Shallow;
 			Fail ( ioctl(FDs[0], EXT4_IOC_ALLOC_DA_BLKS, 0) == -1, "Error during delayed allocation of blocks.");
 			
 		</Code>
 	</Test>
-	<Test Name="Fitrim" FaultSimulationReady="true">
+	<Test Name="Fitrim" FaultSimulationReady="true" Shallow="true">
 		<Description>FITRIM?</Description>
 		<File count="1"/>
 		<Code>
 #ifdef FITRIM
-			_TestStatus = Shallow;
 			struct fstrim_range arg;
 			Fail ( ioctl(FDs[0], FITRIM, &arg) == -1 , "Error FITRIM.");
 #else

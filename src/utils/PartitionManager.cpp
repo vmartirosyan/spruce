@@ -114,7 +114,7 @@ bool PartitionManager::ReleasePartition(string MountPoint, string* output)
 	UnixCommand unmount("umount");
 	vector<string> unmount_args;
 	unmount_args.push_back(MountPoint);
-	sleep(5);
+	
 retry:		
 	
 	//res = unmount.Execute(unmount_args);

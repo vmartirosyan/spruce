@@ -33,7 +33,6 @@
 		<Description>Try to set and get some flag values.</Description>
 		<Dir count="1"/>			
 		<Code>
-			_TestStatus = Shallow;	
 			int set_flags = JFS_NOATIME_FL | JFS_DIRSYNC_FL | JFS_APPEND_FL | JFS_IMMUTABLE_FL | JFS_SYNC_FL; 
 			int get_flags = 0;
 			
@@ -59,7 +58,6 @@
 		<Description>Try to set and get some flag values.</Description>
 		<File count="1"/>			
 		<Code>
-			_TestStatus = Shallow;	
 			int set_flags = JFS_NOATIME_FL |  JFS_APPEND_FL | JFS_IMMUTABLE_FL 
 							| JFS_SYNC_FL | JFS_SECRM_FL; 
 			int get_flags = 0;

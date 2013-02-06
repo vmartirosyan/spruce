@@ -350,8 +350,7 @@
 			//DN_ACCESS			
 			Fail ( fcntl ( dirfd, F_NOTIFY, DN_ACCESS ) == -1, "Cannot set notification DN_ACCESS.");
 						
-			//Unres ( read ( fd, r_buffer_, 5 ) == -1, "Error in reading.");
-			Unres ( write ( fd, w_buffer_, strlen(w_buffer_) ) == -1, "Error in writing to the file.");
+			Unres ( read ( fd, r_buffer_, 5 ) == -1, "Error in reading.");
 			
 			Fail ( SignalNumber != SIGIO, "The signal for DN_ACCESS was not received." );			
 			

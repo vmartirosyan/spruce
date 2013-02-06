@@ -50,6 +50,7 @@
 	<TestSet Name="mkdir_rmdir"/>
 	<TestSet Name="mknod"/>
 	<TestSet Name="mmap"/>
+	<TestSet Name="mount_umount"/>
 	<!--TestSet Name="mount_umount"/--> <!-- Temporarly disabled. Should be enabled as the new manager is implemented -->
 	<TestSet Name="open"/>
 	<TestSet Name="openat"/>
