@@ -32,6 +32,7 @@
 
 	
 	<Test Name="SetGetFlags_Empty" FaultSimulationReady="true">
+		<Requires KernelVersion="2,6,32" Defined="FITRIM" />
 		<Description>Try to set and get flag values. </Description>
 		<File count="1"/>
 		<Code>
@@ -55,7 +56,6 @@
 			
 			Fail ( get_flags != set_flags, "Get and Set flag values do not match!" );
 			
-			;
 		</Code>
 	</Test>
 	<Test Name="SetGetFlags_All" FaultSimulationReady="true" Shallow="true">
@@ -120,15 +120,11 @@
 	
 	<!-- shallow tests -->
 	<Test Name="Fitrim" Shallow="true">
+		<Requires Defined="FITRIM" />
 		<Description>FITRIM shallow test</Description>
 		<File count="1"/>
 		<Code>
-#ifdef FITRIM
 			Fail ( ioctl(FDs[0], FITRIM, 0) == -1 , "Error FITRIM.");
-#else
-	Unsupp("FITRIM is not supported");
-#endif
-
 		</Code>
 	</Test>	
 	<Test Name="BTRFS_IOC_SNAP_CREATE" Shallow="true">
@@ -202,12 +198,10 @@
 	</Test>
 	
 	<Test Name="BTRFS_IOC_SUBVOL_GETFLAGS" Shallow="true">
+		<Requires KernelVersion="2,6,38" />
 		<Description>BTRFS_IOC_SUBVOL_GETFLAGS.</Description>
 		<Dir count="1"/>
 		<Code>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38)
-		Unsupp("BTRFS_IOC_SUBVOL_GETFLAGS operation is not supported in Linux 2.6.37- versions.");
-#else
 			btrfs_ioctl_vol_args arg;
 			strcpy(arg.name, "subvol");
 			arg.fd = DirDs[0];
@@ -224,17 +218,12 @@
 				Error("Cannot destroy snapshot");
 			
 			Fail(status == -1, "Cannot get subvolume flags");
-#endif
 		</Code>
 	</Test>
 		
 	<!-- Test Name="BTRFS_IOC_SUBVOL_SETFLAGS" Shallow="true">
+		<Requires KernelVersion="2,6,38" />
 		<Description>BTRFS_IOC_SUBVOL_SETFLAGS.</Description>
-		<Header>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38)
-		Unsupp("BTRFS_IOC_SUBVOL_SETFLAGS operation is not supported in Linux 2.6.37- versions.");
-#else
-		</Header>
 		<Dir count="1"/>		
 		<Code>
 			btrfs_ioctl_vol_args subvol_arg;
@@ -257,9 +246,6 @@
 			Fail(status == -1, "Cannot set subvolume flags");
 			
 		</Code>
-		<Footer>
-#endif
-		</Footer>
 	</Test-->
 	
 	<Test Name="BTRFS_IOC_DEFAULT_SUBVOL">
@@ -582,34 +568,25 @@
 	</Test>
 
 	<Test Name="BTRFS_IOC_START_SYNC" Shallow="true">
+		<Requires KernelVersion="2,6,37" />
 		<Description>BTRFS_IOC_START_SYNC.</Description>
 		<File count="1"/>
 		<Code>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,37)
-		Unsupp("BTRFS_IOC_START_SYNC operation is not supported in Linux 2.6.37- versions.");
-#else
 #ifndef BTRFS_IOC_START_SYNC			
 #define BTRFS_IOC_START_SYNC _IOR(BTRFS_IOCTL_MAGIC, 24, __u64)
 #endif
-
 			Fail( ioctl( FDs[0], BTRFS_IOC_START_SYNC, NULL) == -1, "Cannot strat sync.");
-#endif
 		</Code>		
-	</Test>
-	
-		<Test Name="BTRFS_IOC_WAIT_SYNC" Shallow="true">
+	</Test>	
+	<Test Name="BTRFS_IOC_WAIT_SYNC" Shallow="true">
+		<Requires KernelVersion="2,6,37" />
 		<Description>BTRFS_IOC_WAIT_SYNC.</Description>
 		<File count="1"/>
 		<Code>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,37)
-		Unsupp("BTRFS_IOC_WAIT_SYNC operation is not supported in Linux 2.6.37- versions.");
-#else
 #ifndef BTRFS_IOC_WAIT_SYNC			
 #define BTRFS_IOC_WAIT_SYNC  _IOW(BTRFS_IOCTL_MAGIC, 22, __u64)
 #endif
-
 			Fail( ioctl( FDs[0], BTRFS_IOC_WAIT_SYNC, NULL) == -1, "Cannot syncronize wait");
-#endif
 		</Code>
 	</Test>
 	
@@ -641,15 +618,12 @@
 	</Test-->
 	
 	<Test Name="BTRFS_IOC_BALANCE_V2" Shallow="true">
+		<Requires KernelVersion="3,3,0" />
 		<Description>BTRFS_IOC_BALANCE_V2.</Description>
 		<File count="1" />
 		<Code>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
-		Unsupp("BTRFS_IOC_BALANCE_V2 operation is not supported in Linux 3.2- versions.");
-#else
 			btrfs_ioctl_balance_args arg;
 			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE_V2, &arg) == -1, "V2 balance failed.");
-#endif
 		</Code>
 		<Footer>
 
@@ -657,12 +631,8 @@
 	</Test>
 	
 	<!--Test Name="BTRFS_IOC_BALANCE_CTL" Shallow="true">
+		<Requires KernelVersion="3,3,0" />
 		<Description>BTRFS_IOC_BALANCE_CTL.</Description>
-		<Header>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
-		Unsupp("BTRFS_IOC_BALANCE_CTL operation is not supported in Linux 3.2- versions.");
-#else
-		</Header>
 		<File count="1" />
 		<Code>
 			Unres( ioctl( FDs[0], BTRFS_IOC_BALANCE, NULL) == -1, "Cannot balance filesystem chunks");
@@ -670,69 +640,43 @@
 			int cmd = BTRFS_BALANCE_CTL_PAUSE;
 			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE_CTL, cmd), "Balance control failed.");
 		</Code>
-		<Footer>
-#endif
-		</Footer>
 	</Test>
 	
 	<Test Name="BTRFS_IOC_BALANCE_PROGRESS" Shallow="true">
-		<Header>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
-		Unsupp("BTRFS_IOC_BALANCE_PROGRESS operation is not supported in Linux 3.2- versions.");
-#else
-		</Header>
+		<Requires KernelVersion="3,3,0" />		
 		<Description>BTRFS_IOC_BALANCE_PROGRESS.</Description>
 		<File count="1"/>
 		<Code>
 			btrfs_ioctl_balance_args arg;
 			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE_PROGRESS, &arg) == -1, "Cannot get balance progress.");
 		</Code>
-		<Footer>
-#endif
-		</Footer>
 	</Test-->
 	
 	<!--Test Name="BTRFS_IOC_SET_RECEIVED_SUBVOL" Shallow="true">
-		<Header>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3,6,0)
-		Unsupp("BTRFS_IOC_SET_RECEIVED_SUBVOL operation is not supported in Linux 3.5- versions.");
-#else
-		</Header>
+		<Requires KernelVersion="3,3,0" />		
 		<Description>BTRFS_IOC_SET_RECEIVED_SUBVOL.</Description>
 		<File count="1"/>
 		<Code>
 			btrfs_ioctl_received_subvol_args arg;
 			Fail(ioctl( FDs[0], BTRFS_IOC_SET_RECEIVED_SUBVOL, &arg) == -1, "Cannot set received subvolume.");
-		</Code>
-		<Footer>
-#endif
-		</Footer>
+		</Code>		
 	</Test-->
 		
 	<!--Test Name="BTRFS_IOC_SEND" Shallow="true">
+		<Requires KernelVersion="3,6,0" />
 		<Description>BTRFS_IOC_SEND.</Description>
-		<Header>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(3,6,0)
-		Unsupp("BTRFS_IOC_SEND operation is not supported in Linux 3.5- versions.");
-#else
-		</Header>
 		<File count="1"/>
 		<Code>
 			btrfs_ioctl_send_args arg;
 			Fail( ioctl( FDs[0], BTRFS_IOC_SEND, &arg) == -1, "Send failed.");
 		</Code>
-		<Footer>
-#endif
-		</Footer>
 	</Test-->
 
 	<Test Name="BTRFS_IOC_GET_DEV_STATS" Shallow="true">
+		<Requires KernelVersion="3,5,0" />
 		<Description>BTRFS_IOC_GET_DEV_STATS.</Description>
 		<File count="1"/>
 		<Code>
-#if  LINUX_VERSION_CODE < KERNEL_VERSION(3,5,0)
-		Unsupp("BTRFS_IOC_GET_DEV_STATS operation is not supported in Linux 3.5- versions.");
-#else
 #ifndef BTRFS_IOC_GET_DEV_STATS
 #define BTRFS_DEV_STAT_VALUES_MAX 5
 struct btrfs_ioctl_get_dev_stats {
@@ -745,25 +689,17 @@ struct btrfs_ioctl_get_dev_stats {
 #endif
 			btrfs_ioctl_get_dev_stats arg;
 			Fail( ioctl( FDs[0], BTRFS_IOC_GET_DEV_STATS, &arg) == -1, "Cannot get device stats.");
-#endif
 		</Code>
 	</Test>
 	
- <!-- Only supported for 3.5 kernel-->
+ <!-- Only supported for 3.5 kernel--> 
 	<!--Test Name="BTRFS_IOC_GET_AND_RESET_DEV_STATS" Shallow="true">
-		<Header>
-#ifdef BTRFS_IOC_GET_AND_RESET_DEV_STATS
-		</Header>
+		<Requires Defined="BTRFS_IOC_GET_AND_RESET_DEV_STATS" />
 		<Description>BTRFS_IOC_GET_AND_RESET_DEV_STATS.</Description>
 		<File count="1"/>
 		<Code>
 			ioctl( FDs[0], BTRFS_IOC_GET_AND_RESET_DEV_STATS, buf);
-		</Code>
-		<Footer>
-#else
-			Error("The BTRFS_IOC_GET_AND_RESET_DEV_STATS value is not defined.", Unsupported);
-#endif
-		</Footer>
+		</Code>		
 	</Test-->
 	<FaultSimulation>
 		<Simulate point="kmalloc"/>		

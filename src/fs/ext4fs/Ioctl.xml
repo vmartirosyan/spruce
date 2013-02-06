@@ -139,12 +139,10 @@
 		</Code>
 	</Test>
 	<Test Name="ResizeFS" FaultSimulationReady="true" Shallow="true">
+		<Requires KernelVersion="3,3,0" />
 		<Description>Resize FS.</Description>
 		<File count="1"/>
 		<Code>
-#if  LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
-		Unsupp("Resize FS operation is unsupported in earlier versions than Linux 3.3.");
-#else
 #ifndef EXT4_IOC_RESIZE_FS
 #	define EXT4_IOC_RESIZE_FS              _IOW('f', 16, __u64)
 #endif
@@ -154,7 +152,6 @@
 				
 			if (S_ISREG(st.st_mode))
 			{
-				cout << "Loop device on regular file." << endl;
 				DeviceSize = st.st_size;
 			}
 			else
@@ -169,8 +166,6 @@
 			
 			__u64 BlockCount = DeviceSize / 4096;
 			Fail(ioctl(FDs[0], EXT4_IOC_RESIZE_FS, &BlockCount) == -1, "Resize FS failed");
-			
-#endif			
 		</Code>
 	</Test>
 	<Test Name="MoveExtent" FaultSimulationReady="true" Shallow="true">
@@ -314,16 +309,12 @@ struct ext4_new_group_data {
 		</Code>
 	</Test>
 	<Test Name="Fitrim" FaultSimulationReady="true" Shallow="true">
+		<Requires Defined="FITRIM" />
 		<Description>FITRIM?</Description>
 		<File count="1"/>
 		<Code>
-#ifdef FITRIM
 			struct fstrim_range arg;
 			Fail ( ioctl(FDs[0], FITRIM, &arg) == -1 , "Error FITRIM.");
-#else
-	Unsupp("FITRIM is not supported");
-#endif
-
 		</Code>
 	</Test>
 	<Test Name="Unsupported">
