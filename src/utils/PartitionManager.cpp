@@ -50,7 +50,8 @@ PartitionStatus PartitionManager::PreparePartition()
 	_CurrentOptions = *_Index;
 	_Index++;
 	
-	//cout << "Mount options: " << cur.MountData << ". " << (_Index - _AdditionalOptions[_FSIndex].begin())  << " of " << _AdditionalOptions[_FSIndex].size() << endl;
+	Logger::LogInfo("Preparing partition: " + GetCurrentOptions(false));
+	
 	if ( !CreateFilesystem(_FileSystem, _DeviceName, false, _CurrentOptions.MkfsOptions) )
 	{				
 		_Index = _AdditionalOptions[_FSIndex].begin();
@@ -173,8 +174,13 @@ bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSyst
 	//cerr << "Mounting " << DeviceName << " to " << MountPoint << " (" << FileSystem << ") \nFlags: "
 	//	<< Flags << ", Data: " << Options << endl;
 	
-	char buf[10];
-	sprintf(buf, "%lu", Flags);
+	const int size = 10;
+	char buf[size];
+	if ( snprintf(buf, size, "%lu", Flags) >= size )
+	{
+		Logger::LogError("Cannot get Flags value.");
+		return false;
+	}
 		
 	setenv("MountFlags", buf, 1);
 	setenv("MountData", Options.c_str(), 1);
