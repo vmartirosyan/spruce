@@ -295,16 +295,17 @@ public:
 			
 <!-- Check if all the requirements are satisfied -->
 		<xsl:if test="Requires">
+<!-- Use standart 'if(false)' construction for template-generated alternatives -->
+#if 0
 			<xsl:if test="Requires/@KernelVersion!=''">
-#if LINUX_VERSION_CODE &lt; KERNEL_VERSION(<xsl:value-of select="Requires/@KernelVersion" />)
+#elif LINUX_VERSION_CODE &lt; KERNEL_VERSION(<xsl:value-of select="Requires/@KernelVersion" />)
 		Unsupp("Kernel version should be at least <xsl:value-of select="Requires/@KernelVersion" />");
-#endif
 			</xsl:if>
 			<xsl:if test="Requires/@Defined!=''">
-#ifndef <xsl:value-of select="Requires/@Defined" />
+#elif ! defined <xsl:value-of select="Requires/@Defined" />
 		Unsupp("The value of <xsl:value-of select="Requires/@Defined" /> is not defined.");
-#endif
 			</xsl:if>			
+#else
 		</xsl:if>
 			
 		<xsl:if test="@FaultSimulationReady='true'">
@@ -430,10 +431,30 @@ public:
 			
 			Error("Exception was thrown: ", e.GetMessage(), Unresolved);
 		}
+		<xsl:if test="Requires">
+<!-- Terminate #if directive. -->
+#endif
+		</xsl:if>
+
 Footer: 
 		_InFooter = true;
+		<xsl:if test="Requires">
+<!-- Compile non-empty 'Footer' section only if all conditions are evaluated to true.-->
+#if 0
+			<xsl:if test="Requires/@KernelVersion!=''">
+#elif LINUX_VERSION_CODE &lt; KERNEL_VERSION(<xsl:value-of select="Requires/@KernelVersion" />)
+			</xsl:if>
+			<xsl:if test="Requires/@Defined!=''">
+#elif ! defined <xsl:value-of select="Requires/@Defined" />
+			</xsl:if>			
+#else
+		</xsl:if>
 		<xsl:value-of select="Footer" />
 		<xsl:value-of select="/TestSet/Footer" />	
+		<xsl:if test="Requires">
+<!-- Terminate #if directive. -->
+#endif
+		</xsl:if>
 		return _TestStatus;
 	}
 	</xsl:for-each>
