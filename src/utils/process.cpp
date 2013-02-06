@@ -69,6 +69,7 @@ ProcessResult * Process::Execute(vector<string> args)
 	return Execute(&Process::Main, args);
 }
 
+
 bool ProcessAlarmed = false;
 
 void ProcessSignalHandler(int signum)
@@ -129,6 +130,12 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 		if ( sigaction(SIGSEGV, &sa, NULL) == -1 )
 		{	
 			cerr << "Cannot set signal handler. " << strerror(errno);
+			_exit(Unresolved);
+		}
+		
+		if(sigprocmask(SIG_BLOCK, &BlockSignalMask, 0) == -1)
+		{
+			cerr << "Cannot set signal block mask. " << strerror(errno);
 			_exit(Unresolved);
 		}
 		

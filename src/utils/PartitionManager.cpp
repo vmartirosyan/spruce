@@ -156,7 +156,7 @@ bool PartitionManager::ReleasePartition(string MountPoint, string* output)
 	
 	UnixCommand unmount("umount");
 	vector<string> unmount_args;
-	unmount_args.push_back(MountPoint);
+	unmount_args.push_back(MountPoint);  
 	
 retry:		
 	
