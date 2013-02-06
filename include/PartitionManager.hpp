@@ -42,6 +42,7 @@
 #include <UnixCommand.hpp>
 #include <map>
 #include <set>
+#include <sstream>
 using namespace std;
 
 enum FileSystems
@@ -214,9 +215,14 @@ public:
 				( MountFlags == cur.MountFlags ) &&
 				( MountData == cur.MountData ) );
 		}
-		bool operator < (const CurrentOptions & cur) const
+		bool operator < (const CurrentOptions & opt) const
 		{
-			return RawData < cur.RawData;			
+			stringstream str_this, str_opt;
+			
+			str_this << MkfsOptions << MountData << MountFlags;
+			str_opt << opt.MkfsOptions << opt.MountData << opt.MountFlags;
+			
+			return str_this.str() < str_opt.str();			
 		}
 		CurrentOptions & operator = (const CurrentOptions & opt)
 		{
