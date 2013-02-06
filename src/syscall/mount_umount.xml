@@ -1,0 +1,368 @@
+<!--    mount_umount.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//      	Karen Tsirunyan <ktsirunyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="mount_umount">
+	<StartUp>
+		chdir("/");		
+	</StartUp>
+	<Header>
+		Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+	</Header>
+	<!-- Requires sys/mount.h but it is included in the module.cpp file to overcome the conflicts with fs.h header file. -->
+	<Test Name="MountGeneral" FaultSimulationReady="true">
+		<Description>Trying to mount the device to another partition</Description>		
+		<Code>
+			EnableFaultSim();
+				
+			Fail (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");			
+		</Code>
+	</Test>
+	<Test Name="RemountGeneral" FaultSimulationReady="true">
+		<Description>Trying to remount the device to the same partition(with MS_REMOUNT flag activated)</Description>
+		<Code>
+			EnableFaultSim();
+			
+			Unres (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed.");
+			
+			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, 0) == -1, "Remount failed.");
+				
+		</Code>		
+	</Test>
+	<Test Name="NoATimeGeneral" FaultSimulationReady="true">
+		<Description>Trying to mount the device with MS_NOATIME flag attempted.</Description>
+		
+		<Code>
+			EnableFaultSim();
+				
+			Fail(mount( DeviceName, MountPoint, FileSystem, MS_NOATIME, 0) == -1, "Mount with MS_NOATIME flag attempted failed");
+			
+		</Code>		
+	</Test>
+	<Test Name="NoDevGeneral" FaultSimulationReady="true">
+		<Description>Trying to mount the device with MS_NODEV flag attempted.</Description>
+		
+		<Code>
+			EnableFaultSim();
+			
+	    	Fail (mount( DeviceName, MountPoint, FileSystem, MS_NODEV, 0) == -1,
+				"Mount with MS_NODEV flag attempted failed");
+		</Code>		
+	</Test>
+	<Test Name="NoDirATimeGeneral" FaultSimulationReady="true">
+		<Description>Trying to mount the device with MS_NODIRATIME flag attempted.</Description>		
+		<Code>
+			EnableFaultSim();
+			
+			Fail (mount( DeviceName, MountPoint, FileSystem, MS_NODIRATIME, 0) == -1, "Mount with MS_NODIRATIME flag attempted failed");
+			
+		</Code>		
+	</Test>
+	<Test Name="NoExecGeneral" FaultSimulationReady="true">
+		<Description>Trying to mount the device with MS_NOEXEC flag attempted.</Description>
+		
+		<Code>
+			EnableFaultSim();
+			
+			Fail(mount( DeviceName, MountPoint, FileSystem, MS_NOEXEC, 0) == -1, "Mount with MS_NOEXEC flag attempted failed");
+		</Code>
+	</Test>
+	<Test Name="NoSUIDGeneral" FaultSimulationReady="true">
+		<Description>Trying to mount the device with MS_NOSUID flag attempted.</Description>
+		<Code>
+			EnableFaultSim();
+			
+			Fail (mount( DeviceName, MountPoint, FileSystem, MS_NOSUID, 0) == -1, "Mount with MS_NOSUID flag attempted failed");					
+		</Code>
+	</Test>
+	<Test Name="MountRdOnlyGeneral" FaultSimulationReady="true">
+		<Description>Trying to mount the device with MS_RDONLY flag attempted.</Description>		
+		<Code>
+			EnableFaultSim();
+			
+			Fail(mount( DeviceName, MountPoint, FileSystem, MS_RDONLY, 0) == -1, "Mount with MS_RDONLY flag attempted failed");			
+		</Code>		
+	</Test>
+	<Test Name="MountRELATIME" FaultSimulationReady="true">
+		<Description>Trying to mount the device with MS_RELATIME flag attempted.</Description>		
+		<Code>
+			EnableFaultSim();
+			
+			Fail (mount( DeviceName, MountPoint, FileSystem, MS_RELATIME, 0) == -1, "Mount with MS_RELATIME flag attempted failed");
+		</Code>		
+	</Test>
+	
+	<Test Name="MountMS_SILENT" FaultSimulationReady="true">
+		<Description>Trying to mount the device with MS_SILENT flag attempted.</Description>		
+		<Code>
+			EnableFaultSim();
+			
+			Fail (mount( DeviceName, MountPoint, FileSystem, MS_SILENT, 0) == -1, "Mount with MS_SILENT flag attempted failed");
+		</Code>		
+	</Test>
+	
+	<Test Name="MountMS_STRICTATIME" FaultSimulationReady="true">
+		<Description>Trying to mount the device with MS_STRICTATIME flag attempted.</Description>		
+		<Code>
+			EnableFaultSim();
+			
+			Fail (mount( DeviceName, MountPoint, FileSystem, MS_STRICTATIME, 0) == -1, "Mount with MS_STRICTATIME flag attempted failed");
+		</Code>
+	</Test>
+	<Test Name="MountMS_SYNCHRONOUS" FaultSimulationReady="true">
+		<Description>Trying to mount the device with MS_SYNCHRONOUS flag attempted.</Description>		
+		<Code>
+			EnableFaultSim();
+			
+			Fail (mount( DeviceName, MountPoint, FileSystem, MS_SYNCHRONOUS, 0) == -1, "Mount with MS_SYNCHRONOUS flag attempted failed");
+		</Code>	
+	</Test>
+	<Test Name="UmountInval">
+		<Description>Umount: Target is not a mount point.</Description>
+		<Code>
+			ErrorTest(umount("/bin"), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="UmountNameTooLong">
+		<Description>Umount: Target name is too long.</Description>
+		<Code>
+			ENameTooLongTest(umount(path), -1);
+		</Code>
+	</Test>
+	<Test Name="MountNameTooLong">
+		<Description>Mount: Target name is too long.</Description>
+		<Code>
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No filesystem is provided.");
+			ENameTooLongTest(mount(DeviceName, path, FileSystem, 0, NULL), -1);
+		</Code>
+	</Test>
+	<Test Name="MountBusy">
+		<Description>Mount: source  is  already  mounted.</Description>
+		<Code>
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;
+			
+			Unres ( mount( DeviceName, MountPoint, FileSystem, 0 | rdonlyflag, 0), "Cannot perform initial mount." );	
+			
+			ErrorTest(mount( DeviceName, MountPoint, FileSystem, 0 | rdonlyflag, 0), -1, EBUSY);
+		</Code>
+	</Test>
+	<Test Name="UmountBusy">
+		<Description>Umount: source is busy.</Description>
+		<Code>
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			ErrorTest(umount( "/" ), -1, EBUSY);
+		</Code>
+	</Test>
+	<Test Name="MountFault">
+		<Description>Mount: One of the pointer arguments points outside the user address space.</Description>
+		<Code>
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;
+			ErrorTest(mount( reinterpret_cast<char*>(-1), reinterpret_cast<char*>(-1), reinterpret_cast<char*>(-1), 0 | rdonlyflag, 0 ), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="UmountFault">
+		<Description>Umount: target points outside the user address space.</Description>
+		<Code>
+			ErrorTest(umount( reinterpret_cast<char*>(-1) ), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="MountLoop">
+		<Description>Mount: target points outside the user address space.</Description>
+		<Code>
+			ErrorTest(umount( reinterpret_cast<char*>(-1) ), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="MountLoop1">
+		<Description>Mount: Too  many  links  encountered during pathname resolution.</Description>
+		<Dir count="1"/>
+		<Code>
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;
+			ELoopDirTest(mount( DeviceName, path, FileSystem, 0 | rdonlyflag, 0 ), -1);
+		</Code>
+	</Test>
+	<Test Name="MountLoop2">
+		<Description>Mount: a move was attempted, while target is a descendant of source.</Description>
+		<Code>
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;
+			ErrorTest(mount( "/", MountPoint, FileSystem, MS_MOVE | rdonlyflag, 0 ), -1, ELOOP);
+		</Code>
+	</Test>
+	<Test Name="MountInval1">
+		<Header>
+			//const char * tmp_mount_dir = "/tmp/spruce_test_mount_dir";
+			//Unres (mkdir(tmp_mount_dir, 0777) == -1, "Cannot create a mount point"); 
+		</Header>		
+		<Description>Mount: a  remount  (MS_REMOUNT) was  attempted,  but  source  was not already mounted on target.</Description>
+		<Code>
+			Unres(! strcmp(DeviceName, ""), "No device name is provided.");		
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;
+			
+			ErrorTest(mount( DeviceName, "/bin", FileSystem, MS_REMOUNT | rdonlyflag, 0 ), -1, EINVAL);
+		</Code>
+		<Footer>
+			//rmdir(tmp_mount_dir);
+		</Footer>
+	</Test>
+	<Test Name="MountInval2">
+		<Description>Mount: a move (MS_MOVE) was attempted, but source was not  a  mount point.</Description>
+		<Code>
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;
+			ErrorTest(mount( "/dev/zero", MountPoint, FileSystem, MS_MOVE | rdonlyflag, 0 ), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="UmountInval1">
+		<Description>Umount: target is not a mount point.</Description>
+		<Code>
+			ErrorTest(umount( "/dev/zero" ), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="UmountInval2">
+		<Description>Umount2:  umount2()  was  called  with MNT_EXPIRE and either MNT_DETACH or MNT_FORCE.</Description>
+		<Code>
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			
+			ErrorTest(umount2( MountPoint, MNT_EXPIRE | MNT_DETACH ), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MountNotBlock">
+		<Description>Mount: source is not a block device.</Description>
+		<Code>
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;
+			ErrorTest(mount( "/dev/zero", MountPoint, FileSystem, 0 | rdonlyflag, 0 ), -1, ENOTBLK);
+		</Code>
+	</Test>
+	<Test Name="MountNoEnt1">
+		<Description>Mount: A pathname was empty.</Description>
+		<Code>
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;
+			ErrorTest(mount( DeviceName, "", FileSystem, 0 | rdonlyflag, 0 ), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="MountNoEnt2">
+		<Description>Mount: A pathname had a nonexistent component.</Description>
+		<Code>
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;
+			ErrorTest(mount( DeviceName, "non_existing_path", FileSystem, 0 | rdonlyflag, 0 ), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="MountNoDev">
+		<Description>Mount: filesystemtype not configured in the kernel.</Description>
+		<Code>
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;
+			ErrorTest(mount( DeviceName, MountPoint, "NonExistingFS", 0 | rdonlyflag, 0 ), -1, ENODEV);
+		</Code>
+	</Test>
+	<Test Name="MountNotDir">
+		<Description>Mount: target, or a prefix of source, is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;
+			ENotDirTest(mount( DeviceName, path, FileSystem, 0 | rdonlyflag, 0 ), -1);
+		</Code>
+	</Test>
+	<Test Name="MountNoPerm">
+		<Description>Mount: The caller does not have the required privileges.</Description>
+		<Code>
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;			
+			ENoAccessTest(mount( DeviceName, MountPoint, FileSystem, 0 | rdonlyflag, 0 ), -1);
+		</Code>
+	</Test>
+	<Test Name="UmountNoPerm">
+		<Description>Umount: The caller does not have the required privileges.</Description>
+		<Code>
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			// sets MS_RDONLY flags for read-only mounted device just in case
+			int rdonlyflag = 0;
+			if(PartitionManager::IsOptionEnabled("ro"))
+				rdonlyflag |= MS_RDONLY;
+			ENoAccessTest(mount( DeviceName, MountPoint, FileSystem, 0 | rdonlyflag, 0 ), -1);
+		</Code>
+	</Test>
+	<CleanUp>
+		if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+		{
+			Error("Restore failed!");
+			_exit(Fatal);
+		}
+	</CleanUp>
+</TestSet>

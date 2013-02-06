@@ -1,0 +1,159 @@
+<!--    openat.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Gurgen Torozyan <gurgen.torozyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="openat">	
+	<Test Name="OpenAtNormal" FaultSimulationReady="true">
+		<Description>Open a file relative to a directory file descriptor.</Description>
+		<Dir count="1"/>
+		<Code>
+			const char * filename = "openNormal.txt";
+			EnableFaultSim();
+			int ret_val = openat(DirDs[0], filename, O_CREAT, S_IRUSR);
+			if(ret_val == -1)
+			{
+				Error("openat returned error in case of noraml filename.", Fail);
+			}
+			close(ret_val);
+			unlink(filename);
+			
+			;
+		</Code>
+	</Test>
+	<Test Name="OpenAtNameTooLong">
+		<Description>File name is too long.</Description>
+		<Dir count="1"/>
+		<File count="1"/>
+		<Code>
+			ENameTooLongTest(openat(DirDs[0], path, O_RDONLY), -1);
+		</Code>
+	</Test>
+	<Test Name="OpenAtNotDir1">
+		<Description>A component of path is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+			Directory d(".");
+			ENotDirTest(openat( d.GetDirectoryDescriptor(), path, O_RDONLY ), -1);
+		</Code>
+	</Test>
+	<Test Name="OpenAtFault">
+		<Description>Path points outside the user address space.</Description>
+		<Code>
+			Directory d(".");
+			ErrorTest(openat( d.GetDirectoryDescriptor(), reinterpret_cast<char*>(-1), O_RDONLY ), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="OpenAtLoop">
+		<Description>Too  many  links  encountered during pathname resolution.</Description>
+		<File count="1"/>
+		<Code>
+			Directory d(".");
+			ELoopTest(openat( d.GetDirectoryDescriptor(), FilePaths[0].c_str(), O_RDONLY ), -1);
+		</Code>
+	</Test>
+	<Test Name="OpenAtNoAccess">
+		<Description>Access is denied.</Description>
+		<File count="1"/>
+		<Code>
+			Directory d(".");
+			ENoAccessTest(openat( d.GetDirectoryDescriptor(), FilePaths[0].c_str(), O_CREAT | O_RDONLY, 0777 ), -1);
+		</Code>
+	</Test>
+	<Test Name="OpenAtNoEnt">
+		<Description>Pathname has a nonexistent component.</Description>
+		<Code>
+			Directory d(".");
+			ErrorTest(openat( d.GetDirectoryDescriptor(), "non_existing_path", O_RDONLY ), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="OpenAtExist">
+		<Description>Pathname already exists.</Description>
+		<File count="1"/>
+		<Code>
+			Directory d(".");
+			ErrorTest(openat( d.GetDirectoryDescriptor(), FilePaths[0].c_str(), O_CREAT | O_EXCL, 0777 ), -1, EEXIST);
+		</Code>
+	</Test>
+	<Test Name="OpenAtIsDir">
+		<Description>Pathname is a directory.</Description>
+		<Code>
+			ErrorTest(openat( -1, "/", O_WRONLY ), -1, EISDIR);
+		</Code>
+	</Test>
+	<Test Name="OpenAtMaxFiles">
+		<Description>The process already has the maximum number of files open.</Description>
+		<Code>
+			Directory d(".");
+			EMaxFilesOpenTest(openat( d.GetDirectoryDescriptor(), path, O_RDONLY ), -1);
+		</Code>
+	</Test>
+	<Test Name="OpenAtENXIO1">
+		<Description> O_NONBLOCK | O_WRONLY is set, the named file is a  FIFO  and  no process has the file open for reading.</Description>
+		<Code>
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
+			const char * FileName = "OpenAtNoDev_FIFO";
+			Unres( mkfifo(FileName, 0666) == -1, "Cannot create FIFO.");
+			Directory d(".");
+			ErrorTest(openat( d.GetDirectoryDescriptor(), FileName, O_WRONLY | O_NONBLOCK ), -1, ENXIO);
+		</Code>
+	</Test>
+	<Test Name="OpenAtENXIO2">
+		<Description>pathname  refers  to  a device special file and no corresponding device exists.</Description>
+		<Code>
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
+			if( PartitionManager::IsOptionEnabled("nodev") )
+			{
+				Error("Device files not supported", Unsupported);
+			}
+			else
+			{
+				const char * FileName = "OpenAtNoDev_Nod";
+				Unres( mknod(FileName, S_IFCHR, 0666) == -1, "Cannot create device file.");
+				Directory d(".");
+				ErrorTest(openat( d.GetDirectoryDescriptor(), FileName, O_WRONLY ), -1, ENXIO);
+			}
+		</Code>
+	</Test>
+	<Test Name="OpenAtTxtBusy">
+		<Description>pathname refers to an executable image which is currently being executed and write access was requested.</Description>
+		<Code>
+			const char * FileName = INSTALL_PREFIX"/bin/spruce";
+			
+			ErrorTest(openat( -1,FileName, O_WRONLY ), -1, ETXTBSY);
+		</Code>
+	</Test>
+	<Test Name="OpenAtBadFile">
+		<Description>dirfd is not a valid file descriptor.</Description>
+		<Code>
+			ErrorTest(openat( -1, "some_relative_file_path", O_WRONLY ), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="OpenAtNotDir2">
+		<Description>dirfd is not a valid file descriptor.</Description>
+		<Code>
+			ErrorTest(openat( 0, "some_relative_file_path", O_WRONLY ), -1, ENOTDIR);
+		</Code>
+	</Test>
+</TestSet>
