@@ -45,6 +45,8 @@
 #include &lt;Logger.hpp>
 using std::map;
 using std::string;
+
+extern bool terminate_process;
 	<xsl:variable name="TestSetName" select="@Name" />
 	
 class <xsl:value-of select="$TestClassName" /> : public Process
@@ -143,6 +145,8 @@ public:
 		{
 			for ( TestMap::iterator it = _tests.begin(); it != _tests.end(); ++it )
 			{
+				if(terminate_process)
+					break;
 				<xsl:value-of select="$ModuleName"/>TestResult * tr = NULL;
 				// Check if the test is set to be excluded
 				std::auto_ptr&lt;ProcessResult> pr;
@@ -178,7 +182,9 @@ public:
 		else
 		{
 			for ( unsigned int i = 0; i &lt; _tests_to_run.size(); ++i )
-			{				
+			{		
+				if(terminate_process)
+					break;
 				ProcessResult * pr = Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(_tests[_tests_to_run[i]]._func));
 				<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", _tests_to_run[i], _tests[_tests_to_run[i]]._description);
 				delete pr;
@@ -199,6 +205,8 @@ public:
 	
 		for ( unsigned int i = 0; i &lt; _fsim_info_vec.size(); ++i )
 		{
+			if(terminate_process)
+				break;
 			_fsim_point = _fsim_info_vec[i].Point;
 			_fsim_expression = "0";
 			//KedrIntegrator::SetIndicator(_fsim_point, "common", _fsim_expression);	
@@ -229,6 +237,8 @@ public:
 		for ( TestMap::iterator it = _fsim_tests.begin(); it != _fsim_tests.end(); ++it )
 		for ( unsigned int i = 0; i &lt; _fsim_info_vec.size(); ++i )
 		{
+			if(terminate_process)
+				break;
 			cerr &lt;&lt; "<xsl:value-of select="$TestSetName" />: Fault count: " &lt;&lt; _fsim_info_vec[i].Count &lt;&lt; endl;
 			_fsim_point = _fsim_info_vec[i].Point;			
 			for ( unsigned int j = 1; j &lt; _fsim_info_vec[i].Count+1; ++j ) 

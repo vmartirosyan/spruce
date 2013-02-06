@@ -77,6 +77,8 @@ struct FSimInfo
 	string Expression;
 };
 
+#define EXIT_IF_SIGNALD if(terminate_process) { cerr<<"Exiting from Spruce"<<endl; return FAULT;}
+
 #define MY_WEXITSTATUS(stat) (((*(static_cast<int *>( &(stat)))) >> 8) & 0xff)
 
 #define Return(st) \

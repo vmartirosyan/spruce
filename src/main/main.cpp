@@ -75,6 +75,8 @@ vector<string> FSAvailable;
 
 vector<string> SplitString(string str, char delim, vector<string> AllowedValues );
 
+bool terminate_process = false;
+
 enum ErrorCodes
 {
 	SUCCESS,
@@ -84,10 +86,18 @@ enum ErrorCodes
 };
 void GenerateHtml(string logfolder, string fs);
 void OpenDashboard(string browser, string logfolder, string fs);
-
+void SignalHandler(int signum);
 
 int main(int argc, char ** argv)
 {
+	struct sigaction sa;
+	sa.sa_handler = SignalHandler;
+	if ((sigaction(SIGINT, &sa, 0) == -1) || (sigaction(SIGQUIT, &sa, 0) == -1) ) // Ctrl+C, Ctrl+4
+	{	
+		cerr << "Cannot set signal handler. " << strerror(errno);
+		return FAULT;
+	}
+
 	try
 	{
 		KedrIntegrator kedr;
@@ -425,6 +435,8 @@ int main(int argc, char ** argv)
 		//cerr << "Executing modules." << endl;
 		for ( vector<string>::iterator fs = FileSystems.begin(); fs != FileSystems.end(); ++fs )
 		{
+			EXIT_IF_SIGNALD;
+						
 			time_t FSStartTime = time(0);
 			cerr << endl << "\033[1;32mFilesystem : " << *fs << "\033[0m" << endl;						
 			
@@ -471,11 +483,14 @@ int main(int argc, char ** argv)
 					lcItem.setOutput(string("KEDR cannot be loaded: ") + e.GetMessage());
 				}
 			}
+		
 			//PartitionManager * pm = ShmAllocator<PartitionManager>::GetInstance();
 			PartitionManager pm(INSTALL_PREFIX"/share/spruce/config/PartitionManager.cfg", partition, MountAt, *fs, MountOpts);
 			
 			for (vector<string>::iterator module = Modules.begin(); module != Modules.end() && ModuleStatus < Fatal; ++module)
 			{			
+				EXIT_IF_SIGNALD;
+				
 				string ModuleBin = (module->find("fs-spec") == string::npos ? *module : (*fs + module->substr(7, module->size())));
 				if ( *module == "fault-sim" )
 					ModuleBin = "fault_sim";
@@ -493,10 +508,11 @@ int main(int argc, char ** argv)
 					vector<string> mkfsArgs;
 					if((*fs).compare("ext4") == 0)
 						mkfsArgs.push_back("-O mmp");
-					
+
+				
+					cerr<<"Preparing partition..."<<endl;
 					PS = pm.PreparePartition();
-					
-					cerr << "Current options:  " << pm.GetCurrentOptions(false) << endl;
+					cerr<<"Partition preparing done. "<<endl;
 					
 					if ( PS == PS_Fatal  )
 					{
@@ -513,9 +529,11 @@ int main(int argc, char ** argv)
 						Logger::LogInfo("End of mount options.");
 						break;
 					}
-					ShowOutput = true;
 					
+					EXIT_IF_SIGNALD;
 					
+					cerr << "Current options:  " << pm.GetCurrentOptions(false) << endl;
+					ShowOutput = true;					
 					
 					// Check if the module should be executed on this FS with these mount options.
 					bool ModuleShouldNotRun = (TestsToRun.size() > 0);
@@ -593,6 +611,8 @@ int main(int argc, char ** argv)
 					time_t ItemStartTime = time(0);
 					ProcessResult * result = command->Execute(module_args);
 					delete command;
+					
+					EXIT_IF_SIGNALD;
 					
 					size_t ItemDuration = time(0) - ItemStartTime;
 					stringstream str;
@@ -895,4 +915,9 @@ ConfigValues ParseConfigFile(string FilePath)
 }
 
 
-
+void SignalHandler(int signum)
+{
+	if(!terminate_process)
+		cerr<<"Spruce receive INTERRUPT signal. Preparing operations, please wait... Spruce PID = "<<getpid()<<endl;
+	terminate_process = true;
+}

@@ -31,9 +31,9 @@
 <xsl:output method="text" encoding="utf-8" indent="yes"/>
 <xsl:include href="testset.xslt" />
 
-	
-
 	<xsl:template match="/Module">
+bool terminate_process = false;	
+
 #include &lt;Common.hpp>
 #include &lt;sys/mount.h>
 #include &lt;Test.hpp>
@@ -100,8 +100,21 @@ map&lt;string, int> FileSystemTypesMap;
 				using <xsl:value-of select="@Name"/>
 		</xsl:for-each-->
 		
+void ModuleSignalHandler(int signum)
+{
+	//printf("SIGNAL RECEIVED = %d. PID = %d, PPID = %d\n\r", signum, getpid(), getppid());
+	terminate_process = true;
+}
 int main(int argc, char ** argv)
 {
+	struct sigaction sa;
+	sa.sa_handler = ModuleSignalHandler;
+	if ((sigaction(SIGINT, &amp;sa, 0) == -1) || (sigaction(SIGQUIT, &amp;sa, 0) == -1) ) //Ctrl+C, Ctrl+4
+	{	
+		cerr &lt;&lt; "Cannot set signal handler. " &lt;&lt;strerror(errno);
+		return EXIT_FAILURE;
+	}
+	
 	if (argc &lt; 2)
 	{
 		cerr &lt;&lt; "No output file specified. Usage: " &lt;&lt; argv[0] &lt;&lt; " &lt;output_file>" &lt;&lt; endl;
@@ -128,6 +141,8 @@ int main(int argc, char ** argv)
 	{
 			bool SkipTestset;
 		<xsl:for-each select="TestSet">
+			if(terminate_process)
+				return EXIT_FAILURE;
 			<xsl:variable name="TestClassName"><xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />Tests</xsl:variable>
 			<xsl:value-of select="$TestClassName"/><xsl:text> </xsl:text><xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests;
 			SkipTestset = false;
@@ -208,7 +223,9 @@ int main(int argc, char ** argv)
 #include &lt;map>
 #include &lt;sys/vfs.h>
 #include &lt;XmlSpruceLog.hpp>
-
+#include &lt;signal.h>
+#include &lt;sys/types.h>
+#include &lt;unistd.h>
 using namespace std;
 
 		<xsl:variable name="MetaModuleName" select="@Name" />
@@ -260,8 +277,22 @@ class <xsl:value-of select="$ModuleName"/>TestResult : public TestResult
 				using <xsl:value-of select="@Name"/>
 		</xsl:for-each-->
 		
+bool terminate_process = false;
+void TerminateSignalHandler(int signum)
+{
+	cerr &lt;&lt; "MODULE, SIGNAL RECEIVED"&lt;&lt;endl;
+	terminate_process = true;
+	//exit(EXIT_SUCCESS);
+}
+	
 int main(int argc, char ** argv)
 {
+	struct sigaction sa;
+	sa.sa_handler = TerminateSignalHandler;
+	sigaction(SIGINT, &amp;sa, 0);  // Ctrl+C
+	sigaction(SIGQUIT, &amp;sa, 0); // Ctrl+4
+	//sigaction(SIGTSTP, &amp;sa, 0); // Ctrl+Z
+	
 	if ( getenv("Partition") )
 		DeviceName = getenv("Partition");
 
