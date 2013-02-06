@@ -229,8 +229,8 @@ class <xsl:value-of select="$ModuleName"/>TestResult : public TestResult
 {
 	public:
 		
-		<xsl:value-of select="$ModuleName"/>TestResult(ProcessResult* pr, string spec, string oper) :	
-		TestResult(ProcessResult(*pr), "", ""), _spec(spec), _operation(oper)
+		<xsl:value-of select="$ModuleName"/>TestResult(ProcessResult* pr, string spec, string oper, string desc) :	
+		TestResult(ProcessResult(*pr), "", "", desc), _spec(spec), _operation(oper)
 		{						
 		}
 		virtual string ToXML()
