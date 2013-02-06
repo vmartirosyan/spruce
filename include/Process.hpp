@@ -39,6 +39,7 @@ enum ProcessMode
 #include <fcntl.h>
 #include <fstream>
 #include <stdlib.h>
+#include <signal.h>
 using namespace std;
 
 class ProcessResult
@@ -96,19 +97,20 @@ class Process
 public:	
 	virtual ProcessResult * Execute(vector<string> args = vector<string>());
 	virtual ProcessResult * Execute( int (Process::* func) (vector<string>), vector<string> args = vector<string>() );
+	int SetBlockSignalMask(int signum) {sigaddset (&BlockSignalMask, signum);};
 	
 	Process():
 		EnableAlarm(false),
 		_Timeout(0)
 	{
-		
+		sigemptyset (&BlockSignalMask);
 	}
 	
 	Process(int timeout):
 		EnableAlarm(true),
 		_Timeout(timeout)
 	{
-		
+		sigemptyset (&BlockSignalMask);
 	}
 	
 	virtual ~Process() 
@@ -119,6 +121,7 @@ protected:
 	bool EnableAlarm;
 	static int Level;
 	int _Timeout;
+	sigset_t BlockSignalMask;
 	virtual int Main(vector<string>) { cerr << "Main not implemented."; return Unsupported; }
 };
 
