@@ -109,7 +109,7 @@ int main(int argc, char ** argv)
 {
 	struct sigaction sa;
 	sa.sa_handler = ModuleSignalHandler;
-	if ((sigaction(SIGINT, &amp;sa, 0) == -1) || (sigaction(SIGQUIT, &amp;sa, 0) == -1) ) //Ctrl+C, Ctrl+4
+	if (sigaction(SIGINT, &amp;sa, 0) == -1)
 	{	
 		cerr &lt;&lt; "Cannot set signal handler. " &lt;&lt;strerror(errno);
 		return EXIT_FAILURE;
