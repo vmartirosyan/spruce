@@ -16,6 +16,7 @@ isn't covered as mount options are parsed and checked in super.c-->
                         Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
                         Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
                         int res;
+                        Unres ( chdir("/") == -1, "Cannot change directory." );
 						res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
 						if( res!= PS_Success )
 						{
