@@ -55,11 +55,10 @@
 			;
 		</Code>
 	</Test>
-	<Test Name="FsyncDir" FaultSimulationReady="true">
+	<Test Name="FsyncDir" FaultSimulationReady="true" Shallow="true">
 		<Description>Synchronize a directory's in-core state with storage device.</Description>
 		<Dir count="1" />
 		<Code>
-			_TestStatus = Shallow;
 			int  ret = fsync (DirDs[0]);
 			
 			if (ret != 0)

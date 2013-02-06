@@ -92,10 +92,9 @@
 			
 		</Code>
 	</Test>
-	<Test Name="QuotactlXQstat" FaultSimulationReady="true">
+	<Test Name="QuotactlXQstat" FaultSimulationReady="true" Shallow="true">
 		<Description>Returns  an fs_quota_stat structure containing XFS file system specific quota information.</Description>
 		<Code>
-			_TestStatus = Shallow;
 			int cmd_xqstat = QCMD(Q_XGETQSTAT, USRQUOTA);
 			
 			struct fs_quota_stat quota_stat;
@@ -106,10 +105,9 @@
 			
 		</Code>
 	</Test>
-	<Test Name="QuotactlXQuotaOff" FaultSimulationReady="true">
+	<Test Name="QuotactlXQuotaOff" FaultSimulationReady="true" Shallow="true">
 		<Description>Turn off quotas for an XFS file system.</Description>
 		<Code>
-			_TestStatus = Shallow;
 			int flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
 			int cmd_off = QCMD(Q_XQUOTAOFF, USRQUOTA);
 			
@@ -118,10 +116,9 @@
 		</Code>
 	</Test>
 	<!-- Must be called after QuotactlXQuotaOff -->
-	<Test Name="QuotactlXQuotaRm" FaultSimulationReady="true">
+	<Test Name="QuotactlXQuotaRm" FaultSimulationReady="true" Shallow="true">
 		<Description>Free the disk space taken by disk quotas. Quotas must have already been turned off.</Description>
 		<Code>
-			_TestStatus = Shallow;
 			int flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
 			int cmd_rm = QCMD(Q_XQUOTARM, USRQUOTA);
 			

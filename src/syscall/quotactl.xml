@@ -223,11 +223,9 @@
 			
 		</Code>
 	</Test>
-	<Test Name="QuotactlSync" FaultSimulationReady="true">
+	<Test Name="QuotactlSync" FaultSimulationReady="true" Shallow="true">
 		<Description>Update the on-disk copy of quota usages for a file system.</Description>		
-		<Code>			
-			_TestStatus = Shallow;
-			
+		<Code>
 			string QuotaFile;
 			int cmd_on, cmd_off;
 			Unres ( Prepare(QuotaFile, cmd_on, cmd_off) == false, "");
