@@ -237,8 +237,13 @@ public:
 					_fsim_expression = _fsim_info_vec[i].Expression;
 				else
 				{
-					char buf[10];
-					sprintf(buf, "%d", j);  
+					const int size = 10;
+					char buf[size];
+					if ( snprintf(buf, size, "%d", j) >= size)
+					{
+						Logger::LogError("Cannot get 'times' value.");
+						break;
+					}
 					//_fsim_expression = "(times%" + (string)buf + " = 0)";
 					_fsim_expression = "times="+(string)buf;
 					
@@ -338,8 +343,10 @@ public:
 			
 			for ( int i = 0 ; i &lt; DirCount; ++i )
 			{
-				char buf[5];
-				sprintf(buf, "%d", i);
+				const int size = 10;
+				char buf[size];
+				Unres ( snprintf(buf, size, "%d", i) >= size, "Cannot prepare DirPath value.");
+				
 				DirPaths[i] = DirPrefix + buf;
 				DirDs[i] = Dirs[i].Open(DirPaths[i], S_IRWXU);
 				if ( DirDs[i] == -1 )
@@ -351,8 +358,10 @@ public:
 			<xsl:if test="Dir/File">
 			for ( int i = 0 ; i &lt; DirFileCount; ++i )
 			{
-				char buf[10];
-				sprintf(buf, "%d", i);
+				const int size = 10;
+				char buf[size];
+				Unres ( snprintf(buf, size, "%d", i) >= size, "Cannot prepare DirFilePath value.");
+				
 				DirFilePaths[i] = DirPaths[0] + "/" + FilePrefix + buf;
 				DirFDs[i] = DirFiles[i].Open(DirFilePaths[i], S_IRWXU, O_CREAT | O_RDWR);
 				if ( DirFDs[i] == -1 )
@@ -365,8 +374,10 @@ public:
 			<xsl:if test="Dir/Dir">
 			for ( int i = 0 ; i &lt; DirDirCount; ++i )
 			{
-				char buf[10];
-				sprintf(buf, "%d", i);
+				const int size = 10;
+				char buf[size];
+				Unres ( snprintf(buf, size, "%d", i) >= size, "Cannot prepare DirDirPath value.");
+				
 				DirDirPaths[i] = DirPaths[0] + "/" + DirPrefix + buf;
 				DirDDs[i] = DirDirs[i].Open(DirDirPaths[i], S_IRWXU);
 				if ( DirDDs[i] == -1 )
@@ -394,8 +405,10 @@ public:
 			int FDs[FileCount];
 			for ( int i = 0 ; i &lt; FileCount; ++i )
 			{
-				char buf[10];
-				sprintf(buf, "%d", i);
+				const int size = 10;
+				char buf[size];
+				Unres ( snprintf(buf, size, "%d", i) >= size, "Cannot prepare FilePath value.");
+				
 				FilePaths[i] = FilePrefix + buf;
 				FDs[i] = Files[i].Open(FilePaths[i], FileMode, FileFlags);
 				if ( FDs[i] == -1 )

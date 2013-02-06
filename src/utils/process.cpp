@@ -256,8 +256,12 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	if ( WIFSIGNALED(status) )
 	{
 		int signum = WTERMSIG(status);
-		char buf[10];
-		sprintf(buf, "%d", signum);
+		const int size = 10;
+		char buf[size];
+		if ( snprintf(buf, size, "%d", signum) < size) 
+		{
+			return new ProcessResult(Fatal, "Cannot get signal from child process.");
+		}
 		Output = static_cast<string>("Signal number: ") + buf + "\n" + Output;
 		return new ProcessResult(Signaled, Output);
 	}
