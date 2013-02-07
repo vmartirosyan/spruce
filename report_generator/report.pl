@@ -46,6 +46,11 @@ sub BEGIN {
     # Detect script directory.
     $script_directory = $0;
     $script_directory =~ s/[^\/]*$//; # Basename
+    # When run program as "report.pl", basename is "" (empty string). Process this case as ".".
+    if($script_directory eq "")
+    {
+        $script_directory = ".";
+    }
 
     $script_directory = make_path_absolute($script_directory);
     # Append the script directory to the @INC to attach our own modules
@@ -1434,16 +1439,21 @@ sub spruce_parse_log_file($$)
         $journal_title .= "." . $mount_opts;
     }
 
-    # Currently, '_32' and '_64' suffixes are not stored in the 'Name' attribute,
-    # that makes names of journal indistinguishable on 64bit arch.
+    # Currently, crosscompilation flag (32bit on 64 bit) is not stored directly.
+    # Instead, testsuite name has corresponded suffix.
     #
-    # Detect _32 suffix from filename and interpret it as 32-bit tests on 64-bit arch.
+    # Cut testsuite bit suffix and set crosscompilation flag if needed.
     my $test_32_on_64 = 0;
-    if(index ($filename_base, "32_${mount_opts}_log") > 0)
+    if($test_suite =~ /_(32|64)$/)
     {
-        $test_32_on_64 = 1;
+        if($1 eq "32")
+        {
+            $test_32_on_64 = 1;
+        }
+
+        $test_suite =~ s/_(32|64)$//;
         
-        $journal_title = $journal_title . "(32)";
+        # NB: suffix is stored in journal name, which is shown to the user.
     }
    
     my $journal = add_journal($journal_title, $filename_base);
@@ -1464,11 +1474,6 @@ sub spruce_parse_log_file($$)
         $journal->{'code_bits'} = 64;
     }
     
-    # Currently, test, contained LeakChecker results, has no "Operation"
-    # subelement.
-    # Assume it to be equal to "Name" attribute of test item.
-    # TODO: fix Spruce log generator.
-    
     # Add tests to the journal.
     foreach my $item_elem (xml_get_children($module_elem))
     {
@@ -1481,7 +1486,8 @@ sub spruce_parse_log_file($$)
             return;
         }
         
-        my $test_point = $test_name;
+        # Test point is empty by default
+        my $test_point = "";
         my $operation_elem = xml_get_first_child($item_elem, "Operation");
 		if($operation_elem)
 		{
