@@ -23,6 +23,7 @@
 #ifndef LOGGER_HPP
 #define LOGGER_HPP
 
+#include <stdlib.h>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -58,8 +59,20 @@ class Logger
 private:
 	static string _LogFile;
 	static LogLevel _LogLevel;
+	static bool _Initialized;
 	static void Log(LogLevel level, const string & msg)
 	{
+		if ( !_Initialized )
+		{
+			// Try to restore the _LogFile and _LogLevel values from the environment
+			if ( getenv("LogFile") && getenv("LogLevel") )
+			{
+				_LogFile = getenv("LogFile");
+				_LogLevel = static_cast<LogLevel>(atoi(getenv("LogLevel")));
+				_Initialized = true;
+			}
+		}
+		
 		// Check if we should print the log
 		if ( _LogLevel > level )
 			return;
@@ -79,7 +92,7 @@ private:
 			of << MsgInternal << endl;
 			of.close();
 			if ( level >= LOG_Warn )
-				cerr << MsgInternal << endl;
+				cerr << msg << endl;
 		}
 		catch (...)
 		{
@@ -102,7 +115,11 @@ public:
 	}
 	static void LogError(const string & msg)
 	{
-		string str = msg + "\nError: " + strerror(errno);
+		string str = msg;
+		if ( errno )
+		{
+			str = msg + "\nError: " + strerror(errno);
+		}
 		Log(LOG_Error, str);
 	}
 	static void LogFatal(const string & msg)
@@ -113,6 +130,11 @@ public:
 	{
 		_LogFile = file;
 		_LogLevel = level;
+		const int size = 10;
+		char buf[size];
+		snprintf( buf, size, "%d", _LogLevel );
+		if ( setenv("LogFile", _LogFile.c_str(), 1) == 0 && setenv("LogLevel", buf, 1) == 0 )
+			_Initialized = true;
 	}
 	static LogLevel Parse(const string & sLevel)
 	{		

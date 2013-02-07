@@ -123,7 +123,7 @@ public:
 		}
 		catch(exception& err)
 		{
-			cerr << "Exception is thrown." << err.what() << endl;
+			Logger::LogError(static_cast<string>("Exception is thrown. ") + err.what());
 			item.setStatus("Unresolved");
 			item.setOutput(err.what());
 			return item;
@@ -155,7 +155,6 @@ protected:
 			// Read the path
 			int SpacePos = Output.find(' ', 9);
 			DebugFSPath = Output.substr(8, SpacePos - 8);
-			cout << "DebugFS path : " << DebugFSPath << endl;
 			return true;
 		}
 			
@@ -177,7 +176,6 @@ protected:
 			pos = str.find(val1.c_str(), pos + 1);
 			if ( pos == string::npos )
 				break;
-				//cout<<"first  "<<pos<<endl;
 			str.replace(pos, 1, val2.c_str());
 		}	
 	}

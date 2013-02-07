@@ -138,7 +138,7 @@ public:
 	virtual TestResultCollection RunNormalTests()
 	{
 		<xsl:value-of select="StartUp"/>
-		chdir(MountPoint);
+		//chdir(MountPoint);
 		TestResultCollection res;
 		//for ( unsigned int i  = 0; i &lt; _tests.size(); ++i)
 		if ( _tests_to_run.empty() )
@@ -158,7 +158,7 @@ public:
 				{
 					Logger::LogInfo("Running test: " + it->first);
 					pr = std::auto_ptr&lt;ProcessResult>( Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(it->second._func)) );
-					Logger::LogInfo("Test  " + it->first + " completed.");
+					Logger::LogInfo("Test  " + it->first + " completed. Status: " + StatusMessages[pr->GetStatus()]);
 					tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr.get(), "<xsl:value-of select="$TestSetName" />", it->first, it->second._description);
 				
 				}
@@ -185,7 +185,9 @@ public:
 			{		
 				if(terminate_process)
 					break;
+				Logger::LogInfo("Running test: " + _tests_to_run[i]);
 				ProcessResult * pr = Execute(static_cast&lt;int (Process::*)(vector&lt;string>)>(_tests[_tests_to_run[i]]._func));
+				Logger::LogInfo("Test  " + _tests_to_run[i] + " completed.");
 				<xsl:value-of select="$ModuleName"/>TestResult * tr = new <xsl:value-of select="$ModuleName"/>TestResult(pr, "<xsl:value-of select="$TestSetName" />", _tests_to_run[i], _tests[_tests_to_run[i]]._description);
 				delete pr;
 				res.AddResult( tr );

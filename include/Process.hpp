@@ -122,7 +122,7 @@ protected:
 	static int Level;
 	int _Timeout;
 	sigset_t BlockSignalMask;
-	virtual int Main(vector<string>) { cerr << "Main not implemented."; return Unsupported; }
+	virtual int Main(vector<string>) { Logger::LogError("Main not implemented."); return Unsupported; }
 };
 
 class BackgroundProcess : public Process

@@ -24,6 +24,7 @@
 #define COMMON_HPP
 
 #include <PlatformConfig.hpp>
+#include <Logger.hpp>
 #include <string>
 #include <iostream>
 #include <vector>
@@ -77,9 +78,9 @@ struct FSimInfo
 	string Expression;
 };
 
-#define EXIT_IF_SIGNALD if(terminate_process) { cerr<<"Exiting from Spruce"<<endl; return FAULT;}
+#define EXIT_IF_SIGNALED if(terminate_process) { Logger::LogFatal("Exiting from Spruce"); return FAULT; }
 
-#define MY_WEXITSTATUS(stat) (((*(static_cast<int *>( &(stat)))) >> 8) & 0xff)
+//#define MY_WEXITSTATUS(stat) (((*(static_cast<int *>( &(stat)))) >> 8) & 0xff)
 
 #define Return(st) \
 {\
@@ -101,7 +102,8 @@ struct FSimInfo
 	if (_fsim_enabled)\
 	{\
 		KedrIntegrator::SetIndicator(_fsim_point, "common", _fsim_expression);\
-		cerr << "Fault simulation is enabled for module " << FileSystem << "(" << _fsim_point << ", " << _fsim_expression << ")" << endl;\
+		Logger::LogInfo(static_cast<string>("Fault simulation is enabled for module ") + FileSystem + "(" +\
+			_fsim_point + ", " + _fsim_expression + ")");\
 	}\
 }
 	
@@ -110,7 +112,8 @@ struct FSimInfo
 	if (_fsim_enabled)\
 	{\
 		KedrIntegrator::ClearIndicator(_fsim_point);\
-		cerr << "Fault simulation is disabled for module " << FileSystem << "(" << _fsim_point << ", " << _fsim_expression << ")" << endl;\
+		Logger::LogInfo(static_cast<string>("Fault simulation is disabled for module ") + FileSystem + "(" +\
+			_fsim_point + ", " + _fsim_expression + ")");\
 	}\
 }
 
@@ -119,10 +122,11 @@ struct FSimInfo
 	
 #define ERROR_3_ARGS(message, add_msg, status)\
 {\
-	cerr << message << add_msg;\
-	if ( errno && status != Unsupported) cerr << "\nError: " << strerror(errno) << endl;\
-	if( ((errno == ENOTSUP) || (errno == ENOTTY)) && (status != -1)) Return(Unsupported);\
-	if ( status != -1 && status != Unsupported ) Return(status);\
+	int local_errno = errno;\
+	string msg = static_cast<string>(message) + add_msg;\
+	Logger::LogError(msg);\
+	if ( ((local_errno == ENOTSUP) || (local_errno == ENOTTY)) && (status != -1)) Return(Unsupported);\
+	if ( (status != -1) && (status != Unsupported) ) Return(status);\
 	if ( status == Unsupported ) Return(Unsupported);\
 }\
 
@@ -130,7 +134,7 @@ struct FSimInfo
 	ERROR_3_ARGS(message, "", status)
 
 #define ERROR_1_ARGS(message)\
-	cerr << message << endl;\
+	Logger::LogError(message);\
 
 #define GET_4TH_ARG(arg1, arg2, arg3, arg4, ...) arg4
 #define ERROR_MACRO_CHOOSER(...) \
@@ -273,7 +277,6 @@ struct FSimInfo
 	unlink(path);\
 	if ( ret_val != error_val || errno != EMFILE )\
 	{\
-		cerr << ret_val << endl;\
 		Error("Function should return '" + static_cast<string>(strerror(EMFILE)) +  "' error but it did not.", Fail);\
 	}\
 	closedir(fdDir);\
@@ -305,7 +308,6 @@ public:\
 	void ExcludeTest(string) {}\
 	virtual TestResultCollection RunNormalTests()\
 	{\
-		cerr << "EmptyTestSet" << endl;\
 		TestResultCollection res;\
 		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name, "None", "None");\
 		res.AddResult(tr);\
@@ -313,7 +315,6 @@ public:\
 	}\
 	virtual TestResultCollection RunFaultyTests()\
 	{\
-		cerr << "EmptyTestSet" << endl;\
 		TestResultCollection res;\
 		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name, "None", "None");\
 		res.AddResult(tr);\
@@ -324,3 +325,4 @@ public:\
 vector<string> SplitString(string str, char delim, vector<string> AllowedValues );
 
 #endif /* COMMON_HPP */
+

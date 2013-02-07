@@ -78,7 +78,7 @@
 			delete quotacheck;
 			if( res == NULL || res->GetStatus() != Success)
 			{
-				Error("Cannot execute 'quotacheck' command to create the quota file." );
+				Error("Cannot execute 'quotacheck' command to create the quota file.\n" + res->GetOutput() );
 				return false;
 			}
 			
