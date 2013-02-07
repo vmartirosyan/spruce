@@ -104,17 +104,17 @@ public:
 			ofstream of((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/current_indicator").c_str());
 			of << indicator;
 			of.close();
-			cerr << "Indicator is set in " << DebugFSPath + "/kedr_fault_simulation/points/" + point + "/current_indicator" << endl;
+			Logger::LogInfo("Indicator is set in " + DebugFSPath + "/kedr_fault_simulation/points/" + point + "/current_indicator");
 			
 			of.open((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/expression").c_str());
 			of << expression;
 			of.close();
-			cerr << "Expression is set" << endl;
+			Logger::LogInfo("Expression " + expression + "is set.");
 			
 			of.open((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/pid").c_str());
 			of << getpid();
 			of.close();
-			cerr << "PID is set" << endl;
+			Logger::LogInfo( "PID is set." );
 			return true;
 		}
 		catch (...)
@@ -131,7 +131,7 @@ public:
 			ofstream of((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/current_indicator").c_str());
 			of << "none";
 			of.close();
-			cerr << "Indicator is cleared." << endl;
+			Logger::LogInfo("Indicator is cleared.");
 			return true;
 		}
 		catch (...)
@@ -143,15 +143,12 @@ public:
 	static int GetTimes( string point )
 	{
 		string _time_file = DebugFSPath + "/kedr_fault_simulation/points/"+ point + "/times";
-		cerr << "time file path: "<<_time_file.c_str() << endl;
 		char buffer[257];
 		int _time_val;
 		ifstream str( _time_file.c_str(), ifstream::in );
-		cerr << "Error in GetTimes(): "<<strerror(errno) << endl;
 		str >> buffer;
 		_time_val = atoi(buffer);
 		str.close();
-	
 		
 		return _time_val;
 	}
@@ -169,7 +166,6 @@ public:
 		// Try to unload KEDR first
 		if(IsRunning())
 		{
-			cerr << "is running !" << endl;
 			UnloadKEDR();
 		}
 		
@@ -228,7 +224,7 @@ public:
 		}
 		catch (Exception e)
 		{
-			cerr << "Not all of the components were successfully unloaded. " << e.GetMessage() << endl;
+			Logger::LogError("Not all of the components were successfully unloaded. " + e.GetMessage());
 			return false;
 		}
 		return true;
@@ -245,7 +241,7 @@ public:
 		ProcessResult * res = kedr.Execute(args);
 		if(res == NULL || res->GetStatus() != Success)
 		{
-			cerr << "failed to get kedr status " + (res ? res->GetOutput() : "") << endl;
+			Logger::LogError("Failed to get kedr status " + (res ? res->GetOutput() : ""));
 			return false;
 		}
 		string StrRes = res->GetOutput();
@@ -272,7 +268,7 @@ public:
 				*output = string("Error executing rmmod: ");
 				*output += res->GetOutput();
 			}
-			cerr << "Error executing rmmod. " << (res ? res->GetOutput() : "") << endl;
+			Logger::LogError("Error executing rmmod. " + (res ? res->GetOutput() : ""));
 			return false;
 		}
 		return true;
@@ -388,7 +384,7 @@ protected:
 		ProcessResult * res = 
 		rmmod.Execute(args);
 		
-		cerr << res->GetOutput() << endl;
+		//cerr << res->GetOutput() << endl;
 	}
 };
 #endif // #ifndef KEDR_INTEGRATOR

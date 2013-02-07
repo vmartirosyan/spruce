@@ -59,6 +59,7 @@ string ProcessResult::StatusToString()
 int Process::Level = 0;
 string Logger::_LogFile;
 LogLevel Logger::_LogLevel;
+bool Logger::_Initialized = false;
 
 ProcessResult::~ProcessResult()
 {
@@ -109,8 +110,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	{
 		MountPoint = getenv("MountAt");    
 	}
-	//changing directory to mounting point 
-	chdir(MountPoint);
+	
 	// Create the child process
 	pid_t ChildId = fork();
 	
@@ -121,8 +121,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	
 	if ( ChildId == 0 ) // Child process. Run the Main method
 	{
-		// Set up the handler for segmentation fault 
-		
+		// Set up the handler for segmentation fault 		
 		struct sigaction sa;
 		bzero(&sa, sizeof(sa));
 		
@@ -137,6 +136,14 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 		{
 			cerr << "Cannot set signal block mask. " << strerror(errno);
 			_exit(Unresolved);
+		}
+		
+		
+		//changing directory to mounting point 
+		if ( MountPoint && strcmp(MountPoint, "") && ( chdir(MountPoint) == -1 ) )
+		{
+			cerr << "Child: Cannot change directory to " << MountPoint << ". Error: " << strerror(errno);
+			_exit(Fatal);
 		}
 		
 		close(1);
@@ -159,13 +166,12 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 		int status = (*this.*func)(args);
 		close(1);
 		close(2);
-		close(fds[1]);
-		system("echo 'Exiting' > child_out");
+		close(fds[1]);		
 		_exit(status);
 	}
 	//Freeing the mount point (have to set the CWD back after)
-	if(MountPoint != NULL)
-		chdir("/");
+	/*if(MountPoint != NULL)
+		chdir("/");*/
 	// Parent process...
 	close(fds[1]);
 	
@@ -243,8 +249,12 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	delete timeout;
 	close(fds[0]);
 	
+	
+	
 	if ( select_res == 0 )
 	{
+		/*if(MountPoint != NULL)
+			chdir(MountPoint);*/
 		kill(ChildId, SIGKILL);
 		return new ProcessResult(Timeout, "Child process has timed out.\nOutput: " + Output);
 	}
@@ -260,6 +270,9 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 			break;
 	}
 	
+	/*if(MountPoint != NULL)
+		chdir(MountPoint);*/
+			
 	if ( WIFSIGNALED(status) )
 	{
 		int signum = WTERMSIG(status);

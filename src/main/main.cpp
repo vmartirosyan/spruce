@@ -435,7 +435,7 @@ int main(int argc, char ** argv)
 		//cerr << "Executing modules." << endl;
 		for ( vector<string>::iterator fs = FileSystems.begin(); fs != FileSystems.end(); ++fs )
 		{
-			EXIT_IF_SIGNALD;
+			EXIT_IF_SIGNALED;
 						
 			time_t FSStartTime = time(0);
 			cerr << endl << "\033[1;32mFilesystem : " << *fs << "\033[0m" << endl;						
@@ -489,7 +489,7 @@ int main(int argc, char ** argv)
 			
 			for (vector<string>::iterator module = Modules.begin(); module != Modules.end() && ModuleStatus < Fatal; ++module)
 			{			
-				EXIT_IF_SIGNALD;
+				EXIT_IF_SIGNALED;
 				
 				string ModuleBin = (module->find("fs-spec") == string::npos ? *module : (*fs + module->substr(7, module->size())));
 				if ( *module == "fault-sim" )
@@ -530,7 +530,7 @@ int main(int argc, char ** argv)
 						break;
 					}
 					
-					EXIT_IF_SIGNALD;
+					EXIT_IF_SIGNALED;
 					
 					cerr << "Current options:  " << pm.GetCurrentOptions(false) << endl;
 					ShowOutput = true;					
@@ -612,7 +612,7 @@ int main(int argc, char ** argv)
 					ProcessResult * result = command->Execute(module_args);
 					delete command;
 					
-					EXIT_IF_SIGNALD;
+					EXIT_IF_SIGNALED;
 					
 					size_t ItemDuration = time(0) - ItemStartTime;
 					stringstream str;

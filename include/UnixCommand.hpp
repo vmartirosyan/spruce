@@ -70,7 +70,7 @@ protected:
 		argv[args.size() + 1] = static_cast<char*>(0);
 		
 		execvp(argv[0], argv);
-		cerr << "Cannot execute unix command: " << argv[0] << " Error: " << strerror(errno);
+		Logger::LogError("Cannot execute unix command: " + (string)argv[0]);
 		return static_cast<int>(Unresolved);
 	}
 protected:

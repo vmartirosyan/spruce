@@ -358,6 +358,10 @@
 			ENoAccessTest(mount( DeviceName, MountPoint, FileSystem, 0 | rdonlyflag, 0 ), -1);
 		</Code>
 	</Test>
+	<Footer>
+		Logger::LogInfo("\t\t\t\t\tIn footer: unmounting partition");
+		Unres (PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition");
+	</Footer>
 	<CleanUp>
 		if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 		{

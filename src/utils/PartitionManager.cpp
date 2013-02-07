@@ -134,8 +134,9 @@ PartitionStatus PartitionManager::RestorePartition(string DeviceName, string Mou
 bool PartitionManager::ReleasePartition(string MountPoint, string* output)
 {
 	Logger::LogInfo((string)"Unmounting partition " + MountPoint);
-	if ( chdir("/") == -1)				
+	if ( chdir("/") == -1)
 		return false;
+	
 	int RetryCount = 0;
 	
 	ProcessResult * res = NULL;
@@ -153,6 +154,8 @@ bool PartitionManager::ReleasePartition(string MountPoint, string* output)
 		Logger::LogInfo("Device was not mounted.");
 		return true;
 	}
+	delete res;
+	
 	
 	UnixCommand unmount("umount");
 	vector<string> unmount_args;
@@ -161,28 +164,28 @@ bool PartitionManager::ReleasePartition(string MountPoint, string* output)
 retry:		
 	
 	//res = unmount.Execute(unmount_args);
-	int res1 = umount(MountPoint.c_str());
-	errno = 0;
+	Logger::LogInfo((string)"Unmounting partition " + MountPoint);
+	int res1 = umount(MountPoint.c_str());	
 	//if ( res->GetStatus() != Success )
-	if ( res1 != 0 && errno == EINVAL )
+	if ( res1 == -1 )
 	{
-		delete res;
-		sleep(1);
-		if ( RetryCount++ < 10 )
+		if ( errno == EBUSY  )
 		{
-			Logger::LogWarn((string)"Device was busy.. retrying... ");
-			goto retry;
+			sleep(1);
+			if ( RetryCount++ < 5 )
+			{
+				Logger::LogWarn((string)"Device was busy.. retrying... ");
+				goto retry;
+			}
 		}
-		else
-		{
-			if(output != NULL)
-				*output = string("Cannot unmount partition ") + MountPoint + string(". ") + strerror(errno);
-			cerr << "Cannot unmount partition " << MountPoint << ". " << strerror(errno) << endl;
-			return false;
-		}				
+		if(output != NULL)
+			*output = string("Cannot unmount partition ") + MountPoint + string(". ") + strerror(errno);
+		Logger::LogError("Cannot unmount partition " + MountPoint + ". ");
+		return false;
 	}
 	
 	Logger::LogInfo((string)"Device is unmounted successfully.");
+	
 	return true;
 }
 
@@ -224,15 +227,14 @@ bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSyst
 		return false;
 	}
 		
-	setenv("MountFlags", buf, 1);
-	setenv("MountData", Options.c_str(), 1);
-	
 	if ( mount(DeviceName.c_str(), MountPoint.c_str(), FileSystem.c_str(), Flags, Options.c_str()) == -1 )
 	{
 		Logger::LogError("Cannot mount device.");
 		return false;
 	}
 	
+	setenv("MountFlags", buf, 1);
+	setenv("MountData", Options.c_str(), 1);
 	
 	Logger::LogInfo( "Device " + DeviceName + " was mounted on folder " 
 			+ MountPoint + "(opts=" + Options + ") ");
@@ -245,10 +247,8 @@ bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSyst
 		cerr << "Cannot change current dir to " << MountPoint << endl;
 		cerr << "Error: " << strerror(errno) << endl;
 		return false;
-	}
+	}	
 	*/
-	
-	
 	//cout << "Changed dir" << endl;
 	return true;
 
@@ -275,12 +275,12 @@ void PartitionManager::ClearCurrentOptions()
 
 bool PartitionManager::IsOptionEnabled(string optionName)
 {
-	if ( IsFlag(optionName) )
+	/*if ( IsFlag(optionName) )
 	{
 		return IsFlagEnabled(optionName);
 	}
 	if ( IsSpecialOption(optionName) )
-		return IsSpecialOptionEnabled(optionName);
+		return IsSpecialOptionEnabled(optionName);*/
 	return IsOptionEnabledInternal(optionName);
 }
 
@@ -396,30 +396,48 @@ bool PartitionManager::IsSpecialOptionEnabled(const string & opt)
 	return false;
 }
 bool PartitionManager::IsOptionEnabledInternal(const string & opt, int * position)
-{			
-	char * opts = NULL;
-	if ( (opts = getenv("MountOpts")) != NULL )
+{	
+	string DeviceName = (getenv("Partition") ? getenv("Partition") : "");
+	string MountPoint = (getenv("MountAt") ? getenv("MountAt") : "");
+	string FileSystem = (getenv("FileSystem") ? getenv("FileSystem") : "");
+	
+	string prefix = DeviceName + " " + MountPoint + " " + FileSystem + " ";
+	
+	vector<string> grep_args;
+	grep_args.push_back(prefix);
+	grep_args.push_back("/proc/mounts");
+	
+	UnixCommand grep("grep");	
+	ProcessResult * res = grep.Execute(grep_args);	
+	
+	if ( res->GetStatus() != Success )
+	{		
+		Logger::LogWarn("Cannot execute grep.\n" + res->GetOutput());
+		delete res;
+		return false;
+	}	
+	string output = res->GetOutput();
+	delete res;
+		
+	size_t end = output.find(' ');
+	if ( end == string::npos )
 	{
-		char * buf = new char[strlen(opts) + 1];
-		strncpy( buf, opts, strlen(opts) );
-		buf[strlen(opts)] = 0;				
-		char * pch;
-		pch = strtok (buf," ,");
-		int pos = -1;
-		while (pch != NULL)
-		{
-			pos++;
-			if(strcmp(pch,opt.c_str()) == 0)
-			{
-				if ( position )
-					*position = pos;						
-				return true;
-			}
-			pch = strtok (NULL, " ,");					
-		}
-	}			
-	return false;
-}		
+		Logger::LogWarn("Wrong formatted output.");
+		return false;
+	}
+	
+	output = output.substr(prefix.length(), output.length() - prefix.length());
+	output = output.substr(0, end);
+	
+	
+	
+	vector<string> opts = SplitString(output, ',', vector<string>());
+	
+	if ( find(opts.begin(), opts.end(), opt) == opts.end())
+		return false;
+		
+	return true;
+}
 bool PartitionManager::LoadConfiguration()
 {
 	bool result = false;
