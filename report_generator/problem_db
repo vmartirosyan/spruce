@@ -59,8 +59,8 @@ expected severity Failed
 
 matched test_messages Error: Invalid argument
 
-attribute comment [comment required]
-# The Read syscall with O_DIRECT option is not supported in kenels version less than 2.6.35
+attribute comment Btrfs doesn't support read() with O_DIRECT flag before kenel 2.6.35
+attribute resolution Filesystem problem
 
 end
 
@@ -115,8 +115,8 @@ expected severity Unresolved
 
 matched test_messages Error: Bad file descriptor
 
-attribute comment [comment required]
-# Direct IO is not supported with journalling on in ext4 for early kernel versions.
+attribute comment Ext4 doesn't support direct IO with journaling before kernel 3.2.30.
+attribute resolution Filesystem problem
 
 end
 
@@ -130,7 +130,7 @@ expected severity Failed
 
 matched test_messages Error: Invalid argument
 
-attribute comment [comment required]
-# Direct IO is not supported with journalling on in ext4 for early kernel versions.
+attribute comment Ext4 doesn't support direct IO with journaling before kernel 3.2.30.
+attribute resolution Filesystem problem
 
 end
