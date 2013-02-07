@@ -418,7 +418,10 @@ bool PartitionManager::IsOptionEnabledInternal(const string & opt, int * positio
 	}	
 	string output = res->GetOutput();
 	delete res;
-		
+	
+	output = output.substr(prefix.length(), output.length() - prefix.length());
+	
+	
 	size_t end = output.find(' ');
 	if ( end == string::npos )
 	{
@@ -426,10 +429,7 @@ bool PartitionManager::IsOptionEnabledInternal(const string & opt, int * positio
 		return false;
 	}
 	
-	output = output.substr(prefix.length(), output.length() - prefix.length());
 	output = output.substr(0, end);
-	
-	
 	
 	vector<string> opts = SplitString(output, ',', vector<string>());
 	
