@@ -24,7 +24,10 @@
 
 <TestSet Name="mount_umount">
 	<StartUp>
-		chdir("/");		
+		// Temporary solution. Should be removed as soon as the logic of test execution is changed.		
+		if ( !PartitionManager::NoMountOptionsEnabled() )
+			goto CleanUp;
+		chdir("/");
 	</StartUp>
 	<Header>
 		Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
