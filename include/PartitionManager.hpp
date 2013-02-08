@@ -159,6 +159,9 @@ public:
 	static bool IsOptionEnabled(string optionName);
 	static uint64_t GetDeviceSize(string partition);
 	static bool NoMountOptionsEnabled();
+	static bool IsUserQuotaEnabled();
+	static bool IsGroupQuotaEnabled();
+	static bool IsProjectQuotaEnabled();
 	
 	struct CurrentOptions
 	{
