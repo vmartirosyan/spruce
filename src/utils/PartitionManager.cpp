@@ -395,6 +395,29 @@ bool PartitionManager::IsSpecialOptionEnabled(const string & opt)
 	// In case of unknown option
 	return false;
 }
+
+bool PartitionManager::NoMountOptionsEnabled()
+{
+	char * sFlags = getenv("MountFlags");
+	char * sData = getenv("MountData");
+	if ( !sFlags && !sData )
+		return true;
+		
+	if ( sFlags )
+	{
+		if ( strcmp("0", sFlags) )
+			return false;
+	}
+	
+	if ( sData )
+	{
+		if ( strcmp("", sData) )
+			return false;
+	}
+	
+	return true;
+}
+
 bool PartitionManager::IsOptionEnabledInternal(const string & opt, int * position)
 {	
 	string DeviceName = (getenv("Partition") ? getenv("Partition") : "");

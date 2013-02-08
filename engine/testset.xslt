@@ -137,9 +137,9 @@ public:
 	
 	virtual TestResultCollection RunNormalTests()
 	{
-		<xsl:value-of select="StartUp"/>
 		//chdir(MountPoint);
 		TestResultCollection res;
+		<xsl:value-of select="StartUp"/>
 		//for ( unsigned int i  = 0; i &lt; _tests.size(); ++i)
 		if ( _tests_to_run.empty() )
 		{
@@ -193,17 +193,18 @@ public:
 				res.AddResult( tr );
 			}
 		}
+CleanUp:
 		<xsl:value-of select="CleanUp"/>
 		return res;
 	}
 	
 	
 	virtual TestResultCollection RunFaultyTests()
-	{
-		<xsl:value-of select="StartUp"/>
+	{		
 		cerr &lt;&lt; "Running faulty tests:  <xsl:value-of select="$TestSetName" />: " &lt;&lt; _fsim_info_vec.size() &lt;&lt; endl;
-		_fsim_enabled = true;
+		_fsim_enabled = true;		
 		TestResultCollection res;
+		<xsl:value-of select="StartUp"/>
 	
 		for ( unsigned int i = 0; i &lt; _fsim_info_vec.size(); ++i )
 		{
@@ -287,6 +288,7 @@ public:
 			//DisableFaultSim();	
 		}
 		
+CleanUp:
 		DisableFaultSim();
 		<xsl:value-of select="CleanUp"/>
 		return res;
