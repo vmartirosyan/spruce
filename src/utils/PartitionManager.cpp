@@ -424,6 +424,20 @@ bool PartitionManager::NoMountOptionsEnabled()
 	return true;
 }
 
+bool PartitionManager::IsUserQuotaEnabled()
+{
+	return IsOptionEnabledInternal("quota") || IsOptionEnabledInternal("usrquota") || IsOptionEnabledInternal("uquota") || IsOptionEnabledInternal("uqnoenforce") || IsOptionEnabledInternal("qnoenforce") || IsOptionEnabledInternal("usrjquota=aquota.user");
+}
+
+bool PartitionManager::IsGroupQuotaEnabled()
+{
+	return IsOptionEnabledInternal("grpquota") || IsOptionEnabledInternal("gquota") || IsOptionEnabledInternal("gqnoenforce") || IsOptionEnabledInternal("usrjquota=aquota.group");
+}
+
+bool PartitionManager::IsProjectQuotaEnabled()
+{
+	return IsOptionEnabledInternal("prjquota") || IsOptionEnabledInternal("pquota") || IsOptionEnabledInternal("pqnoenforce");
+}
 bool PartitionManager::IsOptionEnabledInternal(const string & opt, int * position)
 {	
 	string DeviceName = (getenv("Partition") ? getenv("Partition") : "");
