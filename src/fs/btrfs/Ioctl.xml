@@ -32,11 +32,10 @@
 
 	
 	<Test Name="SetGetFlags_Empty" FaultSimulationReady="true">
-		<Requires KernelVersion="2,6,32" Defined="FITRIM" />
+		<Requires KernelVersion="2.6.32" Defined="FITRIM" />
 		<Description>Try to set and get flag values. </Description>
 		<File count="1"/>
 		<Code>
-			
 			int  set_flags = FS_IMMUTABLE_FL;
 			int  get_flags, flags;
 			
@@ -55,7 +54,6 @@
 			Unres( ioctl(FDs[0], FS_IOC_SETFLAGS, &flags ) == -1, "Error setting initial value to flag. ");
 			
 			Fail ( get_flags != set_flags, "Get and Set flag values do not match!" );
-			
 		</Code>
 	</Test>
 	<Test Name="SetGetFlags_All" FaultSimulationReady="true" Shallow="true">
@@ -198,7 +196,7 @@
 	</Test>
 	
 	<Test Name="BTRFS_IOC_SUBVOL_GETFLAGS" Shallow="true">
-		<Requires KernelVersion="2,6,38" />
+		<Requires KernelVersion="2.6.38" />
 		<Description>BTRFS_IOC_SUBVOL_GETFLAGS.</Description>
 		<Dir count="1"/>
 		<Code>
@@ -222,7 +220,7 @@
 	</Test>
 		
 	<!-- Test Name="BTRFS_IOC_SUBVOL_SETFLAGS" Shallow="true">
-		<Requires KernelVersion="2,6,38" />
+		<Requires KernelVersion="2.6.38" />
 		<Description>BTRFS_IOC_SUBVOL_SETFLAGS.</Description>
 		<Dir count="1"/>		
 		<Code>
@@ -568,7 +566,7 @@
 	</Test>
 
 	<Test Name="BTRFS_IOC_START_SYNC" Shallow="true">
-		<Requires KernelVersion="2,6,37" />
+		<Requires KernelVersion="2.6.37" />
 		<Description>BTRFS_IOC_START_SYNC.</Description>
 		<File count="1"/>
 		<Code>
@@ -579,7 +577,7 @@
 		</Code>		
 	</Test>	
 	<Test Name="BTRFS_IOC_WAIT_SYNC" Shallow="true">
-		<Requires KernelVersion="2,6,37" />
+		<Requires KernelVersion="2.6.37" />
 		<Description>BTRFS_IOC_WAIT_SYNC.</Description>
 		<File count="1"/>
 		<Code>
@@ -618,7 +616,7 @@
 	</Test-->
 	
 	<Test Name="BTRFS_IOC_BALANCE_V2" Shallow="true">
-		<Requires KernelVersion="3,3,0" />
+		<Requires KernelVersion="3.3.0" />
 		<Description>BTRFS_IOC_BALANCE_V2.</Description>
 		<File count="1" />
 		<Code>
@@ -631,7 +629,7 @@
 	</Test>
 	
 	<!--Test Name="BTRFS_IOC_BALANCE_CTL" Shallow="true">
-		<Requires KernelVersion="3,3,0" />
+		<Requires KernelVersion="3.3.0" />
 		<Description>BTRFS_IOC_BALANCE_CTL.</Description>
 		<File count="1" />
 		<Code>
@@ -643,7 +641,7 @@
 	</Test>
 	
 	<Test Name="BTRFS_IOC_BALANCE_PROGRESS" Shallow="true">
-		<Requires KernelVersion="3,3,0" />		
+		<Requires KernelVersion="3.3.0" />		
 		<Description>BTRFS_IOC_BALANCE_PROGRESS.</Description>
 		<File count="1"/>
 		<Code>
@@ -653,7 +651,7 @@
 	</Test-->
 	
 	<!--Test Name="BTRFS_IOC_SET_RECEIVED_SUBVOL" Shallow="true">
-		<Requires KernelVersion="3,3,0" />		
+		<Requires KernelVersion="3.3.0" />		
 		<Description>BTRFS_IOC_SET_RECEIVED_SUBVOL.</Description>
 		<File count="1"/>
 		<Code>
@@ -663,7 +661,7 @@
 	</Test-->
 		
 	<!--Test Name="BTRFS_IOC_SEND" Shallow="true">
-		<Requires KernelVersion="3,6,0" />
+		<Requires KernelVersion="3.6.0" />
 		<Description>BTRFS_IOC_SEND.</Description>
 		<File count="1"/>
 		<Code>
@@ -673,7 +671,7 @@
 	</Test-->
 
 	<Test Name="BTRFS_IOC_GET_DEV_STATS" Shallow="true">
-		<Requires KernelVersion="3,5,0" />
+		<Requires KernelVersion="3.5.0" />
 		<Description>BTRFS_IOC_GET_DEV_STATS.</Description>
 		<File count="1"/>
 		<Code>

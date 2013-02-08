@@ -43,7 +43,7 @@
 		</Code>
 	</Test>
 	<Test Name="FallocateNormalPunchHole" FaultSimulationReady="true">
-		<Requires KernelVersion="2,6,38" />
+		<Requires KernelVersion="2.6.38" />
 		<Description>Specifying  the  FALLOC_FL_PUNCH_HOLE flag in mode deallocates space (i.e., creates a hole) in the byte range starting at offset and continuing for len bytes</Description>
 		<File count="1"/>
 		<Code>

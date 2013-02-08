@@ -465,7 +465,7 @@
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetPipeSize" FaultSimulationReady="true">
-		<Requires KernelVersion="2,6,35" Defined="F_SETPIPE_SZ" />
+		<Requires KernelVersion="2.6.35" Defined="F_SETPIPE_SZ" />
 		<Description>F_SETPIPE_SZ and F_GETPIPE_SZ (since Linux 2.6.35). Changing the capacity of a pipe.</Description>
 		<Code>
 			int pipefd[2];
@@ -642,7 +642,7 @@
 		</Code>
 	</Test-->
 	<Test Name="FcntlFDCapAboveLimit">
-		<Requires KernelVersion="2,6,35" Defined="F_SETPIPE_SZ" />
+		<Requires KernelVersion="2.6.35" Defined="F_SETPIPE_SZ" />
 		<Description></Description>
 		<File count="1"/>
 		<Code>
