@@ -95,9 +95,8 @@ PartitionStatus PartitionManager::PreparePartition()
 	Logger::LogInfo("Preparing partition: " + GetCurrentOptions(false));
 	
 	if ( !CreateFilesystem(_FileSystem, _DeviceName, false, _CurrentOptions.MkfsOptions) )
-	{				
-		_Index = _AdditionalOptions[_FSIndex].begin();
-		return PS_Done;
+	{			
+		return PS_Skip;
 	}
 	Logger::LogInfo((string)"File system " + _FileSystem + " is created successfully.");	
 	
@@ -118,6 +117,8 @@ PartitionStatus PartitionManager::PreparePartition()
 // Try to re-create the file system and mount it with the precious mount options.		
 PartitionStatus PartitionManager::RestorePartition(string DeviceName, string MountPoint, string FileSystem, bool RecreateFilesystem, bool resizeFlag)
 {
+	cerr << "pid: " << getpid() << endl;
+	system("lsof | grep spruce");
 	if( !getenv("MountFlags") || !getenv("MountData") || ( RecreateFilesystem && !getenv("MkfsOpts") ) )
 		return PS_Fatal;
 	if( !ReleasePartition(MountPoint))
@@ -260,11 +261,16 @@ bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSyst
 string PartitionManager::GetCurrentOptions(bool Stripped) const
 {	
 	if ( !Stripped )
-		return _CurrentOptions.RawData;	
+		return _CurrentOptions.RawData;
+		
 	string tmp = _CurrentOptions.RawData;
 	for ( string::iterator i = tmp.begin(); i != tmp.end(); ++i )
+	{
 		if (*i == ' ')
 			*i = '_';
+		if (*i == '/')
+			*i = '_';
+	}
 	return tmp;
 }
 void PartitionManager::ClearCurrentOptions()
@@ -524,6 +530,16 @@ bool PartitionManager::LoadConfiguration()
 					else
 						cur_opts.MountData.append(opts[i]).append(",");
 				}
+				
+				// Process the %DEVICE_NAME variable
+				string DeviceName = (getenv("Partition") ? getenv("Partition") : "");
+				
+				if (DeviceName != "")
+				{
+					StrReplace( cur_opts.MkfsOptions, "%DEVICE_NAME", DeviceName );
+					StrReplace( cur_opts.MountData, "%DEVICE_NAME", DeviceName );
+					StrReplace( cur_opts.RawData, "%DEVICE_NAME", DeviceName );
+				}
 			
 				_AdditionalOptions[_FSIndex].insert(cur_opts);
 			}
@@ -623,8 +639,8 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 	delete mkfs;
 	if ( res->GetStatus() != Success )
 	{
-		cerr << "Cannot create " << fs << " filesystem on device " << partition << endl;
-		cerr << "Error: " << res->GetOutput() << endl;
+		Logger::LogError("Cannot create " + fs + " filesystem on device " + partition);
+		Logger::LogError("Error: " + res->GetOutput());
 		return false;
 	}
 	setenv("MkfsOpts", mkfs_opts.c_str(), 1);

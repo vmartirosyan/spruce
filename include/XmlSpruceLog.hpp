@@ -153,14 +153,7 @@ protected:
 	
 	void replace(string& str, string val1, string val2)
 	{
-		size_t pos = -1;
-		while (true)
-		{
-			pos = str.find(val1.c_str(), pos + 1);
-			if ( pos == string::npos )
-				break;				
-			str.replace(pos, 1, val2.c_str());
-		}	
+		StrReplace(str, val1, val2);
 	}
 	
 	void genXml()

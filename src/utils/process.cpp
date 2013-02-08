@@ -351,3 +351,15 @@ vector<string> SplitString(string str, char delim, vector<string> AllowedValues 
 	return pieces;
 	
 }
+
+void StrReplace(string& str, string val1, string val2)
+{
+	size_t pos = -1;
+	while (true)
+	{
+		pos = str.find(val1.c_str(), pos + 1);
+		if ( pos == string::npos )
+			break;				
+		str.replace(pos, val1.length(), val2.c_str());
+	}	
+}

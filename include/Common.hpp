@@ -323,6 +323,7 @@ public:\
 };
 
 vector<string> SplitString(string str, char delim, vector<string> AllowedValues );
+void StrReplace(string& str, string val1, string val2);
 
 #endif /* COMMON_HPP */
 
