@@ -137,7 +137,7 @@ public:
 	
 	virtual TestResultCollection RunNormalTests()
 	{
-		//chdir(MountPoint);
+		chdir("/");
 		TestResultCollection res;
 		<xsl:value-of select="StartUp"/>
 		//for ( unsigned int i  = 0; i &lt; _tests.size(); ++i)
@@ -197,10 +197,10 @@ CleanUp:
 		<xsl:value-of select="CleanUp"/>
 		return res;
 	}
-	
-	
+		
 	virtual TestResultCollection RunFaultyTests()
-	{		
+	{	
+		chdir("/");
 		cerr &lt;&lt; "Running faulty tests:  <xsl:value-of select="$TestSetName" />: " &lt;&lt; _fsim_info_vec.size() &lt;&lt; endl;
 		_fsim_enabled = true;		
 		TestResultCollection res;
@@ -312,8 +312,12 @@ CleanUp:
 <!-- Use standart 'if(false)' construction for template-generated alternatives -->
 #if 0
 			<xsl:if test="Requires/@KernelVersion!=''">
-#elif LINUX_VERSION_CODE &lt; KERNEL_VERSION(<xsl:value-of select="Requires/@KernelVersion" />)
-		Unsupp("Kernel version should be at least <xsl:value-of select="Requires/@KernelVersion" />");
+#elif LINUX_VERSION_CODE &lt; KERNEL_VERSION(<xsl:call-template name="string-replace-all">
+			<xsl:with-param name="text" select="Requires/@KernelVersion"/>
+			<xsl:with-param name="replace" select="'.'"/>
+			<xsl:with-param name="by" select="','"/>
+				</xsl:call-template>)
+		Unsupp("Operation is not supported. Kernel version should be at least <xsl:value-of select="Requires/@KernelVersion" />.");
 			</xsl:if>
 			<xsl:if test="Requires/@Defined!=''">
 #elif ! defined <xsl:value-of select="Requires/@Defined" />
@@ -456,7 +460,12 @@ Footer:
 <!-- Compile non-empty 'Footer' section only if all conditions are evaluated to true.-->
 #if 0
 			<xsl:if test="Requires/@KernelVersion!=''">
-#elif LINUX_VERSION_CODE &lt; KERNEL_VERSION(<xsl:value-of select="Requires/@KernelVersion" />)
+#elif LINUX_VERSION_CODE &lt; KERNEL_VERSION(<xsl:call-template name="string-replace-all">
+			<xsl:with-param name="text" select="Requires/@KernelVersion"/>
+			<xsl:with-param name="replace" select="'.'"/>
+			<xsl:with-param name="by" select="','"/>
+				</xsl:call-template>)
+		Unsupp("Operation is not supported. Kernel version should be at least <xsl:value-of select="Requires/@KernelVersion" />.");
 			</xsl:if>
 			<xsl:if test="Requires/@Defined!=''">
 #elif ! defined <xsl:value-of select="Requires/@Defined" />
@@ -588,5 +597,25 @@ protected:
 
 <xsl:value-of select="GlobalFooter"/>
 	</xsl:template>
+	
+<xsl:template name="string-replace-all">
+  <xsl:param name="text"/>
+  <xsl:param name="replace"/>
+  <xsl:param name="by"/>
+  <xsl:choose>
+    <xsl:when test="contains($text,$replace)">
+      <xsl:value-of select="substring-before($text,$replace)"/>
+      <xsl:value-of select="$by"/>
+      <xsl:call-template name="string-replace-all">
+        <xsl:with-param name="text" select="substring-after($text,$replace)"/>
+        <xsl:with-param name="replace" select="$replace"/>
+        <xsl:with-param name="by" select="$by"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$text"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
 
 </xsl:stylesheet>
