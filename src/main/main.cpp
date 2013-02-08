@@ -505,14 +505,10 @@ int main(int argc, char ** argv)
 				{
 					MountOptions.push_back(pm.GetCurrentOptions());
 					
-					vector<string> mkfsArgs;
-					if((*fs).compare("ext4") == 0)
-						mkfsArgs.push_back("-O mmp");
-
+					cerr << "Current options:  " << pm.GetCurrentOptions(false) << endl;
 				
 					cerr<<"Preparing partition..."<<endl;
 					PS = pm.PreparePartition();
-					cerr<<"Partition preparing done. "<<endl;
 					
 					if ( PS == PS_Fatal  )
 					{
@@ -532,7 +528,7 @@ int main(int argc, char ** argv)
 					
 					EXIT_IF_SIGNALED;
 					
-					cerr << "Current options:  " << pm.GetCurrentOptions(false) << endl;
+					
 					ShowOutput = true;					
 					
 					// Check if the module should be executed on this FS with these mount options.

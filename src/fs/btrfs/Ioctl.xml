@@ -105,12 +105,13 @@
 			ErrorTest( ioctl(FDs[0], FS_IOC_SETVERSION, &version ) ,-1, ENOTTY );
 		</Code> 
 	</Test>
-	<Test Name="UnsupportedFlag"  Shallow="true">
+	<Test Name="UnsupportedFlag">
 		<Description> Try to set unsupported flag value. </Description>
 		<File count="1"/>
 		<Code>
 			int flags = FS_SECRM_FL;
-			Fail ( ioctl(FDs[0], FS_IOC_SETFLAGS, &flags) == 0 || ( errno != ENOTTY || errno != EOPNOTSUPP), 
+			Fail ( ( ioctl(FDs[0], FS_IOC_SETFLAGS, &flags ) == 0 ) || 
+				( errno != ENOTTY ) && ( errno != EOPNOTSUPP ) , 
 				"Function should return 'Operation not supported' error but it did not.");
 			
 		</Code>
@@ -194,29 +195,33 @@
 			Fail ( ioctl( DirDs[0], BTRFS_IOC_SNAP_DESTROY, &destroy_arg ) == -1, "Cannot destroy snapshot");
 		</Code>
 	</Test>
-	
+	 
 	<Test Name="BTRFS_IOC_SUBVOL_GETFLAGS" Shallow="true">
 		<Requires KernelVersion="2.6.38" />
-		<Description>BTRFS_IOC_SUBVOL_GETFLAGS.</Description>
-		<Dir count="1"/>
-		<Code>
+		<Description>BTRFS_IOC_SUBVOL_GETFLAGS.</Description>		
+		<Header>
+			const char * FilePath = "BTRFS_IOC_SUBVOL_GETFLAGS_dir0";
+			
+			File f(FilePath, 0777, O_RDONLY | O_NOATIME);
+			int fd = f.GetFileDescriptor();
 			btrfs_ioctl_vol_args arg;
 			strcpy(arg.name, "subvol");
-			arg.fd = DirDs[0];
-		//	strcpy(arg.name, DirPaths[0].c_str());
-			Unres ( ioctl( DirDs[0], BTRFS_IOC_SUBVOL_CREATE, &arg ) == -1, "Cannot create subvolume." );
-			
+			arg.fd = fd;
+		
+			Unres ( ioctl( fd, BTRFS_IOC_SUBVOL_CREATE, &arg ) == -1, "Cannot create subvolume." );
+		</Header>
+		<Code>
 			__u64 flags = 0;
-			int status = ioctl( DirDs[0], BTRFS_IOC_SUBVOL_GETFLAGS, &flags);
-			
+			Fail ( ioctl( fd, BTRFS_IOC_SUBVOL_GETFLAGS, &flags) == -1, "Cannot get subvolume flags." );
+		</Code>
+		<Footer>
 			btrfs_ioctl_vol_args destroy_arg;
 			strcpy(destroy_arg.name, "subvol");
-			destroy_arg.fd = DirDs[0];
-			if ( ioctl( DirDs[0], BTRFS_IOC_SNAP_DESTROY, &destroy_arg ) == -1 )
-				Error("Cannot destroy snapshot");
+			destroy_arg.fd = fd;
 			
-			Fail(status == -1, "Cannot get subvolume flags");
-		</Code>
+			if ( ioctl( fd, BTRFS_IOC_SNAP_DESTROY, &destroy_arg ) == -1 )
+				Error("Cannot destroy snapshot");
+		</Footer>
 	</Test>
 		
 	<!-- Test Name="BTRFS_IOC_SUBVOL_SETFLAGS" Shallow="true">
@@ -299,9 +304,16 @@
             File file2(FileNames[2]);
             Unres( fallocate(file2.GetFileDescriptor(), 0, 0, FreeSpace / 3) == -1, "Cannot allocate space for 2nd file");
              fsync(file2.GetFileDescriptor());
-            close(file2.GetFileDescriptor());            
+            close(file2.GetFileDescriptor());
             
             Unres (unlink(FileNames[1].c_str()) == -1, "Cannot remove file1.");
+            
+            
+            // Try to allocate space more than (FreeSpace / 3).
+            // As the filesystem if fragmented it must not be possible.
+            File file10(FileNames[1]);
+            Unres( fallocate(file10.GetFileDescriptor(), 0, 0, FreeSpace / 3 + 1024) == 0, "It was possible to allocate space before defragmentation.");
+            unlink(FileNames[1].c_str());
                         
              char * buf = new char[FreeSpace / 3 + 1024];
             Unres(buf == NULL, "Cannot allocate memory.");
@@ -312,12 +324,6 @@
             close(file3.GetFileDescriptor());
             
             Unres (unlink(FileNames[2].c_str()) == -1, "Cannot remove file2.");
-             
-            // Try to allocate space more than (FreeSpace / 3).
-            // As the filesystem if fragmented it must not be possible.
-            File file10(FileNames[1]);
-            Unres( fallocate(file10.GetFileDescriptor(), 0, 0, FreeSpace / 3 + 1024) == 0, "It was possible to allocate space before defragmentation.");
-             unlink(FileNames[1].c_str());
             
             int fd = open(FileNames[3].c_str(), O_RDWR);
             sync();
