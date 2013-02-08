@@ -35,10 +35,7 @@
 #ifndef QFMT_VFS_V0
 #define QFMT_VFS_V0 2
 #endif	
-	if ( !PartitionManager::IsOptionEnabled("quota")
-	&& !PartitionManager::IsOptionEnabled("jqfmt=vfsv0")
-	&& !PartitionManager::IsOptionEnabled("usrquota")
-	&& !PartitionManager::IsOptionEnabled("grpquota"))
+	if ( PartitionManager::IsOptionEnabled("noquota") || (!PartitionManager::IsGroupQuotaEnabled() && !PartitionManager::IsUserQuotaEnabled()))
 		Unsupp("quota mount option is not provided.");
 	if ( ! strcmp(FileSystem, "xfs") )
 		Unsupp("Quota tests for XFS are implemented in XFS-specifiec module.");	
@@ -53,8 +50,7 @@
 			vector<string> args;
 			
 			
-			if( PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") || 
-						PartitionManager::IsOptionEnabled("usrjquota=aquota.user") )
+			if( PartitionManager::IsUserQuotaEnabled())
 			{
 				cmd_on = QCMD(Q_QUOTAON, USRQUOTA);
 				cmd_off = QCMD(Q_QUOTAOFF, USRQUOTA);
@@ -83,8 +79,7 @@
 			}
 			
 		
-			if( PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") ||
-						PartitionManager::IsOptionEnabled("usrjquota=aquota.user")  )
+			if( PartitionManager::IsUserQuotaEnabled() )
 			{
 				QuotaFile += "/aquota.user";
 			}
@@ -119,8 +114,7 @@
 			int cmd_on, cmd_off;
 			Unres ( Prepare(QuotaFile, cmd_on, cmd_off) == false, "");
 			
-			if(PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") ||
-						PartitionManager::IsOptionEnabled("usrjquota=aquota.user") )
+			if(PartitionManager::IsUserQuotaEnabled() )
 			{
 				cmd_get_quota = QCMD(Q_GETQUOTA, USRQUOTA);
 				cmd_set_quota = QCMD(Q_SETQUOTA, USRQUOTA);
@@ -161,8 +155,7 @@
 			int cmd_on, cmd_off;
 			Unres ( Prepare(QuotaFile, cmd_on, cmd_off) == false, "");
 			
-			if(PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") || 
-						PartitionManager::IsOptionEnabled("usrjquota=aquota.user") )
+			if(PartitionManager::IsUserQuotaEnabled() )
 			{
 				cmd_get_info = QCMD(Q_GETINFO, USRQUOTA);
 				cmd_set_info = QCMD(Q_SETINFO, USRQUOTA);
@@ -203,8 +196,7 @@
 			int cmd_on, cmd_off;
 			Unres ( Prepare(QuotaFile, cmd_on, cmd_off) == false, "");
 			
-			if(PartitionManager::IsOptionEnabled("usrquota") || PartitionManager::IsOptionEnabled("quota") || 
-						PartitionManager::IsOptionEnabled("usrjquota=aquota.user") )
+			if(PartitionManager::IsUserQuotaEnabled())
 			{
 				cmd_get_format = QCMD(Q_GETFMT, USRQUOTA);
 			}
