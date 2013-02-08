@@ -1,0 +1,6 @@
+<Module Name="jfs">
+	<TestSet Name="Ioctl" />
+	<TestSet Name="OverloadTests" />
+	<TestSet Name="mount" />
+	<TestSet Name="WriteDirect" />
+</Module>

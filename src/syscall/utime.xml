@@ -1,0 +1,115 @@
+<!--    utime.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="utime">	
+	<Requires>utime.h</Requires>
+	<Test Name="UtimeNormalNotNull" FaultSimulationReady="true">
+		<Description>The  utime()  system  call changes the access and modification times of the inode specified by filename to the actime  and  modtime  fields  of times respectively.</Description>
+		<File count="1"/>
+		<Code>
+			struct stat stat_buf;
+		
+			time_t cur_time = time(0);
+			Unres ( cur_time == static_cast<time_t>(-1), "Cannot get current time.");
+			
+			cur_time -= 100;
+			
+			struct utimbuf buf;
+			buf.actime = cur_time;
+			EnableFaultSim();
+			Fail ( utime(FilePaths[0].c_str(), &buf) == -1, "utime call failed.");
+			
+			Unres ( fstat(FDs[0], &stat_buf) == -1, "Cannot stat the file");
+			
+			Fail ( stat_buf.st_atime != cur_time, "Wrong access time was set.");
+			
+			;
+		</Code>
+	</Test>
+	<Test Name="UtimeNormalNull" FaultSimulationReady="true">
+		<Description>If  times  is  NULL, then the access and modification times of the file are set to the current time.</Description>
+		<File count="1"/>
+		<Code>
+			struct stat stat_buf;
+		
+			time_t cur_time = time(0);
+			Unres ( cur_time == static_cast<time_t>(-1), "Cannot get current time.");
+			EnableFaultSim();
+			Fail ( utime(FilePaths[0].c_str(), NULL) == -1, "utime call failed.");
+			
+			Unres ( fstat(FDs[0], &stat_buf) == -1, "Cannot stat the file");
+			
+			Fail ( stat_buf.st_atime != cur_time, "Wrong access time was set.");
+			
+			;
+		</Code>
+	</Test>
+	<Test Name="UtimeNoAccess">
+		<Description>times is NULL, the caller's effective user ID does not match the owner of the file, the caller does not have write access to  the file,  and  the  caller  is not privileged.</Description>
+		<File count="1"/>
+		<Code>
+			ENoAccessTest( utime(FilePaths[0].c_str(),NULL), -1 );
+		</Code>
+	</Test>
+	<Test Name="UtimeLoop">
+		<Description>Tool many levels of sym links.</Description>
+		<File count="1"/>
+		<Code>
+			ELoopTest( utime(FilePaths[0].c_str(),NULL), -1 );
+		</Code>
+	</Test>
+	<Test Name="UtimeNameTooLong">
+		<Description>File name is too long.</Description>
+		<File count="1"/>
+		<Code>
+			ENameTooLongTest( utime(path, NULL), -1 );
+		</Code>
+	</Test>
+	<Test Name="UtimeNoEnt1">
+		<Description>File does not exist.</Description>
+		<Code>
+			ErrorTest( utime("non_existin_file", NULL), -1, ENOENT );
+		</Code>
+	</Test>
+	<Test Name="UtimeNoEnt2">
+		<Description>File name is an empty string.</Description>
+		<Code>
+			ErrorTest( utime("", NULL), -1, ENOENT );
+		</Code>
+	</Test>
+	<Test Name="UtimeNotDir">
+		<Description>A component of pathname is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest( utime((FilePaths[0] + "/some_file").c_str(), NULL), -1, ENOTDIR );
+		</Code>
+	</Test>
+	<Test Name="UtimePerm">
+		<Description>times is not NULL, the caller's effective UID does not match the owner of the file, and the caller is not privileged.</Description>
+		<File count="1"/>
+		<Code>
+			struct utimbuf buf;
+			ENoAccessTest( utime(FilePaths[0].c_str(), &buf), -1 );
+		</Code>
+	</Test>
+</TestSet>
