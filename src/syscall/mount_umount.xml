@@ -26,8 +26,7 @@
 	<StartUp>
 		// Temporary solution. Should be removed as soon as the logic of test execution is changed.		
 		if ( !PartitionManager::NoMountOptionsEnabled() )
-			goto CleanUp;
-		chdir("/");
+			goto CleanUp;		
 	</StartUp>
 	<Header>
 		Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");

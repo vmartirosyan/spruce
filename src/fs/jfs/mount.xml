@@ -3,17 +3,16 @@
 It seems the part of resize.c refering to invalid block number checks 
 isn't covered as mount options are parsed and checked in super.c-->
 <TestSet Name="mount">
+	<StartUp>
+		if ( !PartitionManager::NoMountOptionsEnabled() )
+			goto CleanUp;
+	</StartUp>
         <Requires>sys/mount.h</Requires>
         <Requires>sstream</Requires>
         <Test Name="RemountResize" FaultSimulationReady="true">
                 <Description>Resize.</Description>              
                 <Code>
-						if( getenv("MountData") != NULL && strcmp("", getenv("MountData")) != 0 ||
-							getenv("MountFlags") != NULL && strcmp("0", getenv("MountFlags")) != 0)
-						{
-							Return(Skipped);
-						}
-                        Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
                         Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
                         Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
                         int res;
