@@ -73,7 +73,7 @@
 											<xsl:value-of select="count(document($LogFile)//Item[Status='Fatal' or Status='Failed' or Status='Signaled' or Status='Timeout' or Status='FSimSuccess'])" /> 
 										</span> / 
 										<span class="Unresolved">
-											<xsl:value-of select="count(document($LogFile)//Item[Status='Unresolved' or Status='Unsupported' or Status='Skipped'])" />
+											<xsl:value-of select="count(document($LogFile)//Item[Status='Unresolved'])" />
 										</span>
 									</a>
 								</xsl:when>
