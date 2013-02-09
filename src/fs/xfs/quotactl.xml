@@ -39,40 +39,88 @@
 // because quotactl is defined in different ways in those files...
 #ifndef QFMT_VFS_V0
 #define QFMT_VFS_V0 2
-#endif
-		{
-			char * opts = NULL;
-			if ( (opts = getenv("MountOpts")) != NULL )
-			{
-				string strOpts = opts;
-				if ( ( strOpts.find("quota") == string::npos &&
-				 strOpts.find("qnoenforce") == string::npos)
-				|| PartitionManager::IsOptionEnabled("noquota") )
-					Error("quota mount option is not provided.", Unsupported);
-			}
-			else
+#endif	
+			if ( PartitionManager::IsOptionEnabled("noquota") ||
+			( !PartitionManager::IsGroupQuotaEnabled() && !PartitionManager::IsUserQuotaEnabled() && !PartitionManager::IsProjectQuotaEnabled() ))
 				Error("quota mount option is not provided.", Unsupported);
-		}		
+
 			Unres( strcmp(DeviceName, "") == 0, "No device name is provided." );
-			Unres( strcmp(MountPoint, "") == 0, "No mount point is provided." );			
+			Unres( strcmp(MountPoint, "") == 0, "No mount point is provided." );	
+				
 	</Header>
 	<Test Name="QuotactlXQuotaOn" FaultSimulationReady="true">
 		<Description>Turn on quotas for an XFS file system.</Description>		
 		<Code>
-			int cmd_on = QCMD(Q_XQUOTAON, USRQUOTA);			
-			int flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
+			int cmd_on;	
+			int flag;
+			int cmd_off;
+			if(PartitionManager::IsUserQuotaEnabled())
+			{
+				cmd_on = QCMD(Q_XQUOTAON, USRQUOTA);
+				flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
+				cmd_off = QCMD(Q_XQUOTAOFF, USRQUOTA);
+			}
+			if(PartitionManager::IsGroupQuotaEnabled())
+			{
+				cmd_on = QCMD(Q_XQUOTAON, GRPQUOTA);
+				flag = XFS_QUOTA_GDQ_ACCT | XFS_QUOTA_GDQ_ENFD;
+				cmd_off = QCMD(Q_XQUOTAOFF, GRPQUOTA);
+			}
+			if(PartitionManager::IsProjectQuotaEnabled())
+			{
+				cmd_on = QCMD(Q_XQUOTAON, XFS_PROJ_QUOTA);
+				flag = XFS_QUOTA_PDQ_ACCT | XFS_QUOTA_PDQ_ENFD;
+				cmd_off = QCMD(Q_XQUOTAOFF, XFS_PROJ_QUOTA);
+			}
 			// In case if there is nothing to do, quotactl returns EEXIST error code on XFS.
 			Fail( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot enable quotas V0." );
-			
+		//  All the commands turning the quotas off are commented as they affect the mount options.
+		//  According to http://xfs.org/docs/xfsdocs-xml-dev/XFS_User_Guide/tmp/en-US/html/ch08s09.html
+		//  Disabling quotas switches off quota management and quotas can only be re-enabled by un-mounting and remounting the filesystem. 
+		//  In fact all quota options are erased and "noquota" option is added.
+		//  Uncomment the line below when the testset is refactored
+		//	Unres( quotactl(cmd_off, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot disable quota." );
+
 			
 		</Code>
 	</Test>
 	<Test Name="QuotactlXSetGetQuota" FaultSimulationReady="true">
 		<Description>Set and get disk quota limits and current usage for user id.</Description>
 		<Code>
-			int cmd_xset_qlim = QCMD(Q_XSETQLIM, USRQUOTA);
-			int cmd_xget_quota = QCMD(Q_XGETQUOTA, USRQUOTA);
-			
+			int cmd_on;
+			int cmd_xset_qlim;
+			int cmd_xget_quota;
+			int cmd_off;
+			int flag;
+
+			if(PartitionManager::IsUserQuotaEnabled())
+			{
+				cmd_on = QCMD(Q_XQUOTAON, USRQUOTA);
+				cmd_xset_qlim = QCMD(Q_XSETQLIM, USRQUOTA);
+				cmd_xget_quota = QCMD(Q_XGETQUOTA, USRQUOTA);
+				cmd_off = QCMD(Q_XQUOTAOFF, USRQUOTA);
+				flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
+
+			}
+			else
+			{
+				if(PartitionManager::IsGroupQuotaEnabled())
+				{
+					cmd_on = QCMD(Q_XQUOTAON, GRPQUOTA);
+					cmd_xset_qlim = QCMD(Q_XSETQLIM, GRPQUOTA);
+					cmd_xget_quota = QCMD(Q_XGETQUOTA, GRPQUOTA);
+					cmd_off = QCMD(Q_XQUOTAOFF, GRPQUOTA);
+					flag = XFS_QUOTA_GDQ_ACCT | XFS_QUOTA_GDQ_ENFD;
+				}
+				else
+				{
+					cmd_on = QCMD(Q_XQUOTAON, XFS_PROJ_QUOTA);
+					cmd_xset_qlim = QCMD(Q_XSETQLIM, XFS_PROJ_QUOTA);
+					cmd_xget_quota = QCMD(Q_XGETQUOTA, XFS_PROJ_QUOTA);
+					cmd_off = QCMD(Q_XQUOTAOFF, XFS_PROJ_QUOTA);
+					flag = XFS_QUOTA_PDQ_ACCT | XFS_QUOTA_PDQ_ENFD;
+				}
+			}
 			struct fs_disk_quota quota;
 			struct fs_disk_quota quota2;
 			
@@ -81,37 +129,95 @@
 			
 			quota.d_blk_hardlimit = 1024;
 			quota.d_fieldmask = FS_DQ_LIMIT_MASK;
-			
+			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot enable quotas V0." );
+
 			Fail( quotactl(cmd_xset_qlim, DeviceName, 0, reinterpret_cast<caddr_t>( &quota )) == -1, "Cannot get quota." );
 			
 			Fail( quotactl(cmd_xget_quota, DeviceName, 0, reinterpret_cast<caddr_t>( &quota2 )) == -1, "Cannot get quota." );
 			
 			cerr << "quota2.d_blk_hardlimit=" << quota2.d_blk_hardlimit << endl;
 			Fail ( quota.d_blk_hardlimit != quota2.d_blk_hardlimit, "Different values after set-get operations." );
-			
+		//  Uncomment the line below when the testset is refactored
+		//	Unres( quotactl(cmd_off, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot disable quota." );
+
 			
 		</Code>
 	</Test>
 	<Test Name="QuotactlXQstat" FaultSimulationReady="true" Shallow="true">
 		<Description>Returns  an fs_quota_stat structure containing XFS file system specific quota information.</Description>
 		<Code>
-			int cmd_xqstat = QCMD(Q_XGETQSTAT, USRQUOTA);
+			int cmd_xqstat;
+			int cmd_on;
+			int cmd_off;
+			int flag;
+			if(PartitionManager::IsUserQuotaEnabled())
+			{
+				cmd_on = QCMD(Q_XQUOTAON, USRQUOTA);
+				cmd_xqstat = QCMD(Q_XGETQSTAT, USRQUOTA);
+				cmd_off = QCMD(Q_XQUOTAOFF, USRQUOTA);
+				flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
+			}
+			else
+			{
+				if(PartitionManager::IsGroupQuotaEnabled())
+				{
+					cmd_on = QCMD(Q_XQUOTAON, GRPQUOTA);
+					cmd_xqstat = QCMD(Q_XGETQSTAT, GRPQUOTA);
+					cmd_off = QCMD(Q_XQUOTAOFF, GRPQUOTA);
+					flag = XFS_QUOTA_GDQ_ACCT | XFS_QUOTA_GDQ_ENFD;
+				}
+				else
+				{
+					cmd_on = QCMD(Q_XQUOTAON, XFS_PROJ_QUOTA);
+					cmd_xqstat = QCMD(Q_XGETQSTAT, XFS_PROJ_QUOTA);
+					cmd_off = QCMD(Q_XQUOTAOFF, XFS_PROJ_QUOTA);
+					flag = XFS_QUOTA_PDQ_ACCT | XFS_QUOTA_PDQ_ENFD;
+				}
+			}
+			
 			
 			struct fs_quota_stat quota_stat;
 			
 			memset(&quota_stat, 0, sizeof(quota_stat));
-			
+			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot enable quotas V0." );
+
 			Fail( quotactl(cmd_xqstat, DeviceName, 0, reinterpret_cast<caddr_t>( &quota_stat )) == -1, "Cannot get quota stat." );
-			
+		//  Uncomment the line below when the testset is refactored
+		//	Unres( quotactl(cmd_off, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot disable quota." );
+
 		</Code>
 	</Test>
 	<Test Name="QuotactlXQuotaOff" FaultSimulationReady="true" Shallow="true">
 		<Description>Turn off quotas for an XFS file system.</Description>
 		<Code>
-			int flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
-			int cmd_off = QCMD(Q_XQUOTAOFF, USRQUOTA);
+			int cmd_on;
+			int flag;
 			
-			Fail( quotactl(cmd_off, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot disable quota." );
+			int cmd_off;
+			if(PartitionManager::IsUserQuotaEnabled())
+			{
+				flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
+				cmd_on = QCMD(Q_XQUOTAON, USRQUOTA);
+				cmd_off = QCMD(Q_XQUOTAOFF, USRQUOTA);
+			}
+			else
+			{
+				if(PartitionManager::IsGroupQuotaEnabled())
+				{
+					flag = XFS_QUOTA_GDQ_ACCT | XFS_QUOTA_GDQ_ENFD;
+					cmd_on = QCMD(Q_XQUOTAON, GRPQUOTA);
+					cmd_off = QCMD(Q_XQUOTAOFF, GRPQUOTA);
+				}
+				else
+				{
+					flag = XFS_QUOTA_PDQ_ACCT | XFS_QUOTA_PDQ_ENFD;
+					cmd_on = QCMD(Q_XQUOTAON, XFS_PROJ_QUOTA);
+					cmd_off = QCMD(Q_XQUOTAOFF, XFS_PROJ_QUOTA);
+				}
+			}
+			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot enable quotas V0." );
+		//  Uncomment the line below when the testset is refactored
+		//	Fail( quotactl(cmd_off, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot disable quota." );
 			
 		</Code>
 	</Test>
@@ -119,10 +225,34 @@
 	<Test Name="QuotactlXQuotaRm" FaultSimulationReady="true" Shallow="true">
 		<Description>Free the disk space taken by disk quotas. Quotas must have already been turned off.</Description>
 		<Code>
-			int flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
-			int cmd_rm = QCMD(Q_XQUOTARM, USRQUOTA);
+			int flag;
+			int cmd_rm;
+			int cmd_off;
 			
-			Fail( quotactl(cmd_rm, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1, "Cannot remove quotas." );
+			if(PartitionManager::IsUserQuotaEnabled())
+			{
+				flag = XFS_QUOTA_UDQ_ACCT | XFS_QUOTA_UDQ_ENFD;
+				cmd_off = QCMD(Q_XQUOTAOFF, USRQUOTA);
+				cmd_rm = QCMD(Q_XQUOTARM, USRQUOTA);
+			}
+			else
+			{
+				if(PartitionManager::IsGroupQuotaEnabled())
+				{
+					flag = XFS_QUOTA_GDQ_ACCT | XFS_QUOTA_GDQ_ENFD;
+					cmd_off = QCMD(Q_XQUOTAOFF, GRPQUOTA);
+					cmd_rm = QCMD(Q_XQUOTARM, GRPQUOTA);
+				}
+				else
+				{
+					flag = XFS_QUOTA_PDQ_ACCT | XFS_QUOTA_PDQ_ENFD;
+					cmd_off = QCMD(Q_XQUOTAOFF, XFS_PROJ_QUOTA);
+					cmd_rm = QCMD(Q_XQUOTARM, XFS_PROJ_QUOTA);
+				}
+			}
+		//  Uncomment the lines below when the testset is refactored
+		//	Unres( quotactl(cmd_off, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1 && errno != EEXIST, "Cannot disable quota." );
+		//	Fail( quotactl(cmd_rm, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1, "Cannot remove quotas." );
 			
 		</Code>
 	</Test>
