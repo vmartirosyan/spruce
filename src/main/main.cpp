@@ -640,12 +640,17 @@ int main(int argc, char ** argv)
 						}
 						
 					}
-					
-					
+						
+					// if leak checker option is specified, then perform leak cheak
+					if(lcItem.getStatus() != "")					
+					{
+							moduleLog.addItem(lcItem);
+					}
+					//closing xml tags
+					xmlSpruceLog.closeTags();
+					//if we need htmls, then generating them
 					if ( ! ((configValues.find("genhtml") != configValues.end()) && (configValues["genhtml"] == "false")))
-					{					
-						moduleLog.addItem(lcItem);
-						xmlSpruceLog.closeTags();
+					{	
 						UnixCommand xslt("xsltproc");
 						vector<string> xslt_args;
 						
