@@ -245,7 +245,7 @@
 			
 			Unres ( ioctl(FDs[0], XFS_IOC_FSGETXATTRA, &old_attr) == -1, "Cannot get original attributes.");
 			
-			set_attr.fsx_xflags = XFS_XFLAG_NODEFRAG;
+			set_attr.fsx_xflags = old_attr.fsx_xflags | XFS_XFLAG_NODEFRAG;
 			
 			Fail ( ioctl(FDs[0], XFS_IOC_FSSETXATTR, &set_attr) == -1, "Cannot set new xattrs.");
 			
