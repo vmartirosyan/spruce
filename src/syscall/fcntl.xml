@@ -259,7 +259,7 @@
 	</Test>
 	<!-- The command F_NOTIFY is in fact deprecated. The man page says that a new approach is there
 		- the inotify interface, which should be used by new applications (since 2.6.13). -->		
-	<Test Name="FcntlFDNoteDir" FaultSimulationReady="true" Shallow="true">
+	<!--Test Name="FcntlFDNoteDir" FaultSimulationReady="true" Shallow="true">
 		<Description>F_NOTIFY: Provide notification when the directory referred to by fd is changed.</Description>
 		<Code>
 			struct sigaction sa;
@@ -386,7 +386,7 @@
 			close(fd);
 			close(dirfd);
 		</Code>
-	</Test>
+	</Test-->
 	<Test Name="FcntlFDGetSetLease" FaultSimulationReady="true">
 		<Description>F_SETLEASE  and  F_GETLEASE are used (respectively) to establish a new lease, and retrieve the current lease, on the open file description referred to by the file descriptor fd.</Description>
 		<Code>
