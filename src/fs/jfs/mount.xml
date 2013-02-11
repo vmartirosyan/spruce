@@ -1,0 +1,53 @@
+<!--Test set covers most of JFS resize.c and some of dmap.c code
+(the functions called from resize.c which weren't called before.)
+It seems the part of resize.c refering to invalid block number checks 
+isn't covered as mount options are parsed and checked in super.c-->
+<TestSet Name="mount">
+	<StartUp>
+		if ( !PartitionManager::NoMountOptionsEnabled() )
+			goto CleanUp;
+	</StartUp>
+        <Requires>sys/mount.h</Requires>
+        <Requires>sstream</Requires>
+        <Test Name="RemountResize" FaultSimulationReady="true">
+                <Description>Resize.</Description>              
+                <Code>
+						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+                        Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+                        Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+                        int res;
+                        Unres ( chdir("/") == -1, "Cannot change directory." );
+						res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+						if( res!= PS_Success )
+						{
+							if( res == PS_Fatal )
+							{
+								Error("Device too small.");
+								Return(Unresolved);
+							}						
+							Error("Partition mount or umount failed");
+							Return(Unresolved);	
+						}
+						
+                        res = mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") ;
+                        
+                        
+						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+						{
+							Error("Mount failed!");
+							Return(Fatal);
+						}
+						if( res == -1 )
+						{
+							if( PartitionManager::IsOptionEnabled("ro") )
+							{
+								Return(Success);
+							}
+							else
+							{
+								Return(Fail);
+							}
+						}
+                </Code>
+        </Test>
+</TestSet>

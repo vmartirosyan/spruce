@@ -1,0 +1,204 @@
+<!--    ioctl.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Suren Grigoryan <suren.grigoryan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="ioctl">	
+	<Requires>linux/fs.h</Requires>
+	<Requires>linux/fiemap.h</Requires>
+	<Requires>sys/ioctl.h</Requires>				
+	<Test Name="IoctlGetSetVersion" FaultSimulationReady="true">
+		<Description>Set and get version.</Description>
+		<File count="1"/>
+		<Code>
+			int old_version = 0;
+			if ( ioctl(FDs[0], FS_IOC_GETVERSION, &old_version ) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Error("Get/set verion is not supported.", Unsupported);
+				}
+				else
+				{
+					Error("Error backing up old values.", Unresolved);
+				}
+			}		
+			int set_version = 15; 
+			int get_version = 0;			
+			
+			EnableFaultSim();
+			if ( ioctl(FDs[0], FS_IOC_SETVERSION, &set_version ) == -1)
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Error("Set verion is not supported.", Unsupported);
+				}
+				else
+				{
+					Error("Error setting version.", Fail);
+				}
+			}
+			
+			Fail (ioctl(FDs[0], FS_IOC_GETVERSION, &get_version) == -1, "Error getting newly set version.");
+			
+			Unres (ioctl(FDs[0], FS_IOC_SETVERSION, &old_version) == -1, "Error restoring old values.");
+									
+			if(get_version != set_version)
+			{
+				Error("Set and got versions do not match", Fail);
+			}
+			
+			;
+		</Code>
+	</Test>
+<Test Name="IoctlFITRIM" FaultSimulationReady="true" Shallow="true">
+		<Requires Defined="FITRIM" />
+		<Description>Ioctl FITRIM.</Description>
+		<File count="1"/>
+		<Code>
+			struct fstrim_range arg;
+			arg.start = 0;
+			arg.len = 10;
+			EnableFaultSim();
+			if ( ioctl(FDs[0], FITRIM, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Error("FITRIM is not supported.", Unsupported);
+				}
+				else
+				{
+					Error("FITRIM operation failed.", Fail);
+				}
+			}			
+		</Code>		
+	</Test>
+	<Test Name="IoctlFIEMAP" FaultSimulationReady="true" Shallow="true">
+		<Description>Ioctl FIEMAP.</Description>
+		<File count="1"/>
+		<Code>
+			struct fiemap arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.fm_length = 1;
+			EnableFaultSim();
+			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Error("FIEMAP is not supported by Btrfs.", Unsupported);
+				}
+				else
+				{
+					Error("FIEMAP operation failed.", Fail);
+				}
+			}			
+		</Code>
+	</Test>
+	<Test Name="IoctlFIEMAPWithXattrFlag" FaultSimulationReady="true" Shallow="true">
+		<Description>Ioctl FIEMAP test with FIEMAP_FLAG_XATTR flag set.</Description>
+		<File count="1"/>
+		<Code>
+			struct fiemap arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.fm_length = 1;
+			arg.fm_flags = FIEMAP_FLAG_XATTR;
+			EnableFaultSim();
+			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Error("FIEMAP is not supported by Btrfs.", Unsupported);
+				}
+				else
+				{
+					Error("FIEMAP operation with FIEMAP_FLAG_XATTR flag failed.", Fail);
+				}
+			}			
+		</Code>
+	</Test>
+	<Test Name="IoctlFIBMAP" FaultSimulationReady="true" Shallow="true">
+		<Description>Ioctl FIBMAP.</Description>
+		<File count="1"/>
+		<Code>
+			if ( ! strcmp(FileSystem, "btrfs") )
+				Unsupp("FIBMAP not supported in btrfs.");
+			int Block = 1;
+			EnableFaultSim();
+			Fail( ioctl(FDs[0], FIBMAP, &Block) == -1, "FIBMAP operation failed." );
+		</Code>
+	</Test>
+	
+	<Test Name="IoctlFIFREEZE" FaultSimulationReady="true">
+		<Description>Ioctl FIFREEZE and FITHAW.</Description>
+		<File count="1"/>
+		<Code>
+			EnableFaultSim();
+			if(PartitionManager::IsOptionEnabled("nointegrity"))
+			{
+				Return(Skipped);
+			}
+			if ( ioctl(FDs[0], FIFREEZE, 0) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Error("FIFREEZE is not supported.", Unsupported);
+				}
+				else
+				{
+					Error("FIFREEZE operation failed.", Fail);
+				}
+			}
+			if ( ioctl(FDs[0], FITHAW, 0) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL)
+				{
+					Error("FITHAW is not supported.", Unsupported);
+				}
+				else
+				{
+					Error("FITHAW operation failed.", Fail);
+				}
+			}
+			;
+		</Code>
+	</Test>
+	<Test Name="IoctlBadFile">
+		<Description>Not a valid descriptor.</Description>
+		<Code>
+			ErrorTest(ioctl(-1, 0, NULL), -1, EBADF);
+		</Code>
+	</Test>
+	<!-- There is no operation supported by all the filesystems to be able to check the EFAULT case -->
+	<!--Test Name="IoctlFault">
+		<Description>argp references an inaccessible memory area.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(ioctl(FDs[0], FS_IOC_GETVERSION, -1), -1, EFAULT);
+		</Code>
+	</Test-->
+	<Test Name="IoctlNoTTY">
+		<Description>File descriptor is not associated with a character special device.</Description>
+		<Code>
+			ErrorTest(ioctl(0, FS_IOC_GETVERSION, NULL), -1, EINVAL);
+		</Code>
+	</Test>
+</TestSet>
