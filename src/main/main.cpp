@@ -108,8 +108,8 @@ int main(int argc, char ** argv)
 		
 		
 		// Log files of the modules
-		//vector<string> XMLFilesToProcess;
-		vector<string> MountOptions;
+		//vector<string> XMLFilesToProcess;		
+		vector<pair<string, string> > MountOptions;
 		
 		//Prepare the allowed modules list
 		ModulesAvailable.push_back("syscall");
@@ -503,7 +503,8 @@ int main(int argc, char ** argv)
 				PartitionStatus PS = PS_Done;
 				do
 				{
-					MountOptions.push_back(pm.GetCurrentOptions());
+					// Get the options both escaped and clear forms
+					MountOptions.push_back(pair<string,string>(pm.GetCurrentOptions(), pm.GetCurrentOptions(false)));
 					
 					cerr << "Current options:  " << pm.GetCurrentOptions(false) << endl;
 				
@@ -727,10 +728,24 @@ int main(int argc, char ** argv)
 			fs_xml << "\t<Start>" + strFSStartTime + "</Start>\n";
 			fs_xml << "\t<Duration>" + str.str() + "</Duration>\n";
 			fs_xml << "\t<Rev>" HG_REV "</Rev>\n";
-			fs_xml << "\t<MountOptions>\n";
+			fs_xml << "\t<Options>\n";
 			for ( unsigned int i = 0; i < MountOptions.size(); ++i )
-				fs_xml << "\t\t<Option>" + MountOptions[i] + "</Option>\n";
-			fs_xml << "\t</MountOptions>";
+			{
+				cerr << "Options: " << MountOptions[i].first << "\t" << MountOptions[i].second << endl;
+				string option = MountOptions[i].second;
+				string mkfs_opt = "";
+				string mount_opt = "";
+				if ( option.find(":") != string::npos )
+				{
+					mkfs_opt = option.substr(0, option.find(":"));
+					mount_opt = option.substr( option.find(":") + 1, option.length() - option.find(":") );
+				}
+				else
+					mount_opt = option;
+				fs_xml << "\t\t<Option Mkfs=\"" + mkfs_opt + "\" Mount=\"" + mount_opt + 
+					"\" Raw=\"" + MountOptions[i].first + "\"/>\n";
+			}
+			fs_xml << "\t</Options>";
 			
 			fs_xml << "\t<Modules>\n";
 			for ( unsigned int i = 0; i < Modules.size(); ++i )
