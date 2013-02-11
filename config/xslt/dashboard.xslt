@@ -7,7 +7,7 @@
     indent="yes"
     encoding="utf-8" />
     
-<xsl:key name="DistinctMountOptions" match="/SpruceDashboard/MountOptions/Option" use="." />
+<xsl:key name="DistinctOptions" match="/SpruceDashboard/Options/Option" use="@Raw" />
 
 <xsl:template match="/SpruceDashboard">
 <html>
@@ -47,21 +47,25 @@
 		<h2 style="text-align:center">Revision: <xsl:value-of select="Rev" /></h2>
 		<table border="1" cellspacing="0" align="center">
 			<tr>
-				<th>MountOptions</th>
+				<th>Mkfs Options</th>
+				<th>Mount Options</th>
 				<xsl:for-each select="Modules/Module">
 					<th><xsl:value-of select="."/></th>
 				</xsl:for-each>
 			</tr>
-			<xsl:for-each select="//MountOptions/Option[generate-id()=generate-id(key('DistinctMountOptions',.)[1])]">
-				<xsl:variable name="MountOptions" select="." />
+			<xsl:for-each select="//Options/Option[generate-id()=generate-id(key('DistinctOptions',@Raw)[1])]">
+				<xsl:variable name="Options" select="@Raw" />
 				<tr>
 					<td>
-						<xsl:value-of select="."/>
+						<xsl:value-of select="@Mkfs"/>
+					</td>
+					<td>
+						<xsl:value-of select="@Mount"/>
 					</td>
 					<xsl:for-each select="//Modules/Module">
 						<td>
-							<xsl:variable name="LogFile"><xsl:value-of select="$LogFolder"/>/<xsl:value-of select="/SpruceDashboard/@FS"/>_<xsl:value-of select="."/>_<xsl:value-of select="$MountOptions"/>_log.xml</xsl:variable>
-							<xsl:variable name="LogFileHtml"><xsl:value-of select="/SpruceDashboard/@FS"/>_<xsl:value-of select="."/>_<xsl:value-of select="$MountOptions"/>_log.html</xsl:variable>
+							<xsl:variable name="LogFile"><xsl:value-of select="$LogFolder"/>/<xsl:value-of select="/SpruceDashboard/@FS"/>_<xsl:value-of select="."/>_<xsl:value-of select="$Options"/>_log.xml</xsl:variable>							
+							<xsl:variable name="LogFileHtml"><xsl:value-of select="/SpruceDashboard/@FS"/>_<xsl:value-of select="."/>_<xsl:value-of select="$Options"/>_log.html</xsl:variable>
 							<xsl:choose>
 								<xsl:when test="document($LogFile)">
 									<a>
