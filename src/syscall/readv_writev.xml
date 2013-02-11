@@ -188,7 +188,27 @@
 			ErrorTest(writev(FDs[0], WriteVec, -1), -1, EINVAL);
 		</Code>
 	</Test>
-	<Test Name="ReadvInval3">
+	
+	<!--
+	Theese tests are removed, as they have ambiguous behaviour according to their documentation:
+	Linux Notes
+       POSIX.1-2001 allows an implementation to place a limit on the number of
+       items  that  can be passed in iov.  An implementation can advertise its
+       limit by defining IOV_MAX in <limits.h> or at run time via  the  return
+       value  from  sysconf(_SC_IOV_MAX).   On  Linux, the limit advertised by
+       these mechanisms is 1024, which is the true kernel limit.  However, the
+       glibc  wrapper  functions  do  some  extra work if they detect that the
+       underlying kernel system call failed because this limit  was  exceeded.
+       In  the case of readv() the wrapper function allocates a temporary buf‐
+       fer large enough for all of the items specified  by  iov,  passes  that
+       buffer  in  a call to read(2), copies data from the buffer to the loca‐
+       tions specified by the iov_base fields of the elements of iov, and then
+       frees the buffer.  The wrapper function for writev() performs the anal‐
+       ogous task using a temporary buffer and a call to write(2).
+       
+       So it is useless to check the functionality of readv andwritev, in case when buf size is greater than IOV_MAX
+	-->
+	<!--Test Name="ReadvInval3">
 		<Description>readv: The  vector  count  iovcnt is greater than the permitted maximum.</Description>
 		<File count="1"/>
 		<Code>
@@ -211,6 +231,6 @@
 			const struct iovec WriteVec[BufCount] = { {WriteBuf1, 10}, {WriteBuf2, 10}};
 			ErrorTest(writev(FDs[0], WriteVec, IOV_MAX + 1), -1, EINVAL);
 		</Code>
-	</Test>
+	</Test-->
 	
 </TestSet>
