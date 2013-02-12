@@ -596,6 +596,7 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 		args.push_back("-f");
 	if ( fs == "ext4" )
 		args.push_back("-F");
+
 	// Block and partition size
 	// Reserve empty space on device for later resize tests.
 	stringstream s1;
@@ -603,6 +604,18 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 	string strBlockSize;			
 	s1 << BlockSize;
 	strBlockSize = s1.str();
+			
+	// Overwrite default block size, if it is specified in mkfs_opts
+	vector<string> tmp = SplitString(mkfs_opts, ' ', vector<string>());
+	unsigned int blkSzInd;
+	for ( blkSzInd = 0; blkSzInd < tmp.size(); ++blkSzInd )
+		if(tmp[blkSzInd] == "-b")
+		{
+			BlockSize = atoi(tmp[blkSzInd+1].c_str());
+			strBlockSize = tmp[blkSzInd+1];
+			break;
+		}
+
 	
 	stringstream s2;
 	string PartitionSize;
@@ -642,10 +655,8 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 		args.push_back("-b");
 		args.push_back(SizeInBlocks);
 	}
-	
-	// Add the additional options
-	vector<string> tmp = SplitString(mkfs_opts, ' ', vector<string>());
-	for ( unsigned int i = 0; i < tmp.size(); ++i )
+
+	for ( unsigned int i = 0; i < tmp.size() && i != blkSzInd && i != blkSzInd + 1 ; ++i )
 		args.push_back(tmp[i]);
 	
 	ProcessResult * res;
