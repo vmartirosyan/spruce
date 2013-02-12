@@ -230,5 +230,21 @@ private:
 		static std::map<string, unsigned long> MountFlagMap;
 };
 
+class MkfsCommand : public UnixCommand
+{
+public:	
+	MkfsCommand(string name, ProcessMode mode = ProcessForeground) : UnixCommand(name, mode) {}
+	
+	virtual ProcessResult * Execute(vector<string> args = vector<string>())
+	{		
+		SetBlockSignalMask(sigmask(SIGINT));
+			
+		ProcessResult * res = ( ( _mode == ProcessBackground ) ? BackgroundProcess::Execute(args) : Process::Execute(args) );
+		
+		return res;
+	}
+	~MkfsCommand(){}
+};
+
 #endif /* PARTITIONMANAGER_HPP */
 

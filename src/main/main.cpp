@@ -503,6 +503,7 @@ int main(int argc, char ** argv)
 				PartitionStatus PS = PS_Done;
 				do
 				{
+					EXIT_IF_SIGNALED;
 					// Get the options both escaped and clear forms
 					MountOptions.push_back(pair<string,string>(pm.GetCurrentOptions(), pm.GetCurrentOptions(false)));
 					
@@ -608,8 +609,6 @@ int main(int argc, char ** argv)
 					time_t ItemStartTime = time(0);
 					ProcessResult * result = command->Execute(module_args);
 					delete command;
-					
-					EXIT_IF_SIGNALED;
 					
 					size_t ItemDuration = time(0) - ItemStartTime;
 					stringstream str;
@@ -759,7 +758,7 @@ int main(int argc, char ** argv)
 			if ( !( (configValues.find("genhtml") != configValues.end() ) && ( configValues["genhtml"] == "false") ) )
 			{
 				GenerateHtml(logfolder, *fs);
-				if( browser != "" )
+				if( ( browser != "" ) && !terminate_process)
 				{
 					OpenDashboard(browser, logfolder, *fs);
 				}

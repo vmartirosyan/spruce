@@ -589,7 +589,7 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 	if ( DeviceSize == 0 )
 		return false;
 	
-	UnixCommand * mkfs = new UnixCommand("mkfs." + fs);
+	MkfsCommand * mkfs = new MkfsCommand("mkfs." + fs);
 	vector<string> args;		
 	args.push_back(partition);		
 	if ( fs == "xfs" || fs == "jfs" ) //Force if necessary

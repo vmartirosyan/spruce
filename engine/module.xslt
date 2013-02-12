@@ -102,7 +102,7 @@ map&lt;string, int> FileSystemTypesMap;
 		
 void ModuleSignalHandler(int signum)
 {
-	//printf("SIGNAL RECEIVED = %d. PID = %d, PPID = %d\n\r", signum, getpid(), getppid());
+	Logger::LogWarn("Received Ctrl+C signal!");
 	terminate_process = true;
 }
 int main(int argc, char ** argv)
@@ -114,7 +114,7 @@ int main(int argc, char ** argv)
 		cerr &lt;&lt; "Cannot set signal handler. " &lt;&lt;strerror(errno);
 		return EXIT_FAILURE;
 	}
-	
+
 	if (argc &lt; 2)
 	{
 		cerr &lt;&lt; "No output file specified. Usage: " &lt;&lt; argv[0] &lt;&lt; " &lt;output_file>" &lt;&lt; endl;
@@ -142,60 +142,63 @@ int main(int argc, char ** argv)
 			bool SkipTestset;
 		<xsl:for-each select="TestSet">
 			if(terminate_process)
-				return EXIT_FAILURE;
-			<xsl:variable name="TestClassName"><xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />Tests</xsl:variable>
-			<xsl:value-of select="$TestClassName"/><xsl:text> </xsl:text><xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests;
-			SkipTestset = false;
-			// Check if there are certain tests to run or be excluded
-			if ( argc > 2 )
-			{				
-				if ( !strcmp(argv[2], "-run") )
-				{
-					SkipTestset = true;
-					// Set the tests to run
-					for ( int i = 3; i &lt; argc; ++i )
-					{						
-						if ( strstr(argv[i], "<xsl:value-of select="@Name" />") != NULL )
-						{
-							SkipTestset = false;
-							string test_name = argv[i] + strlen("<xsl:value-of select="@Name" />") + 1;							
-							<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.RunTest(test_name);
-						}
-					}					
-				}
-				if ( !strcmp(argv[2], "-exclude") )
-				{
-					SkipTestset = false;
-					// Set the tests to run
-					for ( int i = 3; i &lt; argc; ++i )
+				goto terminate_exit;
+			{
+				<xsl:variable name="TestClassName"><xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />Tests</xsl:variable>
+				<xsl:value-of select="$TestClassName"/><xsl:text> </xsl:text><xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests;
+				SkipTestset = false;
+				// Check if there are certain tests to run or be excluded
+				if ( argc > 2 )
+				{				
+					if ( !strcmp(argv[2], "-run") )
 					{
-						string argvi = argv[i];
-						string TestSetNameToExclude = argvi.substr(0, argvi.find('.'));
-						
-						if ( TestSetNameToExclude != "<xsl:value-of select="@Name" />" )
-							continue;
-						string test_name = argv[i] + strlen("<xsl:value-of select="@Name" />") + 1;
-						<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.ExcludeTest(test_name);						
+						SkipTestset = true;
+						// Set the tests to run
+						for ( int i = 3; i &lt; argc; ++i )
+						{						
+							if ( strstr(argv[i], "<xsl:value-of select="@Name" />") != NULL )
+							{
+								SkipTestset = false;
+								string test_name = argv[i] + strlen("<xsl:value-of select="@Name" />") + 1;							
+								<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.RunTest(test_name);
+							}
+						}					
+					}
+					if ( !strcmp(argv[2], "-exclude") )
+					{
+						SkipTestset = false;
+						// Set the tests to run
+						for ( int i = 3; i &lt; argc; ++i )
+						{
+							string argvi = argv[i];
+							string TestSetNameToExclude = argvi.substr(0, argvi.find('.'));
+							
+							if ( TestSetNameToExclude != "<xsl:value-of select="@Name" />" )
+								continue;
+							string test_name = argv[i] + strlen("<xsl:value-of select="@Name" />") + 1;
+							<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.ExcludeTest(test_name);						
+						}
 					}
 				}
-			}
-			if ( !SkipTestset )
-			{
-			<xsl:choose>
-				<xsl:when test="@RunTests">
-					Results.Merge(<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.Run<xsl:value-of select="@RunTests"/>Tests());
-				</xsl:when>
-				<xsl:otherwise>
-					Results.Merge(<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.RunNormalTests());
-				</xsl:otherwise>
-			</xsl:choose>
+				if ( !SkipTestset )
+				{
+				<xsl:choose>
+					<xsl:when test="@RunTests">
+						Results.Merge(<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.Run<xsl:value-of select="@RunTests"/>Tests());
+					</xsl:when>
+					<xsl:otherwise>
+						Results.Merge(<xsl:value-of select="$ModuleName" /><xsl:value-of select="@Name" />_tests.RunNormalTests());
+					</xsl:otherwise>
+				</xsl:choose>
+				}
 			}
 		</xsl:for-each>
-			
+					
 			//ofstream of(argv[1], ios_base::app);
 			//of &lt;&lt; "&lt;Module Name=\"" &lt;&lt; argv[0] &lt;&lt; "\">\n" &lt;&lt; Results.ToXML() &lt;&lt; "&lt;/Module>";
 			//of.close();
 			
+			terminate_exit:	
 			vector&lt;TestResult*> items = Results.GetResults();
 			vector&lt;TestResult*>::iterator i;
 			for( i = items.begin(); i != items.end(); i++)
