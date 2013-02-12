@@ -52,7 +52,6 @@
 			{
 				Error("fdatasync updated last modification time of the file", Fail);
 			}
-			;
 		</Code>
 	</Test>
 	<Test Name="FsyncDir" FaultSimulationReady="true" Shallow="true">

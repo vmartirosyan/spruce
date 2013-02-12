@@ -39,10 +39,17 @@
 			time_t time_after = time(NULL);
 			
 			Unres( stat (FilePaths[0].c_str(), &stat_buf) == -1, "stat failed.");
+			if ( PartitionManager::IsOptionEnabled("sync") || PartitionManager::IsOptionEnabled("dirsync"))
+			{
+				Fail ( stat_buf.st_mtime > time_after, 
+					"sync hasn't correctly updated last modification time of the file.");
+			}
+			else
+			{
+				Fail (stat_buf.st_mtime < time_before || stat_buf.st_mtime > time_after, 
+					"sync hasn't correctly updated last modification time of the file.");
+			}
 			
-			Fail (stat_buf.st_mtime < time_before || stat_buf.st_mtime > time_after, "sync hasn't updated last modification time of the file.");
-			
-			;
 		</Code>
 	</Test>	
 </TestSet>

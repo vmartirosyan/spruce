@@ -731,7 +731,6 @@ int main(int argc, char ** argv)
 			fs_xml << "\t<Options>\n";
 			for ( unsigned int i = 0; i < MountOptions.size(); ++i )
 			{
-				cerr << "Options: " << MountOptions[i].first << "\t" << MountOptions[i].second << endl;
 				string option = MountOptions[i].second;
 				string mkfs_opt = "";
 				string mount_opt = "";
