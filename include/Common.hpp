@@ -78,7 +78,7 @@ struct FSimInfo
 	string Expression;
 };
 
-#define EXIT_IF_SIGNALED if(terminate_process) { Logger::LogFatal("Exiting from Spruce"); return FAULT; }
+#define EXIT_IF_SIGNALED if(terminate_process) { Logger::LogFatal("Exiting from Spruce..."); break; }
 
 //#define MY_WEXITSTATUS(stat) (((*(static_cast<int *>( &(stat)))) >> 8) & 0xff)
 
