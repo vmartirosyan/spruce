@@ -119,13 +119,6 @@
 			ErrorTest(readv(DirDs[0], ReadVec, BufCount), -1, EISDIR);
 		</Code>
 	</Test>
-	<Test Name="WritevFault">
-		<Description>writev: argument is outside your accessible address space.</Description>
-		<File count="1"/>
-		<Code>
-			ErrorTest(writev(FDs[0], reinterpret_cast<const struct iovec*>(-1), 1), -1, EFAULT);
-		</Code>
-	</Test>	
 	<Test Name="ReadvInval2">
 		<Description>readv: The  vector  count  iovcnt is less than zero.</Description>
 		<File count="1"/>
