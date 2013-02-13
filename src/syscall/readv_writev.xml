@@ -58,29 +58,6 @@
 			;
 		</Code>
 	</Test>
-	<Test Name="ReadvBadFile1">
-		<Description>readv: Bad file descriptor.</Description>
-		<Code>
-			const int BufCount = 2;
-			char ReadBuf1[10];
-			char ReadBuf2[10];
-			
-			struct iovec ReadVec[BufCount] = { {ReadBuf1, 10}, {ReadBuf2, 10}};
-			ErrorTest(readv(-1, ReadVec, BufCount), -1, EBADF);
-		</Code>
-	</Test>
-	<Test Name="WritevBadFile1">
-		<Description>writev: Bad file descriptor.</Description>
-		<Code>
-			const int BufCount = 2;
-			const string WriteBuf1 = "012345";
-			const string WriteBuf2 = "abcd";
-			
-			const struct iovec WriteVec[BufCount] = { {static_cast<void*>(const_cast<char*>(WriteBuf1.c_str())), WriteBuf1.size()}, {static_cast<void*>(const_cast<char*>(WriteBuf2.c_str())), WriteBuf2.size()}};
-			
-			ErrorTest(writev(-1, WriteVec, BufCount), -1, EBADF);
-		</Code>
-	</Test>
 	<Test Name="ReadvBadFile2">
 		<Description>readv: File is not open for reading.</Description>
 		<File count="1" flags="O_CREAT | O_WRONLY"/>
@@ -142,25 +119,11 @@
 			ErrorTest(readv(DirDs[0], ReadVec, BufCount), -1, EISDIR);
 		</Code>
 	</Test>
-	<Test Name="ReadvErrAgain">
-		<Description>readv: The  file descriptor fd refers to a file other than a socket and has been marked nonblocking (O_NONBLOCK),  and  the  readv  would block.</Description>
-		<Code>
-			const int BufCount = 2;
-			char ReadBuf1[10];
-			char ReadBuf2[10];
-			
-			struct iovec ReadVec[BufCount] = { {ReadBuf1, 10}, {ReadBuf2, 10}};
-			
-			int fds[2];
-			Unres(pipe2(fds, O_NONBLOCK) == -1, "Cannot create pipe.");
-			
-			ErrorTest(readv(fds[0], ReadVec, BufCount), -1, EAGAIN);
-		</Code>
-	</Test>
 	<Test Name="WritevFault">
 		<Description>writev: argument is outside your accessible address space.</Description>
+		<File count="1"/>
 		<Code>
-			ErrorTest(write(1, reinterpret_cast<const struct iovec*>(-1), 1), -1, EFAULT);
+			ErrorTest(writev(FDs[0], reinterpret_cast<const struct iovec*>(-1), 1), -1, EFAULT);
 		</Code>
 	</Test>	
 	<Test Name="ReadvInval2">
