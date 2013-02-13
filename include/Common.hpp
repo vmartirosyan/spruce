@@ -157,7 +157,8 @@ struct FSimInfo
 {\
 	if ( PartitionManager::IsOptionEnabled("ro") )\
 		Unsupp("Read-only file system.");\
-	const char * Link = (FilePaths[0] + "_link").c_str();\
+	string sLink = FilePaths[0] + "_link";\
+	const char * Link = sLink.c_str();\
 	Unres( symlink(FilePaths[0].c_str(), Link) == -1, "Cannot create symlink on old file.");\
 	Unres( unlink(FilePaths[0].c_str()) == -1, "Cannot remove old_file. ");\
 	Unres( symlink(Link, FilePaths[0].c_str()) == -1, "Cannot create symlink on new_file.");\
@@ -199,7 +200,8 @@ struct FSimInfo
 
 #define ENotDirTest(func_call, error_val)\
 {\
-	const char * path = (FilePaths[0] + "/some_file").c_str();\
+	string path1 = (FilePaths[0] + "/some_file");\
+	const char * path = path1.c_str();\
 	ErrorTest(func_call, error_val, ENOTDIR);\
 }\
 

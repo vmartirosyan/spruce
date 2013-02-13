@@ -51,47 +51,41 @@
 	<Test Name="OpenAtNotDir1">
 		<Description>A component of path is not a directory.</Description>
 		<File count="1"/>
-		<Code>
-			Directory d(".");
-			ENotDirTest(openat( d.GetDirectoryDescriptor(), path, O_RDONLY ), -1);
+		<Code>			
+			ENotDirTest(openat( AT_FDCWD, path, O_RDONLY ), -1);
 		</Code>
 	</Test>
 	<Test Name="OpenAtFault">
 		<Description>Path points outside the user address space.</Description>
-		<Code>
-			Directory d(".");
-			ErrorTest(openat( d.GetDirectoryDescriptor(), reinterpret_cast<char*>(-1), O_RDONLY ), -1, EFAULT);
+		<Code>			
+			ErrorTest(openat( AT_FDCWD, reinterpret_cast<char*>(-1), O_RDONLY ), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="OpenAtLoop">
 		<Description>Too  many  links  encountered during pathname resolution.</Description>
 		<File count="1"/>
-		<Code>
-			Directory d(".");
-			ELoopTest(openat( d.GetDirectoryDescriptor(), FilePaths[0].c_str(), O_RDONLY ), -1);
+		<Code>			
+			ELoopTest(openat( AT_FDCWD, FilePaths[0].c_str(), O_RDONLY ), -1);
 		</Code>
 	</Test>
 	<Test Name="OpenAtNoAccess">
 		<Description>Access is denied.</Description>
 		<File count="1"/>
 		<Code>
-			Directory d(".");
-			ENoAccessTest(openat( d.GetDirectoryDescriptor(), FilePaths[0].c_str(), O_CREAT | O_RDONLY, 0777 ), -1);
+			ENoAccessTest(openat( AT_FDCWD, FilePaths[0].c_str(), O_CREAT | O_RDONLY, 0777 ), -1);
 		</Code>
 	</Test>
 	<Test Name="OpenAtNoEnt">
 		<Description>Pathname has a nonexistent component.</Description>
-		<Code>
-			Directory d(".");
-			ErrorTest(openat( d.GetDirectoryDescriptor(), "non_existing_path", O_RDONLY ), -1, ENOENT);
+		<Code>			
+			ErrorTest(openat( AT_FDCWD, "non_existing_path", O_RDONLY ), -1, ENOENT);
 		</Code>
 	</Test>
 	<Test Name="OpenAtExist">
 		<Description>Pathname already exists.</Description>
 		<File count="1"/>
 		<Code>
-			Directory d(".");
-			ErrorTest(openat( d.GetDirectoryDescriptor(), FilePaths[0].c_str(), O_CREAT | O_EXCL, 0777 ), -1, EEXIST);
+			ErrorTest(openat( AT_FDCWD, FilePaths[0].c_str(), O_CREAT | O_EXCL, 0777 ), -1, EEXIST);
 		</Code>
 	</Test>
 	<Test Name="OpenAtIsDir">
@@ -103,8 +97,7 @@
 	<Test Name="OpenAtMaxFiles">
 		<Description>The process already has the maximum number of files open.</Description>
 		<Code>
-			Directory d(".");
-			EMaxFilesOpenTest(openat( d.GetDirectoryDescriptor(), path, O_RDONLY ), -1);
+			EMaxFilesOpenTest(openat( AT_FDCWD, path, O_RDONLY ), -1);
 		</Code>
 	</Test>
 	<Test Name="OpenAtENXIO1">
@@ -113,9 +106,8 @@
 			if ( PartitionManager::IsOptionEnabled("ro") )
 				Unsupp("Read-only file system.");
 			const char * FileName = "OpenAtNoDev_FIFO";
-			Unres( mkfifo(FileName, 0666) == -1, "Cannot create FIFO.");
-			Directory d(".");
-			ErrorTest(openat( d.GetDirectoryDescriptor(), FileName, O_WRONLY | O_NONBLOCK ), -1, ENXIO);
+			Unres( mkfifo(FileName, 0666) == -1, "Cannot create FIFO.");			
+			ErrorTest(openat( AT_FDCWD, FileName, O_WRONLY | O_NONBLOCK ), -1, ENXIO);
 		</Code>
 	</Test>
 	<Test Name="OpenAtENXIO2">
@@ -131,8 +123,8 @@
 			{
 				const char * FileName = "OpenAtNoDev_Nod";
 				Unres( mknod(FileName, S_IFCHR, 0666) == -1, "Cannot create device file.");
-				Directory d(".");
-				ErrorTest(openat( d.GetDirectoryDescriptor(), FileName, O_WRONLY ), -1, ENXIO);
+				
+				ErrorTest(openat( AT_FDCWD, FileName, O_WRONLY ), -1, ENXIO);
 			}
 		</Code>
 	</Test>

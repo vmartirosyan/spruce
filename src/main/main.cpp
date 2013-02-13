@@ -507,10 +507,8 @@ int main(int argc, char ** argv)
 					// Get the options both escaped and clear forms
 					MountOptions.push_back(pair<string,string>(pm.GetCurrentOptions(), pm.GetCurrentOptions(false)));
 					
-					cerr << "Current options:  " << pm.GetCurrentOptions(false) << endl;
-				
-					cerr<<"Preparing partition..."<<endl;
 					PS = pm.PreparePartition();
+					cerr << "Current options:  " << pm.GetCurrentOptions(false) << endl;
 					
 					if ( PS == PS_Fatal  )
 					{
