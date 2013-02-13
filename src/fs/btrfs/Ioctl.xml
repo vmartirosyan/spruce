@@ -629,6 +629,9 @@
 		<File count="1" />
 		<Code>
 			btrfs_ioctl_balance_args arg;
+			arg = (const struct btrfs_ioctl_balance_args){0};
+            arg.flags = 0;     
+            arg.state |= BTRFS_BALANCE_STATE_RUNNING;
 			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE_V2, &arg) == -1, "V2 balance failed.");
 		</Code>
 		<Footer>
