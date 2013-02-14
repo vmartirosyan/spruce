@@ -907,7 +907,8 @@ sub process_test_point_result {
         return;
     }
     elsif (($lowercase_severity eq "unused") || ($lowercase_severity eq "untested") ||
-        ($lowercase_severity eq "unsupported") || ($lowercase_severity eq "unimplemented")) {
+        ($lowercase_severity eq "unsupported") || ($lowercase_severity eq "unimplemented") ||
+        ($lowercase_severity eq "skipped")) {
         $journal->{stats_tests_skipped} += 1;
         return;
     }
@@ -1350,6 +1351,7 @@ sub spruce_report_parse_error($$)
 
 # Map of some Spruce test statuses into severity strings.
 my %spruce_status_severity_map = (
+    "Fatal"    => "Unresolved",
     "Shallow"  => "Passed",
     "Signaled" => "Unresolved",
     "Success"  => "Passed",
