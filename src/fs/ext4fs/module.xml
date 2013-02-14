@@ -1,0 +1,4 @@
+<Module Name="ext4">	
+	<TestSet Name="Ioctl" />
+	<TestSet Name="truncate" />
+</Module>
