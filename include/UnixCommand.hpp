@@ -42,10 +42,7 @@ public:
 	}
 	
 	virtual ProcessResult * Execute(vector<string> args = vector<string>())
-	{		
-		if(_name.find("mkfs.") != string::npos) // For mkfs command we block signals
-			SetBlockSignalMask(sigmask(SIGINT));
-			
+	{				
 		ProcessResult * res = ( ( _mode == ProcessBackground ) ? BackgroundProcess::Execute(args) : Process::Execute(args) );
 		
 		return res;
