@@ -59,6 +59,23 @@
 			Fail ( st.st_size != (int)buf.size(), "File size is changed.");
 		</Code>
 	</Test>
+	<Test Name="FallocateNormalAllocAndWritre" FaultSimulationReady="true">
+		<Description>fallocate() allocates the disk space and writes\reads data</Description>
+		<File count="1"/>
+		<Code>
+			const int NewSize = 32*1024; //32KiB
+			char buf[NewSize];
+			EnableFaultSim();
+			Fail( fallocate( FDs[0], 0, 0, NewSize ) == -1, "Cannot allocate space in file." );
+	
+			memset(buf, 'e', NewSize);
+			Unres(write(FDs[0], buf, NewSize) == -1, "Cannot write to file.");
+			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
+			memset(buf, 0, NewSize);
+			Unres(read(FDs[0], buf, NewSize) == -1, "Cannot read from file");	
+			Fail ( buf[NewSize / 2] != 'e', "File content error.");	
+		</Code>
+	</Test>
 	<FaultSimulation>
 		<Simulate point="kmalloc"/>
 		<Simulate point="copy_to_user" />
