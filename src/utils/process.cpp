@@ -220,38 +220,23 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 		timeout->tv_usec = 0;
 	}
 	
-	sigset_t bs;
-	sigemptyset (&bs);
-	sigaddset (&bs, SIGINT);
 	int select_res = 0;
 	string Output = "";
 	while ( true )
-	{
-		if(sigprocmask(SIG_BLOCK, &bs, 0) == -1)
-			return new ProcessResult(Fatal, "Cannot set signal block mask. ");
-			
+	{		
 		select_res = select(fds[0] + 1, &read_fds, NULL , NULL, timeout);
-		
-		if(sigprocmask(SIG_UNBLOCK, &bs, 0) == -1)
-			return new ProcessResult(Fatal, "Cannot unblock signal. ");
 		
 		if ( select_res == -1 && errno == EINTR )
 			continue;
 		
 		if ( select_res <= 0 )
 			break;
-			
-		
-		if(sigprocmask(SIG_BLOCK, &bs, 0) == -1)
-			return new ProcessResult(Fatal, "Cannot set signal block mask. ");
-			
+					
 		char buf[1000];
 		int bytes = read( fds[0], buf, 999 );
 		
-		if(sigprocmask(SIG_UNBLOCK, &bs, 0) == -1)
-			return new ProcessResult(Fatal, "Cannot unblock signal. ");
 			
-		if ( bytes == -1 && errno == EAGAIN )
+		if ( bytes == -1 && ( (errno == EAGAIN) || (errno == EINTR)) )
 			continue;
 			
 		if ( bytes <= 0 )
