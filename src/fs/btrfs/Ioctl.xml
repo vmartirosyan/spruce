@@ -317,10 +317,11 @@
 						Unres(files[i] == -1 , "Cannot open last pad file");
 					    Unres( fallocate(files[i], 0, 0, LastFileSize ) == -1, "Cannot allocate space for last pad file");
 						fsync( files[i] );
-						close( files[i] );    
+						close( files[i] );  
+						Unres (unlink(ss.str().c_str()) == -1, "Cannot remove file1.");  
 				}
             }
-            
+            delete files;
             
             File file1(FileNames[0]);
             Unres( fallocate(file1.GetFileDescriptor(), 0, 0, FreeSpace / 3) == -1, "Cannot allocate space for 1st file");
@@ -332,7 +333,6 @@
              fsync(file2.GetFileDescriptor());
             close(file2.GetFileDescriptor());
             
-            Unres (unlink(FileNames[0].c_str()) == -1, "Cannot remove file1.");
             
             
             // It is not guaranteed that the fallocate function allocates continuous space.
