@@ -30,96 +30,32 @@
 		</Code>
 	</Test>	
 	
-	<Test Name="DirectoriesNames" FaultSimulationReady="true">
-		<Description>Trying to create directories with different names</Description>
+	<Test Name="DirectoryNames" FaultSimulationReady="true">
+		<Description>Trying to create directories with different long names</Description>
 		<Code>
-		Directory dir[100] = {
-		static_cast<string>("asdsadabbbbbbbbbbbbbbbbbbbbd"),
-		static_cast<string>("bqwessdwwwsddddddbbbbbbffffffffffffffffffffffdrs"),
-		static_cast<string>("ceedqwbbnnhdddddddddddddddddddddddddddddddddddh"),
-		static_cast<string>("dasdsavvvvvvvvvvvvvvvvvvvvvvvvvvvvvdad"),
-		static_cast<string>("ebqwessdnwvddddddddddddddddddddwwwrrtttts"),
-		static_cast<string>("fceedqwbbsnngggggggggggggggggggdnnhh"),
-		static_cast<string>("gasdsadannnnnnnnnnnnnnnnnnnnnnnnnnnnnn"),
-		static_cast<string>("hqwessdwwwrcccccccccccccccccccccccrtttdtsrtyrtyrty"),
-		static_cast<string>("ieedqwbbnnccccccccccccccccccccccchhserser"),
-		static_cast<string>("jbqwessdwwxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxwrrtttts"),
-		static_cast<string>("pasadsdsadzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzbad"),
-		static_cast<string>("obqwefdssdbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbwwwrrtttts"),
-		static_cast<string>("iceedqvcwbbbfffffffffffffffffffffffebnnhh"),
-		static_cast<string>("udasdsagfeeeeeeeeeeeeeeeeeeeeeeeeeeedad"),
-		static_cast<string>("yebqwesslreeeeeeeeeeeeeeeellllllllllllllledwwwrrtttts"),
-		static_cast<string>("tfceedqwhhhhhhhhhbfffffffffffffffftrbnnhh"),
-		static_cast<string>("egasdsadlllllllllllllllllllllllllljkghfjhhhhhhhfdad"),
-		static_cast<string>("whqwessdwfdwwrrttttsrtyrtyrty"),
-		static_cast<string>("qieedqwbbndnnnnnnnnnnnnnnnnnnnnnnnnnnnfnhhserser"),
-		static_cast<string>("rjbqwessdwwfdwrrtttts"),
-		static_cast<string>("Aasdsadaswwnbbbbbbbbbbbbbbbbbbbbbbbbbbbwwdd"),
-		static_cast<string>("Abqwessderwsdssssssssasdwwrrtttts"),
-		static_cast<string>("Aceedqwdfbbnndddddddddddddddddddqqqqqqqqqqqqqqqqqqhh"),
-		static_cast<string>("Adasdsafdadsssssssssssssssssssssd"),
-		static_cast<string>("Aebqwesbsssqsqdddddddddddwewrewrwewerwedwwwrrtttts"),
-		static_cast<string>("Afceedqbewbbnnewqqqqqqqqqqqqjkllllllllllllllhh"),
-		static_cast<string>("Agasdsabdadsaaaaaaaaaaaaaauiiiiiiiiiiiiwdd"),
-		static_cast<string>("Ahqwessdwwwrrttaaaaaaaaaaaaaaaaaaabttsrtyrtyrty"),
-		static_cast<string>("Aieedqwbbnnhhsffffffffffffffffffffffffebrser"),
-		static_cast<string>("Ajbqwessdwweeeeeeeeeeeeeeeeeeewrrtbttts"),
-		static_cast<string>("asdsadaeeeeeeeeeeeeeeeeeeeeed"),
-		static_cast<string>("bqwesseeeeeeeeeeeeeeeeefffffffffffdwwwrrtttts"),
-		static_cast<string>("ceedqwddddddddddddddddddddkkkkkkkkkkkkkowwwwwwwwwwwbbnnhh"),
-		static_cast<string>("dasdsadnnnnnnnnnnnnnnnnnad"),
-		static_cast<string>("ebqwessdwbbbbbbbbbbbbbbbbbbbbbbbbbbbbbwwrrtttts"),
-		static_cast<string>("fceedqwbbnnnnnnnnnnnnnnnnnnnnnnnnnnnnnhh"),
-		static_cast<string>("gasdsabbbbbbbbbbbbbbbbbbbbbbbbbbdad"),
-		static_cast<string>("hqwessdwwfgggggggggggggggggggggggggwrrttttsrtyrtyrty"),
-		static_cast<string>("ieedqwbbrrrrrrrrrrrrrrrrrfgdferrrrrrennhhserser"),
-		static_cast<string>("jbqwessbbbbbbbbbbbbbbbbbbbbbdwwwrrtttts"),
-		static_cast<string>("Pasdsadabbbbbbbbbpoiuytrwsddsasbbbbbbbbbbbd"),
-		static_cast<string>("WEbqwessdwwwsddddddbbbbbbffffffffhsadgffffffffffffffdrs"),
-		static_cast<string>("Tceedqwbbnnhdddddddddddddddddddsghadddddddddddddddddh"),
-		static_cast<string>("TEasdsavvvvvvvvvvvvvvvvvvvvlkjhfdvvvvvvvvvdad"),
-		static_cast<string>("Kebqwessdnwvddddddddddddddddddgfdddwwwrrtttts"),
-		static_cast<string>("Tfceedqwbbsnnggggggggggggggggggfdfgdnnhh"),
-		static_cast<string>("Pgasdsadannnnnnnnnnnnnnnnnnnnnnnnntynnnnn"),
-		static_cast<string>("qhqwessdwwwrcccccccccccccccccccccccryutttdtsrtyrtyrty"),
-		static_cast<string>("Qieedqwbbnncccccccccccccccccccccccewqhhserser"),
-		static_cast<string>("QEWjbqwessdwwxxxxxxxxxxxxxxxxxxxsd_fxxxxxxxxxxxxxwrrtttts"),
-		static_cast<string>("ERpasadsdsadzzzzzzzzzzzzzzzzzzlk_zzzzzzzzzzzzzzzzzzzzzzzzzzbad"),
-		static_cast<string>("FoDSbqwefdssdbbbbbbbbbbbbbbbghbbbbbbbbbbbbbbbbbbbwwwrrtttts"),
-		static_cast<string>("Giceedqvcwbbbffffffffffffdfgffdffffffffffebnnhh"),
-		static_cast<string>("Gudasdsagfeeeeeeeeeeeeeeeeeeeeeeeeeeedad"),
-		static_cast<string>("Fyebqwesslreeeeeeeeeeeeeeeellczllllllllllllledwwwrrtttts"),
-		static_cast<string>("Btfceedqwhhhhhhhhhbffffffffasdffffffffftrbnnhh"),
-		static_cast<string>("Vegasdsadllllllllllllllllwqelllllllllljkghfjhhhhhhhfdad"),
-		static_cast<string>("KLNwhqwessdwfdwwrrttttsrtuyyrtyrty"),
-		static_cast<string>("Pqieedqwbbndnnnnnnnnnnnnoinnnnnnnnnnnnnnnfnhhserser"),
-		static_cast<string>("ZXCjbqwessdwwfdwrrttttoius"),
-		static_cast<string>("QWQasdsadaswwnbbbbbbbbbbbbbbbbpuibbbbbbbbbbbwwdd"),
-		static_cast<string>("Abqwessderwsdssssssssasdwwrrdsatttts"),
-		static_cast<string>("UIOAceedqwdfbbnndddddddddddsaddddddddqqqqqqqqqqqqqqqqqqhh"),
-		static_cast<string>("AOIUdasdsafdadssssssssssssfdsssssssssd"),
-		static_cast<string>("HJKAebqwesbsssqsqddddddddddddwewrewrwewerwedwwwrrtttts"),
-		static_cast<string>("POIAfceedqbewbbnnewqqqqqqqerqqqqqjkllllllllllllllhh"),
-		static_cast<string>("hjg123_Agasdsabdadsaaaaaaaeaaaaaaauiiiiiiiiiiiiwdd"),
-		static_cast<string>("_Ahqwessdwwwrrttaaaaaaaaaaaaaaaaaaabttsrtyrtyrty"),
-		static_cast<string>("asdAieedqwbbnnhhsfffffffffefffffffffffffffebrser"),
-		static_cast<string>("_xxsssAjbqwessdwweeeeeeeeeeeeeeeeeeeewrrtbttts"),
-		static_cast<string>("XXCsZdadasdsadaeeeeeeeeeeeeeeeeeeeeeed"),
-		static_cast<string>("ZIXHSDbqwesseeeeeeeeeeeeeeeeeefffffffffffdwwwrrtttts"),
-		static_cast<string>("SFDceedqwdddddddddddddddddderddkkkkkkkkkkkkkowwwwwwwwwwwbbnnhh"),
-		static_cast<string>("POdasdsadnnnnnnnnnnnnnnnnnarwed"),
-		static_cast<string>("ERTebqwessdwbbbbbbbbbbbbbbbbbbwbbbbbbbbbbbwwrrtttts"),
-		static_cast<string>("SDLKfceedqwbbnnnnnnnnnnnnnnnrewnnnnnnnnnnnnnnhh"),
-		static_cast<string>("FNDgasdsabbbbbbbbbbbbbbbbbrwebbbbbbbbbdad"),
-		static_cast<string>("Fhqwessdwwfggggggggggggsdafgggggggggggggwrrttttsrtyrtyrty"),
-		static_cast<string>("GFDGieedqwbbrrrrrrrbrbbrrrrrrrrrfgdferrrrrrennhhserser"),
-		static_cast<string>("DDFjbqwessbbbbbbbbbbbbbbbbbbbbbbbdwwwrrtttts")}	;
+		const int dirCount = 100;	//... 
+		const int nameLength = 50;  // the numbers may be refactored. the changes must have point and make sense on coverage improvement
+		char name[nameLength+1];
+		Directory dir[dirCount];
+		int j;
 		
-		dir[2] = static_cast<string>("I'm used variable");
-		
+		for(int i = 0; i < dirCount; ++i)
+		{
+			name[0] = 'a';  // the first character must not be a '-', as it leads to several problems
+			for(j = 1; j < nameLength; ++j)
+			{
+				char randInt = 33 + rand()%94; // all the possible characters possible for using for a file name
+				if(randInt == '/')  // excluding the '/', as slash is not allowed in filenames in Linux. Checkp ut the ASCII table
+					++randInt;
+				name[j] = randInt;
+			}
+			name[j] = 0;   // the end of the name
+			dir[i] = static_cast<string>(name);  //now we have a random name of length 'nameLength'
+		}
+			
 		</Code>
 	</Test>	
-	
+
 	<Test Name="DirectoriesInDepth" FaultSimulationReady="true">
 		<Description>Trying to create many directories inserted</Description>
 		<Code>
@@ -149,12 +85,10 @@
 		</Code>
 	</Test>	
 	
-	<Test Name="ManyBigFiles" FaultSimulationReady="true">
+	<Test Name="BigFiles" FaultSimulationReady="true">
 		<Description>Trying to create some big files</Description>
-		<File count = "500" />
 		<Code>
-		
-		
+				
 			Unres ( system("rm -rf *") != 0, "Cannot clear partition");
 			const string fileName = "BigFileewoieqhasddddddddwwwwwwwwwwwwwwwwwwwwwwssssssssssssssssssssssssssssssq";		
 			const int fileSize = 3*1024;
@@ -179,4 +113,24 @@
 		
 		</Code>
 	</Test>	
+	
+	<Test Name="ManySmallWrittenFiles" FaultSimulationReady="true">
+		<Description>Trying to create some small files, and write the data.</Description>
+		<File count = "500" />
+		<Code>
+		
+			const int fileSize = 1024;
+			const int dataSize = fileSize - 10;
+			char * data = new char[dataSize];
+						
+			for(int i = 0; i < 500; ++i)
+			{
+				write(FDs[i], data, dataSize);
+				close(FDs[i]);	
+			}
+			delete data;
+		
+		</Code>
+	</Test>	
+	
 </TestSet>
