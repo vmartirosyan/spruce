@@ -267,71 +267,97 @@
             uint64_t DeviceSize = 0;
             // Get the real free space.
             struct statvfs stat;
-             Unres ( statvfs(".", &stat ) == -1, "Cannot obtain free space." );
+            Unres ( statvfs(".", &stat ) == -1, "Cannot obtain free space." );
             DeviceSize = stat.f_bavail * stat.f_bsize;
             //Unres ( (DeviceSize = PartitionManager::GetDeviceSize(DeviceName)) == 0, "Cannot get device size");
              
             Unres ( system("rm -rf *") != 0, "Cannot clear partition");
             
             const string FileNames[] = {
-                "Btrfs_ioctl_Defrag_pad",
-                 "Btrfs_ioctl_Defrag_1",
-                "Btrfs_ioctl_Defrag_2",
-                "Btrfs_ioctl_Defrag_3" };
+			"Btrfs_ioctl_Defrag_1",
+			"Btrfs_ioctl_Defrag_2",
+			"Btrfs_ioctl_Defrag_3" };
                 
             uint64_t FreeSpace = 1024*1024*1024;
-             File file0(FileNames[0]);
-            
-            
+            int i;
+            stringstream ss; 
+            int FileNum = ( DeviceSize - FreeSpace )/( FreeSpace );
+            int LastFileSize = ( DeviceSize - FreeSpace )%( FreeSpace );
+                
+            int *files = new int [FileNum+1];
+			for( i = 0; i < FileNum; ++i )
+			{
+				ss.clear();
+				ss.str( string() );
+				ss << i;
+				files[i] = open( ss.str().c_str(),O_RDWR | O_CREAT, S_IRUSR | S_IWUSR );
+				Unres(files[i] == -1 , "Cannot open pad file");
+			}
             if ( FreeSpace >= DeviceSize )
             {
                 // No need in pad file in this case.
                 FreeSpace = DeviceSize;
-             }
+            }
             else
             {    
-                Unres( fallocate(file0.GetFileDescriptor(), 0, 0, DeviceSize - FreeSpace ) == -1, "Cannot allocate space for pad file");
-                fsync(file0.GetFileDescriptor());
-                 close(file0.GetFileDescriptor());    
+				for( i = 0; i < FileNum; ++i )
+                {
+                        Unres( fallocate( files[i], 0, 0, FreeSpace ) == -1, "Cannot allocate space for pad file" );
+						fsync( files[i] );
+						close( files[i] );    
+				}
+				if( LastFileSize )
+                {
+						ss.clear();
+						ss.str( string() );
+						i = FileNum;
+						ss << i;
+						cerr<<ss.str();
+						files[i] = open( ss.str().c_str(),O_RDWR | O_CREAT, S_IRUSR | S_IWUSR );
+						Unres(files[i] == -1 , "Cannot open last pad file");
+					    Unres( fallocate(files[i], 0, 0, LastFileSize ) == -1, "Cannot allocate space for last pad file");
+						fsync( files[i] );
+						close( files[i] );    
+				}
             }
             
             
-            File file1(FileNames[1]);
+            File file1(FileNames[0]);
             Unres( fallocate(file1.GetFileDescriptor(), 0, 0, FreeSpace / 3) == -1, "Cannot allocate space for 1st file");
              fsync(file1.GetFileDescriptor());
             close(file1.GetFileDescriptor());            
             
-            File file2(FileNames[2]);
+            File file2(FileNames[1]);
             Unres( fallocate(file2.GetFileDescriptor(), 0, 0, FreeSpace / 3) == -1, "Cannot allocate space for 2nd file");
              fsync(file2.GetFileDescriptor());
             close(file2.GetFileDescriptor());
             
-            Unres (unlink(FileNames[1].c_str()) == -1, "Cannot remove file1.");
+            Unres (unlink(FileNames[0].c_str()) == -1, "Cannot remove file1.");
             
             
             // It is not guaranteed that the fallocate function allocates continuous space.
             // Try to allocate space more than (FreeSpace / 3).
             // As the filesystem if fragmented it must not be possible.
-            //File file10(FileNames[1]);
+            //File file10(FileNames[0]);
             //Unres( fallocate(file10.GetFileDescriptor(), 0, 0, FreeSpace / 3 + 1024) == 0, "It was possible to allocate space before defragmentation.");
-            //unlink(FileNames[1].c_str());
+            //unlink(FileNames[0].c_str());
                         
              char * buf = new char[FreeSpace / 3 + 1024];
             Unres(buf == NULL, "Cannot allocate memory.");
-            File file3(FileNames[3]);
+            File file3(FileNames[2]);
             write(file3.GetFileDescriptor(), buf, FreeSpace / 3 + 1024 );
              delete buf;
             fsync(file3.GetFileDescriptor());
             close(file3.GetFileDescriptor());
             
-            Unres (unlink(FileNames[2].c_str()) == -1, "Cannot remove file2.");
+            Unres (unlink(FileNames[1].c_str()) == -1, "Cannot remove file2.");
             
-            int fd = open(FileNames[3].c_str(), O_RDWR);
+            int fd = open(FileNames[2].c_str(), O_RDWR);
             sync();
             
             int status = ioctl( fd, BTRFS_IOC_DEFRAG, NULL);
              close(fd);
-            unlink(FileNames[3].c_str());
+            unlink(FileNames[2].c_str());
             
             
             // It is not guaranteed that the fallocate function allocates continuous space.
@@ -388,7 +414,7 @@
 			btrfs_ioctl_vol_args arg, arg1;
 			int res2;
 			strcpy(arg.name, "max");
-			strcpy(arg1.name, "-20m");
+			strcpy(arg1.name, "-20k");
 			res = ioctl( fd, BTRFS_IOC_RESIZE, &arg);
 			res2 = ioctl( fd, BTRFS_IOC_RESIZE, &arg1);
 			int my_errno = errno;
