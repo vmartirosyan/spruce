@@ -4,38 +4,9 @@ INCLUDE (CheckTypeSize)
 
 project (Spruce)
 
-function (check_include name HAVE_H type)
-	CHECK_INCLUDE_FILES ("${name}" ${HAVE_H})
-		IF (NOT ${HAVE_H})
-			Message(FATAL_ERROR "The '${name}' ${type} wasn't found. Please install it.")
-			#SET(HAVE_XFS_H 0)
-		ENDIF (NOT ${HAVE_H})
-endfunction()
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-function (set_default var value)
-		IF (NOT ${var})
-		SET( ${var} "${value}")
-		ENDIF (NOT ${var})
-endfunction()
-
-function (check_executable name path)
-	Message("-- Looking for '${name}' executable")
-	IF ( NOT EXISTS ${${path}} )
-	Message("   The ${path} wasn't set, looking for it ...")
-	find_program(${path} ${name})
-	IF ( NOT EXISTS ${${path}} )
-		Message(FATAL_ERROR "'${name}' cannot be executed. Set correct path of '${name}' executable.")
-	ENDIF ( NOT EXISTS ${${path}} )
-	ENDIF ( NOT EXISTS ${${path}} )
-	execute_process(COMMAND ${${path}} -V
-				RESULT_VARIABLE STAT
-				OUTPUT_QUIET
-				ERROR_QUIET)
-	IF ( ${STAT} )
-	Message(FATAL_ERROR "Cannot get '${name}' via '${path} -V'. Set ${path} to correct path of '${name}' executable.")
-	ENDIF( ${STAT} )
-	Message("-- Looking for '${name}' executable - found")
-endfunction()
+INCLUDE (common)
 
 IF( UNIX )
     EXECUTE_PROCESS( 
@@ -130,11 +101,8 @@ add_subdirectory (engine)
 add_subdirectory (include)
 #add_subdirectory (lib)
 add_subdirectory (src)
-#add_subdirectory (tests)
 add_subdirectory (config)
 add_subdirectory (doc)
-
-
 
 # Uninstall the system
 configure_file(
@@ -145,3 +113,8 @@ configure_file(
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
     
+if(SPRUCE_ENABLE_TESTING)
+	spruce_enable_testing()
+
+	add_subdirectory (tests)
+endif(SPRUCE_ENABLE_TESTING)

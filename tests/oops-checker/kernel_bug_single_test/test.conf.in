@@ -1,0 +1,6 @@
+fs=jfs
+modules=syscall
+run_tests=jfs..syscall.open.OpenNormal
+partition=@TEST_DEVICE@
+logfolder=@CMAKE_CURRENT_BINARY_DIR@/log
+subfolders=false

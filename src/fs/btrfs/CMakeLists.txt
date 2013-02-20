@@ -1,5 +1,4 @@
 MESSAGE("-- Configuring BTRFS module")
-include(../../arch.cmake)
 
 ADD_CUSTOM_COMMAND(
    OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/module.cpp 
