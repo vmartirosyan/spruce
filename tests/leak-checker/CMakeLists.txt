@@ -1,0 +1,4 @@
+add_subdirectory(simple)
+add_subdirectory(no_leaks)
+add_subdirectory(possible_leaks)
+add_subdirectory(unallocated_frees)
