@@ -23,6 +23,8 @@
 
 <TestSet Name="acl">	
 <Requires>sys/acl.h</Requires>
+	<Requires>attr/xattr.h</Requires>	
+
 	<Test Name="ACLInitFree" FaultSimulationReady="true">
 		<Description>Initialize and release ACL memory storage.</Description>		
 		<Code>	
