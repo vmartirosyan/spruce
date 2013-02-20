@@ -45,7 +45,7 @@
 			for(j = 1; j < nameLength; ++j)
 			{
 				char randInt = 33 + rand()%94; // all the possible characters possible for using for a file name
-				if(randInt == '/')  // excluding the '/', as slash is not allowed in filenames in Linux. Checkp ut the ASCII table
+				if(randInt == '/')  // excluding the '/', as slash is not allowed in filenames in Linux. Check out the ASCII table
 					++randInt;
 				name[j] = randInt;
 			}
