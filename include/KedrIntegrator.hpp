@@ -78,22 +78,22 @@ public:
 		TargetModule = module;
 		return true;
 	}
-	bool EnableMemLeakCheck()
+	// Add KEDR configuration file to be processed while load KEDR.
+	void AddPayloads(const string& confFile)
 	{
-		KEDRProfiles.push_back("leak_check.conf");
-		return true;
+		KEDRProfiles.push_back(confFile);
 	}
 	
-	bool EnableFaultSimulation()
+	void EnableMemLeakCheck()
 	{
-		KEDRProfiles.push_back("fsim.conf");
-		return true;
+		AddPayloads("leak_check.conf");
 	}
-	bool EnableCallMonitoring()
+	
+	void EnableFaultSimulation()
 	{
-		KEDRProfiles.push_back("callm.conf");
-		return true;
+		AddPayloads("fsim.conf");
 	}
+	
 	// The process ID is set to the curent PID
 	static bool SetIndicator(string point, string indicator, string expression)
 	{

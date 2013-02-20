@@ -1,0 +1,1 @@
+payload @CMAKE_BINARY_DIR@/tests/kmod/kernel_leak_simulator/leak_simulator.ko simulate_allocs=y

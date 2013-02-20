@@ -1,13 +1,7 @@
-cmake_minimum_required(VERSION 2.4)
+set(spruce_executable "${CMAKE_INSTALL_PREFIX}/bin/spruce")
+set(report_generator "perl ${CMAKE_SOURCE_DIR}/report_generator/report.pl")
 
-message("Configuring tests.")
+add_subdirectory (kmod)
 
-add_subdirectory (benchmark)
-add_subdirectory (common)
-add_subdirectory (fs)
-add_subdirectory (main)
-add_subdirectory (syscall)
-
-project (Spruce)
-
-
+add_subdirectory(oops-checker)
+add_subdirectory(leak-checker)

@@ -1,0 +1,2 @@
+add_subdirectory(kernel_bug)
+add_subdirectory(kernel_bug_single_test)

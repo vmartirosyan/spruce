@@ -1,0 +1,6 @@
+fs=btrfs
+modules=syscall;leak-check
+run_tests=btrfs..syscall.open.OpenNormal
+partition=@TEST_DEVICE@
+logfolder=@CMAKE_CURRENT_BINARY_DIR@/log
+subfolders=false

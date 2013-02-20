@@ -469,6 +469,14 @@ int main(int argc, char ** argv)
 						kedr.EnableMemLeakCheck();
 					if ( PerformFaultSimulation )
 						kedr.EnableFaultSimulation();
+					// Process possible additional KEDR payload.
+					// Used in testing of Spruce itself.
+					const char* KEDRAdditionalPayloads = getenv("KEDR_ADDITIONAL_PAYLOADS");
+					if(KEDRAdditionalPayloads && KEDRAdditionalPayloads[0] != '\0')
+					{
+						kedr.AddPayloads(KEDRAdditionalPayloads);
+					}
+					
 					kedr.LoadKEDR();
 					cout << "KEDR is successfully loaded." << endl;
 					
