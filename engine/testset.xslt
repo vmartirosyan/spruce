@@ -306,7 +306,10 @@ CleanUp:
 		bool _InFooter = false;	
 		if ( _InFooter == true )
 			_InFooter = false;
-			
+		
+		<xsl:value-of select="/TestSet/Header" />
+		<xsl:value-of select="Header" />
+		
 <!-- Check if all the requirements are satisfied -->
 		<xsl:if test="Requires">
 <!-- Use standart 'if(false)' construction for template-generated alternatives -->
@@ -330,10 +333,7 @@ CleanUp:
 		if ( PartitionManager::IsOptionEnabled("ro") )
 			Unsupp("Read-only file system.");
 		</xsl:if>
-		
-		<xsl:value-of select="/TestSet/Header" />
 			
-		<xsl:value-of select="Header" />		
 		//cerr &lt;&lt; "Description: " &lt;&lt; "<xsl:value-of select="Description" />" &lt;&lt; endl;
 		try
 		{
