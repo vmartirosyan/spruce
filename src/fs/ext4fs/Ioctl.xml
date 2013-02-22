@@ -228,74 +228,57 @@ struct ext4_new_group_data {
 			
 		</Code>
 	</Test>
-	<!--Test Name="Migrate" FaultSimulationReady="true" Shallow="true">
+	<Test Name="Migrate" FaultSimulationReady="true" Shallow="true">
 		<Description>Migrate an Ext3 partition to Ext4</Description>
+		<StartUp>
+			// Temporary solution. Should be removed as soon as the logic of test execution is changed.		
+			if ( !PartitionManager::NoMountOptionsEnabled() )
+				goto CleanUp;		
+		</StartUp>
 		<Header>
 #ifndef EXT4_IOC_MIGRATE
 #	define EXT4_IOC_MIGRATE		_IO('f', 9)
 #endif
-			Status result = Fail;
-			int _file = -1;
+			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+
 		</Header>
 		<Code>
-			Unres ( chdir ("/") == -1 , "Cannot change directory.");
-			
-			//if ( umount2( MountPoint, MNT_FORCE ) == -1 )	
-			Unres ( umount( MountPoint ) == -1, "Cannot unmount " + (string)MountPoint);
-			
+			int _file = -1;
 			UnixCommand mkfs("mkfs.ext3");
 			vector<string> args;
-			args.push_back("-t");
-			args.push_back("ext3");
+			args.push_back(DeviceName);
+			ProcessResult * res;
+			res = mkfs.Execute(args);
+			Unres ( res == NULL || res->GetStatus() != Success, "Cannot create ext3 filesystem on device " + (string)DeviceName);
+		
+			UnixCommand tunefs("tune2fs");
+			args.erase(args.begin(),args.end());
 			args.push_back("-O");
 			args.push_back("extents");
 			args.push_back(DeviceName);
 			
-			ProcessResult * res;
-			res = mkfs.Execute(args);
-			Unres ( res == NULL || res->GetStatus() != Success, "Cannot create ext3 filesystem on device " + (string)DeviceName);
+			res = tunefs.Execute(args);
+			Unres ( res == NULL || res->GetStatus() != Success, "Cannot tune ext3 filesystem on device " + (string)DeviceName);
 			
+			delete res;
 			Unres ( mount( DeviceName, MountPoint, "ext4", 0, 0) == -1, "Cannot mount ext3 FS " + (string)DeviceName + " to " + (string)MountPoint);
+			Unres ( chdir(MountPoint) != 0,"Cannot change current dir to " );
+
+			Unres( (_file = open(MountPoint, O_DIRECTORY | O_RDONLY)) == -1, "Cannot open dir");
 			
-			_file = open(MountPoint, O_DIRECTORY | O_RDONLY);
-		
-			if ( _file == -1 )
-			{
-				Error("Cannot open mount folder.");
-				result = Unresolved;
-				goto finally;
-			}
+			Fail ( ioctl(_file, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
 			
-			cerr << "Calling Ioctl!!!" << endl;
-			if ( ioctl(_file, EXT4_IOC_MIGRATE, 0) == -1 )
-			{
-				Error("Error migrating.");
-				result = Fail;
-				goto finally;
-			}
-			else
-			{
-				result = Success;
-				goto finally;
-			}
-			;
 		</Code>
-		<Footer>
-			finally:
+		<CleanUp>
 			if (_file != -1)
 				close(_file);
-				
-			/*PartitionManager * pm = ShmAllocator<PartitionManager>::GetInstance();
-			if ( pm == NULL )
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success )
 			{
-				cerr << "Cannot get the partition manager object." << endl;
+				Error("Restore failed!");
+				_exit(Fatal);
 			}
-			pm->RestorePartition();
-			ShmAllocator<PartitionManager>::Free(pm);*/
-
-			return result;
-		</Footer>
-	</Test-->
+		</CleanUp>
+	</Test>
 	<Test Name="AllocDABlocks" FaultSimulationReady="true" Shallow="true">
 		<Description>Allocate delayed-allocation blocks.</Description>
 		<File count="1"/>
