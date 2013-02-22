@@ -590,13 +590,8 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 		return false;
 	
 	MkfsCommand * mkfs = new MkfsCommand("mkfs." + fs);
-	vector<string> args;		
-	args.push_back(partition);		
-	if ( fs == "xfs" || fs == "jfs" ) //Force if necessary
-		args.push_back("-f");
-	if ( fs == "ext4" )
-		args.push_back("-F");
-
+	vector<string> args;
+	
 	// Block and partition size
 	// Reserve empty space on device for later resize tests.
 	stringstream s1;
@@ -604,72 +599,113 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 	string strBlockSize;			
 	s1 << BlockSize;
 	strBlockSize = s1.str();
-			
-	// Overwrite default block size, if it is specified in mkfs_opts
-	vector<string> tmp = SplitString(mkfs_opts, ' ', vector<string>());
-	unsigned int blkSzInd;
-	for ( blkSzInd = 0; blkSzInd < tmp.size(); ++blkSzInd )
-		if(tmp[blkSzInd] == "-b")
+	
+	// If we need more than one mkfs;
+	vector<string> mkfs_opts_s = SplitString(mkfs_opts, '@', vector<string>());
+	for(int i = 0; i < mkfs_opts_s.size(); i++)
+	{
+		stringstream s2;
+		string PartitionSize;
+		if ( !resizeFlag )
 		{
-			BlockSize = atoi(tmp[blkSzInd+1].c_str());
-			strBlockSize = tmp[blkSzInd+1];
-			break;
+			if(fs != "ext4")
+				s2 << ((DeviceSize / BlockSize) );
+			else
+				s2 << ((DeviceSize / BlockSize) - 100000);
+		}
+		else
+		{
+			s2 << ((DeviceSize / BlockSize) - 10000);
+		}
+		PartitionSize = s2.str();
+		
+		string Partition = partition;
+		args.erase(args.begin(), args.begin() + args.size());
+		vector<string> tmp = SplitString(mkfs_opts_s[i], ' ', vector<string>());
+		// Overwrite default block size, if it is specified in mkfs_opts
+		unsigned int blkSzInd;
+		for ( blkSzInd = 0; blkSzInd < tmp.size(); ++blkSzInd )
+			if(tmp[blkSzInd] == "-b")
+			{
+				BlockSize = atoi(tmp[blkSzInd+1].c_str());
+				strBlockSize = tmp[blkSzInd+1];
+				break;
+			}
+			
+		if(fs == "jfs")
+		{
+			for(int i = 0; i < tmp.size(); i++)
+			{
+				if(tmp[i] == "-J" && tmp[i+1] == "journal_dev")
+				{
+					Partition = "";
+					PartitionSize = "";
+				}
+				if(tmp[i] == "-J" && tmp[i+1].find("device=", 0) != string::npos)
+				{
+					PartitionSize = "";
+				}	 
+			}
 		}
 
-	
-	stringstream s2;
-	string PartitionSize;
-	if ( !resizeFlag )
-	{
-		if(fs != "ext4")
-			s2 << ((DeviceSize / BlockSize) );
-		else
-			s2 << ((DeviceSize / BlockSize) - 100000);
-	}
-	else
-	{
-		s2 << ((DeviceSize / BlockSize) - 10000);
-	}
-	PartitionSize = s2.str();
-	
-	if ( fs == "ext4" )
-	{	
-		args.push_back("-b");
-		args.push_back(strBlockSize);
-		args.push_back(PartitionSize);
-	}
-	if ( fs == "xfs" )
-	{	
+			
+		if ( fs == "xfs" || fs == "jfs" ) //Force if necessary
+			args.push_back("-f");
+		if ( fs == "ext4" )
+			args.push_back("-F");
+		if ( fs == "ext4" )
+		{	
+			args.push_back("-b");
+			args.push_back(strBlockSize);
+		}
+		if ( fs == "xfs" )
+		{	
+			
+		}
+
+		if ( fs == "btrfs" )
+		{
+			stringstream s3;
+			s3 << (DeviceSize - 512*1000);
+			string SizeInBlocks = s3.str();
+			args.push_back("-b");
+			args.push_back(SizeInBlocks);
+		}
+
+		for ( unsigned int i = 0; i < tmp.size() && i != blkSzInd && i != blkSzInd + 1 ; ++i )
+			args.push_back(tmp[i]);
+		if(Partition != "")
+			args.push_back(Partition);
+		if ( fs == "jfs" && PartitionSize != "")
+		{	
+			args.push_back(PartitionSize);
+		}
+		if( fs == "ext4" )
+		{
+			args.push_back(PartitionSize);
+		}
 		
-	}
-	if ( fs == "jfs" )
-	{	
-		args.push_back(PartitionSize);
-	}
-	if ( fs == "btrfs" )
-	{
-		stringstream s3;
-		s3 << (DeviceSize - 512*1000);
-		string SizeInBlocks = s3.str();
+		ProcessResult * res;
+		cerr << "mkfs." << fs << " ";
+		for(int i = 0; i < args.size(); i++)
+		{
+			cerr << args[i] << " ";
+		}
+		cerr << endl;
+		res = mkfs->Execute(args);
 		
-		args.push_back("-b");
-		args.push_back(SizeInBlocks);
+		if ( res->GetStatus() != Success )
+		{
+			Logger::LogError("Cannot create " + fs + " filesystem on device " + Partition);
+			Logger::LogError("Error: " + res->GetOutput());
+			delete mkfs;
+			return false;
+		}		
 	}
 
-	for ( unsigned int i = 0; i < tmp.size() && i != blkSzInd && i != blkSzInd + 1 ; ++i )
-		args.push_back(tmp[i]);
-	
-	ProcessResult * res;
-	res = mkfs->Execute(args);
-	delete mkfs;
-	if ( res->GetStatus() != Success )
-	{
-		Logger::LogError("Cannot create " + fs + " filesystem on device " + partition);
-		Logger::LogError("Error: " + res->GetOutput());
-		return false;
-	}
 	setenv("MkfsOpts", mkfs_opts.c_str(), 1);
 	Logger::LogInfo("Mkfs complete.");
+	delete mkfs;
 	return true;
 }
 
