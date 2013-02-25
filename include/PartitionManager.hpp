@@ -156,7 +156,7 @@ public:
 	static bool Mount(string DeviceName,string MountPoint,string FileSystem,string Options, unsigned long Flags = 0);
 	string GetCurrentOptions(bool Stripped = true) const;
 	void ClearCurrentOptions();
-	static bool IsOptionEnabled(string optionName);
+	static bool IsOptionEnabled(string optionName, bool IsMkfsOption = false);
 	static uint64_t GetDeviceSize(string partition);
 	static bool NoMountOptionsEnabled();
 	static bool IsUserQuotaEnabled();
@@ -217,15 +217,12 @@ private:
 		FileSystems _FSIndex;		
 		set<CurrentOptions> _AdditionalOptions[FS_UNSUPPORTED];		
 		
-		static bool IsSpecialOption(const string & opt);
-		static bool IsSpecialOptionEnabled(const string & opt);
-		static bool IsOptionEnabledInternal(const string & opt, int * position = 0);
+		static bool IsMountOptionEnabled(const string & opt);
+		static bool IsMkfsOptionEnabled(const string & opt);
 		bool LoadConfiguration();
 		static bool CreateFilesystem(string fs, string partition, bool resizeFlag = false, string mkfs_opts = "");
 		FileSystems GetFSNumber(string FSName);
 		
-		static bool IsFlag(string optionName);
-		static bool IsFlagEnabled(string optionName);
 		
 		static std::map<string, unsigned long> MountFlagMap;
 };
