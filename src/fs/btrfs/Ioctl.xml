@@ -264,6 +264,8 @@
 	<Test Name="DefragFile" Shallow="true">
         <Description>Defragment file.</Description>
         <Code>
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
             uint64_t DeviceSize = 0;
             // Get the real free space.
             struct statvfs stat;
