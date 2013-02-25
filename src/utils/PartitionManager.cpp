@@ -279,128 +279,15 @@ void PartitionManager::ClearCurrentOptions()
 	//_CurrentMountOptions = "";
 }
 
-bool PartitionManager::IsOptionEnabled(string optionName)
+bool PartitionManager::IsOptionEnabled(string optionName, bool IsMkfsOption)
 {
-	/*if ( IsFlag(optionName) )
+	if(IsMkfsOption)
 	{
-		return IsFlagEnabled(optionName);
+		return IsMkfsOptionEnabled(optionName);
 	}
-	if ( IsSpecialOption(optionName) )
-		return IsSpecialOptionEnabled(optionName);*/
-	return IsOptionEnabledInternal(optionName);
+	return IsMountOptionEnabled(optionName);
 }
 
-bool PartitionManager::IsFlag(string optionName)
-{
-	return ( MountFlagMap.find(optionName) != MountFlagMap.end() );
-}
-
-bool PartitionManager::IsFlagEnabled(string optionName)
-{
-	if ( getenv("MountFlags") == NULL )
-		return false;
-
-	char * buf = getenv("MountFlags");
-	unsigned long flags = atoi(buf);
-	
-	unsigned long flag = MountFlagMap[optionName];
-	
-	return ( ( flags & flag ) != 0 );
-}
-
-// Some options need to be processed differentelly. (e.g. noexec, nodev)		
-bool PartitionManager::IsSpecialOption(const string & opt)
-{
-	if ( opt == "noexec" || opt == "nodev" || opt == "nosuid" )
-		return true;
-	return false;
-}
-bool PartitionManager::IsSpecialOptionEnabled(const string & opt)
-{
-	// According to man 8 mount:
-	// user, users: These  options  imply  the  options  noexec,
-	//  nosuid,  and  nodev (unless overridden by subsequent options, as
-	//  in the option line user,exec,dev,suid).
-	if ( opt == "noexec" )
-	{
-		int userPos;
-		int execPos;
-		int noexecPos;
-		// If the noexec option is there and (exec option is missing or comes before noexec)
-		if ( IsOptionEnabledInternal("noexec", &noexecPos) && ( !IsOptionEnabledInternal("exec", &execPos) || execPos < noexecPos ) )
-			return true;
-		// If the user option is there and (exec option is missing or comes before user)
-		if ( IsOptionEnabledInternal("user", &userPos) && ( !IsOptionEnabledInternal("exec", &execPos) || execPos < userPos) )
-			return true;
-		// If the users option is there and (exec option is missing or comes before users)
-		if ( IsOptionEnabledInternal("users", &userPos) && ( !IsOptionEnabledInternal("exec", &execPos) || execPos < userPos) )
-			return true;
-			
-		return false;
-	}
-	
-	// According to man 8 mount:
-	// user, users, group, owner: These  options  imply  the  options  
-	//  nosuid,  and  nodev (unless overridden by subsequent options, as
-	//  in the option line user,dev,suid).
-	if ( opt == "nodev" )
-	{
-		int userPos;
-		int groupPos;
-		int devPos;
-		int nodevPos;
-		int ownerPos;
-		// If the nodev option is there and (dev option is missing or comes before nodev)
-		if ( IsOptionEnabledInternal("nodev", &nodevPos) && ( !IsOptionEnabledInternal("dev", &devPos) || devPos < nodevPos ) )
-			return true;
-		// If the user option is there and (dev option is missing or comes before user)
-		if ( IsOptionEnabledInternal("user", &userPos) && ( !IsOptionEnabledInternal("dev", &devPos) || devPos < userPos) )
-			return true;
-		// If the users option is there and (dev option is missing or comes before users)
-		if ( IsOptionEnabledInternal("users", &userPos) && ( !IsOptionEnabledInternal("dev", &devPos) || devPos < userPos) )
-			return true;
-		// If the group option is there and (dev option is missing or comes before group)
-		if ( IsOptionEnabledInternal("group", &groupPos) && ( !IsOptionEnabledInternal("dev", &devPos) || devPos < groupPos) )
-			return true;
-		// If the owner option is there and (dev option is missing or comes before group)
-		if ( IsOptionEnabledInternal("owner", &ownerPos) && ( !IsOptionEnabledInternal("dev", &devPos) || devPos < ownerPos) )
-			return true;
-			
-		return false;
-	}
-	
-	// According to man 8 mount:
-	// user, users, group, owner: These  options  imply  the  options  
-	//  nosuid,  and  nodev (unless overridden by subsequent options, as
-	//  in the option line user,dev,suid).
-	if ( opt == "nosuid" )
-	{
-		int userPos;
-		int groupPos;
-		int suidPos;
-		int nosuidPos;
-		int ownerPos;
-		// If the nosuid option is there and (suid option is missing or comes before nosuid)
-		if ( IsOptionEnabledInternal("nosuid", &nosuidPos) && ( !IsOptionEnabledInternal("suid", &suidPos) || suidPos < nosuidPos ) )
-			return true;
-		// If the user option is there and (suid option is missing or comes before user)
-		if ( IsOptionEnabledInternal("user", &userPos) && ( !IsOptionEnabledInternal("suid", &suidPos) || suidPos < userPos) )
-			return true;
-		// If the users option is there and (suid option is missing or comes before users)
-		if ( IsOptionEnabledInternal("users", &userPos) && ( !IsOptionEnabledInternal("suid", &suidPos) || suidPos < userPos) )
-			return true;
-		// If the group option is there and (suid option is missing or comes before group)
-		if ( IsOptionEnabledInternal("group", &groupPos) && ( !IsOptionEnabledInternal("suid", &suidPos) || suidPos < groupPos) )
-			return true;
-		// If the owner option is there and (dev option is missing or comes before group)
-		if ( IsOptionEnabledInternal("owner", &ownerPos) && ( !IsOptionEnabledInternal("suid", &suidPos) || suidPos < ownerPos) )
-			return true;
-			
-		return false;
-	}
-	// In case of unknown option
-	return false;
-}
 
 bool PartitionManager::NoMountOptionsEnabled()
 {
@@ -426,19 +313,19 @@ bool PartitionManager::NoMountOptionsEnabled()
 
 bool PartitionManager::IsUserQuotaEnabled()
 {
-	return IsOptionEnabledInternal("quota") || IsOptionEnabledInternal("usrquota") || IsOptionEnabledInternal("uquota") || IsOptionEnabledInternal("uqnoenforce") || IsOptionEnabledInternal("qnoenforce") || IsOptionEnabledInternal("usrjquota=aquota.user");
+	return IsMountOptionEnabled("quota") || IsMountOptionEnabled("usrquota") || IsMountOptionEnabled("uquota") || IsMountOptionEnabled("uqnoenforce") || IsMountOptionEnabled("qnoenforce") || IsMountOptionEnabled("usrjquota=aquota.user");
 }
 
 bool PartitionManager::IsGroupQuotaEnabled()
 {
-	return IsOptionEnabledInternal("grpquota") || IsOptionEnabledInternal("gquota") || IsOptionEnabledInternal("gqnoenforce") || IsOptionEnabledInternal("usrjquota=aquota.group");
+	return IsMountOptionEnabled("grpquota") || IsMountOptionEnabled("gquota") || IsMountOptionEnabled("gqnoenforce") || IsMountOptionEnabled("usrjquota=aquota.group");
 }
 
 bool PartitionManager::IsProjectQuotaEnabled()
 {
-	return IsOptionEnabledInternal("prjquota") || IsOptionEnabledInternal("pquota") || IsOptionEnabledInternal("pqnoenforce");
+	return IsMountOptionEnabled("prjquota") || IsMountOptionEnabled("pquota") || IsMountOptionEnabled("pqnoenforce");
 }
-bool PartitionManager::IsOptionEnabledInternal(const string & opt, int * position)
+bool PartitionManager::IsMountOptionEnabled(const string & opt)
 {	
 	string DeviceName = (getenv("Partition") ? getenv("Partition") : "");
 	string MountPoint = (getenv("MountAt") ? getenv("MountAt") : "");
@@ -481,6 +368,23 @@ bool PartitionManager::IsOptionEnabledInternal(const string & opt, int * positio
 		
 	return true;
 }
+
+
+bool PartitionManager::IsMkfsOptionEnabled(const string & opt)
+{
+	string mkfs_opts = getenv("MkfsOpts");
+	vector<string> mkfs_opts_s = SplitString(mkfs_opts, '@', vector<string>());
+	int i = 0;
+	int size = mkfs_opts_s.size();
+	for( i = 0; i < size; ++i )
+	{
+		if(opt == mkfs_opts_s[i])
+			return true;
+	}
+	return false;
+}
+
+
 bool PartitionManager::LoadConfiguration()
 {
 	bool result = false;
