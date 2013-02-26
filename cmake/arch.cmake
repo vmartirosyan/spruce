@@ -32,7 +32,7 @@ function (arch module)
 	   )
 		set_source_files_properties(module_32.cpp PROPERTIES COMPILE_FLAGS "-m32")
 		
-		
+		ADD_DEFINITIONS(-DCOMPAT)
 		ADD_EXECUTABLE(${module}_32 module_32.cpp)
 		TARGET_LINK_LIBRARIES(${module}_32 utils_32)
 		if (${module} STREQUAL "syscall")

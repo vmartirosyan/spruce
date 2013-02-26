@@ -4,13 +4,12 @@
 	<Requires>fcntl.h</Requires>
 	<Requires>ext2fs/ext2_fs.h</Requires>	
 	<Requires>pwd.h</Requires>
-	<Requires>linux/version.h</Requires>
 	<Requires>inttypes.h</Requires>
 	<Test Name="SetFlagsGetFlags" FaultSimulationReady="true">		
 		<Description>Try to set and get some flag values.</Description>
 		<File count="1"/>
 		<Code>
-			int set_flags = EXT4_EXTENTS_FL | 1; // We may NOT clear the extents flag...
+			int set_flags = /*EXT4_IMMUTABLE_FL |*/ 1; // We may NOT clear the extents flag...
 			int get_flags = 0;
 			
 			// Backup the old values just in case
@@ -241,6 +240,10 @@ struct ext4_new_group_data {
 #ifndef EXT4_IOC_MIGRATE
 #	define EXT4_IOC_MIGRATE		_IO('f', 9)
 #endif
+
+#ifdef	COMPAT
+			Unsupp("Not supported in COMPAT mode.");
+#endif	
 			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
 
 		</Header>
@@ -289,8 +292,11 @@ struct ext4_new_group_data {
 #define EXT4_IOC_ALLOC_DA_BLKS		_IO('f', 12)
 #endif
 
-			Fail ( ioctl(FDs[0], EXT4_IOC_ALLOC_DA_BLKS, 0) == -1, "Error during delayed allocation of blocks.");
-			
+#ifdef	COMPAT
+		Unsupp("Not supported in COMPAT mode.");
+#else
+		Fail ( ioctl(FDs[0], EXT4_IOC_ALLOC_DA_BLKS, 0) == -1, "Error during delayed allocation of blocks.");
+#endif	
 		</Code>
 	</Test>
 	<Test Name="Fitrim" FaultSimulationReady="true" Shallow="true">
