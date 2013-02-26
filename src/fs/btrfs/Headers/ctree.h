@@ -24,8 +24,8 @@
 #include "radix-tree.h"
 #include "extent-cache.h"
 #include "extent_io.h"
-#include "ioctl.h"
-
+//#include "ioctl.h"
+#include "btrfs.hpp"
 struct btrfs_root;
 struct btrfs_trans_handle;
 #define BTRFS_MAGIC 0x4D5F53665248425F /* ascii _BHRfS_M, no null */

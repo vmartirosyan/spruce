@@ -22,7 +22,8 @@
 //      MA 02110-1301, USA.
 -->
 <TestSet Name="Ioctl">
-	<Requires>sys/ioctl.h</Requires>
+	
+	<!--Requires>sys/ioctl.h</Requires-->
 	<Requires>sys/types.h</Requires>
 	<Requires>sys/statvfs.h</Requires>
 	<Requires>linux/fs.h</Requires>
@@ -30,7 +31,6 @@
 	<Requires>fcntl.h</Requires>
 	<Requires>btrfs.hpp</Requires>
 	<Requires>defines.h</Requires>
-	
 	<Test Name="SetGetFlags_Empty" FaultSimulationReady="true">
 		<Requires KernelVersion="2.6.32" Defined="FITRIM" />
 		<Description>Try to set and get flag values. </Description>
