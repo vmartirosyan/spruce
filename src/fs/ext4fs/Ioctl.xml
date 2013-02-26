@@ -2,12 +2,11 @@
 	<Requires>sys/ioctl.h</Requires>
 	<Requires>linux/fs.h</Requires>
 	<Requires>fcntl.h</Requires>
-	<Requires>ext2_fs.h</Requires>	
+	<Requires>ext4.hpp</Requires>	
 	<Requires>pwd.h</Requires>
 	<Requires>linux/version.h</Requires>
 	<Requires>inttypes.h</Requires>
-	<Requires>defines.h</Requires>
-	
+		
 	<Test Name="SetFlagsGetFlags" FaultSimulationReady="true">		
 		<Description>Try to set and get some flag values.</Description>
 		<File count="1"/>
@@ -17,16 +16,16 @@
 			
 			// Backup the old values just in case
 			int old_flags;	
-			Unres( ioctl(FDs[0], EXT2_IOC_GETFLAGS, &old_flags ) == -1 , "Error backing up old values.");
+			Unres( ioctl(FDs[0], EXT4_IOC_GETFLAGS, &old_flags ) == -1 , "Error backing up old values.");
 			
 			// Set our testing flag values
-			Unres ( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+			Unres ( ioctl(FDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
 		
 			// Get the flags back
-			Unres ( ioctl(FDs[0], EXT2_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+			Unres ( ioctl(FDs[0], EXT4_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
 			
 			// Restore the original flags
-			Unres ( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+			Unres ( ioctl(FDs[0], EXT4_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
 			
 			// Compare them
 			Fail ( get_flags != set_flags, "Set and Get flags mismatch");
@@ -40,7 +39,7 @@
 		<Code>
 			// Backup the old values just in case
 			int old_flags;
-			Unres ( ioctl(FDs[0], EXT2_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+			Unres ( ioctl(FDs[0], EXT4_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
 			if(!(old_flags && EXT4_EXTENTS_FL))
 			{
 				Error("Extent flag not supported",Unsupported);
@@ -48,7 +47,7 @@
 			int non_permitted_flags = old_flags & ~EXT4_EXTENTS_FL; // We may NOT clear the extents flag... but we shall try!
 			EnableFaultSim();
 			// Try to set the non-permitted flag
-			Fail( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &non_permitted_flags ) == 0, "It was permitted to set non-permitted flag!.");
+			Fail( ioctl(FDs[0], EXT4_IOC_SETFLAGS, &non_permitted_flags ) == 0, "It was permitted to set non-permitted flag!.");
 							
 		</Code>
 	</Test>
@@ -58,7 +57,7 @@
 		<Code>
 			int flags = EXT4_EXTENTS_FL;			
 			
-			ENoAccessTest(ioctl(FDs[0], EXT2_IOC_SETFLAGS, &flags ), -1);			
+			ENoAccessTest(ioctl(FDs[0], EXT4_IOC_SETFLAGS, &flags ), -1);			
 		</Code>
 	</Test>
 	<Test Name="SetVersionGetVersion" FaultSimulationReady="true">
@@ -70,16 +69,16 @@
 			
 			// Backup the old version just in case
 			int old_version;
-			Unres ( ioctl(FDs[0], EXT2_IOC_GETVERSION, &old_version) == -1, "Error backing up old version.");
+			Unres ( ioctl(FDs[0], EXT4_IOC_GETVERSION, &old_version) == -1, "Error backing up old version.");
 			
 			// Set our testing version value
-			Unres ( ioctl(FDs[0], EXT2_IOC_SETVERSION, &set_version) == -1, "Error setting new version values.");
+			Unres ( ioctl(FDs[0], EXT4_IOC_SETVERSION, &set_version) == -1, "Error setting new version values.");
 			
 			// Get the version back
-			Unres ( ioctl(FDs[0], EXT2_IOC_GETVERSION, &get_version) == -1, "Error getting version value back.");
+			Unres ( ioctl(FDs[0], EXT4_IOC_GETVERSION, &get_version) == -1, "Error getting version value back.");
 			
 			// Restore the original version
-			Unres ( ioctl(FDs[0], EXT2_IOC_SETVERSION, &old_version) == -1, "Error restoring old version value.");
+			Unres ( ioctl(FDs[0], EXT4_IOC_SETVERSION, &old_version) == -1, "Error restoring old version value.");
 			
 			// Compare them
 			Fail ( get_version != set_version, "Set and Get version mismatch");
@@ -137,9 +136,9 @@
 			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
 			File file("GroupExtendfile");
 			
-			ioctl(file.GetFileDescriptor(), EXT2_IOC_GROUP_EXTEND, 0);//covering code
+			ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_EXTEND, 0);//covering code
 			int NewPartitionSizeInBlocks = PartitionManager::GetDeviceSize(DeviceName)/BlockSize - 50000;
-			Fail(ioctl(file.GetFileDescriptor(), EXT2_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1, "Error during online resize. ");
+			Fail(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1, "Error during online resize. ");
 		</Code>
 		<Footer>
 			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )

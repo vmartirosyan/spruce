@@ -19,7 +19,7 @@
 #define _EXT4_H
 
 #include "platform_defs.hpp"
-#include <ext2_fs.h>
+//#include <ext2_fs.h>
 
 #define	FS_IOC_GETFLAGS			_IOR('f', 1, long)
 #define	FS_IOC_SETFLAGS			_IOW('f', 2, long)
@@ -439,6 +439,8 @@ struct ext4_new_group_data {
 #define EXT4_IOC_GROUP_ADD		_IOW('f', 8, struct ext4_new_group_input)
 #endif
 #define EXT4_IOC_MIGRATE		_IO('f', 9)
+#define EXT4_IOC_RESIZE_FS		_IOW('f', 16, __u64)
+
  /* note ioctl 10 reserved for an early version of the FIEMAP ioctl */
  /* note ioctl 11 reserved for filesystem-independent FIEMAP ioctl */
 #define EXT4_IOC_ALLOC_DA_BLKS		_IO('f', 12)
