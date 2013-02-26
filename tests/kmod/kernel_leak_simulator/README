@@ -1,0 +1,17 @@
+Kernel module which may be used for simulate possible leaks and
+unallocated frees in other module.
+
+Module is payload for KEDR LeakCheck and for KEDR platform itself. Source
+code for module is generated using template for KEDR LeakCheck payloads.
+
+When loaded with 'simulate_allocs=y', each bio_alloc() call is interpreted
+by KEDR LeakChecker as memory allocation.
+
+When loaded with 'simulate_frees=y', each bio_put() call is interpreted
+by KEDR LeakChecker as memory freeing.
+
+NB: While memory allocation interpretation in bio_alloc() seems natural,
+memory freeing interpretation in bio_put() is not correct: this function
+release memory only when it is last reference to 'bio' object. But fact
+of 'last reference' cannot be determined using function interception
+mechanism in KEDR.

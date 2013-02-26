@@ -1,0 +1,136 @@
+<!--    OverloadTests.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Karen Tsirunyan <ktsirunyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="OverloadTests">
+	<Test Name="DirectoriesInWidth" FaultSimulationReady="true">
+		<Description>Trying to create many directories</Description>
+		<Dir count="1000"/>
+		<Code>
+				// just creating 1000 directories
+		</Code>
+	</Test>	
+	
+	<Test Name="DirectoryNames" FaultSimulationReady="true">
+		<Description>Trying to create directories with different long names</Description>
+		<Code>
+		const int dirCount = 150;	//... 
+		const int nameLength = 50;  // the numbers may be refactored. the changes must have point and make sense on coverage improvement
+		char name[nameLength+1];
+		Directory dir[dirCount];
+		int j;
+		
+		for(int i = 0; i < dirCount; ++i)
+		{
+			name[0] = 'a';  // the first character must not be a '-', as it leads to several problems
+			for(j = 1; j < nameLength; ++j)
+			{
+				char randInt = 33 + rand()%94; // all the possible characters possible for using for a file name
+				if(randInt == '/')  // excluding the '/', as slash is not allowed in filenames in Linux. Check out the ASCII table
+					++randInt;
+				name[j] = randInt;
+			}
+			name[j] = 0;   // the end of the name
+			dir[i] = static_cast<string>(name);  //now we have a random name of length 'nameLength'
+		}
+			
+		</Code>
+	</Test>	
+
+	<Test Name="DirectoriesInDepth" FaultSimulationReady="true">
+		<Description>Trying to create many directories inserted</Description>
+		<Code>
+			
+			string Dirpath1;
+			string Dirpath;
+			string Dirpath2;
+			for(char c = 'a'; c < 'z'; ++c)
+			{
+				Dirpath = "dir";
+				Dirpath += c;
+				Unres(mkdir(Dirpath.c_str(), 0777) == -1, "Connot make a directory 1");
+				Dirpath1 = Dirpath;
+				Dirpath2 = Dirpath;
+				Dirpath1 += "/";
+				for(char c1 = 'a'; c1 < 'z'; ++c1)
+				{
+					
+					Dirpath1 += c1;
+					Dirpath2 += "/other";
+					Unres(mkdir(Dirpath1.c_str(), 0777) == -1, "cannot make a directory 2");
+					Dirpath1 += "/";
+					Unres(mkdir(Dirpath2.c_str(), 0777) == -1, "cannot make a directory 3");
+				}
+			}
+
+		</Code>
+	</Test>	
+	
+	<Test Name="BigFiles" FaultSimulationReady="true">
+		<Description>Trying to create some big files</Description>
+		<Code>
+				
+			Unres ( system("rm -rf *") != 0, "Cannot clear partition");
+			const string fileName = "BigFileewoieqhasddddddddwwwwwwwwwwwwwwwwwwwwwwssssssssssssssssssssssssssssssq";		
+			const int fileSize = 3*1024;
+			char * data = new char[fileSize - 10];
+					
+			File file(fileName);
+			write(file.GetFileDescriptor(), data, fileSize - 10);
+			close(file.GetFileDescriptor());	
+						
+			Unres(mkdir("dir1", 0777) == -1, "cannot make a directory");	
+			const string fileName1 = "dir1/gggggggggggggeeeeeeeBigFile1";										
+			File file1(fileName1);
+			write(file1.GetFileDescriptor(), data, fileSize - 10);
+			close(file1.GetFileDescriptor());	
+			Unres(mkdir("newdir", 0777) == -1, "cannot make a directory");	
+			const string fileName2 = "newdir/ZASDdddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww";										
+			File file2(fileName2);
+			write(file2.GetFileDescriptor(), data, fileSize - 10);
+			close(file2.GetFileDescriptor());	
+			
+			delete data;
+		
+		</Code>
+	</Test>	
+	
+	<Test Name="ManySmallWrittenFiles" FaultSimulationReady="true">
+		<Description>Trying to create some small files, and write the data.</Description>
+		<File count = "500" />
+		<Code>
+		
+			const int fileSize = 1024;
+			const int dataSize = fileSize - 10;
+			char * data = new char[dataSize];
+						
+			for(int i = 0; i < 500; ++i)
+			{
+				write(FDs[i], data, dataSize);
+				close(FDs[i]);	
+			}
+			delete data;
+		
+		</Code>
+	</Test>	
+	
+</TestSet>
