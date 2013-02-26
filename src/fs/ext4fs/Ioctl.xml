@@ -6,22 +6,28 @@
 	<Requires>pwd.h</Requires>
 	<Requires>linux/version.h</Requires>
 	<Requires>inttypes.h</Requires>
-	<Requires>defines.h</Requires>
-	
+	<Requires>ext4.hpp</Requires>
+	<Requires>PartitionManager.hpp</Requires>
 	<Test Name="SetFlagsGetFlags" FaultSimulationReady="true">		
 		<Description>Try to set and get some flag values.</Description>
 		<File count="1"/>
 		<Code>
-			int set_flags = EXT4_EXTENTS_FL | 1; // We may NOT clear the extents flag...
+			int set_flags = 0;
+			// Set 'EXT4_IMMUTABLE_FL' flag, assuming that created file is not immutable
+			if(PartitionManager:: IsOptionEnabled("-t ext2", true) || PartitionManager:: IsOptionEnabled("-t ext3", true))
+				set_flags = EXT4_IMMUTABLE_FL | EXT4_SECRM_FL;
+			else
+				set_flags = EXT4_EXTENTS_FL | EXT4_IMMUTABLE_FL | EXT4_SECRM_FL; // We may NOT clear the extents flag...
+				
 			int get_flags = 0;
 			
 			// Backup the old values just in case
-			int old_flags;	
+			int old_flags;
 			Unres( ioctl(FDs[0], EXT2_IOC_GETFLAGS, &old_flags ) == -1 , "Error backing up old values.");
-			
+						
 			// Set our testing flag values
 			Unres ( ioctl(FDs[0], EXT2_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
-		
+			
 			// Get the flags back
 			Unres ( ioctl(FDs[0], EXT2_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
 			
@@ -306,6 +312,9 @@
 				goto CleanUp;		
 		</StartUp>
 		<Header>
+			#ifndef EXT4_IOC_MIGRATE
+			#	define EXT4_IOC_MIGRATE		_IO('f', 9)
+			#endif
 			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
 
 		</Header>
@@ -363,10 +372,11 @@
 		</Code>
 	</Test>
 	<Test Name="Unsupported">
-		<Description>Unsupported operation.</Description>
-		<File count="1"/>
-		<Code>
-			ErrorTest(ioctl(FDs[0], -100, 0), -1, ENOTTY);
-		</Code>
-	</Test>
+        <Description>Unsupported operation.</Description>
+        <File count="1"/>
+        <Code>
+            Fail(ioctl(FDs[0], -100, 0) != -1, "Function should fail but it did not.");
+            Fail(errno != ENOTTY && errno != EINVAL, "Function should return 'ENOTTY' or 'EINVAL' error but it did not.");
+        </Code>
+    </Test>
 </TestSet>

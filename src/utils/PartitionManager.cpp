@@ -243,7 +243,7 @@ bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSyst
 	// That's why it makes sense to retry mounting several times with a delay.
 	int ret_cnt;
 	for(ret_cnt = 0; ret_cnt < 5; ++ret_cnt)
-	{ 
+	{
 		if ( mount(DeviceName.c_str(), MountPoint.c_str(), FileSystem.c_str(), Flags, Options.c_str()) == 0 )
 		{
 			break;
@@ -401,7 +401,7 @@ bool PartitionManager::IsMkfsOptionEnabled(const string & opt)
 	int size = mkfs_opts_s.size();
 	for( i = 0; i < size; ++i )
 	{
-		if(opt == mkfs_opts_s[i])
+		if(mkfs_opts_s[i].find(opt, 0) != string::npos)
 			return true;
 	}
 	return false;
