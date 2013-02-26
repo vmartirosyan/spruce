@@ -87,10 +87,17 @@ class Directory
 				
 				//cerr<<"Removing directory "<<_pathname;
 				
-				if ( system(("rm -rf " + _pathname).c_str()) == -1)
+				UnixCommand remove("rm");
+				vector<string> args;
+				args.push_back("-rf");
+				args.push_back(_pathname);
+				ProcessResult * res = remove.Execute(args);
+				if ( res == NULL || res->GetStatus() )
 				{
-					cerr << "Cannot remove directory " << _pathname << ". Error: " << strerror(errno);					
+					cerr << "Cannot remove Directory" << _pathname<<endl;
+					cerr << res->GetOutput() << endl;  
 				}
+				delete res;
 			
 								
 			}
