@@ -2,9 +2,7 @@
 	<Requires>sys/ioctl.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>linux/fs.h</Requires>
-	<Requires>linux/version.h</Requires>
 	<Requires>xfs.h</Requires>	
-	<Requires>xfs_fs.h</Requires>	
 	<Test Name="SetFlagsNotOwner">
 		<Description>Change flag by not the file owner.</Description>
 		<File count="1"/>
