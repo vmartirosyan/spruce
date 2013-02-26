@@ -1,0 +1,95 @@
+<!--    access.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Gurgen Torozyan <gurgen.torozyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="chown">
+	<Test Name="ChownNormal" FaultSimulationReady="true">
+		<Description>Change ownership of a file.</Description>
+		<File count="1" />
+		<Code>
+			int ret_chown;
+			struct stat mode;
+			struct passwd *nobody;
+			int ret ;
+			uid_t user_uid;
+			gid_t user_gid;
+			
+			nobody= getpwnam("nobody");
+			Unres(nobody == NULL, "getpwnam failed: Aborting test.");
+			
+			//getting user  and group id for nobody user.
+			user_uid = nobody->pw_uid;
+			user_gid = nobody->pw_gid;
+		
+			EnableFaultSim();
+			//changing owner  from root to nobody 
+			ret_chown = chown(FilePaths[0].c_str(), user_uid,user_gid);
+			
+			Fail(ret_chown == -1, "Chown failed: Aborting test.");
+				
+				
+			ret = stat(FilePaths[0].c_str(), &mode);
+			Unres( ret == -1, "stat failed: Aborting test.");
+			
+			if( user_uid != mode.st_uid )
+			{
+				Error("Chown failed :chown should chenge file owner from root to nobody but it does not.", Fail);
+			}
+			
+			if( user_gid != mode.st_gid )
+			{
+				Error("Chown failed :chown should chenge group  from root to nobody but it does not.",  Fail);
+			}
+		
+			;
+			
+		</Code>
+	</Test>
+	<Test Name="ChownIsNotDirectory">
+		<Description>A component of the path prefix is not a directory.</Description>
+		<File count="1" />
+		<Code>
+			ENotDirTest(chown(path, 0,0), -1);
+		</Code>
+	</Test>
+	<Test Name="ChownTooLongPath">
+		<Description>path is too long.</Description>
+		<Code>
+			ENameTooLongTest(chown(path, 0,0), -1);
+		</Code>
+	</Test>
+	<Test Name="ChownFileNotExist">
+		<Description>The file does not exist.</Description>
+		<Code>
+			ErrorTest(chown("non_existing_file", 0, 0), -1, ENOENT);
+		</Code>
+	</Test>
+	
+	<FaultSimulation>
+		<Simulate point="kmalloc"  />
+		<Simulate point="copy_to_user" />
+		<!-- ... -->
+	</FaultSimulation>
+</TestSet>
+
+
