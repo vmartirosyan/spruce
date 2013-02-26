@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 2.6)
 INCLUDE (CheckIncludeFiles)
 INCLUDE (CheckTypeSize)
-
+include_directories("${CMAKE_SOURCE_DIR}/src/fs/ext4fs/Headers")
+include_directories("${CMAKE_SOURCE_DIR}/src/fs/jfs/Headers")
+include_directories("${CMAKE_SOURCE_DIR}/src/fs/xfs/Headers")
+include_directories("${CMAKE_SOURCE_DIR}/src/fs/btrfs/Headers")
 project (Spruce)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)

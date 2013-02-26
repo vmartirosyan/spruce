@@ -68,6 +68,16 @@ std::pair<std::string, unsigned long> map_data[] = {
 std::map<string, unsigned long> PartitionManager::MountFlagMap(map_data,
     map_data + sizeof map_data / sizeof map_data[0]);
 
+std::pair<std::string, unsigned long> map2_data[] = {
+    std::make_pair("ext4",1024),
+	std::make_pair("btrfs",64000),
+	std::make_pair("xfs",0),
+	std::make_pair("jfs",4096)
+};
+
+std::map<string, unsigned long> PartitionManager::SBOffsets(map2_data,
+    map2_data + sizeof map2_data / sizeof map2_data[0]);
+
 PartitionStatus PartitionManager::PreparePartition()
 {
 	Logger::LogInfo((string)"Preparing partition " + _DeviceName);
@@ -338,6 +348,7 @@ bool PartitionManager::IsProjectQuotaEnabled()
 {
 	return IsMountOptionEnabled("prjquota") || IsMountOptionEnabled("pquota") || IsMountOptionEnabled("pqnoenforce");
 }
+
 bool PartitionManager::IsMountOptionEnabled(const string & opt)
 {	
 	string DeviceName = (getenv("Partition") ? getenv("Partition") : "");
@@ -382,7 +393,6 @@ bool PartitionManager::IsMountOptionEnabled(const string & opt)
 	return true;
 }
 
-
 bool PartitionManager::IsMkfsOptionEnabled(const string & opt)
 {
 	string mkfs_opts = getenv("MkfsOpts");
@@ -396,7 +406,6 @@ bool PartitionManager::IsMkfsOptionEnabled(const string & opt)
 	}
 	return false;
 }
-
 
 bool PartitionManager::LoadConfiguration()
 {
@@ -709,3 +718,44 @@ uint64_t PartitionManager::GetDeviceSize(string partition)
 	}
 	return DeviceSize;
 }
+
+bool PartitionManager::GetSuperBlock(void * sb_struct, int size)
+{
+	string fs;
+	string dev;
+	int fd;
+	unsigned long offset;
+	if( getenv("FileSystem") && getenv("Partition") )
+	{
+		fs = getenv("FileSystem");
+		dev = getenv("Partition");
+	}
+	else
+	{
+		cerr << "Cannot get filesystem type or device name" << endl;
+		return false;
+	}
+	offset = SBOffsets[fs];
+	fd = open(dev.c_str(), O_RDONLY);
+	if(fd == -1)
+	{
+		cerr << "Cannot open device." << strerror(errno) << endl;
+		return false;
+	}
+	if( lseek(fd, offset, SEEK_SET) == -1 )
+	{
+		cerr << "Cannot seek in device." << strerror(errno) << endl;
+		close(fd);
+		return false;
+	}
+	if( read(fd, sb_struct, size) == -1 )
+	{
+		cerr << "Cannot read superblock from the device." << strerror(errno) << endl;
+		close(fd);
+		return false;
+	}
+	close(fd);
+	return true;
+		
+}
+

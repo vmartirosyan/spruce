@@ -4,12 +4,15 @@
 	<Requires>fcntl.h</Requires>
 	<Requires>ext2fs/ext2_fs.h</Requires>	
 	<Requires>pwd.h</Requires>
+	<Requires>linux/version.h</Requires>
 	<Requires>inttypes.h</Requires>
+	<Requires>defines.h</Requires>
+	
 	<Test Name="SetFlagsGetFlags" FaultSimulationReady="true">		
 		<Description>Try to set and get some flag values.</Description>
 		<File count="1"/>
 		<Code>
-			int set_flags = /*EXT4_IMMUTABLE_FL |*/ 1; // We may NOT clear the extents flag...
+			int set_flags = EXT4_EXTENTS_FL | 1; // We may NOT clear the extents flag...
 			int get_flags = 0;
 			
 			// Backup the old values just in case
@@ -92,9 +95,6 @@
 #if  LINUX_VERSION_CODE > KERNEL_VERSION(3,1,0)
 		Unsupp("Wait for read only operation is unsupported in Linux 3.1+ versions.");
 #else
-#ifndef EXT4_IOC_WAIT_FOR_READONLY
-#define EXT4_IOC_WAIT_FOR_READONLY	_IOR('f', 99, long)
-#endif
 			EnableFaultSim();
 			if ( ioctl(FDs[0], EXT4_IOC_WAIT_FOR_READONLY, NULL) == -1 )
 			{
@@ -118,6 +118,7 @@
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 			int res;
+			ext4_super_block sb;
 			Unres ( chdir("/") == -1, "Cannot change directory." );
 			res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
 			if( res!= PS_Success )
@@ -130,12 +131,14 @@
 				Error("Partition mount or umount failed");
 				Return(Unresolved);	
 			}			
-			
+			Unres( !PartitionManager::GetSuperBlock(&sb, sizeof(sb)), "Cannot read superblock" );
+			int BlockSize = (1 << (sb.s_log_block_size+10));
+			Unres(!BlockSize, "Block size is zero");
 			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
 			File file("GroupExtendfile");
 			
 			ioctl(file.GetFileDescriptor(), EXT2_IOC_GROUP_EXTEND, 0);//covering code
-			int NewPartitionSizeInBlocks = PartitionManager::GetDeviceSize(DeviceName)/4096 - 50000;
+			int NewPartitionSizeInBlocks = PartitionManager::GetDeviceSize(DeviceName)/BlockSize - 50000;
 			Fail(ioctl(file.GetFileDescriptor(), EXT2_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1, "Error during online resize. ");
 		</Code>
 		<Footer>
@@ -147,17 +150,14 @@
 		</Footer>
 	</Test>
 	<Test Name="ResizeFS" FaultSimulationReady="true" Shallow="true">
-		<Requires KernelVersion="3,3,0" />
+		<Requires KernelVersion="3.3.0" />
 		<Description>Resize FS.</Description>
-		<Code>
-#ifndef EXT4_IOC_RESIZE_FS
-#	define EXT4_IOC_RESIZE_FS              _IOW('f', 16, __u64)
-#endif
-			
+		<Code>	
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 			int res;
+			ext4_super_block sb;
 			Unres ( chdir("/") == -1, "Cannot change directory." );
 			res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
 			if( res!= PS_Success )
@@ -191,8 +191,10 @@
 
 				close(fd);
 			}
-			
-			__u64 BlockCount = DeviceSize / 4096;
+			Unres( !PartitionManager::GetSuperBlock(&sb, sizeof(sb)), "Cannot read superblock" );
+			int BlockSize = (1 << (sb.s_log_block_size+10));
+			Unres(!BlockSize, "Block size is zero");
+			__u64 BlockCount = DeviceSize / BlockSize;
 			Fail(ioctl(file.GetFileDescriptor(), EXT4_IOC_RESIZE_FS, &BlockCount) == -1, "Resize FS failed");
 		</Code>
 		<Footer>
@@ -207,17 +209,6 @@
 		<Description>Move extent.</Description>
 		<File count="2"/>
 		<Code>
-#ifndef EXT4_IOC_MOVE_EXT
-struct move_extent {
-	__u32 reserved;		/* should be zero */
-	__u32 donor_fd;		/* donor file descriptor */
-	__u64 orig_start;	/* logical start offset in block for orig */
-	__u64 donor_start;	/* logical start offset in block for donor */
-	__u64 len;		/* block length to be moved */
-	__u64 moved_len;	/* moved block length */
-};
-#define EXT4_IOC_MOVE_EXT		_IOWR('f', 15, struct move_extent)
-#endif
 			Unres (unlink(FilePaths[0].c_str()) == -1, "Cannot unlink the donor file.");
 			
 			Unres ( fallocate(FDs[0], 0, 0, 32000*2*4096), "Cannot allocate space for donor file.");
@@ -246,9 +237,7 @@ struct move_extent {
 
 			//
 
-#ifndef EXT4_IOC_GROUP_ADD
-#define EXT4_IOC_GROUP_ADD		_IOW('f', 8, struct ext4_new_group_input)
-#endif
+
 			/*
 			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
@@ -317,13 +306,6 @@ struct move_extent {
 				goto CleanUp;		
 		</StartUp>
 		<Header>
-#ifndef EXT4_IOC_MIGRATE
-#	define EXT4_IOC_MIGRATE		_IO('f', 9)
-#endif
-
-#ifdef	COMPAT
-			Unsupp("Not supported in COMPAT mode.");
-#endif	
 			Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
 
 		</Header>
@@ -368,15 +350,7 @@ struct move_extent {
 		<Description>Allocate delayed-allocation blocks.</Description>
 		<File count="1"/>
 		<Code>
-#ifndef EXT4_IOC_ALLOC_DA_BLKS
-#define EXT4_IOC_ALLOC_DA_BLKS		_IO('f', 12)
-#endif
-
-#ifdef	COMPAT
-		Unsupp("Not supported in COMPAT mode.");
-#else
-		Fail ( ioctl(FDs[0], EXT4_IOC_ALLOC_DA_BLKS, 0) == -1, "Error during delayed allocation of blocks.");
-#endif	
+			Fail ( ioctl(FDs[0], EXT4_IOC_ALLOC_DA_BLKS, 0) == -1, "Error during delayed allocation of blocks.");	
 		</Code>
 	</Test>
 	<Test Name="Fitrim" FaultSimulationReady="true" Shallow="true">

@@ -43,6 +43,11 @@
 #include <map>
 #include <set>
 #include <sstream>
+#include <ext4.hpp>
+#include <jfs_superblock.h>
+#include <ctree.h>
+#include <xfs_sb.h>
+
 using namespace std;
 
 enum FileSystems
@@ -149,7 +154,6 @@ public:
 		_FSIndex = GetFSNumber(_FileSystem);			
 		_Index = _AdditionalOptions[_FSIndex].begin();
 	}
-	
 	PartitionStatus PreparePartition();
 	static PartitionStatus RestorePartition(string DeviceName, string MountPoint, string FileSystem, bool RecreateFilesystem = false, bool resizeFlag = false);
 	static bool ReleasePartition(string MountPoint, string* output = NULL);
@@ -162,6 +166,7 @@ public:
 	static bool IsUserQuotaEnabled();
 	static bool IsGroupQuotaEnabled();
 	static bool IsProjectQuotaEnabled();
+	static bool GetSuperBlock(void *, int);
 	
 	struct CurrentOptions
 	{
@@ -212,7 +217,7 @@ private:
 		//string _CurrentMountOptions;
 		string _MkfsOpts;
 		//string _CurrentMkfsOptions;
-				
+		static std::map<string, unsigned long> SBOffsets;	//fs superblock offsets on disk in bytes	
 		set<CurrentOptions>::iterator _Index;
 		FileSystems _FSIndex;		
 		set<CurrentOptions> _AdditionalOptions[FS_UNSUPPORTED];		
@@ -222,7 +227,6 @@ private:
 		bool LoadConfiguration();
 		static bool CreateFilesystem(string fs, string partition, bool resizeFlag = false, string mkfs_opts = "");
 		FileSystems GetFSNumber(string FSName);
-		
 		
 		static std::map<string, unsigned long> MountFlagMap;
 };

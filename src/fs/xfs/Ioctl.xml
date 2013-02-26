@@ -1,23 +1,10 @@
 <TestSet Name="Ioctl">
-	<GlobalHeader>
-#define DO_EXPAND(VAL)  VAL ## 1
-#define EXPAND(VAL)     DO_EXPAND(VAL)
-
-#if EXPAND(HAVE_XFS_H) == 1
-	EmptyTestSet(xfs, Ioctl, Unsupported, "XFS header file is not found in the system. Please install the xfslibs-dev package.")
-#else
-	</GlobalHeader>
 	<Requires>sys/ioctl.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>linux/fs.h</Requires>
 	<Requires>linux/version.h</Requires>
-	<Requires>xfs/xfs.h</Requires>	
-	<Requires>xfs/xfs_fs.h</Requires>	
-	<Header>
-		#ifndef BMV_IF_DELALLOC
-		#define BMV_IF_DELALLOC		0x8
-		#endif 	
-	</Header>
+	<Requires>xfs.h</Requires>	
+	<Requires>xfs_fs.h</Requires>	
 	<Test Name="SetFlagsNotOwner">
 		<Description>Change flag by not the file owner.</Description>
 		<File count="1"/>
@@ -116,19 +103,15 @@
 	</Test>
 	<Test Name="XFS_IOC_ZERO_RANGE" Shallow="true">
 		<Description>XFS_IOC_ZERO_RANGE</Description>
-		<Requires KernelVersion="2,6,37" />
+		<Requires KernelVersion="2.6.37" />
 		<File count="1"/>
 		<Code>
-#ifndef XFS_IOC_ZERO_RANGE
-	Unsupp("The XFS_IOC_ZERO_RANGE value is not defined.");
-#else
 			xfs_flock64_t arg;
 			memset(&arg, 0, sizeof(arg));
 			arg.l_len = 100;
 			Unres ( ioctl(FDs[0], XFS_IOC_RESVSP, &arg) == -1, "Cannot reserve space");
 			
 			Fail ( ioctl(FDs[0], XFS_IOC_ZERO_RANGE, &arg) == -1, "Ioctl failed");
-#endif
 		</Code>		
 	</Test>
 	<Test Name="XFS_IOC_DIOINFO" Shallow="true">
@@ -563,8 +546,5 @@
 			ioctl(FDs[0], XFS_IOC_ERROR_CLEARALL, buf);
 		</Code>
 	</Test-->
-	<GlobalFooter>
-#endif
-	</GlobalFooter>
 </TestSet>
 
