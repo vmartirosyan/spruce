@@ -1,0 +1,5 @@
+module_name=leak_simulator
+
+ccflags-y :=  -I@KEDR_INSTALL_PREFIX@/include
+obj-m := $(module_name).o
+$(module_name)-y := params.o payload.o functions_support.o
