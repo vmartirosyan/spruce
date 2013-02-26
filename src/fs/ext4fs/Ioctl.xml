@@ -113,41 +113,68 @@
 	</Test>
 	<Test Name="GroupExtend" FaultSimulationReady="true" Shallow="true">
 		<Description>Group extend.</Description>
-		<File count="1"/>
 		<Code>
-			struct stat st;
-			Unres ( fstat (FDs[0], &st ) == -1, "Cannot stat file " + static_cast<string>(MountPoint));
 		
-			ioctl(FDs[0], EXT2_IOC_GROUP_EXTEND, 0);//covering code
-			int NewPartitionSizeInBlocks = PartitionManager::GetDeviceSize(DeviceName)/4096+50000;
-			if(ioctl(FDs[0], EXT2_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1)
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			int res;
+			Unres ( chdir("/") == -1, "Cannot change directory." );
+			res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+			if( res!= PS_Success )
 			{
-				cerr << "Error during online resize. " << strerror(errno);
-				Return(Fail);
-			}
-		
-			//Status status;
+				if( res == PS_Fatal )
+				{
+					Error("Device too small.");
+					Return(Unresolved);
+				}						
+				Error("Partition mount or umount failed");
+				Return(Unresolved);	
+			}			
 			
-			/*NewPartitionSizeInBlocks -= 2;
-			if ( ioctl(FDs[0], EXT2_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1 )
-			{
-				cerr << "Error during online resize. " << strerror(errno);
-				Return(Fail);
-			}
-			else
-			{
-				cerr << "Online resize was successful. " << endl;
-			}*/
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			File file("GroupExtendfile");
+			
+			ioctl(file.GetFileDescriptor(), EXT2_IOC_GROUP_EXTEND, 0);//covering code
+			int NewPartitionSizeInBlocks = PartitionManager::GetDeviceSize(DeviceName)/4096 - 50000;
+			Fail(ioctl(file.GetFileDescriptor(), EXT2_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1, "Error during online resize. ");
 		</Code>
+		<Footer>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+			{
+				Error("Restoring Partition failed!");
+				Return(Fatal);
+			}
+		</Footer>
 	</Test>
 	<Test Name="ResizeFS" FaultSimulationReady="true" Shallow="true">
 		<Requires KernelVersion="3,3,0" />
 		<Description>Resize FS.</Description>
-		<File count="1"/>
 		<Code>
 #ifndef EXT4_IOC_RESIZE_FS
 #	define EXT4_IOC_RESIZE_FS              _IOW('f', 16, __u64)
 #endif
+			
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			int res;
+			Unres ( chdir("/") == -1, "Cannot change directory." );
+			res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+			if( res!= PS_Success )
+			{
+				if( res == PS_Fatal )
+				{
+					Error("Device too small.");
+					Return(Unresolved);
+				}						
+				Error("Partition mount or umount failed");
+				Return(Unresolved);	
+			}			
+			
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			File file("ResizeFSfile");
+
 			uint64_t DeviceSize;
 			struct stat st;
 			Unres ( stat(DeviceName, &st) == -1, "Cannot get file stats.");
@@ -167,8 +194,15 @@
 			}
 			
 			__u64 BlockCount = DeviceSize / 4096;
-			Fail(ioctl(FDs[0], EXT4_IOC_RESIZE_FS, &BlockCount) == -1, "Resize FS failed");
+			Fail(ioctl(file.GetFileDescriptor(), EXT4_IOC_RESIZE_FS, &BlockCount) == -1, "Resize FS failed");
 		</Code>
+		<Footer>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+			{
+				Error("Restoring Partition failed!");
+				Return(Fatal);
+			}
+		</Footer>
 	</Test>
 	<Test Name="MoveExtent" FaultSimulationReady="true" Shallow="true">
 		<Description>Move extent.</Description>
@@ -206,30 +240,76 @@ struct move_extent {
 			
 		</Code>
 	</Test>
-	<Test Name="GroupAdd" FaultSimulationReady="true" Shallow="true">
+	<!--Test Name="GroupAdd" FaultSimulationReady="true" Shallow="true">
 		<Description>Group add.</Description>
 		<File count="1"/>
 		<Code>
-struct ext4_new_group_data {
-	__u32 group;
-	__u64 block_bitmap;
-	__u64 inode_bitmap;
-	__u64 inode_table;
-	__u32 blocks_count;
-	__u16 reserved_blocks;
-	__u16 unused;
-	__u32 free_blocks_count;
-};
+
+			//
+
 #ifndef EXT4_IOC_GROUP_ADD
 #define EXT4_IOC_GROUP_ADD		_IOW('f', 8, struct ext4_new_group_input)
 #endif
-			struct ext4_new_group_input input;
-			memset(&input, 0, sizeof(input));			
-						
-			ioctl(FDs[0], EXT4_IOC_GROUP_ADD, &input);
+			/*
+			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			int res;
+			Unres ( chdir("/") == -1, "Cannot change directory." );
+			res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+			if( res!= PS_Success )
+			{
+				if( res == PS_Fatal )
+				{
+					Error("Device too small.");
+					Return(Unresolved);
+				}						
+				Error("Partition mount or umount failed");
+				Return(Unresolved);	
+			}
 			
+			int sbNumber = 1024; // 1024 is the superblock number according to documentation
+			int fdOpen = open(DeviceName, O_RDONLY);
+			Unres(fdOpen == -1, "error in opening device file");
+			Unres(lseek(fdOpen, sbNumber, SEEK_SET) == -1, "error while lseek");
+			ext2_super_block myStruct;
+			Unres(read(fdOpen, &myStruct, sizeof(ext2_super_block)) == -1, "Cannot read superblock into buffer");
+			struct ext4_new_group_input input;
+		   	memset(&input, 0, sizeof(input));
+		
+		   	// the modulo of devision of s_blocks_count on s_blocks_per_group may be not be an integer, so we are rounding it to up. 
+		   	int blockCount = myStruct.s_blocks_count - myStruct.s_first_data_block + myStruct.s_blocks_per_group - 1;
+			
+			
+			//input.group = 391;
+			input.group = blockCount / myStruct.s_blocks_per_group ;
+			
+			
+			if(blockCount % myStruct.s_blocks_per_group != 0)
+			{
+				input.group = blockCount / myStruct.s_blocks_per_group + 1;
+			}
+			else
+			{
+				input.group = (blockCount / myStruct.s_blocks_per_group);			
+			}
+			File file("GroupAddFile"); */
+
+			//Fail(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input) == -1, "Error adding Group");
+			
+			struct ext4_new_group_input input;
+		   	memset(&input, 0, sizeof(input));
+			ioctl(FDs[0], EXT4_IOC_GROUP_ADD, &input);
 		</Code>
-	</Test>
+		<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Restoring Partition failed!");
+					Return(Fatal);
+				}
+		</Footer>
+	</Test-->
+
 	<Test Name="Migrate" FaultSimulationReady="true" Shallow="true">
 		<Description>Migrate an Ext3 partition to Ext4</Description>
 		<StartUp>
