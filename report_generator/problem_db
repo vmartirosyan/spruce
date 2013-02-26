@@ -110,6 +110,8 @@ expected test_suite fs-spec
 expected fs xfs
 expected distro Debian
 expected distro_version 6.0.6
+expected arch x86_64
+expected code_bits 32
 
 expected severity Failed
 
