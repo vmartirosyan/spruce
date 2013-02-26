@@ -154,7 +154,10 @@ bool PartitionManager::ReleasePartition(string MountPoint, string* output)
 		return true;
 	}
 	delete res;
-	
+
+	// There is a data race problem in VFS which brings to crashes on unmount.
+	// Let's sync the data first!
+	sync();	
 	
 	UnixCommand unmount("umount");
 	vector<string> unmount_args;
@@ -226,9 +229,21 @@ bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSyst
 		return false;
 	}
 		
-	if ( mount(DeviceName.c_str(), MountPoint.c_str(), FileSystem.c_str(), Flags, Options.c_str()) == -1 )
+	// There was a problem in BtrFS (old kernels) with mount.
+	// That's why it makes sense to retry mounting several times with a delay.
+	int ret_cnt;
+	for(ret_cnt = 0; ret_cnt < 5; ++ret_cnt)
+	{ 
+		if ( mount(DeviceName.c_str(), MountPoint.c_str(), FileSystem.c_str(), Flags, Options.c_str()) == 0 )
+		{
+			break;
+		}
+		Logger::LogError("Cannot mount device, retrying.");		
+		sleep(1);
+	}
+	if(ret_cnt == 5)
 	{
-		Logger::LogError(string("Cannot mount device."));
+		Logger::LogError("Cannot mount device.");		
 		return false;
 	}
 	
