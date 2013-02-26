@@ -10,6 +10,7 @@
 	<Requires>sys/ioctl.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>linux/fs.h</Requires>
+	<Requires>linux/version.h</Requires>
 	<Requires>xfs/xfs.h</Requires>	
 	<Requires>xfs/xfs_fs.h</Requires>	
 	<Header>
@@ -115,6 +116,7 @@
 	</Test>
 	<Test Name="XFS_IOC_ZERO_RANGE" Shallow="true">
 		<Description>XFS_IOC_ZERO_RANGE</Description>
+		<Requires KernelVersion="2,6,37" />
 		<File count="1"/>
 		<Code>
 #ifndef XFS_IOC_ZERO_RANGE
