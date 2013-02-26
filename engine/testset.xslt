@@ -43,6 +43,7 @@
 #include &lt;KedrIntegrator.hpp>
 #include &lt;PartitionManager.hpp>
 #include &lt;Logger.hpp>
+#include &lt;linux/version.h>
 using std::map;
 using std::string;
 
