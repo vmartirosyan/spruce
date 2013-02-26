@@ -104,7 +104,7 @@
 			{
 				if ( errno == ENOTTY || errno == EINVAL )
 				{
-					Error("FIEMAP is not supported by Btrfs.", Unsupported);
+					Error("FIEMAP is not supported.", Unsupported);
 				}
 				else
 				{
@@ -126,7 +126,7 @@
 			{
 				if ( errno == ENOTTY || errno == EINVAL )
 				{
-					Error("FIEMAP is not supported by Btrfs.", Unsupported);
+					Error("FIEMAP is not supported.", Unsupported);
 				}
 				else
 				{
