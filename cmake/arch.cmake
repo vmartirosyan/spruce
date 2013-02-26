@@ -32,7 +32,6 @@ function (arch module)
 	   )
 		set_source_files_properties(module_32.cpp PROPERTIES COMPILE_FLAGS "-m32")
 		
-		ADD_DEFINITIONS(-DCOMPAT)
 		ADD_EXECUTABLE(${module}_32 module_32.cpp)
 		TARGET_LINK_LIBRARIES(${module}_32 utils_32)
 		if (${module} STREQUAL "syscall")
@@ -40,6 +39,7 @@ function (arch module)
 		endif()	
 		
 		set_target_properties(${module}_32 PROPERTIES LINK_FLAGS "-m32") 
+		set_target_properties(${module}_32 PROPERTIES COMPILE_FLAGS "-DCOMPAT")
 		
 		install (	FILES "${CMAKE_BINARY_DIR}/bin/${module}_32"
 				DESTINATION bin
