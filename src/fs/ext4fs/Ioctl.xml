@@ -2,7 +2,7 @@
 	<Requires>sys/ioctl.h</Requires>
 	<Requires>linux/fs.h</Requires>
 	<Requires>fcntl.h</Requires>
-	<Requires>ext2fs/ext2_fs.h</Requires>	
+	<Requires>ext2_fs.h</Requires>	
 	<Requires>pwd.h</Requires>
 	<Requires>linux/version.h</Requires>
 	<Requires>inttypes.h</Requires>
