@@ -105,6 +105,21 @@ attribute comment [comment required]
 
 end
 
+test Ioctl	XFS_IOC_ZERO_RANGE
+expected test_suite fs-spec
+expected fs xfs
+expected distro Debian
+expected distro_version 6.0.6
+
+expected severity Failed
+
+matched test_messages Error: Invalid argument
+
+attribute comment Debian 6.0.6 doesn't support XFS_IOC_ZERO_RANGE. 
+attribute resolution Debian 6.0.6 problem
+
+end
+
 test read_write ReadWriteDirect
 expected test_suite syscall
 expected fs ext4
@@ -134,3 +149,4 @@ attribute comment Ext4 doesn't support direct IO with journaling before kernel 3
 attribute resolution Filesystem problem
 
 end
+
