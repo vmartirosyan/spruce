@@ -94,7 +94,7 @@
 		</Code>
 	</Test>
 	<!-- This commang is removed in newer kernels... -->
-	<Test Name="WaitForReadonly" FaultSimulationReady="true" Shallow="true">
+	<!--Test Name="WaitForReadonly" FaultSimulationReady="true" Shallow="true">
 
 		<Description>Wait for read only.</Description>
 		<File count="1"/>
@@ -116,7 +116,7 @@
 			}
 #endif
 		</Code>		
-	</Test>
+	</Test-->
 	<Test Name="GroupExtend" FaultSimulationReady="true" Shallow="true">
 		<Description>Group extend.</Description>
 		<Code>
