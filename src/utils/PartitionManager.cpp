@@ -521,14 +521,11 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 	string PartitionSize;
 	if ( !resizeFlag )
 	{
-		if(fs != "ext4")
 			s2 << ((DeviceSize / BlockSize) );
-		else
-			s2 << ((DeviceSize / BlockSize) - 100000);
 	}
 	else
 	{
-		s2 << ((DeviceSize / BlockSize) - 10000);
+		s2 << ((DeviceSize / BlockSize) - 100000);
 	}
 	PartitionSize = s2.str();
 	
