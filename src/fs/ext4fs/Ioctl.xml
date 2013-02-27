@@ -4,7 +4,6 @@
         <Requires>fcntl.h</Requires>
         <Requires>ext4.hpp</Requires>   
         <Requires>pwd.h</Requires>
-        <Requires>linux/version.h</Requires>
         <Requires>inttypes.h</Requires>
         <Requires>ext4.hpp</Requires>
         <Requires>PartitionManager.hpp</Requires>
