@@ -2,4 +2,5 @@
 	<TestSet Name="Ioctl" />
 	<TestSet Name="OverloadTests" />
 	<TestSet Name="truncate" />
+	<TestSet Name="ShowAndStoreFunctions" />
 </Module>
