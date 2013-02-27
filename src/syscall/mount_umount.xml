@@ -195,25 +195,6 @@
 			ErrorTest(umount( reinterpret_cast<char*>(-1) ), -1, EFAULT);
 		</Code>
 	</Test>
-	<Test Name="MountLoop">
-		<Description>Mount: target points outside the user address space.</Description>
-		<Code>
-			ErrorTest(umount( reinterpret_cast<char*>(-1) ), -1, EFAULT);
-		</Code>
-	</Test>
-	<Test Name="MountLoop1">
-		<Description>Mount: Too  many  links  encountered during pathname resolution.</Description>
-		<Dir count="1"/>
-		<Code>
-			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			ELoopDirTest(mount( DeviceName, path, FileSystem, 0 | rdonlyflag, 0 ), -1);
-		</Code>
-	</Test>
 	<Test Name="MountLoop2">
 		<Description>Mount: a move was attempted, while target is a descendant of source.</Description>
 		<Code>
