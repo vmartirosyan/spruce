@@ -609,16 +609,28 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 			string Partition = partition;
 			args.clear();
 			vector<string> tmp = SplitString(mkfs_opts_s[i], ' ', vector<string>());
-			// Overwrite default block size, if it is specified in mkfs_opts
-			unsigned int blkSzInd;
-			for ( blkSzInd = 0; blkSzInd < tmp.size(); ++blkSzInd )
-				if(tmp[blkSzInd] == "-b")
-				{
-					BlockSize = atoi(tmp[blkSzInd+1].c_str());
-					strBlockSize = tmp[blkSzInd+1];
-					break;
-				}
-				
+			// Overwrite default block size, if it is specified in mkfs_opts, for ext4 and xfs fs
+			int blkSzInd = -1;
+			if (fs == "ext4" || fs == "xfs")
+			{
+				for ( blkSzInd = 0; blkSzInd < tmp.size(); ++blkSzInd )
+					if(tmp[blkSzInd] == "-b")
+					{
+						BlockSize = atoi(tmp[blkSzInd+1].c_str());
+						strBlockSize = tmp[blkSzInd+1];
+						s2.str("");
+						if ( !resizeFlag )
+						{
+								s2 << ((DeviceSize / BlockSize) );
+						}
+						else
+						{
+							s2 << ((DeviceSize / BlockSize) - 100000);
+						}
+						PartitionSize = s2.str();
+						break;
+					}
+			}	
 			if(fs == "jfs")
 			{
 				for(int i = 0; i < tmp.size(); i++)
@@ -658,9 +670,10 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 				args.push_back("-b");
 				args.push_back(SizeInBlocks);
 			}
-
-			for ( unsigned int i = 0; i < tmp.size() && i != blkSzInd && i != blkSzInd + 1 ; ++i )
-				args.push_back(tmp[i]);
+			
+			if (fs == "ext4" || fs == "xfs")
+				for ( int i = 0; i < tmp.size() && i != blkSzInd && i != blkSzInd + 1 ; ++i )
+					args.push_back(tmp[i]);
 			if(Partition != "")
 				args.push_back(Partition);
 			if ( fs == "jfs" && PartitionSize != "")
