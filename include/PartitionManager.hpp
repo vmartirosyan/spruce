@@ -163,6 +163,8 @@ public:
 	static bool IsOptionEnabled(string optionName, bool IsMkfsOption = false);
 	static uint64_t GetDeviceSize(string partition);
 	static bool NoMountOptionsEnabled();
+	static bool NoMkfsOptionsEnabled();
+	static bool NoOptionsEnabled();
 	static bool IsUserQuotaEnabled();
 	static bool IsGroupQuotaEnabled();
 	static bool IsProjectQuotaEnabled();

@@ -312,6 +312,12 @@ bool PartitionManager::IsOptionEnabled(string optionName, bool IsMkfsOption)
 }
 
 
+bool PartitionManager::NoOptionsEnabled()
+{
+	return NoMountOptionsEnabled() && NoMkfsOptionsEnabled();
+}
+
+
 bool PartitionManager::NoMountOptionsEnabled()
 {
 	char * sFlags = getenv("MountFlags");
@@ -333,6 +339,19 @@ bool PartitionManager::NoMountOptionsEnabled()
 	
 	return true;
 }
+
+
+bool PartitionManager::NoMkfsOptionsEnabled()
+{
+	char * sOpts = getenv("MkfsOpts");
+	if ( !sOpts || !strcmp("", sOpts))
+	{
+		return true;
+	}
+	
+	return false;
+}
+
 
 bool PartitionManager::IsUserQuotaEnabled()
 {
