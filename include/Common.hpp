@@ -181,10 +181,10 @@ struct FSimInfo
     string link2 = "link2";\
 	Directory dir(dirPath, 0777);\
 	Unres (chdir(dirPath.c_str()) == -1, "Cannot change directory");\
-	Unres (symlink (dirPath.c_str(), link1.c_str()) != 0, "symlink() can't create symlink.");\
-	Unres (symlink (link1.c_str(), link2.c_str()) != 0, "symlink() can't create symlink.");\
+	Unres (symlink (dirPath.c_str(), link1.c_str()) != 0, "symlink() can't create symlink1.");\
+	Unres (symlink (link1.c_str(), link2.c_str()) != 0, "symlink() can't create symlink2.");\
 	Unres (unlink (link1.c_str()) != 0, "remove() can't remove symlink.");\
-	Unres (symlink (link2.c_str(), link1.c_str()) != 0, "symlink() can't create symlink.");\
+	Unres (symlink (link2.c_str(), link1.c_str()) != 0, "symlink() can't create symlink3.");\
 	Unres (chdir("..") == -1, "Cannot change back to parent directory");\
 	const char *path = (dirPath + link1).c_str();\
 	ErrorTest(func_call, error_val, ELOOP);\
