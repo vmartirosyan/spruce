@@ -25,7 +25,6 @@
 
 <TestSet Name="fcntl">
 	<Requires>fcntl.h</Requires>
-	<Requires>linux/version.h</Requires>
 	<GlobalHeader>
 		int SignalNumber = 0;
 		void SignalHandler(int signum)

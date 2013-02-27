@@ -27,7 +27,6 @@
 	<Requires>sys/types.h</Requires>
 	<Requires>sys/statvfs.h</Requires>
 	<Requires>linux/fs.h</Requires>
-	<Requires>linux/version.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>btrfs.hpp</Requires>
 	<Requires>defines.h</Requires>
