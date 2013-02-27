@@ -118,7 +118,7 @@
 		<Description>Ioctl FIEMAP test with FIEMAP_FLAG_XATTR flag set.</Description>
 		<File count="1"/>
 		<Code>
-			if(PartitionManager::IsOptionEnabled("-t ext2") || PartitionManager::IsOptionEnabled("-t ext3"))
+			if(PartitionManager::IsOptionEnabled("-t ext2", true) || PartitionManager::IsOptionEnabled("-t ext3", true))
 			{
 				Unsupp("FIEMAP_FLAG_XATTR flag is not supported on ext2 and ext3 file systems");
 			}
