@@ -119,6 +119,13 @@
         </Test-->
         <Test Name="GroupExtend" FaultSimulationReady="true" Shallow="true">
                 <Description>Group extend.</Description>
+				<Header>            
+					   if ( !PartitionManager::NoOptionsEnabled() )
+						{   
+							  Error("Works only with no mount options.");
+							  return Skipped;           
+						}
+				</Header>
                 <Code>
                 
                         Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -159,6 +166,13 @@
         <Test Name="ResizeFS" FaultSimulationReady="true" Shallow="true">
                 <Requires KernelVersion="3.3.0" />
                 <Description>Resize FS.</Description>
+				<Header>            
+					   if ( !PartitionManager::NoOptionsEnabled() )
+						{   
+							  Error("Works only with no mount options.");
+							  return Skipped;           
+						}
+                </Header>
                 <Code>  
                         Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
                         Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
@@ -239,6 +253,13 @@
         </Test>
         <Test Name="GroupAdd" FaultSimulationReady="true" Shallow="true">
                 <Description>Group add.</Description>
+                 <Header>            
+                       if ( !PartitionManager::NoOptionsEnabled() )
+                        {   
+							  Error("Works only with no mount options.");
+                              return Skipped;           
+                        }
+                </Header>
                 <Code>
 						
                         Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -305,12 +326,17 @@
 
         <Test Name="Migrate" FaultSimulationReady="true" Shallow="true">
                 <Description>Migrate an Ext3 partition to Ext4</Description>
-                <StartUp>
-                        // Temporary solution. Should be removed as soon as the logic of test execution is changed.             
-                        if ( !PartitionManager::NoMountOptionsEnabled() )
-                                goto CleanUp;           
-                </StartUp>
                 <Header>
+					
+					int _file = -1;   
+					
+                        // Temporary solution. Should be removed as soon as the logic of test execution is changed.             
+                        if ( !PartitionManager::NoOptionsEnabled() )
+                        {   
+							  Error("Works only with no mount options.");
+                              return Skipped;           
+                        }
+                              
                         #ifndef EXT4_IOC_MIGRATE
                         #       define EXT4_IOC_MIGRATE         _IO('f', 9)
                         #endif
@@ -319,9 +345,10 @@
 						#endif	
                         
                         Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+                                    
                 </Header>
                 <Code>
-                        int _file = -1;
+                                 
                         UnixCommand mkfs("mkfs.ext3");
                         vector<string> args;
                         args.push_back(DeviceName);
@@ -347,7 +374,7 @@
                         Fail ( ioctl(_file, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
                         
                 </Code>
-                <CleanUp>
+                <Footer>
                         if (_file != -1)
                                 close(_file);
                         if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success )
@@ -355,7 +382,7 @@
                                 Error("Restore failed!");
                                 _exit(Fatal);
                         }
-                </CleanUp>
+                </Footer>
         </Test>
         <Test Name="AllocDABlocks" FaultSimulationReady="true" Shallow="true">
                 <Description>Allocate delayed-allocation blocks.</Description>
