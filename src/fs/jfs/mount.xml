@@ -4,7 +4,7 @@ It seems the part of resize.c refering to invalid block number checks
 isn't covered as mount options are parsed and checked in super.c-->
 <TestSet Name="mount">
 	<StartUp>
-		if ( !PartitionManager::NoMountOptionsEnabled() )
+		if ( !PartitionManager::NoOptionsEnabled() )
 			goto CleanUp;
 	</StartUp>
         <Requires>sys/mount.h</Requires>

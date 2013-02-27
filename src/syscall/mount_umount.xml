@@ -25,7 +25,7 @@
 <TestSet Name="mount_umount">
 	<StartUp>
 		// Temporary solution. Should be removed as soon as the logic of test execution is changed.		
-		if ( !PartitionManager::NoMountOptionsEnabled() )
+		if ( !PartitionManager::NoOptionsEnabled() )
 			goto CleanUp;		
 	</StartUp>
 	<Header>
