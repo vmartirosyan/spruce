@@ -21,7 +21,7 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="OverlaodTests">
+<TestSet Name="OverloadTests">
 	<Test Name="DirectoriesInWidth" FaultSimulationReady="true">
 		<Description>Trying to create many directories</Description>
 		<Dir count="1000"/>
@@ -89,7 +89,6 @@
 		<Description>Trying to create some big files</Description>
 		<Code>
 				
-			Unres ( system("rm -rf *") != 0, "Cannot clear partition");
 			const string fileName = "BigFileewoieqhasddddddddwwwwwwwwwwwwwwwwwwwwwwssssssssssssssssssssssssssssssq";		
 			const int fileSize = 3*1024;
 			char * data = new char[fileSize - 10];

@@ -33,7 +33,7 @@
 	<Test Name="DirectoryNames" FaultSimulationReady="true">
 		<Description>Trying to create directories with different long names</Description>
 		<Code>
-		const int dirCount = 150;	//... 
+		const int dirCount = 50;	//... 
 		const int nameLength = 50;  // the numbers may be refactored. the changes must have point and make sense on coverage improvement
 		char name[nameLength+1];
 		Directory dir[dirCount];
@@ -89,7 +89,6 @@
 		<Description>Trying to create some big files</Description>
 		<Code>
 				
-			Unres ( system("rm -rf *") != 0, "Cannot clear partition");
 			const string fileName = "BigFileewoieqhasddddddddwwwwwwwwwwwwwwwwwwwwwwssssssssssssssssssssssssssssssq";		
 			const int fileSize = 3*1024;
 			char * data = new char[fileSize - 10];
