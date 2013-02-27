@@ -377,6 +377,17 @@
                         Fail ( ioctl(FDs[0], FITRIM, &arg) == -1 , "Error FITRIM.");
                 </Code>
         </Test>
+        <Test Name="CompatIoctlTests" Shallow="true">
+                <Requires Defined="COMPAT" />
+                <Description>EXT4_IOC32_GETRSVSZ and EXT4_IOC32_SETRSVSZ coverage tests</Description>
+                <File count="1"/>
+                <Code>
+						// This ioctl cases is not implemented, empty cases in compat_ioctl
+                        char ptr; 
+                        ioctl(FDs[0], EXT4_IOC32_GETRSVSZ, &ptr);
+                        ioctl(FDs[0], EXT4_IOC32_SETRSVSZ, &ptr);
+                </Code>
+        </Test>
         <Test Name="Unsupported">
         <Description>Unsupported operation.</Description>
         <File count="1"/>
