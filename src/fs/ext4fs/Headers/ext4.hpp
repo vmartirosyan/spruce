@@ -363,16 +363,17 @@ enum {
         CHECK_FLAG_VALUE(RESERVED);
 }*/
 
+typedef __u64 __attribute__((aligned(4))) compat_u64;
 
-#if defined(__KERNEL__) && defined(CONFIG_COMPAT)
+#ifdef COMPAT
 struct compat_ext4_new_group_input {
-        u32 group;
+        __u32 group;
         compat_u64 block_bitmap;
         compat_u64 inode_bitmap;
         compat_u64 inode_table;
-        u32 blocks_count;
-        u16 reserved_blocks;
-        u16 unused;
+        __u32 blocks_count;
+        __u16 reserved_blocks;
+        __u16 unused;
 };
 #endif
 
@@ -386,6 +387,16 @@ struct ext4_new_group_data {
         __u16 reserved_blocks;
         __u16 unused;
         __u32 free_blocks_count;
+};
+
+struct ext4_new_group_input {
+	__u32 group;		/* Group number for this data */
+	__u64 block_bitmap;	/* Absolute block number of block bitmap */
+	__u64 inode_bitmap;	/* Absolute block number of inode bitmap */
+	__u64 inode_table;	/* Absolute block number of inode table start */
+	__u32 blocks_count;	/* Total number of blocks in this group */
+	__u16 reserved_blocks;	/* Number of reserved blocks in this group */
+	__u16 unused;
 };
 
 /*
@@ -446,7 +457,7 @@ struct ext4_new_group_data {
 #define EXT4_IOC_ALLOC_DA_BLKS          _IO('f', 12)
 #define EXT4_IOC_MOVE_EXT               _IOWR('f', 15, struct move_extent)
 
-#if defined(__KERNEL__) && defined(CONFIG_COMPAT)
+#ifdef COMPAT
 /*
  * ioctl commands in 32 bit emulation
  */

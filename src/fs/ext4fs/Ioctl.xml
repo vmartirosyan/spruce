@@ -4,6 +4,7 @@
         <Requires>fcntl.h</Requires>
         <Requires>ext4.hpp</Requires>   
         <Requires>pwd.h</Requires>
+        <Requires>linux/version.h</Requires>
         <Requires>inttypes.h</Requires>
         <Requires>ext4.hpp</Requires>
         <Requires>PartitionManager.hpp</Requires>
@@ -236,19 +237,15 @@
                         
                 </Code>
         </Test>
-        <!--Test Name="GroupAdd" FaultSimulationReady="true" Shallow="true">
+        <Test Name="GroupAdd" FaultSimulationReady="true" Shallow="true">
                 <Description>Group add.</Description>
-                <File count="1"/>
                 <Code>
-
-                        //
-
-
-                        /*
+						
                         Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
                         Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
                         Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
                         int res;
+                        ext4_super_block sb;
                         Unres ( chdir("/") == -1, "Cannot change directory." );
                         res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
                         if( res!= PS_Success )
@@ -260,49 +257,51 @@
                                 }                                               
                                 Error("Partition mount or umount failed");
                                 Return(Unresolved);     
-                        }
+                        }                       
+                        Unres( !PartitionManager::GetSuperBlock(&sb, sizeof(sb)), "Cannot read superblock" );
+                        int BlockSize = (1 << (sb.s_log_block_size+10));
+                        Unres(!BlockSize, "Block size is zero");
+                        Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+                        File file("GroupAddfile");
                         
-                        int sbNumber = 1024; // 1024 is the superblock number according to documentation
-                        int fdOpen = open(DeviceName, O_RDONLY);
-                        Unres(fdOpen == -1, "error in opening device file");
-                        Unres(lseek(fdOpen, sbNumber, SEEK_SET) == -1, "error while lseek");
-                        ext2_super_block myStruct;
-                        Unres(read(fdOpen, &myStruct, sizeof(ext2_super_block)) == -1, "Cannot read superblock into buffer");
-                        struct ext4_new_group_input input;
-                        memset(&input, 0, sizeof(input));
+                        
+                        // NEED TO CONSIDER ALSO THE s_blocks_count_hi, in case of BIG file systems.
+                        
+                        int blockCount = ((sb.s_blocks_count_lo /  sb.s_blocks_per_group) + 1) * sb.s_blocks_per_group;
+                        Unres(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_EXTEND, &blockCount) == -1, "Cannot extend file system.");
+                        
+                        
                 
                         // the modulo of devision of s_blocks_count on s_blocks_per_group may be not be an integer, so we are rounding it to up. 
-                        int blockCount = myStruct.s_blocks_count - myStruct.s_first_data_block + myStruct.s_blocks_per_group - 1;
+                        blockCount = sb.s_blocks_count_lo - sb.s_first_data_block + sb.s_blocks_per_group - 1;
                         
+                  #ifndef COMPAT
+                        ext4_new_group_input input;
                         
-                        //input.group = 391;
-                        input.group = blockCount / myStruct.s_blocks_per_group ;
+                  #else
+                        compat_ext4_new_group_input input;
                         
+                  #endif
+						memset(&input, 0, sizeof(input));
+                        input.group = blockCount / sb.s_blocks_per_group ;
+                        input.blocks_count = 32768;
                         
-                        if(blockCount % myStruct.s_blocks_per_group != 0)
-                        {
-                                input.group = blockCount / myStruct.s_blocks_per_group + 1;
-                        }
-                        else
-                        {
-                                input.group = (blockCount / myStruct.s_blocks_per_group);                       
-                        }
-                        File file("GroupAddFile"); */
-
-                        //Fail(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input) == -1, "Error adding Group");
+                        //these numbers must be bigger than blocks_count
+                        input.block_bitmap = blockCount + 1;
+                        input.inode_bitmap = blockCount + 2;
+                        input.inode_table = blockCount + 3;
                         
-                        struct ext4_new_group_input input;
-                        memset(&input, 0, sizeof(input));
-                        ioctl(FDs[0], EXT4_IOC_GROUP_ADD, &input);
+                        Fail(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input) == -1, "Error adding Group");
+                        
                 </Code>
                 <Footer>
-                                if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
-                                {
-                                        Error("Restoring Partition failed!");
-                                        Return(Fatal);
-                                }
+						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+						{
+								Error("Restoring Partition failed!");
+								Return(Fatal);
+						}
                 </Footer>
-        </Test-->
+        </Test>
 
         <Test Name="Migrate" FaultSimulationReady="true" Shallow="true">
                 <Description>Migrate an Ext3 partition to Ext4</Description>
