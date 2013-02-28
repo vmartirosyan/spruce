@@ -42,8 +42,6 @@
 			Unres ( fstat(FDs[0], &stat_buf) == -1, "Cannot stat the file");
 			
 			Fail ( stat_buf.st_atime != cur_time, "Wrong access time was set.");
-			
-			;
 		</Code>
 	</Test>
 	<Test Name="UtimeNormalNull" FaultSimulationReady="true">
@@ -59,9 +57,7 @@
 			
 			Unres ( fstat(FDs[0], &stat_buf) == -1, "Cannot stat the file");
 			
-			Fail ( stat_buf.st_atime != cur_time, "Wrong access time was set.");
-			
-			;
+			Fail ( (stat_buf.st_atime - cur_time) > 1, "Wrong access time was set.");
 		</Code>
 	</Test>
 	<Test Name="UtimeNoAccess">
