@@ -3,4 +3,5 @@
 	<TestSet Name="OverloadTests" />
 	<TestSet Name="mount" />
 	<TestSet Name="WriteDirect" />
+	<TestSet Name="XattrGetALot" />
 </Module>
