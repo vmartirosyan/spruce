@@ -56,11 +56,9 @@ check_executable("quotacheck" QUOTACHECK_PATH)
 
 check_include ("sys/types.h;attr/xattr.h" HAVE_XATTR_H "header file")
 
-check_include ("ext2fs/ext2_fs.h" HAVE_EXT2_FS_H "header file")
 
 check_include ("sys/acl.h" HAVE_ACL_H "header file")
 
-check_include ("xfs/xfs.h" HAVE_XFS_H "header file")
 
 SET( CMAKE_REQUIRED_DEFINITIONS "-D _GNU_SOURCE")
 SET(CMAKE_EXTRA_INCLUDE_FILES "fcntl.h")
