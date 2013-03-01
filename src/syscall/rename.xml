@@ -46,7 +46,6 @@
 				Error("The old file is still there.", Fail);
 			}
 			
-			;
 		</Code>
 	</Test>
 	<Test Name="RenameNormal2" FaultSimulationReady="true">
@@ -68,7 +67,52 @@
 			{
 				Error("The old file is still there.", Fail);
 			}
-			;
+		</Code>
+	</Test>
+		<Test Name="RenameNormalDir1" FaultSimulationReady="true">
+		<Description>Change the name or location of a directory.</Description>
+		<Dir count="1"/>
+		<Code>
+			const char * NewDirName = "RenameNormalDir_new";
+			EnableFaultSim();
+			if ( rename(DirPaths[0].c_str(), NewDirName) == -1 )
+			{
+				Error("Rename failed.", Fail);
+			}
+			
+			if ( access(NewDirName, F_OK) == -1 )
+			{
+				Error("The new directory is not created.", Fail);
+			}
+			
+			rmdir(NewDirName);
+			
+			if ( access(DirPaths[0].c_str(), F_OK) == 0 )
+			{
+				Error("The old directory is still there.", Fail);
+			}
+			
+		</Code>
+	</Test>
+	<Test Name="RenameNormalDir2" FaultSimulationReady="true">
+		<Description>If new directory already exists it will be atomically replaced.</Description>
+		<Dir count="2"/>
+		<Code>
+			EnableFaultSim();
+			if ( rename(DirPaths[0].c_str(), DirPaths[1].c_str()) == -1 )
+			{
+				Error("Rename failed.", Fail);
+			}
+			
+			if ( access(DirPaths[1].c_str(), F_OK) == -1 )
+			{
+				Error("The new directory is not created.", Fail);
+			}
+			
+			if ( access(DirPaths[0].c_str(), F_OK) == 0 )
+			{
+				Error("The old directory is still there.", Fail);
+			}
 		</Code>
 	</Test>
 	<Test Name="RenameNormalHardLink" FaultSimulationReady="true">
@@ -91,7 +135,7 @@
 			}
 			unlink(Link1);
 			unlink(Link2);
-			;
+
 		</Code>
 	</Test>
 	<Test Name="RenameNormalSoftLink1" FaultSimulationReady="true">
@@ -121,7 +165,6 @@
 				Error("The old file is still there.", Fail);
 			}
 			
-			;
 		</Code>
 	</Test>
 	<Test Name="RenameNormalSoftLink2" FaultSimulationReady="true">
@@ -148,7 +191,6 @@
 				Error("The old file is still there.", Fail);
 			}
 			
-			;
 		</Code>
 	</Test>
 	<Test Name="RenameFault1">
