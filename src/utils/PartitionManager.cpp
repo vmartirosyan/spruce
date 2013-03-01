@@ -553,7 +553,9 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 	}
 	else
 	{
-		s2 << ((DeviceSize / BlockSize) - 100000);
+		// If the partition is too small (less than 1GB, then take -100000 blocks
+		// Else let's make it 1GB
+		s2 << ( ( 1000000 < (DeviceSize / BlockSize) ) ? 1000000 : (DeviceSize / BlockSize) - 100000);
 	}
 	PartitionSize = s2.str();
 	
@@ -625,7 +627,9 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 						}
 						else
 						{
-							s2 << ((DeviceSize / BlockSize) - 100000);
+							// If the partition is too small (less than 1GB, then take -100000 blocks
+							// Else let's make it 1GB
+							s2 << ( ( 1000000 < (DeviceSize / BlockSize) ) ? 1000000 : (DeviceSize / BlockSize) - 100000);
 						}
 						PartitionSize = s2.str();
 						break;
