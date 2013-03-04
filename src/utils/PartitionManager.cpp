@@ -678,6 +678,11 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 			if (fs == "ext4" || fs == "xfs")
 				for ( int i = 0; i < tmp.size() && i != blkSzInd && i != blkSzInd + 1 ; ++i )
 					args.push_back(tmp[i]);
+			else
+			{
+				for ( int i = 0; i < tmp.size(); ++i )
+					args.push_back(tmp[i]);
+			}	
 			if(Partition != "")
 				args.push_back(Partition);
 			if ( fs == "jfs" && PartitionSize != "")
