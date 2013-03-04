@@ -28,6 +28,31 @@
 			Fail ( get_flags != set_flags, "Set and Get flags mismatch");
 		</Code>
 	</Test>	
+	<Test Name="SetGetFSFlagsForDirectory" FaultSimulationReady="true">
+		<Description>Try to set and get some flag values.</Description>
+		<Dir count="1"/>			
+		<Code>
+			int set_flags = FS_NOATIME_FL | FS_DIRSYNC_FL | FS_APPEND_FL | FS_IMMUTABLE_FL | FS_SYNC_FL; 
+			int get_flags = 0;
+			
+			// Backup the old values just in case
+			int old_flags;
+			Unres ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+			
+			// Set our testing flag values
+			Unres ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+			
+			// Get the flags back
+			Unres ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+			
+			// Restore the original flags
+			Unres ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+		
+			// Compare them
+			//Fail ( get_flags != set_flags, "Set and Get flags mismatch");
+						
+		</Code>
+	</Test>
 	<Test Name="SetGetFlagsForDirectory" FaultSimulationReady="true">
 		<Description>Try to set and get some flag values.</Description>
 		<Dir count="1"/>			
