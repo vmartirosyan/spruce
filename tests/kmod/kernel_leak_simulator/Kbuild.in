@@ -1,5 +1,5 @@
-module_name=leak_simulator
+module_name=@module_name@
 
-ccflags-y :=  -I@KEDR_INSTALL_PREFIX@/include
+ccflags-y :=  -I@KEDR_INSTALL_PREFIX@/include -I@CMAKE_CURRENT_SOURCE_DIR@
 obj-m := $(module_name).o
-$(module_name)-y := params.o payload.o functions_support.o
+$(module_name)-y := simulation_params.o payload.o functions_support.o
