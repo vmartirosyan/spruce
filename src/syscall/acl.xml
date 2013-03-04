@@ -194,5 +194,15 @@
 			delete buff;
 		</Code>		
 	</Test>
-
+	<Test Name="AccessErrAccess">
+		<Description>Set default acl to a file not to a directory.</Description>
+		<File count="1" />
+		<Code>
+			acl_t acl;
+			acl_t aclCopy;
+			Unres( (acl = acl_init(1)) == NULL, "Cannot initialize acl.");
+			Fail(acl_set_file(FilePaths[0].c_str(),ACL_TYPE_DEFAULT,acl) == 0 || errno != EACCES,"acl_set_file() should return EACCES error code but it did not." );
+	
+		</Code>
+	</Test>
 </TestSet>
