@@ -1,0 +1,2 @@
+add_subdirectory(kernel_bug_simulator)
+add_subdirectory(kernel_leak_simulator)

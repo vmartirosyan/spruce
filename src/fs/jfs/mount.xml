@@ -1,0 +1,77 @@
+<!--    OverloadTests.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Nellie Danielyan <Nellie.92.d@gmail.com>
+//      	Vahram Martirosyan <vmartirosyan@gmail.com>
+//
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<!--Test set covers most of JFS resize.c and some of dmap.c code
+(the functions called from resize.c which weren't called before.)
+It seems the part of resize.c refering to invalid block number checks 
+isn't covered as mount options are parsed and checked in super.c-->
+<TestSet Name="mount">
+	<StartUp>
+		if ( !PartitionManager::NoOptionsEnabled() )
+			goto CleanUp;
+	</StartUp>
+        <Requires>sys/mount.h</Requires>
+        <Requires>sstream</Requires>
+        <Test Name="RemountResize" FaultSimulationReady="true">
+                <Description>Resize.</Description>              
+                <Code>
+						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+                        Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+                        Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+                        int res;
+                        Unres ( chdir("/") == -1, "Cannot change directory." );
+						res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+						if( res!= PS_Success )
+						{
+							if( res == PS_Fatal )
+							{
+								Error("Device too small.");
+								Return(Unresolved);
+							}						
+							Error("Partition mount or umount failed");
+							Return(Unresolved);	
+						}
+						
+                        res = mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") ;
+                        
+                        
+						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+						{
+							Error("Mount failed!");
+							Return(Fatal);
+						}
+						if( res == -1 )
+						{
+							if( PartitionManager::IsOptionEnabled("ro") )
+							{
+								Return(Success);
+							}
+							else
+							{
+								Return(Fail);
+							}
+						}
+                </Code>
+        </Test>
+</TestSet>
