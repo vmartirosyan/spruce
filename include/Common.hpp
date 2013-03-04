@@ -145,7 +145,11 @@ struct FSimInfo
 #define Fail(cond, message)\
 	if ( (cond) )\
 		{ Error(message, Fail) }\
-		
+
+#define Skipped(cond, message)\
+	if ( (cond) )\
+		{ Error(message, Skipped) }\
+
 #define Unres(cond, message)\
 	if ( (cond) )\
 	{ Error(message, Unresolved) }

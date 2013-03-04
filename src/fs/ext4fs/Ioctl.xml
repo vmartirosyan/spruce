@@ -120,11 +120,8 @@
         <Test Name="GroupExtend" FaultSimulationReady="true" Shallow="true">
                 <Description>Group extend.</Description>
 				<Header>            
-					   if ( !PartitionManager::NoOptionsEnabled() )
-						{   
-							  Error("Works only with no mount options.");
-							  return Skipped;           
-						}
+					  	Skipped ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
+
 				</Header>
                 <Code>
                 
@@ -167,11 +164,8 @@
                 <Requires KernelVersion="3.3.0" />
                 <Description>Resize FS.</Description>
 				<Header>            
-					   if ( !PartitionManager::NoOptionsEnabled() )
-						{   
-							  Error("Works only with no mount options.");
-							  return Skipped;           
-						}
+					   	Skipped ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
+
                 </Header>
                 <Code>  
                         Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -254,11 +248,8 @@
         <Test Name="GroupAdd" FaultSimulationReady="true" Shallow="true">
                 <Description>Group add.</Description>
                  <Header>            
-                       if ( !PartitionManager::NoOptionsEnabled() )
-                        {   
-							  Error("Works only with no mount options.");
-                              return Skipped;           
-                        }
+                      	Skipped ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
+
                 </Header>
                 <Code>
 						
@@ -331,15 +322,9 @@
 					int _file = -1;   
 					
                         // Temporary solution. Should be removed as soon as the logic of test execution is changed.             
-                        if ( !PartitionManager::NoOptionsEnabled() )
-                        {   
-							  Error("Works only with no mount options.");
-                              return Skipped;           
-                        }
+                      	Skipped ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
+
                               
-                        #ifndef EXT4_IOC_MIGRATE
-                        #       define EXT4_IOC_MIGRATE         _IO('f', 9)
-                        #endif
                         #ifdef	COMPAT
 						Unsupp("Not supported in COMPAT mode.");
 						#endif	
