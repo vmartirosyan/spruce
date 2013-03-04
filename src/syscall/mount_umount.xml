@@ -139,6 +139,14 @@
 			Fail (mount( DeviceName, MountPoint, FileSystem, MS_SYNCHRONOUS, 0) == -1, "Mount with MS_SYNCHRONOUS flag attempted failed");
 		</Code>	
 	</Test>
+	<Test Name="MountWrongOption" FaultSimulationReady="true">
+		<Description>Trying to mount the device to another partition</Description>		
+		<Code>
+			EnableFaultSim();
+				
+			mount( DeviceName, MountPoint, FileSystem, 0, "NotAnOption");			
+		</Code>
+	</Test>
 	<Test Name="UmountInval">
 		<Description>Umount: Target is not a mount point.</Description>
 		<Code>
