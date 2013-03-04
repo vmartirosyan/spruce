@@ -5,7 +5,7 @@ add_custom_target(${module_name}
 
 set(payload_data_file "${CMAKE_CURRENT_SOURCE_DIR}/payload.data")
 set(payload_c_filename "payload.c")
-set(params_c_filename "params.c")
+set(params_c_filename "simulation_params.c")
 set(functions_support_filename "functions_support.c")
 
 set(kedr_symvers_dir "${KEDR_INSTALL_PREFIX}/lib/modules/${CMAKE_SYSTEM_VERSION}/symvers")
@@ -20,7 +20,7 @@ set(kedr_gen_templates_dir "${KEDR_INSTALL_PREFIX}/share/kedr/templates")
 
 add_custom_command(OUTPUT ${module_name}.ko
 	COMMAND cat ${symvers_files} > "${CMAKE_CURRENT_BINARY_DIR}/Module.symvers"
-	COMMAND make -C /lib/modules/${CMAKE_SYSTEM_VERSION}/build M=${CMAKE_CURRENT_BINARY_DIR}
+	COMMAND make -C /lib/modules/${CMAKE_SYSTEM_VERSION}/build M=${CMAKE_CURRENT_BINARY_DIR} modules
 	DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${payload_c_filename}"
 			"${CMAKE_CURRENT_BINARY_DIR}/${functions_support_filename}"
 			"${CMAKE_CURRENT_BINARY_DIR}/${params_c_filename}")
