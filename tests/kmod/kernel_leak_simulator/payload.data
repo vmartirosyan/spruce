@@ -1,6 +1,5 @@
-# A plugin to KERD LeakCheck that tracks the calls to bio_alloc.
-#
-# Used for simulate leaks for test Spruce leak checker.
+# A plugin to KERD LeakChecker that tracks some function calls for
+# simulate allocation and frees from the sence of KEDR LeakChecker.
 #
 # Based on 'leak_check' example from KEDR package.
 
@@ -9,24 +8,21 @@ module.author = Andrey Tsyvarev
 module.license = GPL
 
 header =>>
-#include <linux/bio.h>
+#include <linux/fs.h> /* new_inode */
+#include <linux/bio.h> /* bio_put */
 
-extern bool simulate_allocs;
-extern bool simulate_frees;
+#include "simulation_params.h"
 
 <<
 
 [group]
 	# Name and return type of the target function
-	function.name = bio_alloc
-	returnType = struct bio *
+	function.name = new_inode
+	returnType = struct inode *
 
 	# Names and types of the arguments of the target function
-	arg.type = gfp_t
-	arg.name = gfp_mask
-	
-	arg.type = int
-	arg.name = nr_iovecs
+	arg.type = struct super_block *
+	arg.name = sb
 	
 	# The body of the replacement function.
 	# For allocation events, kedr_lc_handle_alloc() should be 
@@ -38,7 +34,7 @@ extern bool simulate_frees;
 	# by KEDR core and LeakCheck, no need to bother about them.
 	#
 	handler.post =>>
-	if (simulate_allocs && (ret_val != NULL))
+	if (/*simulate_allocs &&*/ (ret_val != NULL))
 		kedr_lc_handle_alloc(target_module, ret_val, sizeof(*ret_val),
 			caller_address);
 	<< 
@@ -55,7 +51,7 @@ extern bool simulate_frees;
 	
 	# The body of the replacement function
 	handler.pre =>>
-	if(simulate_frees)
+	/*if(simulate_frees)*/
 		kedr_lc_handle_free(target_module, bio, 
 			caller_address);
 	<< 
