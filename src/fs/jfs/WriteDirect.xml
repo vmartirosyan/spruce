@@ -26,8 +26,8 @@
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
 		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
 		<Code>
-				const int BlockSize = 512;
-			char* WriteBuf = new char[100003*BlockSize];
+				const int BlockSize = 4096;
+			char* WriteBuf = new char[500000*BlockSize];
 			// Align to block size
 			char * WriteStart = reinterpret_cast<char*>(((reinterpret_cast<long>(WriteBuf) / BlockSize) + 1) * BlockSize);
 			WriteStart[0] = 'A';
@@ -36,7 +36,7 @@
 			char * ReadStart = reinterpret_cast<char*>(((reinterpret_cast<long>(ReadBuf) / BlockSize) + 1) * BlockSize);
 			
 			EnableFaultSim();
-			if ( write(FDs[0], WriteStart, 100002*BlockSize) == -1 )
+			if ( write(FDs[0], WriteStart, 500000*BlockSize) == -1 )
 			{
 				Error("Cannot write to file.", Fail);
 			}
