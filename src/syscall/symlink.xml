@@ -69,7 +69,7 @@
 			const char * NewFilePath = "new_file";
 			unlink(NewFilePath);
 			EnableFaultSim();
-			Fail(symlink(OldFilePath, NewFilePath) == -1, "Cannot create link.");
+			symlink(OldFilePath, NewFilePath);
 
 		</Code>
 	</Test>
