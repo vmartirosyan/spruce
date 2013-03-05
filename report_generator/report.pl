@@ -60,7 +60,7 @@ sub make_path_absolute
     my $input_path = shift;
     # While Perl has 'readlink' function, one cannot affect on its arguments.
     # So use common backtics for call Linux readlink command and extract its output.
-    my $abs_path = `readlink -mnq $input_path`;
+    my $abs_path = `readlink -mnq "$input_path"`;
     
     return $abs_path;
 }
