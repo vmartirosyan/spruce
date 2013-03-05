@@ -1,0 +1,175 @@
+<!--    access.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Giorgi Gulabyan <gulabyang@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="ShowAndStoreFunctions">
+        <Requires>sys/ioctl.h</Requires>
+        <Requires>linux/fs.h</Requires>
+        <Requires>fcntl.h</Requires>
+        <Requires>pwd.h</Requires>
+        <Requires>inttypes.h</Requires>
+        <Requires>ext4.hpp</Requires>
+        <Requires>PartitionManager.hpp</Requires>
+        <Requires>dirent.h</Requires>
+                
+        <Test Name="SysfsTests">              
+                <Description>Read sysfs files.</Description>
+                <Code>
+                        DIR * dir;
+                        string devname = (string)DeviceName;
+                        string path = "/sys/fs/ext4/" + devname.substr(4);
+                        
+                        cerr << "path: " << path << endl;
+                        
+                        dir = opendir(path.c_str());
+                        Unres(dir == 0, "Can not open directory");
+                        
+                        struct dirent *ent;
+                        char buf[1024]; 
+                        
+                        while(true)
+						{
+							errno = 0;
+							ent = readdir(dir);
+							if(ent == 0)
+							{
+								Unres(errno != 0, "Can not readdir");
+								break;
+							}
+							if(!strcmp(ent->d_name, ".") 
+								|| !strcmp(ent->d_name, ".") 
+								|| !strcmp(ent->d_name, "trigger_fs_error")
+								)
+								continue;							
+							
+							int fd;
+							if((fd = open((path + "/" + ent->d_name).c_str(), O_RDONLY)) == -1)
+							{
+								Logger::LogError("Can not open file " + (string)ent->d_name);
+								continue;
+							}
+							if(read(fd, buf, 1024) == -1)
+							{
+								Logger::LogError( "Can not read from file "  + (string)ent->d_name);
+								close(fd);
+								continue;
+							} 
+							close(fd);
+							
+							
+							// open for write 
+							if((fd = open((path + "/" + ent->d_name).c_str(), O_WRONLY)) == -1)
+							{
+								Logger::LogError("Can not open file for write " + (string)ent->d_name);
+								continue;
+							}
+							
+							int t = 1024;
+							if(write(fd, &t, sizeof(t)) == -1)
+							{
+								Logger::LogError( "Can not write to file "  + (string)ent->d_name);
+								close(fd);
+								continue;
+							} 
+							close(fd);							
+						}
+						closedir(dir);
+                </Code>
+        </Test>
+        <Test Name="ProcfsTests">
+                <Description>Read procfs files.</Description>
+                <Code>
+                        DIR * dir;
+                        string devname = (string)DeviceName;
+                        string path = "/proc/fs/ext4/" + devname.substr(4);
+                        
+                        dir = opendir(path.c_str());
+                        Unres(dir == 0, "Can not open directory");
+                        
+                        struct dirent *ent;
+                        char buf[1024]; 
+                        
+                        while(true)
+						{
+							errno = 0;
+							ent = readdir(dir);
+							if(ent == 0)
+							{
+								Unres(errno != 0, "Can not readdir");
+								break;
+							}
+							if(!strcmp(ent->d_name, ".") 
+								|| !strcmp(ent->d_name, ".") 
+								)
+								continue;							
+							
+							int fd;
+							if((fd = open((path + "/" + ent->d_name).c_str(), O_RDONLY)) == -1)
+							{
+								Logger::LogError("Can not open file.");
+								continue;
+							}
+							if(read(fd, buf, 1024) == -1)
+							{
+								Logger::LogError( "Can not read from file");
+								close(fd);
+								continue;
+							} 
+							close(fd);
+							
+							// open for write 
+							if((fd = open((path + "/" + ent->d_name).c_str(), O_WRONLY)) == -1)
+							{
+								Logger::LogError("Can not open file for write " + (string)ent->d_name);
+								continue;
+							}
+							
+							int t = 1024;
+							if(write(fd, &t, sizeof(t)) == -1)
+							{
+								Logger::LogError( "Can not write to file "  + (string)ent->d_name);
+								close(fd);
+								continue;
+							} 
+							close(fd);
+						}
+						closedir(dir);
+                </Code>
+        </Test>
+        <Test Name="TriggerError">
+                <Description>Trigger error.</Description>
+                <Code>
+						
+						string devname = (string)DeviceName;
+                        string path = "/sys/fs/ext4/" + devname.substr(4) + "/trigger_fs_error";
+                        
+                        if ( access(path.c_str(), W_OK) == -1 )
+							Unsupp("The trigger_fs_error file does not exist.");
+                        
+						int fd;
+						Unres((fd = open(path.c_str(), O_WRONLY)) == -1,"Can not open file.");
+                        Unres(write(fd, "1", 1) == -1, "Can not write file");
+                        close(fd); 
+                </Code>
+        </Test>        
+</TestSet>

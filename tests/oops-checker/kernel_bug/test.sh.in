@@ -1,0 +1,38 @@
+#!/bin/bash
+
+kmodule_name="kernel_bug_module"
+kmodule_path="@CMAKE_BINARY_DIR@/tests/kmod/kernel_bug_simulator/${kmodule_name}.ko"
+
+journals_dir="@CMAKE_CURRENT_BINARY_DIR@/log"
+report_dir="@CMAKE_CURRENT_BINARY_DIR@/report"
+
+# Generate BUG() in kernel log. This record should be read by Spruce oops
+# checker and be interpreted as fatal error in test.
+
+if /sbin/insmod ${kmodule_path}; then
+	printf "Loaded module doesn't generate BUG. Test deficiency.\n"
+	exit 2
+fi
+
+# Note, that module cannot be unloaded now.
+
+
+# Clean journals directory before Spruce executing.
+# That is, after error Spruce itself, journals directory will be empty
+# (or invalid), and that fact will be discovered at report generation stage.
+rm -rf $journals_dir
+
+@spruce_executable@ -c test.conf
+
+# Check that test journals are correct
+
+if ! @report_generator@ --journals-dir ${journals_dir} ${report_dir}; then
+	printf "Cannot generate report for test journals.\n"
+	exit 1
+fi
+
+# Check that some test has 'Fatal' status.
+if ! grep -r --include "*_log.xml" -e "<Status>Fatal</Status>" ${journals_dir}; then
+	printf "No 'Fatal' test is found. Oops checker doesn't detect BUG.\n"
+	exit 1
+fi

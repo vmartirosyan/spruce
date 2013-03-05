@@ -1,0 +1,8 @@
+Check, that OopsChecker detects messages in kernel log, which are result
+of BUG_ON() macro and similar.
+
+Run single test under Spruce.
+
+Test assume that OopsChecker detect such messages even them appears
+before Spruce is run.
+For more natural test Spruce should support additional tests.
