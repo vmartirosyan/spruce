@@ -28,7 +28,8 @@ It seems the part of resize.c refering to invalid block number checks
 isn't covered as mount options are parsed and checked in super.c-->
 <TestSet Name="mount">
 	<StartUp>
-		if ( !PartitionManager::NoOptionsEnabled() )
+		if ( !PartitionManager::NoOptionsEnabled() 
+		&amp;&amp; !PartitionManager::IsOptionEnabled("-j", true) )
 			goto CleanUp;
 	</StartUp>
         <Requires>sys/mount.h</Requires>
@@ -63,14 +64,28 @@ isn't covered as mount options are parsed and checked in super.c-->
 						}
 						if( res == -1 )
 						{
-							if( PartitionManager::IsOptionEnabled("ro") )
-							{
-								Return(Success);
-							}
-							else
-							{
-								Return(Fail);
-							}
+							Return(Fail);
+						}
+                </Code>
+        </Test>
+         <Test Name="RemountResizeWrong" FaultSimulationReady="true">
+                <Description>.</Description>              
+                <Code>
+						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+                        Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+                        Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+                        int res;
+						uint64_t size = PartitionManager::GetDeviceSize(DeviceName)+100;
+						stringstream ss;
+						ss << size;
+                        mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, ("resize=" + ss.str()).c_str());
+                        mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize=1");
+
+                        
+						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+						{
+							Error("Mount failed!");
+							Return(Fatal);
 						}
                 </Code>
         </Test>

@@ -23,13 +23,6 @@
 -->
 
 <TestSet Name="ShowAndStoreFunctions">
-        <Requires>sys/ioctl.h</Requires>
-        <Requires>linux/fs.h</Requires>
-        <Requires>fcntl.h</Requires>
-        <Requires>pwd.h</Requires>
-        <Requires>inttypes.h</Requires>
-        <Requires>ext4.hpp</Requires>
-        <Requires>PartitionManager.hpp</Requires>
         <Requires>dirent.h</Requires>
                 
       
