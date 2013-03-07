@@ -242,7 +242,7 @@ public:
 	{		
 		SetBlockSignalMask(sigmask(SIGINT));
 			
-		ProcessResult * res = ( ( _mode == ProcessBackground ) ? BackgroundProcess::Execute(args) : Process::Execute(args) );
+		ProcessResult * res = ( ( _mode == ProcessBackground ) ? BackgroundProcess::Execute(NULL, args) : Process::Execute(NULL, args) );
 		
 		return res;
 	}

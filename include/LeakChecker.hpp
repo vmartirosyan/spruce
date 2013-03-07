@@ -33,16 +33,16 @@ using namespace std;
 class LeakChecker
 {
 public:
-	LeakChecker(string log_file = ""):
-		DebugFSPath(""),
-		LogFilePath(log_file)
+	LeakChecker():
+		DebugFSPath("")
 	{
 		MountDebugFS();
 	}
 
-	Item ProcessLeakCheckerOutput(string fs)
+	TestSet ProcessLeakCheckerOutput(string fs)
 	{
-		Item item("Possible leaks, Unallocated frees", "");
+		TestSet ts("Possible leaks, Unallocated frees");
+				
 		try
 		{			
 			UnixCommand grep("grep");
@@ -60,18 +60,18 @@ public:
 			grepArgs.push_back(DebugFSPath + string("/kedr_leak_check/") + fs + "/info");
 			ProcessResult * resUnallocFrees = grep.Execute(grepArgs);
 			
-			if(resPosLeaks->GetStatus() == 0 || resUnallocFrees->GetStatus() == 0)
+			if(resPosLeaks->GetStatus() != 0 && resUnallocFrees->GetStatus() != 0)
 			{
-
-				item.setStatus("Failed");
+				Test item("Memory leaks", "Memory leaks");
 				
-				//str += "\t<Item Name=\"PossibleLeak\" Id=\"" + 123 + "\">\n\t\t<Status>Failed</Status><Output>";
-			}
-			else
-			{
-				item.setStatus("Success");
+				item.AddResult(MemoryLeak, ProcessResult(Success, "No memory leaks were detected."));
+				
+				ts.AddTest(item);
+				return ts;
 				//of << "\t<Item Name=\"PossibleLeak\" Id=\"" << rand() << "\">\n\t\t<Status>Success</Status><Output>";
 			}
+			
+			string Output = "";
 
 			UnixCommand cat("cat");
 			vector<string> catArgs;
@@ -79,7 +79,11 @@ public:
 			ProcessResult * res = cat.Execute(catArgs);
 			if (res->GetStatus() == Success)
 			{
-				item.appendOutput(res->GetOutput());
+				Test item("Info", "General information about memory leaks.");
+				
+				item.AddResult(MemoryLeak, ProcessResult(Fail, res->GetOutput()) );
+				
+				ts.AddTest(item);
 			}
 			//string str = res.GetOutput();
 			//string num = str.substr(string("Possible leaks: ").length(), str.length() - string("Possible leaks: ").length());
@@ -93,11 +97,11 @@ public:
 				
 				if(res->GetStatus() == Success)
 				{
-					item.appendOutput(res->GetOutput());
-				}
-				else
-				{
+					Test item("Possible leaks", "Information about possible memory leaks.");
+				
+					item.AddResult(MemoryLeak, ProcessResult(Fail, res->GetOutput()) );
 					
+					ts.AddTest(item);
 				}
 			}
 			
@@ -110,12 +114,16 @@ public:
 				res = cat.Execute(catArgs);
 				if(resUnallocFrees->GetStatus() == Success)
 				{
-					item.appendOutput(resUnallocFrees->GetOutput());
-				}
-				else
-				{
+					Test item("Unallocated frees", "Information about unallocated frees.");
+				
+					item.AddResult(MemoryLeak, ProcessResult(Fail, res->GetOutput()) );
+					
+					ts.AddTest(item);
 				}
 			}
+			
+			
+			
 			//of << "</Output></Item></Module>" << endl;
 			
 			//of.close();
@@ -124,17 +132,20 @@ public:
 		catch(exception& err)
 		{
 			Logger::LogError(static_cast<string>("Exception is thrown. ") + err.what());
-			item.setStatus("Unresolved");
-			item.setOutput(err.what());
-			return item;
+			
+			Test item("Memory leaks", "Memory leaks");
+			
+			item.AddResult(MemoryLeak, ProcessResult(Unresolved, err.what()));
+			
+			ts.AddTest(item);
+			return ts;
 		}
 		
-		return item;
+		return ts;
 	}
 	
 protected:
-	string DebugFSPath;
-	string LogFilePath;
+	string DebugFSPath;	
 	
 	bool MountDebugFS()
 	{
@@ -152,9 +163,9 @@ protected:
 		string Output = res->GetOutput();
 		if ( Output != "" )
 		{
-			// Read the path
-			int SpacePos = Output.find(' ', 9);
-			DebugFSPath = Output.substr(8, SpacePos - 8);
+			// Read the path			
+			int SpacePos = Output.find(' ', 12);
+			DebugFSPath = Output.substr(11, SpacePos - 11 );
 			return true;
 		}
 			

@@ -49,7 +49,7 @@
 			<tr>
 				<th>Mkfs Options</th>
 				<th>Mount Options</th>
-				<xsl:for-each select="Modules/Module">
+				<xsl:for-each select="//Packages/Package">
 					<th><xsl:value-of select="."/></th>
 				</xsl:for-each>
 			</tr>
@@ -62,22 +62,23 @@
 					<td>
 						<xsl:value-of select="@Mount"/>
 					</td>
-					<xsl:for-each select="//Modules/Module">
+					<xsl:for-each select="//Packages/Package">
 						<td>
 							<xsl:variable name="LogFile"><xsl:value-of select="$LogFolder"/>/<xsl:value-of select="/SpruceDashboard/@FS"/>_<xsl:value-of select="."/>_<xsl:value-of select="$Options"/>_log.xml</xsl:variable>							
 							<xsl:variable name="LogFileHtml"><xsl:value-of select="/SpruceDashboard/@FS"/>_<xsl:value-of select="."/>_<xsl:value-of select="$Options"/>_log.html</xsl:variable>
+							
 							<xsl:choose>
 								<xsl:when test="document($LogFile)">
 									<a>
 										<xsl:attribute name="href"><xsl:value-of select="$LogFileHtml"/></xsl:attribute>
 										<span class="Success">
-											<xsl:value-of select="count(document($LogFile)//Item[Status='Success' or Status='Shallow' or Status='FSimFail'])" /> 
+											<xsl:value-of select="count(document($LogFile)//Test/Results/Check[Status='Success' or Status='Shallow' or Status='FSimFail'])" /> 
 										</span> / 
 										<span class="Failed">
-											<xsl:value-of select="count(document($LogFile)//Item[Status='Fatal' or Status='Failed' or Status='Signaled' or Status='Timeout' or Status='FSimSuccess'])" /> 
+											<xsl:value-of select="count(document($LogFile)//Test/Results/Check[Status='Fatal' or Status='Failed' or Status='Signaled' or Status='Timeout' or Status='FSimSuccess'])" /> 
 										</span> / 
 										<span class="Unresolved">
-											<xsl:value-of select="count(document($LogFile)//Item[Status='Unresolved'])" />
+											<xsl:value-of select="count(document($LogFile)//Test/Results/Check[Status='Unresolved'])" />
 										</span>
 									</a>
 								</xsl:when>

@@ -6,7 +6,7 @@ install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/xslt/processor.xslt"
 			DESTINATION share/spruce/config/xslt
 			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
 			
-install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/xslt/module.xslt"
+install (	FILES "${CMAKE_CURRENT_SOURCE_DIR}/xslt/package.xslt"
 			DESTINATION share/spruce/config/xslt
 			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ)
 

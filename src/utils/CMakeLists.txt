@@ -20,9 +20,10 @@ IF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB} )
    COMMAND cp ${CMAKE_SOURCE_DIR}/src/utils/PartitionManager.cpp PartitionManager_32.cpp
    DEPENDS PartitionManager.cpp
    )
+	set_source_files_properties(test_32.cpp process_32.cpp PartitionManager_32.cpp PROPERTIES COMPILE_FLAGS "-DCOMPAT")
 	set_source_files_properties(test_32.cpp process_32.cpp PartitionManager_32.cpp PROPERTIES COMPILE_FLAGS "-m32")
 	
 	add_library(utils_32 STATIC test_32.cpp process_32.cpp PartitionManager_32.cpp )
-	set_target_properties(utils_32 PROPERTIES LINK_FLAGS "-m32") 
+	set_target_properties(utils_32 PROPERTIES LINK_FLAGS "-m32")
 	
 ENDIF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB})

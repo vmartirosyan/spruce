@@ -26,6 +26,7 @@
 #include <signal.h>
 #include <fstream>
 #include <algorithm>
+#include <map>
 using namespace std;
 
 string StatusMessages[] = {	
@@ -34,6 +35,7 @@ string StatusMessages[] = {
 	"Skipped",
 	"Unsupported",
 	"Unresolved",
+	"PossibleFailure",
 	"Failed",	
 	"Timeout",
 	"Signaled",
@@ -47,6 +49,16 @@ string StatusMessages[] = {
 	"Unknown" // Must be the last status
 	
 };
+
+pair<Checks, string> arrCheckStrings[] = {
+	make_pair(None, "None"),
+	make_pair(Functional, "Functional"),
+	make_pair(Stability, "Stability"),
+	make_pair(MemoryLeak, "MemoryLeak")
+};
+
+map<Checks, string> CheckStrings(arrCheckStrings,
+	arrCheckStrings + sizeof arrCheckStrings / sizeof arrCheckStrings[0]);
 	
 string ProcessResult::StatusToString()
 { 
@@ -56,19 +68,19 @@ string ProcessResult::StatusToString()
 		return static_cast<string>(StatusMessages[Unknown]);
 }
 
+string ProcessResult::CheckToString(Checks c)
+{
+	if ( CheckStrings.find(c) != CheckStrings.end() )
+		return CheckStrings[c];
+		
+	return "Unknown";
+}
+
+
 int Process::Level = 0;
 string Logger::_LogFile;
 LogLevel Logger::_LogLevel;
 bool Logger::_Initialized = false;
-
-ProcessResult::~ProcessResult()
-{
-}
-
-ProcessResult * Process::Execute(vector<string> args)
-{
-	return Execute(&Process::Main, args);
-}
 
 
 bool ProcessAlarmed = false;
@@ -89,8 +101,11 @@ void ProcessSignalHandler(int signum)
 	
 }
 
-ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<string> args)
+ProcessResult * Process::Execute(ProcessFunc func, vector<string> args)
 {
+	if ( _mode & ProcessNoCaptureOutput )
+		return ExecuteNoCaptureOutput(func, args);
+	
 	int fds[2];
 	if ( pipe(fds) == -1 )
 	{
@@ -110,7 +125,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	{
 		MountPoint = getenv("MountAt");    
 	}
-	
+
 	// Create the child process
 	pid_t ChildId = fork();
 	
@@ -139,12 +154,7 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 		}
 		
 		
-		//changing directory to mounting point 
-		if ( MountPoint && strcmp(MountPoint, "") && ( chdir(MountPoint) == -1 ) )
-		{
-			cerr << "Child: Cannot change directory to " << MountPoint << ". Error: " << strerror(errno);
-			_exit(Fatal);
-		}
+		
 		
 		close(1);
 		close(2);
@@ -163,49 +173,28 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 		}
 		//cerr << " ";
 		
-		int status = (*this.*func)(args);
+		int status = 0;
+		if ( func )
+		{
+			//changing directory to mounting point 
+			if ( MountPoint && strcmp(MountPoint, "") && ( chdir(MountPoint) == -1 ) )
+			{
+				cerr << "Child: Cannot change directory to " << MountPoint << ". Error: " << strerror(errno);
+				_exit(Fatal);
+			}
+			status = (*func)(this, args);
+		}
+		else
+			status = Main(args);
+			
 		close(1);
 		close(2);
 		close(fds[1]);		
 		_exit(status);
 	}
-	//Freeing the mount point (have to set the CWD back after)
-	/*if(MountPoint != NULL)
-		chdir("/");*/
+	
 	// Parent process...
 	close(fds[1]);
-	
-	/*if (EnableAlarm)
-	{
-		struct sigaction sa;
-		bzero(&sa, sizeof(sa));
-		
-		sa.sa_handler = ProcessSignalHandler;
-		if ( sigaction(SIGALRM, &sa, NULL) == -1 )
-		{	
-			return new ProcessResult(Unresolved, "Cannot set signal handler. " + static_cast<string>(strerror(errno)));
-		}
-	
-		alarm(_Timeout);
-	}
-	
-	int status;
-	int wait_res = waitpid(ChildId, &status, WUNTRACED);
-	
-	alarm(0);
-	
-	if ( wait_res == -1 )
-	{
-		cerr << "wait_res=" << wait_res << endl;
-		cerr << "Error: " << strerror(errno) << endl;
-	
-		kill(ChildId, SIGKILL);
-		if ( ProcessAlarmed )
-			return new ProcessResult(Timeout, "Child process has timed out.");
-		else
-			return new ProcessResult(Signaled, "Child process has been signalled.");
-	}*/
-	
 	
 	
 	fd_set read_fds;
@@ -289,7 +278,95 @@ ProcessResult * Process::Execute(int (Process::*func) (vector<string>) , vector<
 	return new ProcessResult(static_cast<Status>(WEXITSTATUS(status)), Output);
 }
 
-ProcessResult * BackgroundProcess::Execute(vector<string> args)
+
+ProcessResult * Process::ExecuteNoCaptureOutput(ProcessFunc func, vector<string> args)
+{
+	
+	char * MountPoint = NULL;
+	if ( getenv("MountAt") )
+	{
+		MountPoint = getenv("MountAt");    
+	}
+
+	// Create the child process
+	pid_t ChildId = fork();
+	
+	if ( ChildId == -1 )
+	{
+		return new ProcessResult(Unresolved, "Cannot create child process. " + static_cast<string>(strerror(errno)));
+	}
+	
+	if ( ChildId == 0 ) // Child process. Run the Main method
+	{
+		// Set up the handler for segmentation fault 		
+		struct sigaction sa;
+		bzero(&sa, sizeof(sa));
+		
+		sa.sa_handler = ProcessSignalHandler;
+		if ( sigaction(SIGSEGV, &sa, NULL) == -1 )
+		{	
+			cerr << "Cannot set signal handler. " << strerror(errno);
+			_exit(Unresolved);
+		}
+		
+		if(sigprocmask(SIG_BLOCK, &BlockSignalMask, 0) == -1)
+		{
+			cerr << "Cannot set signal block mask. " << strerror(errno);
+			_exit(Unresolved);
+		}
+		
+		int status = 0;
+		if ( func )
+		{
+			//changing directory to mounting point 
+			if ( MountPoint && strcmp(MountPoint, "") && ( chdir(MountPoint) == -1 ) )
+			{
+				cerr << "Child: Cannot change directory to " << MountPoint << ". Error: " << strerror(errno);
+				_exit(Fatal);
+			}
+			status = (*func)(this, args);
+		}
+		else
+			status = Main(args);
+			
+		_exit(status);
+	}
+	
+	int status;
+		
+	int wait_res;
+	while (true)
+	{
+		wait_res = waitpid(ChildId, &status, WUNTRACED);
+		if ( wait_res == 0 || errno != EINTR )
+			break;
+	}
+	
+	string Output = "No output is captured!";
+			
+	if ( WIFSIGNALED(status) )
+	{
+		int signum = WTERMSIG(status);
+		const int size = 10;
+		char buf[size];
+		if ( snprintf(buf, size, "%d", signum) >= size) 
+		{
+			return new ProcessResult(Fatal, "Cannot get signal from child process.");
+		}
+		Output = static_cast<string>("Signal number: ") + buf + "\n" + Output;
+		return new ProcessResult(Signaled, Output);
+	}
+	
+	return new ProcessResult(static_cast<Status>(WEXITSTATUS(status)), Output);
+}
+
+
+
+
+
+
+
+ProcessResult * BackgroundProcess::Execute(ProcessFunc func, vector<string> args)
 {
 	// Create the child process
 	pid_t ChildId = fork();
@@ -314,7 +391,10 @@ ProcessResult * BackgroundProcess::Execute(vector<string> args)
 			cerr << "Error opening dummy streams. Error : " << strerror(errno);			
 		}
 		
-		_exit(Main(args));
+		if ( func )
+			_exit(func(this, args));
+		else
+			_exit(Main(args));
 	}
 	
 	int status = 0;
@@ -323,7 +403,7 @@ ProcessResult * BackgroundProcess::Execute(vector<string> args)
 	return new ProcessResult(static_cast<Status>(WEXITSTATUS(status)), "Child process is executed.");
 }
 
-vector<string> SplitString(string str, char delim, vector<string> AllowedValues )
+vector<string> SplitString(string str, char delim, vector<string> AllowedValues)
 {
 	vector<string> pieces;
 	size_t PrevPos = 0, CurPos;

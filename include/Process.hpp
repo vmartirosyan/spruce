@@ -25,8 +25,9 @@
 
 enum ProcessMode
 {
-	ProcessForeground,
-	ProcessBackground
+	ProcessForeground = 0,
+	ProcessBackground = 1,
+	ProcessNoCaptureOutput = 2,
 };
 
 #include "Common.hpp"
@@ -57,8 +58,6 @@ public:
 		
 	}
 	
-	virtual ~ProcessResult();
-	
 	Status GetStatus() const
 	{
 		return _status;
@@ -85,6 +84,7 @@ public:
 	}
 		
 	string StatusToString();
+	string CheckToString(Checks);
 protected:
 	Status _status;
 	string _output;
@@ -92,23 +92,32 @@ protected:
 	
 };
 
+class Process;
+
+typedef int (*ProcessFunc) (Process const *, vector<string>);
+
+
 class Process
 {
-public:	
-	virtual ProcessResult * Execute(vector<string> args = vector<string>());
-	virtual ProcessResult * Execute( int (Process::* func) (vector<string>), vector<string> args = vector<string>() );
-	int SetBlockSignalMask(int signum) {sigaddset (&BlockSignalMask, signum);};
+public:
+
+	virtual ProcessResult * Execute(ProcessFunc = NULL, vector<string> args = vector<string>() );
+	virtual ProcessResult * ExecuteNoCaptureOutput(ProcessFunc = NULL, vector<string> args = vector<string>() );
+	
+	int SetBlockSignalMask(int signum) { return sigaddset (&BlockSignalMask, signum);};
 	
 	Process():
 		EnableAlarm(false),
-		_Timeout(0)
+		_Timeout(0),
+		_mode(ProcessForeground)
 	{
 		sigemptyset (&BlockSignalMask);
 	}
 	
 	Process(int timeout):
 		EnableAlarm(true),
-		_Timeout(timeout)
+		_Timeout(timeout),
+		_mode(ProcessForeground)
 	{
 		sigemptyset (&BlockSignalMask);
 	}
@@ -122,13 +131,14 @@ protected:
 	static int Level;
 	int _Timeout;
 	sigset_t BlockSignalMask;
+	ProcessMode _mode;
 	virtual int Main(vector<string>) { Logger::LogError("Main not implemented."); return Unsupported; }
 };
 
 class BackgroundProcess : public Process
 {
 public:	
-	virtual ProcessResult * Execute(vector<string> args = vector<string>());
+	virtual ProcessResult * Execute(ProcessFunc = NULL, vector<string> args = vector<string>());
 	
 	virtual ~BackgroundProcess() {}
 protected:

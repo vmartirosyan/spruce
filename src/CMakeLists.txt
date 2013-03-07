@@ -8,10 +8,12 @@ INCLUDE (arch)
 
 #add_subdirectory (benchmark)
 #add_subdirectory (common)
-add_subdirectory (fs)
+add_subdirectory (engine/generator)
+
 add_subdirectory (main)
-add_subdirectory (syscall)
-#add_subdirectory (syscall)
+add_subdirectory (tests)
+add_subdirectory (engine/doer)
+
 #add_subdirectory (utils)
-add_subdirectory (fault_sim)
+#add_subdirectory (fault_sim)
 

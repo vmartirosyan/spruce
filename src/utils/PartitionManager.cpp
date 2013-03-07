@@ -80,7 +80,13 @@ std::map<string, unsigned long> PartitionManager::SBOffsets(map2_data,
 
 PartitionStatus PartitionManager::PreparePartition()
 {
-	Logger::LogInfo((string)"Preparing partition " + _DeviceName);
+	Logger::LogInfo((string)"Preparing partition `" + _DeviceName + "`");
+	if ( _Index == _AdditionalOptions[_FSIndex].end() )
+	{
+		_Index = _AdditionalOptions[_FSIndex].begin();
+		return PS_Done;
+	}
+	
 	if ( !ReleasePartition(_MountPoint) )
 	{
 		return PS_Fatal;
@@ -92,11 +98,6 @@ PartitionStatus PartitionManager::PreparePartition()
 		
 		Logger::LogInfo((string)"Mounting with additional option: " + _CurrentMountOptions);
 	}*/
-	if ( _Index == _AdditionalOptions[_FSIndex].end() )
-	{
-		_Index = _AdditionalOptions[_FSIndex].begin();
-		return PS_Done;
-	}
 	
 	_CurrentOptions = *_Index;
 	_Index++;
@@ -125,8 +126,6 @@ PartitionStatus PartitionManager::PreparePartition()
 // Try to re-create the file system and mount it with the precious mount options.		
 PartitionStatus PartitionManager::RestorePartition(string DeviceName, string MountPoint, string FileSystem, bool RecreateFilesystem, bool resizeFlag)
 {
-	cerr << "pid: " << getpid() << endl;
-	system("lsof | grep spruce");
 	if( !getenv("MountFlags") || !getenv("MountData") || ( RecreateFilesystem && !getenv("MkfsOpts") ) )
 		return PS_Fatal;
 	if( !ReleasePartition(MountPoint))

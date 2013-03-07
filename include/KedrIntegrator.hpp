@@ -94,8 +94,51 @@ public:
 		AddPayloads("fsim.conf");
 	}
 	
+	static void SetAllIndicators(string indicator = "common")
+	{
+		DIR * dir = opendir(  (DebugFSPath + "/kedr_fault_simulation/points/").c_str() );
+		if ( dir == NULL )
+		{
+			Logger::LogError("Cannot open kedr fault simulation points directory.");
+			return;
+		}
+		
+		while ( struct dirent * file = readdir(dir) )
+		{
+			if ( !strcmp(file->d_name, ".") || !strcmp(file->d_name, "..") )
+				continue;
+				
+			SetIndicator( file->d_name, indicator );
+			ClearPid(file->d_name);
+			ClearTimes(file->d_name);
+		}
+		
+		closedir(dir);
+	}
+	
+	static void ClearAllIndicators()
+	{
+		DIR * dir = opendir(  (DebugFSPath + "/kedr_fault_simulation/points/").c_str() );
+		if ( dir == NULL )
+		{
+			Logger::LogError("Cannot open kedr fault simulation points directory.");
+			return;
+		}
+		
+		while ( struct dirent * file = readdir(dir) )
+		{
+			if ( !strcmp(file->d_name, ".") || !strcmp(file->d_name, "..") )
+				continue;
+				
+			ClearIndicator( file->d_name );
+		}
+		
+		closedir(dir);
+	}
+	
+	
 	// The process ID is set to the curent PID
-	static bool SetIndicator(string point, string indicator, string expression)
+	static bool SetIndicator(string point, string indicator)
 	{
 		if ( !KEDR_INSTALLED )
 			return false;
@@ -106,22 +149,34 @@ public:
 			of.close();
 			Logger::LogInfo("Indicator is set in " + DebugFSPath + "/kedr_fault_simulation/points/" + point + "/current_indicator");
 			
-			of.open((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/expression").c_str());
-			of << expression;
-			of.close();
-			Logger::LogInfo("Expression " + expression + "is set.");
 			
-			of.open((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/pid").c_str());
-			of << getpid();
-			of.close();
-			Logger::LogInfo( "PID is set." );
 			return true;
 		}
 		catch (...)
 		{
+			Logger::LogError("Cannot set indicator " + indicator + " for point " + point);
 			return false;
 		}
 	}
+	
+	static bool SetExpression(string point, string expression)
+	{
+		try
+		{
+			ofstream of;
+			of.open((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/expression").c_str());
+			of << expression;
+			of.close();
+			Logger::LogInfo("Expression " + expression + "is set.");
+			return true;
+		}
+		catch (...)
+		{
+			Logger::LogError("Cannot set expression " + expression + " for point " + point);
+			return false;
+		}
+	}		
+	
 	static bool ClearIndicator(string point)
 	{
 		if ( !KEDR_INSTALLED )
@@ -136,6 +191,7 @@ public:
 		}
 		catch (...)
 		{
+			Logger::LogError("Cannot clear indicator for point " + point);
 			return false;
 		}
 	}
@@ -145,20 +201,105 @@ public:
 		string _time_file = DebugFSPath + "/kedr_fault_simulation/points/"+ point + "/times";
 		char buffer[257];
 		int _time_val;
-		ifstream str( _time_file.c_str(), ifstream::in );
-		str >> buffer;
-		_time_val = atoi(buffer);
-		str.close();
+		try
+		{
+			ifstream str( _time_file.c_str(), ifstream::in );
+			str >> buffer;
+			_time_val = atoi(buffer);
+			str.close();
 		
-		return _time_val;
+			return _time_val;
+		}
+		catch (...)
+		{
+			Logger::LogError("Cannot obtain `times` value for point " + point);
+			return -1;
+		}
 	}
-	static void  ResetTimes( string point )
+	
+	static void SetPid(string point = "", pid_t pid = 0 )
+	{
+		// Recurse the function to set the same process ID in all the points
+		if ( point == "" )
+		{
+			DIR * dir = opendir(  (DebugFSPath + "/kedr_fault_simulation/points/").c_str() );
+			if ( dir == NULL )
+			{
+				Logger::LogError("Cannot open kedr fault simulation points directory.");
+				return;
+			}
+			
+			while ( struct dirent * file = readdir(dir) )
+			{
+				if ( !strcmp(file->d_name, ".") || !strcmp(file->d_name, "..") )
+					continue;
+				SetPid( file->d_name, pid );
+			}
+			
+			closedir(dir);
+			return;
+		}
+		
+		if ( pid != -1 )
+			Logger::LogInfo("Setting pid for point " + point );
+		
+		string _pid_file = DebugFSPath + "/kedr_fault_simulation/points/"+ point + "/pid";
+		
+		if ( pid == 0 )
+			pid = getpid();
+			
+		try
+		{
+			ofstream str( _pid_file.c_str() );
+			str << pid;
+			str.close();
+		}
+		catch (...)
+		{
+			Logger::LogError("Cannot write to file " + _pid_file);
+		}
+	}
+	
+	static void ClearPid(string point)
+	{
+		Logger::LogInfo("Clearing pid for point " + point );
+		SetPid(point, -1);
+	}
+	
+	static map<string, unsigned int> GetPointTimesMap()
+	{
+		map<string, unsigned int> PointTimes;
+		
+		DIR * dir = opendir(  (DebugFSPath + "/kedr_fault_simulation/points/").c_str() );
+		if ( dir == NULL )
+		{
+			Logger::LogError("Cannot open kedr fault simulation points directory.");
+			return PointTimes;
+		}
+		
+		while ( struct dirent * file = readdir(dir) )
+		{
+			if ( !strcmp(file->d_name, ".") || !strcmp(file->d_name, "..") )
+					continue;
+			
+			PointTimes[file->d_name] = GetTimes(file->d_name);
+		}
+		
+		closedir(dir);
+		
+		return PointTimes;
+	}
+
+
+	
+	static void ClearTimes( string point )
 	{
 		string _time_file = DebugFSPath + "/kedr_fault_simulation/points/"+ point + "/times";
 		ofstream of(_time_file.c_str());
 		of << "0";
 		of.close();
-	} 
+	}
+	
 	bool LoadKEDR()
 	{
 		if ( !KEDR_INSTALLED )
@@ -268,7 +409,7 @@ public:
 				*output = string("Error executing rmmod: ");
 				*output += res->GetOutput();
 			}
-			Logger::LogError("Error executing rmmod. " + (res ? res->GetOutput() : ""));
+			Logger::LogWarn("Error executing rmmod. " + (res ? res->GetOutput() : ""));
 			return false;
 		}
 		return true;
