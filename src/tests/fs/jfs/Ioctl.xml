@@ -13,22 +13,22 @@
 			
 			// Backup the old values just in case
 			int old_flags;
-			Unres ( ioctl(FDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+			Fail ( ioctl(FDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
 			
 			// Set our testing flag values
-			Unres ( ioctl(FDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+			Fail ( ioctl(FDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
 			
 			// Get the flags back
-			Unres ( ioctl(FDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+			Fail ( ioctl(FDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
 			
 			// Restore the original flags
-			Unres ( ioctl(FDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+			Fail ( ioctl(FDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
 			
 			// Compare them			
 			Check ( get_flags != set_flags, "Set and Get flags mismatch");			
 		</Code>
 	</Test>	
-	<Test Name="SetGetFSFlagsForDirectory" FaultSimulationReady="true">
+	<Test Name="SetGetFSFlagsForDirectory" FaultSimulationReady="true" Shallow="true">
 		<Description>Try to set and get some flag values.</Description>
 		<Dir count="1"/>			
 		<Code>
@@ -37,30 +37,20 @@
 			
 			// Backup the old values just in case
 			int old_flags;
-			Unres ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+			Fail ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
 			
 			// Set our testing flag values
-			Unres ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+			Fail ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
 			
 			// Get the flags back
-			Unres ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+			Fail ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
 			
 			// Restore the original flags
-			Unres ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+			Fail ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
 		
-			// Compare them
-			
-			int a;
-			//cin >> a;
-			Fail(mkdir("9875", 0777) == -1, "Cannot make dir");//Check ( get_flags != set_flags, "Set and Get flags mismatch");			
-			//cin >> a;
-			DisableFaultSim();
-			//cin >> a;
-			rmdir("9875");
-			//cin >> a;
 		</Code>
 	</Test>
-	<Test Name="SetGetFlagsForDirectory" FaultSimulationReady="true">
+	<Test Name="SetGetFlagsForDirectory" FaultSimulationReady="true" Shallow="true">
 		<Description>Try to set and get some flag values.</Description>
 		<Dir count="1"/>			
 		<Code>
@@ -69,23 +59,21 @@
 			
 			// Backup the old values just in case
 			int old_flags;
-			Unres ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+			Fail ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
 			
 			// Set our testing flag values
-			Unres ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+			Fail ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
 			
 			// Get the flags back
-			Unres ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+			Fail ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
 			
 			// Restore the original flags
-			Unres ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+			Fail ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
 		
-			// Compare them
-			Check ( get_flags != set_flags, "Set and Get flags mismatch");
 						
 		</Code>
 	</Test>
-	<Test Name="SetGetAllFlags" FaultSimulationReady="true">
+	<Test Name="SetGetAllFlags" FaultSimulationReady="true" Shallow="true">
 		<Description>Try to set and get some flag values.</Description>
 		<File count="1"/>			
 		<Code>
@@ -95,19 +83,17 @@
 			
 			// Backup the old values just in case
 			int old_flags;
-			Unres ( ioctl(FDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+			Fail ( ioctl(FDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
 			
 			// Set our testing flag values
-			Unres ( ioctl(FDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+			Fail ( ioctl(FDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
 			
 			// Get the flags back
-			Unres ( ioctl(FDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+			Fail ( ioctl(FDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
 			
 			// Restore the original flags
-			Unres ( ioctl(FDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+			Fail ( ioctl(FDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
 		
-			// Compare them
-			Check ( get_flags != set_flags, "Set and Get flags mismatch");
 						
 		</Code>
 	</Test>		
