@@ -1,11 +1,81 @@
 #ifndef XML_SPRUCE_LOG_HPP
 #define XML_SPRUCE_LOG_HPP
 
+#include <Test.hpp>
 #include <string.h>
 #include <vector>
 #include <fstream>
 #include <iostream>
 using namespace std;
+
+class XMLGenerator
+{
+public:
+	static string Validate(string str)
+	{
+		StrReplace(str, "&", "&amp;");
+		StrReplace(str, "<", "&lt;");
+		StrReplace(str, ">", "&gt;");
+		StrReplace(str, "'", "&apos;");
+		StrReplace(str, "\"", "&quot;");
+		return str;
+	}
+	
+	// Generates the log file
+	static void GenerateLog(const string & file_name, const TestPackage & results, string fs, string mount_opts, string duration)
+	{
+		ofstream of(file_name.c_str(), ios_base::app);
+		string xml = "";
+		xml += "<SpruceLog>";
+		xml += "<FS Name=\"" + Validate(fs) + "\" MountOptions=\"" + Validate(mount_opts) + "\">\n";
+		xml += "\t<Package Name=\"" + Validate(results.GetName()) + "\">\n";
+		of << xml;
+		
+		map<string, TestSet> TestSetResults = results.GetTestSets();
+		
+		for ( map<string, TestSet>::iterator i = TestSetResults.begin(); i != TestSetResults.end(); ++i )
+		{
+			xml = "\t\t<TestSet Name=\"" + Validate((*i).second.GetName()) + "\">\n";
+			
+			map<string, Test> Tests = (*i).second.GetTests();
+			
+			for ( map<string, Test>::iterator j = Tests.begin(); j != Tests.end(); ++j )
+			{
+				stringstream str;
+				str << rand();
+				
+				xml += "\t\t\t<Test Name=\"" + Validate((*j).second.GetName()) + "\" Id=\"" + Validate(str.str()) + "\">\n";				
+				xml += "\t\t\t\t<Desc>" + Validate((*j).second.GetDescription()) + "</Desc>\n";
+				xml += "\t\t\t\t<Results>\n";
+				
+				map<Checks, TestResult> Results = (*j).second.GetResults();
+				
+				for ( map<Checks, TestResult>::iterator k = Results.begin(); k != Results.end(); ++k )
+				{
+					xml += "\t\t\t\t\t<Check Name=\"" + k->second.CheckToString(k->first) + "\">\n";
+					xml += "\t\t\t\t\t\t<Status>" + Validate((*k).second.StatusToString()) + "</Status>\n";
+					xml += "\t\t\t\t\t\t<Output>" + Validate((*k).second.GetOutput()) + "</Output>\n";
+					xml += "\t\t\t\t\t</Check>\n";
+					
+				}
+				
+				xml += "\t\t\t\t</Results>\n";
+				xml += "\t\t\t</Test>\n";
+			}
+			
+			xml += "\t\t</TestSet>";
+			of << xml;
+		}
+		
+		xml = "";
+		xml += "\t</Package>\n";
+		xml += "\t<Duration>" + Validate(duration) + "</Duration>\n";
+		xml += "</FS>";
+		xml += "</SpruceLog>";
+		of << xml;
+		of.close();
+	}
+};
 
 class Item
 {

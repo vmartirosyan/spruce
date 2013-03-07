@@ -36,14 +36,17 @@
 class UnixCommand : public BackgroundProcess
 {
 public:	
-	UnixCommand(string name, ProcessMode mode = ProcessForeground) : _name(name), _mode(mode) 
+	UnixCommand(string name, ProcessMode mode = ProcessForeground) : _name(name)
 	{
-		
+		Process::_mode = mode;
 	}
 	
 	virtual ProcessResult * Execute(vector<string> args = vector<string>())
-	{				
-		ProcessResult * res = ( ( _mode == ProcessBackground ) ? BackgroundProcess::Execute(args) : Process::Execute(args) );
+	{		
+		if(_name.find("mkfs.") != string::npos) // For mkfs command we block signals
+			SetBlockSignalMask(sigmask(SIGINT));
+			
+		ProcessResult * res = ( ( _mode == ProcessBackground ) ? BackgroundProcess::Execute(NULL, args) : Process::Execute(NULL, args) );
 		
 		return res;
 	}
@@ -51,7 +54,7 @@ public:
 	{
 		
 	}
-	
+
 protected:
 	
 	int Main(vector<string> args) 
@@ -71,8 +74,7 @@ protected:
 		return static_cast<int>(Unresolved);
 	}
 protected:
-	string _name;
-	ProcessMode _mode;
+	string _name;	
 };
 
 #endif /* UNIX_COMMAND_H */

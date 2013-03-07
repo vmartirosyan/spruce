@@ -112,17 +112,17 @@ int main(int argc, char ** argv)
 		vector<pair<string, string> > MountOptions;
 		
 		//Prepare the allowed modules list
-		ModulesAvailable.push_back("syscall");
+		//ModulesAvailable.push_back("syscall");
 		//ModulesAvailable.push_back("benchmark");
-		ModulesAvailable.push_back("fs-spec");
-		ModulesAvailable.push_back("leak-check");
-		ModulesAvailable.push_back("fault-sim");
+		//ModulesAvailable.push_back("fs-spec");
+		//ModulesAvailable.push_back("leak-check");
+		//ModulesAvailable.push_back("fault-sim");
 		
 		// Prepare the allowed FS list
-		FSAvailable.push_back("ext4");
-		FSAvailable.push_back("btrfs");
-		FSAvailable.push_back("xfs");	
-		FSAvailable.push_back("jfs");
+		//FSAvailable.push_back("ext4");
+		//FSAvailable.push_back("btrfs");
+		//FSAvailable.push_back("xfs");	
+		//FSAvailable.push_back("jfs");
 		
 		// Parse the arguments
 		ConfigValues options = ParseOptions(argc, argv);
@@ -157,19 +157,39 @@ int main(int argc, char ** argv)
 		for ( unsigned int i = 0; i < FileSystems.size(); ++i )
 			cout << "FS : " << FileSystems[i] << endl;
 			
-		// Check if the modules key exists in the config file
-		if ( configValues.find("modules") == configValues.end() )
+		// Check if the 'packages' key exists in the config file
+		vector<string> Packages;
+		string strPackages;
+		if ( configValues.find("packages") == configValues.end() )
 		{
-			cerr << "Cannot find modules list to be executed. Aborting." << endl;
-			return NOMODULES;
+			Logger::LogWarn("No `packages` are provided. Executing both common and fs-specific packages.");
+			strPackages = "common;fs-spec";
 		}
-		// Split the module list into module names
-		vector<string> Modules = SplitString(configValues["modules"], ';', ModulesAvailable);
+		else		
+		{
+			strPackages = configValues["packages"];
+		}
+		Packages = SplitString(strPackages, ';');
 		/*
 		for ( int i = 0; i < Modules.size(); ++i )
 			cerr << Modules[i] << " ";
 		cerr << endl;*/
 		
+		// Get the `checks` value
+		vector<string> Checks;
+		string strChecks;
+		if ( configValues.find("checks") == configValues.end() )
+		{
+			Logger::LogWarn("No `checks` are provided. Perfoming functional check only.");
+			strChecks = "func";
+		}
+		else		
+		{
+			strChecks = configValues["checks"];
+		}
+		Checks = SplitString(strChecks, ';');
+		
+		/*
 		// Search for the special modules ("fs-spec", "leak-check", "fault-sim" )
 		//bool PerformFS_SpecificTests = false;
 		bool PerformLeakCheck = false;
@@ -223,7 +243,7 @@ int main(int argc, char ** argv)
 			Modules.push_back("syscall_64");
 		}
 #endif
-
+		*/
 		
 		
 		string partition = "current";
@@ -428,11 +448,8 @@ int main(int argc, char ** argv)
 			cerr << "Error: " << strerror(errno) << endl;
 			return errno;
 		}
-		bool ShowOutput = false;
+		bool ShowOutput = true;
 		
-		// Go through the modules, execute them
-		// and collect the output
-		//cerr << "Executing modules." << endl;
 		for ( vector<string>::iterator fs = FileSystems.begin(); fs != FileSystems.end(); ++fs )
 		{
 			EXIT_IF_SIGNALED;
@@ -455,43 +472,36 @@ int main(int argc, char ** argv)
 				continue;
 			}			
 			
-			// 
-			Item lcItem("Possible leaks, Unallocated frees");
 			
-			// Check if KEDR needs to be loaded			
-			if ( PerformLeakCheck || PerformFaultSimulation )
+			vector<string> doer_args;
+			
+			doer_args.push_back("-f"); // FileSystem
+			doer_args.push_back(*fs);
+			
+			doer_args.push_back("-l"); //Log folder
+			doer_args.push_back(logfolder);
+			
+			doer_args.push_back("-p"); // Packages
+			doer_args.push_back(strPackages);
+			
+			doer_args.push_back("-c"); // Checks
+			doer_args.push_back(strChecks);
+			
+			
+			UnixCommand * command = new UnixCommand(INSTALL_PREFIX"/bin/doer", ProcessNoCaptureOutput);			
+			
+			
+			ProcessResult * result = command->Execute(doer_args);
+			delete command;
+			
+			if ( !OS_32_BITS && HAVE_MULTILIB )
 			{
-				try
-				{
-					cout << "Loading KEDR framework for module : " << *fs << endl;
-					kedr.SetTargetModule(*fs);
-					if ( PerformLeakCheck )
-						kedr.EnableMemLeakCheck();
-					if ( PerformFaultSimulation )
-						kedr.EnableFaultSimulation();
-					// Process possible additional KEDR payload.
-					// Used in testing of Spruce itself.
-					const char* KEDRAdditionalPayloads = getenv("KEDR_ADDITIONAL_PAYLOADS");
-					if(KEDRAdditionalPayloads && KEDRAdditionalPayloads[0] != '\0')
-					{
-						kedr.AddPayloads(KEDRAdditionalPayloads);
-					}
-					
-					kedr.LoadKEDR();
-					cout << "KEDR is successfully loaded." << endl;
-					
-				}
-				catch (Exception e)
-				{
-					cerr << "KEDR cannot be loaded." << endl;
-					cerr << "Exception is thrown. " << e.GetMessage() << endl;
-					PerformFaultSimulation = false;
-					PerformLeakCheck = false;
-					lcItem.setStatus("Unresolved");
-					lcItem.setOutput(string("KEDR cannot be loaded: ") + e.GetMessage());
-				}
+				UnixCommand * command = new UnixCommand(INSTALL_PREFIX"/bin/doer_32", ProcessNoCaptureOutput);
+				
+				ProcessResult * result = command->Execute(doer_args);
+				delete command;
 			}
-		
+			/*
 			//PartitionManager * pm = ShmAllocator<PartitionManager>::GetInstance();
 			PartitionManager pm(INSTALL_PREFIX"/share/spruce/config/PartitionManager.cfg", partition, MountAt, *fs, MountOpts);
 			
@@ -537,7 +547,7 @@ int main(int argc, char ** argv)
 					EXIT_IF_SIGNALED;
 					
 					
-					ShowOutput = true;					
+					ShowOutput = true;
 					
 					// Check if the module should be executed on this FS with these mount options.
 					bool ModuleShouldNotRun = (TestsToRun.size() > 0);
@@ -554,7 +564,8 @@ int main(int argc, char ** argv)
 						cerr << "Skipping module: " << *module << " (accoring to key run_tests in configuration file)."	<< endl;
 						continue;
 					}
-					UnixCommand * command = new UnixCommand((INSTALL_PREFIX"/bin/" + ModuleBin).c_str());
+					//UnixCommand * command = new UnixCommand((INSTALL_PREFIX"/bin/" + ModuleBin).c_str());
+					UnixCommand * command = new UnixCommand(INSTALL_PREFIX"/bin/doer");
 					
 					string FileName = logfolder + "/" + *fs + "_" + *module + "_" + pm.GetCurrentOptions() + "_log.xml";
 					
@@ -563,12 +574,15 @@ int main(int argc, char ** argv)
 					
 					vector<string> module_args;
 					
-					SpruceLog xmlSpruceLog(FileName, *fs, pm.GetCurrentOptions(), "", *module);
-					xmlSpruceLog.openTags();
-					ModuleLog moduleLog(FileName);
+					//SpruceLog xmlSpruceLog(FileName, *fs, pm.GetCurrentOptions(), "", *module);
+					//xmlSpruceLog.openTags();
+					//ModuleLog moduleLog(FileName);
 					
 					
+					module_args.push_back(*fs);
 					module_args.push_back(FileName);
+					module_args.push_back(pm.GetCurrentOptions());
+					
 					//XMLFilesToProcess.push_back(FileName);
 					
 					// Find out which tests should be excluded in current module
@@ -616,11 +630,13 @@ int main(int argc, char ** argv)
 					ProcessResult * result = command->Execute(module_args);
 					delete command;
 					
+					cerr << "Module output: " << result->GetOutput() << endl;
+					
 					size_t ItemDuration = time(0) - ItemStartTime;
 					stringstream str;
 					str << ItemDuration;
 					
-					xmlSpruceLog.setDuration(str.str());
+					//xmlSpruceLog.setDuration(str.str());
 					
 					// Process the memory leak checker output
 					if ( PerformLeakCheck && kedr.IsRunning() )
@@ -650,13 +666,58 @@ int main(int argc, char ** argv)
 					// if leak checker option is specified, then perform leak cheak
 					if(lcItem.getStatus() != "")					
 					{
-							moduleLog.addItem(lcItem);
+						#pragma warning "Do not forget the leak checker"
+							//moduleLog.addItem(lcItem);
 					}
 					//closing xml tags
-					xmlSpruceLog.closeTags();
-					//if we need htmls, then generating them
-					if ( ! ((configValues.find("genhtml") != configValues.end()) && (configValues["genhtml"] == "false")))
-					{	
+					//xmlSpruceLog.closeTags();
+					
+				}
+				while ( PS != PS_Done );
+				
+				
+				
+		
+				
+				//ShmAllocator<PartitionManager>::Free(pm);
+				pm.ClearCurrentOptions();
+			}*/
+
+			// Unload the KEDR framework
+			
+			if ( !ShowOutput )
+			{
+				cerr << "\033[1;31mNo log file is generated for " << *fs << ".\033[0m" << endl;
+				continue;
+			}
+			
+			//if we need htmls, then generating them
+			if ( ! ((configValues.find("genhtml") != configValues.end()) && (configValues["genhtml"] == "false")))
+			{	
+				// Find all the generated XMLs for the current FS
+				UnixCommand find("find");
+				vector<string> find_args;
+				find_args.push_back(logfolder);
+				find_args.push_back("-name");
+				find_args.push_back( *fs + "*.xml");
+				
+				
+				ProcessResult *res = find.Execute(find_args);
+				
+				if ( !res || res->GetStatus() != Success )
+				{
+					cerr << "No XMl files were found to process.";
+				}
+				else
+				{
+				
+					vector<string> xmls = SplitString(res->GetOutput(), '\n', vector<string>());
+				
+					
+					for (size_t i = 0; i < xmls.size(); ++i)
+					{
+						string FileName = xmls[i];
+					
 						UnixCommand xslt("xsltproc");
 						vector<string> xslt_args;
 						
@@ -666,99 +727,19 @@ int main(int argc, char ** argv)
 						xslt_args.push_back(logfolder + "/xslt/processor.xslt");
 						xslt_args.push_back(FileName);
 											
-						ProcessResult *res = xslt.Execute(xslt_args);
+						res = xslt.Execute(xslt_args);
 
-						if ( res == NULL )
+						if ( res == NULL || res->GetStatus() != Success)
 						{
-							cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;						
-						}
-						
-						if ( res->GetStatus() != Success )
-						{
+							cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;
 							cerr << res->GetOutput() << endl;
-						}			
-						
-						ModuleStatus = result->GetStatus();					
-						
-						SpruceStatus = static_cast<Status>(ModuleStatus | SpruceStatus);
-						cerr << "Module " << *module << " exits with status `" << StatusMessages[ModuleStatus] << "`" << endl;
-						if ( ModuleStatus >= Fatal )
-						{
-							cerr << "\033[1;31mSpruce: Fatal error has rised. Stopping system execution.\033[0m" << endl;						
-							break;
+							continue;
 						}
-						cout << endl;
-					}						
+						
+					}
 				}
-				while ( PS != PS_Done );
-				
-				
-				
-				/*if ( !pm.ReleasePartition() )
-				{
-					cerr << "Cannot release the partition: " << strerror(errno) << endl;
-					break;
-				}*/
-				
-				//ShmAllocator<PartitionManager>::Free(pm);
-				pm.ClearCurrentOptions();
-			}
-
-			// Unload the KEDR framework
-			try
-			{
-				if ( ( PerformFaultSimulation || PerformLeakCheck ) && kedr.IsRunning() )
-				{
-					if(kedr.UnloadKEDR())
-						cout << "KEDR is successfully unloaded." << endl;
-				}
-			}
-			catch(Exception e)
-			{
-				cerr << "Error unloading KEDR. " << e.GetMessage() << endl;
-			}
-			if ( !ShowOutput )
-			{
-				cerr << "\033[1;31mNo log file is generated for " << *fs << ".\033[0m" << endl;
-				continue;
-			}
-			// Produce the <FS>.xml to pass to the dashboard generator
-			// The file contains information about mount options and modules
-			size_t FSDuration = time(0) - FSStartTime;
-			stringstream str;
-			str << FSDuration;
-			string strFSStartTime = ctime(&FSStartTime);
-			ofstream fs_xml((logfolder + "/" + *fs + ".xml").c_str());
-			fs_xml << "<SpruceDashboard FS=\"" + *fs + "\">\n";
-			fs_xml << "\t<Start>" + strFSStartTime + "</Start>\n";
-			fs_xml << "\t<Duration>" + str.str() + "</Duration>\n";
-			fs_xml << "\t<Rev>" HG_REV "</Rev>\n";
-			fs_xml << "\t<Options>\n";
-			for ( unsigned int i = 0; i < MountOptions.size(); ++i )
-			{
-				string option = MountOptions[i].second;
-				string mkfs_opt = "";
-				string mount_opt = "";
-				if ( option.find(":") != string::npos )
-				{
-					mkfs_opt = option.substr(0, option.find(":"));
-					mount_opt = option.substr( option.find(":") + 1, option.length() - option.find(":") );
-				}
-				else
-					mount_opt = option;
-				fs_xml << "\t\t<Option Mkfs=\"" + mkfs_opt + "\" Mount=\"" + mount_opt + 
-					"\" Raw=\"" + MountOptions[i].first + "\"/>\n";
-			}
-			fs_xml << "\t</Options>";
+			}						
 			
-			fs_xml << "\t<Modules>\n";
-			for ( unsigned int i = 0; i < Modules.size(); ++i )
-				fs_xml << "\t\t<Module>" + Modules[i] + "</Module>\n";
-			fs_xml << "\t</Modules>\n";
-			fs_xml << "</SpruceDashboard>";
-			
-			fs_xml.close();
-			MountOptions.erase(MountOptions.begin(), MountOptions.end());
 			
 			// we generate html's if it is in need, also if the browser is specified, open the log files in the selected browser.
 			if ( !( (configValues.find("genhtml") != configValues.end() ) && ( configValues["genhtml"] == "false") ) )

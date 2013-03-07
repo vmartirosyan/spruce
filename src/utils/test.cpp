@@ -26,102 +26,246 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <algorithm>
+#include <KedrIntegrator.hpp>
+#include <memory>
 
-
-
-	
-/*bool Alarmed = false;
-
-void  SignalHandler(int signum)
-{
-	switch (signum)
-	{
-		case SIGALRM:			
-			Alarmed = true;
-			break;
-	}
-}
-*/
-
-/*	
 ProcessResult * Test::Execute(vector<string> args)
 {
-	struct sigaction sa;
-	bzero(&sa, sizeof(sa));
+	Logger::LogInfo("Test: " + _name);
+	ProcessResult * p_res = Process::Execute(_func, args);
+	Logger::LogInfo("Test: " + _name + " - OK");
 	
-	sa.sa_handler = SignalHandler;
-	if ( sigaction(SIGALRM, &sa, NULL) == -1 )
-	{	
-		return new ProcessResult(Unresolved, "Cannot set signal handler. " + static_cast<string>(strerror(errno)));
-	}
-	
-	alarm(TEST_TIMEOUT);
-	
-	ProcessResult * p_res = Process::Execute(args);
-	
-	alarm(0);
-	
-	TestResult * t_res = NULL;
-	
-	if ( Alarmed )
-	{
-		Alarmed = false;
-		t_res = new TestResult(ProcessResult(Timeout, "Timeout"), _operation, _args);
-	}
-	else
-	{
-		t_res = new TestResult(*p_res, _operation, _args);
-	}
-	
-	delete p_res;
-	
-	return t_res;
+	return p_res;
 }
 
-void TestCollection::Merge(TestCollection & tc)
+Status Test::OopsChecker(string& OutputLog)	
+{
+	string mainMessage;
+	vector<string> args;
+	args.push_back("-c"); // Clear the ring
+	//args.push_back("dmesg");
+	UnixCommand* command = new UnixCommand("dmesg");
+	std::auto_ptr<ProcessResult> result(command->Execute(args));
+	if(result.get() == NULL || result->GetStatus() != Success)
+	{
+		OutputLog = "Unable to read system log";
+		if ( result.get() != NULL )
+			OutputLog += result->GetOutput();
+		return Unresolved;
+	}
+	mainMessage = result->GetOutput();
+	delete command;
+	
+	//searching points
+	const string bug = "BUG";
+	const string oops = "Oops";
+	const string panic = "ernel panic";  //interested in both "Kernel panic" and "kernel panic"
+	const char less = 60;  // 60 is the ASCII code of the operation 'less than'
+	const char amp = 38;   // 38 is the ASCII code of the operation 'ampersand'
+	size_t foundPos;
+	
+	foundPos = mainMessage.find(bug); // searching "bug" in the kernel output
+	if( foundPos != string::npos )
+	{
+		OutputLog.assign(mainMessage.begin() + foundPos, mainMessage.end());
+		size_t pos = 0;
+		while(true)
+		{
+			pos = (OutputLog.find(amp, pos+1));
+			if(pos == std::string::npos)
+				break;
+			OutputLog.replace(pos, 1, " "); 
+		}
+		while(true)
+		{
+			pos = (OutputLog.find(less, pos+1));
+			if(pos == std::string::npos)
+				break;
+			OutputLog.replace(pos, 1, " ");   
+		}
+		Logger::LogFatal("Oops checker: bug found.");
+		return Bug;
+	}
+	foundPos = mainMessage.find(oops);			
+	if( foundPos != string::npos )
+	{
+		OutputLog.assign(mainMessage.begin() + foundPos, mainMessage.end());
+		size_t pos = 0;
+		while(true)
+		{
+			pos = (OutputLog.find(amp, pos+1));
+			if(pos == std::string::npos)
+				break;
+			OutputLog.replace(pos, 1, " ");  
+		}
+		while(true)
+		{
+			pos = (OutputLog.find(less, pos+1));
+			if(pos == std::string::npos)
+				break;
+			OutputLog.replace(pos, 1, " ");  
+		}
+		Logger::LogFatal("Oops checker: oops found.");
+		return Oops;
+	}
+	foundPos = mainMessage.find(panic);			
+	if( foundPos != string::npos )
+	{
+		OutputLog.assign(mainMessage.begin() + foundPos, mainMessage.end());
+		size_t pos = 0;
+		while(true)
+		{
+			pos = (OutputLog.find(amp, pos+1));
+			if(pos == std::string::npos)
+				break;
+			OutputLog.replace(pos, 1, " ");  
+		}
+		while(true)
+		{
+			pos = (OutputLog.find(less, pos+1));
+			if(pos == std::string::npos)
+				break;
+			OutputLog.replace(pos, 1, " ");  
+		}
+		Logger::LogFatal("Oops checker: Panic found.");
+		return Panic;
+	}
+	return Success;
+}
+
+void TestSet::Merge(TestSet & tc)
 {
 	//for ( vector<Test *>::iterator i = tc._tests.begin(); i != tc._tests.end(); ++i)		
-	for ( unsigned int i = 0; i < tc._tests.size(); )
+	for ( map<string, Test>::iterator i = tc._tests.begin(); i != tc._tests.end(); )
 	{
-		_tests.push_back(tc._tests[i]);
+		_tests.insert(*i);
 		// Erase the original pointer so that the destructors do not overlap
-		tc._tests.erase(tc._tests.begin() + i);
+		tc._tests.erase(i);
 	}
 }
 
-TestResultCollection TestCollection::Run()
+Status TestSet::Run(Checks checks)
 {
-	TestResultCollection Results;
+	Status result = Success;
+	Status st = Success;
 	
-		
-	for ( unsigned int index = 0 ; index < _tests.size(); ++index)
+	if ( _StartUpFunc )
+		if ( (st = _StartUpFunc()) != Success )
+			return st;
+	
+	for ( map<string, Test>::iterator i = _tests.begin(); i != _tests.end(); ++i)
 	{
-		TestResult * res = static_cast<TestResult *>(_tests[index]->Execute());
-		Results.AddResult( res );
+		i->second.SetChecks(checks);
 		
-
+		if ( i->second.GetEffectiveChecks() == None )
+		{
+			Logger::LogWarn("Test " + i->first + " does not support necessary checks. Skipping.");
+			continue;
+		}
+		
+		if ( i->second.GetEffectiveChecks() & Stability )
+		{
+			KedrIntegrator::SetAllIndicators();
+		}
+		
+		
+		TestResult res = *static_cast<TestResult *>(i->second.Execute());
+		if ( i->second.GetEffectiveChecks() & Functional )
+			i->second.AddResult(Functional, res );
+		
+		if ( result < res.GetStatus() )
+			result = res.GetStatus();
+		
+		// Perform oops checking and handle it
+		string log;
+		Status oopsStatus = i->second.OopsChecker(log); // log is an output parameter
+		
+		if(oopsStatus != Success)
+		{	
+			//so we have an emergency situation...
+			i->second.AddResult(Stability, ProcessResult(Fatal, "Status: " + StatusMessages[oopsStatus] + "Output: " + log));
+		}
 		
 		// If Fatal error has rised quit!
-		if ( res->GetStatus() == Fatal )
+		if ( res.GetStatus() == Fatal )
 			break;
+			
+		// See if the stability check should be done
 		
-		//delete _tests[index];
+		if ( i->second.GetEffectiveChecks() & Stability )
+		{
+			i->second.SetChecks(Stability);
+			// At this point it known that EnableFaultSim and DisbleFaultSim have been executed
+			// Thus the indicators are set, the `times` values are still there.
+			map<string, unsigned int> PointTimes = KedrIntegrator::GetPointTimesMap();
+			
+			KedrIntegrator::ClearAllIndicators();
+			
+			for ( map<string, unsigned int>::iterator j = PointTimes.begin(); j != PointTimes.end(); ++j )
+			{
+				if ( j->second )
+				{
+					cerr << "Test: " << i->first << endl;
+					cerr << "Processing point " << j->first << ". Count: " << j->second << endl;
+				}
+				
+				unsigned int Count = j->second;
+				for ( unsigned int k = 1; k <= Count; ++k )
+				{
+					
+					i->second.SetCurrentPoint(j->first);
+					KedrIntegrator::SetIndicator(j->first, "common");
+					KedrIntegrator::ClearPid(j->first);
+					KedrIntegrator::ClearTimes(j->first);
+					
+					stringstream sExpression;
+					
+					sExpression << "times = ";
+					
+					sExpression << k;
+					
+					KedrIntegrator::SetExpression(j->first, sExpression.str() );
+					
+					Logger::LogInfo("Executing test " + i->first + " in fault simulated environment.");
+					TestResult res = *static_cast<TestResult *>(i->second.Execute());
+					
+					oopsStatus = i->second.OopsChecker(log); // log is an output parameter
+					
+					if(oopsStatus != Success)
+					{	
+						//so we have an emergency situation...
+						i->second.AddResult(Stability, ProcessResult(Fatal, "Status: " + StatusMessages[oopsStatus] + "Output: " + log));
+					}
+					else
+					{
+						i->second.AddResult(Stability, res );
+					}
+				}
+			}
+		}
 	}	
 	
-	return Results;
+	if ( _CleanUpFunc )
+		_CleanUpFunc();
+	
+	return result;
 }
-*/
 
-
-string TestResult::ToXML()
+Status TestPackage::Run(Checks checks)
 {
-	// Just for debugging
-	// return OperationToString() + " : " + StatusToString() + " : " + _output + " : Arguments: " + _arguments;
-	// The real XML...
+	Status result = Success;
+	for ( map<string, TestSet>::iterator i = _testsets.begin(); i != _testsets.end(); ++i)
+	{
+		Status st = i->second.Run(checks);		
+		
+		if ( st > result )
+			result = st;
+
+		// If Fatal error has rised quit!
+		if ( st == Fatal )
+			break;
+		
+	}	
 	
-	return "\n\t<Operation>" + OperationToString() + "</Operation>\n\t<Status>" + StatusToString() + "</Status>\n\t<Output>" +
-		_output +  "</Output>\n\t<Arguments>" + _arguments + "</Arguments>";
-	
-	//return _arguments;
-	
+	return result;
 }

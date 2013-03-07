@@ -46,6 +46,22 @@ enum Mode
 	FaultSimulation
 };
 
+enum Check
+{
+	None = 0,
+	Functional = 1,
+	Stability = 2,
+	MemoryLeak = 4,
+	All = Functional | Stability | MemoryLeak
+};
+
+const string strFuncional = "func";
+const string strStability = "stability";
+const string strMemoryLeak = "mem-leak";
+
+// A combination of flags from enum Check
+typedef unsigned int Checks;
+
 enum Status
 {
 	Success = 0, // 0 means Success!
@@ -53,7 +69,8 @@ enum Status
 	Skipped,
 	Unsupported,
 	Unresolved,
-	Fail,
+	PossibleFail, // Indicates a success in fault simulation process
+	Fail,	
 	Timeout,
 	Signaled,
 	FSimSuccess,
@@ -95,9 +112,22 @@ struct FSimInfo
 	}\
 }\
 
-#define EnableFaultSim() \
+// The only thing which the child process has to do
+// is to manipulate the `pid` value.
+// In fact setting `pid` to -1 means stop any kedr activity on the point
+#define EnableFaultSim()\
 {\
-	errno = 0;/* Reset the errno variable.*/\
+	KedrIntegrator::SetPid(obj->GetCurrentPoint());\
+}\
+
+#define DisableFaultSim()\
+{\
+	KedrIntegrator::ClearPid(obj->GetCurrentPoint());\
+}\
+
+ /*\
+{\
+	errno = 0;/\
 	KedrIntegrator::ResetTimes( _fsim_point );\
 	if (_fsim_enabled)\
 	{\
@@ -105,9 +135,9 @@ struct FSimInfo
 		Logger::LogInfo(static_cast<string>("Fault simulation is enabled for module ") + FileSystem + "(" +\
 			_fsim_point + ", " + _fsim_expression + ")");\
 	}\
-}
+}*/
 	
-#define DisableFaultSim() \
+/*#define DisableFaultSim() \
 {\
 	if (_fsim_enabled)\
 	{\
@@ -115,7 +145,7 @@ struct FSimInfo
 		Logger::LogInfo(static_cast<string>("Fault simulation is disabled for module ") + FileSystem + "(" +\
 			_fsim_point + ", " + _fsim_expression + ")");\
 	}\
-}
+}*/
 
 #define SetFaultCount() \
 	_fault_count = KedrIntegrator::GetTimes( _fsim_point); 
@@ -126,8 +156,9 @@ struct FSimInfo
 	string msg = static_cast<string>(message) + add_msg;\
 	Logger::LogError(msg);\
 	if ( ((local_errno == ENOTSUP) || (local_errno == ENOTTY)) && (status != -1)) Return(Unsupported);\
-	if ( (status != -1) && (status != Unsupported) ) Return(status);\
+	if ( (status != -1) && (status != Unsupported) && (status != PossibleFail) ) Return(status);\
 	if ( status == Unsupported ) Return(Unsupported);\
+	if ( status == PossibleFail ) _TestStatus = status;\
 }\
 
 #define ERROR_2_ARGS(message, status)\
@@ -142,11 +173,46 @@ struct FSimInfo
 
 #define Error(...) { ERROR_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__) }
 
-#define Fail(cond, message)\
-	if ( (cond) )\
-		{ Error(message, Fail) }\
+// The Fail macro should be called any time the target function is to be invoked.
+// The macro invokates the target function and makes all the necessary checks.
 
-#define Skipped(cond, message)\
+// Fail macro should behaive differently when the fault simulation is in progress.
+// In that case it is normal that target functions should fail.
+// On the other side it is really strange that a function can success even though
+// it cannot allocate memory or something like that
+#define Fail(cond, message)\
+{\
+	if ( obj->GetEffectiveChecks() & Stability )\
+		EnableFaultSim();\
+	bool res = (cond);\
+	if ( obj->GetEffectiveChecks() & Stability )\
+		DisableFaultSim();\
+	if ( obj->GetEffectiveChecks() == Stability ) /* It means that fault simulation is activated */\
+	{\
+		if ( !res )\
+			{ Error(message, PossibleFail) }\
+	}\
+	else\
+	{\
+		if ( res )\
+			{ Error(message, Fail) }\
+	}\
+}\
+
+// The Check macro should be called when a real functional check is being done
+// For example: comparison of set and obtained values in case of get/set tests.
+#define Check(cond, message)\
+{\
+	if ( obj->GetEffectiveChecks() & Functional )\
+	{\
+		if ( (cond) )\
+			Error(message, Fail);\
+	}\
+}\
+	
+
+
+#define Skip(cond, message)\
 	if ( (cond) )\
 		{ Error(message, Skipped) }\
 
@@ -300,35 +366,20 @@ struct FSimInfo
 	{\
 		if (  errno != error_code )\
 		{\
-			Error("Function should return '" + static_cast<string>(strerror(error_code)) +  "' error but it did not.", Fail);\
+			Error("Function should return '" + static_cast<string>(strerror(error_code)) + \
+				"' error but returned '" + static_cast<string>(strerror(errno)) +  "'", Fail);\
 		}\
 	}\
 	Return(Success);\
 }\
 
-#define EmptyTestSet(module_name, test_set_name, status, message)\
-class module_name##test_set_name##Tests : public Process\
+#define EmptyTestSet(package_name, test_set_name, status, message)\
+TestSet Init_##package_name##_##test_set_name()\
 {\
-public:\
-	void RunTest(string) {}\
-	void ExcludeTest(string) {}\
-	virtual TestResultCollection RunNormalTests()\
-	{\
-		TestResultCollection res;\
-		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name, "None", "None");\
-		res.AddResult(tr);\
-		return res;\
-	}\
-	virtual TestResultCollection RunFaultyTests()\
-	{\
-		TestResultCollection res;\
-		module_name##TestResult * tr = new module_name##TestResult(new ProcessResult(status, message), #test_set_name, "None", "None");\
-		res.AddResult(tr);\
-		return res;\
-	}\
-};
+	return TestSet(message);\
+}
 
-vector<string> SplitString(string str, char delim, vector<string> AllowedValues );
+vector<string> SplitString(string str, char delim, vector<string> AllowedValues = vector<string>());
 void StrReplace(string& str, string val1, string val2);
 
 #endif /* COMMON_HPP */

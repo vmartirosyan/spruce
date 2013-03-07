@@ -20,209 +20,220 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-#ifndef TEST_BASE_H
-#define TEST_BASE_H
+#ifndef TEST_H
+#define TEST_H
 
+#include <TestResult.hpp>
 #include "Common.hpp"
 #include "Process.hpp"
 #include <stdlib.h>
 #include <sstream>
 #include <fstream>
+#include <map>
 using namespace std;
 
-class TestResult : public ProcessResult
+class Test : public Process
 {
-public:
-	/*TestResult():
-		ProcessResult(Unknown, "No output"),
-		_operation(0),
-		_arguments("No arguments provided") {}*/
-	TestResult(ProcessResult pr, int op, string args, string desc, string spec = "", string stroper = ""):
-		ProcessResult(pr),
-		_spec(spec),
-		_operation(op),
+public:	
+	Test():
+		_name("Unknown"),
+		_description("None"),
+		_func(0),
+		_currentPoint("")
+		{
+		}
+	Test(string name, string desc, ProcessFunc func = NULL, Checks supportedChecks = All):
+		_name(name),
 		_description(desc),
-		_stroperation(stroper),
-		_arguments(args) {}
-	
-	TestResult(ProcessResult pr, string args, string spec, string stroper, string desc):
-		ProcessResult(pr),
-		_spec(spec),
-		_operation(0),
-		_description(desc),
-		_stroperation(stroper),
-		_arguments(args) {}
+		_func(func),
+		_supportedChecks(supportedChecks),
+		_performChecks(Functional),
+		_currentPoint("")
+		{
+			 //cerr << "Constructing test: " << _name << endl;
+		}
 		
-	TestResult(Status s, string output, int op, string args, string desc):
-		ProcessResult(s, output),
-		_spec(""),
-		_operation(op),
-		_description(desc),
-		_stroperation(OperationToString()),
-		_arguments(args) {}
-	TestResult(ProcessResult pr, string op, string args, string desc):
-		ProcessResult(pr),
-		_spec(""),
-		_operation(0),
-		_description(desc),
-		_stroperation(op),		
-		_arguments(args)
-		 {}
-	TestResult(Status s, string output, string op, string args, string desc):
-		ProcessResult(s, output),
-		_spec(""),
-		_operation(0),
-		_description(desc),
-		_stroperation(op),
-		_arguments(args) {}
-	TestResult(TestResult const & tr) : 
-		ProcessResult(tr),
-		_spec(tr._spec),
-		_operation(tr._operation),
-		_description(tr._description),
-		_stroperation(tr._stroperation),
-		_arguments(tr._arguments) {}
-	 	 	 
-	//virtual string ToXML();
-	virtual string OperationToString()
+	Test(const Test & t):
+		_name(t._name),
+		_description(t._description),
+		_func(t._func),
+		_supportedChecks(t._supportedChecks),
+		_performChecks(Functional),
+		_results(t._results),
+		_currentPoint(t._currentPoint)
+		{}
+		
+	string GetName() const
 	{
-		return "Unknown";
-		//return Operation::ToString((Operations)_operation);
-	}
-	string GetStrOperation() const
-	{
-		return _stroperation;
-	}
-	string GetArguments() const
-	{
-		return _arguments;
+		return _name;
 	}
 	string GetDescription() const
 	{
 		return _description;
 	}
-	virtual string ToXML();
-	string GetSpec() const
+	bool operator < (const Test &t) const
 	{
-		return _spec;
+		return _name < t._name;
 	}
-protected:
-	string _spec;
-	int _operation;
-	string _description;
-	string _stroperation;
-	string _arguments;
-};
-
-class TestResultCollection 
-{
-public:
-	TestResultCollection():
-		_results()
-		{}
-	void AddResult(Status s, string output, int op, string args, string desc)
+	
+	void SetChecks(Checks performChecks)
 	{
-		TestResult * tmp = new TestResult(s,output,op,args, desc);
-		_results.push_back(tmp);
+		_performChecks = performChecks;
 	}
-	void AddResult(TestResult * result)
+	
+	Checks GetEffectiveChecks() const
 	{
-		_results.push_back(result);
+		return ( _supportedChecks & _performChecks );
 	}
-	void Merge(TestResultCollection results)
+	
+	void AddResult(Checks c, ProcessResult t)
 	{
-		for ( unsigned int i = 0; i < results._results.size(); )
-		{
-			_results.push_back(results._results[i]);
-			// Erase the original pointer so that the destructors do not overlap
-			results._results.erase(results._results.begin() + i);
-		}
+		_results[c] = t;		
 	}
-	string ToXML()
+	
+	string GetCurrentPoint() const
 	{
-		string result = "";
-		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
-		{
-			//cerr << (*i)->ToXML() << endl;
-			result += (*i)->ToXML();			
-		}
-		
-		return result;
+		return _currentPoint;
 	}
-	// Returns the highest status in the collection.
-	Status GetStatus()
+	void SetCurrentPoint(string point)
 	{
-		Status max_stat = Success;
-		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
-			if ( (*i)->GetStatus() > max_stat && (*i)->GetStatus() >= Unresolved )
-				max_stat = (*i)->GetStatus();
-		return max_stat;
+		_currentPoint = point;
 	}
-	string GetOutput() const
-	{
-		return "asdf";
-	}
-	~TestResultCollection()
-	{
-		for ( vector<TestResult *>::iterator i = _results.begin(); i != _results.end(); ++i )
-			delete (*i);
-	}
-	const vector<TestResult*>& GetResults() const
+	
+	const map<Checks, TestResult>& GetResults() const
 	{
 		return _results;
 	}
-private:
-	vector<TestResult*> _results;
-};
-
-/*
-class Test : public Process
-{
-public:	
-	Test(Mode m, int op, string a):
-		_mode(m),
-		_operation(op),
-		_stroperation("Unknown"),
-		_args(a) {}
-	Test(Mode m, string op, string a):
-		_mode(m),
-		_operation(0),
-		_stroperation(op),
-		_args(a) {}
-	Test(const Test & t):
-		_mode(t._mode),
-		_operation(t._operation),
-		_stroperation(t._stroperation),
-		_args(t._args) {}
 	
 	ProcessResult * Execute(vector<string> args = vector<string>());
-	virtual ~Test() {}
+	virtual ~Test() 
+	{
+		
+	}
+	
+	Status OopsChecker(string &);
+	
 protected:
-	virtual int Main(vector<string> args) = 0;
-	Mode _mode;
-	int _operation;
-	string _stroperation;
-	string _args;
+	int Main(vector<string>)
+	{
+		Logger::LogFatal("Main method in Test class should be never called!");
+		return -1;
+	}
+	string _name;
+	string _description;
+	ProcessFunc _func;
+	Checks _supportedChecks;
+	Checks _performChecks;
+	string _currentPoint;
+	map<Checks, TestResult> _results; //One result per check
 };
 
-class TestCollection
+typedef Status (*StartUpFunc) ();
+typedef void (*CleanUpFunc) ();
+
+class TestSet
 {
 public:
-	TestResultCollection Run();
-	void AddTest(Test * t)
+	TestSet(string name = "Undefined", Test tests[] = 0, int count = 0):
+		_name(name),
+		_StartUpFunc(0),
+		_CleanUpFunc(0)
 	{
-		_tests.push_back(t);
+		for ( int i = 0; i < count; ++i )
+			AddTest(tests[i]);
 	}
-	void Merge( TestCollection &);
-	~TestCollection()
+
+	Status Run(Checks);
+	
+	void AddTest(Test t)
 	{
-		for ( vector<Test *>::iterator i = _tests.begin(); i != _tests.end(); ++i )
-		{
-			delete (*i);
-		}
+		//cerr << "Adding test: " << t.GetName() << endl;
+		_tests[t.GetName()] = t;
+	}
+	
+	string GetName() const
+	{
+		return _name;
+	}
+	
+	void SetStartUpFunc(StartUpFunc _start)
+	{
+		_StartUpFunc = _start;
+	}
+	
+	void SetCleanUpFunc(CleanUpFunc _clean)
+	{
+		_CleanUpFunc = _clean;
+	}
+	
+	const std::map<string, Test>& GetTests() const
+	{
+		return _tests;
+	}	
+	
+	bool operator < (const TestSet &t) const
+	{
+		return _name < t._name;
+	}
+	
+	void Merge( TestSet & );
+		
+	~TestSet()
+	{
 	}	
 private:
-	vector<Test *> _tests;
+	string _name;
+	std::map<string, Test> _tests;
+	StartUpFunc _StartUpFunc;
+	CleanUpFunc _CleanUpFunc;
 };
-*/
-#endif /* TEST_BASE_H */
+
+class TestPackage
+{
+public:
+	TestPackage():
+		_testsets()
+	{}
+	
+	TestPackage(string name, TestSet testsets[] = 0, int count = 0):
+		_name(name)
+	{
+		for ( int i = 0; i < count; ++i )
+			AddTestSet(testsets[i]);
+	}
+
+	Status Run(Checks);
+	
+	void AddTestSet(TestSet t)
+	{
+		//cerr << "Adding testset: " << t.GetName() << endl;
+		_testsets[t.GetName()] = t;
+	}
+	
+	string GetName() const
+	{
+		return _name;
+	}
+	
+	void Merge( TestPackage & tp)
+	{
+		for ( map<string, TestSet>::iterator i = tp._testsets.begin(); i != tp._testsets.end(); ++i )
+			_testsets[i->second.GetName()] = i->second;
+	}
+	
+	const std::map<string, TestSet>& GetTestSets() const
+	{
+		return _testsets;
+	}
+	
+	~TestPackage()
+	{
+	}	
+private:
+	string _name;
+	std::map<string, TestSet> _testsets;
+};
+
+
+
+#endif /* TEST_H */

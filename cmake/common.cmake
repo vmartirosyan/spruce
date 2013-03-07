@@ -137,3 +137,87 @@ function (check_executable name path)
 	ENDIF( ${STAT} )
 	Message("-- Looking for '${name}' executable - found")
 endfunction()
+
+function (add_test_package name )
+
+	MESSAGE("-- Configuring ${name} test package")
+
+	#set(package_xmls package.xml)
+	#set(package_sources package.cpp)
+
+	execute_process(
+			COMMAND ${CMAKE_BINARY_DIR}/bin/generator ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src/engine/generator
+		)
+
+	file(GLOB xml_source_files "${CMAKE_CURRENT_SOURCE_DIR}/*.xml")
+	foreach(source_xml_file ${xml_source_files})
+		string( REPLACE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} bin_xml_file ${source_xml_file} )	
+		
+		ADD_CUSTOM_COMMAND(
+			OUTPUT ${bin_xml_file}
+			COMMAND ${CMAKE_BINARY_DIR}/bin/generator ${CMAKE_SOURCE_DIR}/src/tests ${CMAKE_BINARY_DIR}/src/tests ${CMAKE_SOURCE_DIR}/src/engine/generator
+			DEPENDS ${CMAKE_BINARY_DIR}/bin/generator ${source_xml_file} )
+		
+		list(APPEND package_xmls ${bin_xml_file})
+	endforeach()
+
+
+	file(GLOB xml_binary_files "${CMAKE_CURRENT_BINARY_DIR}/*.xml")
+	foreach(xml_file ${xml_binary_files})
+		string( REPLACE xml cpp source_file ${xml_file} )	
+		
+		execute_process(COMMAND	bash -c "			
+				stat ${source_file} > /dev/null 2>&1
+				if [ $? -ne 0 ] || [ `stat -c %Y ${xml_file}` -gt `stat -c %Y ${source_file}` ]
+				then
+					xsltproc --stringparam XmlFolder ${CMAKE_CURRENT_BINARY_DIR} --stringparam PackageName ${name}  -o ${source_file}	${CMAKE_SOURCE_DIR}/src/engine/generator/testpackage.xslt ${xml_file}
+				fi")
+		
+		ADD_CUSTOM_COMMAND(
+			OUTPUT ${source_file}
+			COMMAND xsltproc 
+				--stringparam XmlFolder ${CMAKE_CURRENT_BINARY_DIR}
+				--stringparam PackageName ${name}
+				-o ${source_file}
+				${CMAKE_SOURCE_DIR}/src/engine/generator/testpackage.xslt ${xml_file}
+				
+			DEPENDS ${xml_file} )
+		
+		list(APPEND package_sources ${source_file})
+	endforeach()
+
+	add_library(${name} ${package_sources})
+
+	add_dependencies(${name} generator)
+
+	target_link_libraries(${name} utils)
+	
+	
+	IF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB})	
+	
+		# copy the original files to build the compatible version of the target		
+		foreach(source_file ${package_sources})
+			string( REPLACE .cpp _32.cpp compat_source_file ${source_file} )
+			
+			add_custom_command(
+				OUTPUT ${compat_source_file}
+				COMMAND cp ${source_file} ${compat_source_file}
+				DEPENDS ${source_file} )
+			
+			list(APPEND compat_package_sources ${compat_source_file})
+		endforeach()
+		
+		message("Compat files: ${compat_package_sources}")
+		
+		# generate the compat version of the library
+		set_source_files_properties(${compat_package_sources} PROPERTIES COMPILE_FLAGS "-DCOMPAT")
+		set_source_files_properties(${compat_package_sources} PROPERTIES COMPILE_FLAGS "-m32")
+		add_library(${name}_32 ${compat_package_sources})
+		
+		add_dependencies(${name}_32 generator)
+
+		target_link_libraries(${name}_32 utils_32)
+	
+	ENDIF ()
+	
+endfunction()
