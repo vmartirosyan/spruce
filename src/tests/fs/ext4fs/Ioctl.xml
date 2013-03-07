@@ -24,16 +24,16 @@
                         
                         // Backup the old values just in case
                         int old_flags;  
-                        Unres( ioctl(FDs[0], EXT4_IOC_GETFLAGS, &old_flags ) == -1 , "Error backing up old values.");
+                        Fail( ioctl(FDs[0], EXT4_IOC_GETFLAGS, &old_flags ) == -1 , "Error backing up old values.");
                         
                         // Set our testing flag values
-                        Unres ( ioctl(FDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+                        Fail ( ioctl(FDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
                 
                         // Get the flags back
-                        Unres ( ioctl(FDs[0], EXT4_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+                        Fail ( ioctl(FDs[0], EXT4_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
                         
                         // Restore the original flags
-                        Unres ( ioctl(FDs[0], EXT4_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+                        Fail ( ioctl(FDs[0], EXT4_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
                         
                         // Compare them
                         Check ( get_flags != set_flags, "Set and Get flags mismatch");
@@ -45,7 +45,7 @@
                 <Code>
                         // Backup the old values just in case
                         int old_flags;
-                        Unres ( ioctl(FDs[0], EXT4_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+                        Fail ( ioctl(FDs[0], EXT4_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
                         if(!(old_flags && EXT4_EXTENTS_FL))
                         {
                                 Error("Extent flag not supported",Unsupported);
@@ -75,16 +75,16 @@
                         
                         // Backup the old version just in case
                         int old_version;
-                        Unres ( ioctl(FDs[0], EXT4_IOC_GETVERSION, &old_version) == -1, "Error backing up old version.");
+                        Fail ( ioctl(FDs[0], EXT4_IOC_GETVERSION, &old_version) == -1, "Error backing up old version.");
                         
                         // Set our testing version value
-                        Unres ( ioctl(FDs[0], EXT4_IOC_SETVERSION, &set_version) == -1, "Error setting new version values.");
+                        Fail ( ioctl(FDs[0], EXT4_IOC_SETVERSION, &set_version) == -1, "Error setting new version values.");
                         
                         // Get the version back
-                        Unres ( ioctl(FDs[0], EXT4_IOC_GETVERSION, &get_version) == -1, "Error getting version value back.");
+                        Fail ( ioctl(FDs[0], EXT4_IOC_GETVERSION, &get_version) == -1, "Error getting version value back.");
                         
                         // Restore the original version
-                        Unres ( ioctl(FDs[0], EXT4_IOC_SETVERSION, &old_version) == -1, "Error restoring old version value.");
+                        Fail ( ioctl(FDs[0], EXT4_IOC_SETVERSION, &old_version) == -1, "Error restoring old version value.");
                         
                         // Compare them
                         Check ( get_version != set_version, "Set and Get version mismatch");
