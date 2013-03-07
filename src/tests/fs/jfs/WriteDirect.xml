@@ -29,8 +29,6 @@
 			const int BlockSize = 4096;
 			int Mult;
 			Mult = ((PartitionManager::GetDeviceSize(DeviceName)/1024 < 3000000)?100000:500000);
-			cerr<<Mult<<endl;
-			Fail(1,"");
 			char* WriteBuf = new char[Mult*BlockSize];
 			// Align to block size
 			char * WriteStart = reinterpret_cast<char*>(((reinterpret_cast<long>(WriteBuf) / BlockSize) + 1) * BlockSize);
