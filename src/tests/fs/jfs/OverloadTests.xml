@@ -22,7 +22,7 @@
 -->
 
 <TestSet Name="OverloadTests">
-	<Test Name="DirectoriesInWidth" FaultSimulationReady="true" NonFunctional="true">
+	<Test Name="DirectoriesInWidth" FaultSimulationReady="true">
 		<Description>Trying to create many directories</Description>
 		<Dir count="1000"/>
 		<Code>
@@ -30,7 +30,7 @@
 		</Code>
 	</Test>	
 	
-	<Test Name="DirectoryNames" FaultSimulationReady="true" NonFunctional="true">
+	<Test Name="DirectoryNames" FaultSimulationReady="true">
 		<Description>Trying to create directories with different long names</Description>
 		<Code>
 		const int dirCount = 100;	//... 
@@ -56,7 +56,7 @@
 		</Code>
 	</Test>	
 
-	<Test Name="DirectoriesInDepth" FaultSimulationReady="true" NonFunctional="true">
+	<Test Name="DirectoriesInDepth" FaultSimulationReady="true">
 		<Description>Trying to create many directories inserted</Description>
 		<Code>
 			
@@ -85,7 +85,7 @@
 		</Code>
 	</Test>	
 	
-	<Test Name="BigFiles" FaultSimulationReady="true" NonFunctional="true">
+	<Test Name="BigFiles" FaultSimulationReady="true">
 		<Description>Trying to create some big files</Description>
 		<Code>
 				
@@ -114,7 +114,7 @@
 		</Code>
 	</Test>	
 	
-	<Test Name="ManySmallWrittenFiles" FaultSimulationReady="true" NonFunctional="true">
+	<Test Name="ManySmallWrittenFiles" FaultSimulationReady="true">
 		<Description>Trying to create some small files, and write the data.</Description>
 		<File count = "500" />
 		<Code>
