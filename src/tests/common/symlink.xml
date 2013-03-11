@@ -53,7 +53,7 @@
 			Fail(symlink(OldFilePath, NewFilePath) == -1, "Cannot create link.");
 		</Code>
 	</Test>
-	<Test Name="SymlinkLongName" FaultSimulationReady="true">
+	<Test Name="SymlinkLongName" FaultSimulationReady="true" Shallow="true">
 		<Description>Create a symlink of a file with a long path.</Description>
 		<Code>
 			int NameLength =  PATH_MAX - strlen(MountPoint)-1;
@@ -65,7 +65,7 @@
 			const char * NewFilePath = "new_file";
 			unlink(NewFilePath);
 			
-			Fail(symlink(OldFilePath, NewFilePath) == -1, "Cannot create link.");
+			symlink(OldFilePath, NewFilePath);
 
 		</Code>
 	</Test>
