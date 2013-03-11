@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 -->
-<TestSet Name="XattrGetALot">
+<TestSet Name="Xattr">
 	<GlobalHeader>
 #define DO_EXPAND(VAL)  VAL ## 1
 #define EXPAND(VAL)     DO_EXPAND(VAL)
@@ -55,6 +55,56 @@
 			Fail ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
 			
 			Fail ( getxattr(FilePaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
+		</Code>
+	</Test>
+	<Test Name="XattrGetSetEmptyValueUser" FaultSimulationReady="true">
+        <Description>Set and retrieve an empty extended attribute value.</Description>
+        <File count="1"/>
+        <Code>
+            const char * AttrName = "user.";
+            const char * ValueSet = 0;   
+            const int ValueLen = 0;
+            char * ValueGot = new char[1];
+           
+            if ( removexattr(FilePaths[0].c_str(), AttrName) == -1 && errno != ENOATTR )
+            {
+                if ( errno == ENOTSUP )
+                {
+                    Error("Xattrs are not supported.", Unsupported);
+                }
+                Unres(true, "Cannot remove xattr.");
+            }
+            Fail ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, 0) == -1, "Cannot set xattr.");
+           
+            Fail ( getxattr(FilePaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");
+           
+            Fail ( strncmp(ValueSet, ValueGot, ValueLen ), static_cast<string>("Different xattr values: ") + ValueSet + " : " + ValueGot );
+        </Code>
+    </Test>
+    	<Test Name="XattrGetSetOS2" FaultSimulationReady="true">
+		<Description>Set and retrieve an extended attribute value.</Description>
+		<File count="1"/>
+		<Code>
+			const char * AttrName = "os2.XattrSetGetTest";
+			const char * ValueSet = "asdf";		
+			const int ValueLen = strlen(ValueSet);
+			char * ValueGot = new char[strlen(ValueSet)];
+			
+			if ( removexattr(FilePaths[0].c_str(), AttrName) == -1 && errno != ENOATTR )
+			{
+				if ( errno == ENOTSUP )
+				{
+					Error("Xattrs are not supported.", Unsupported);
+				}
+				Unres(true, "Cannot remove xattr.");
+			}
+			
+			Fail ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			
+			Fail ( getxattr(FilePaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");
+			
+			Check ( strncmp(ValueSet, ValueGot, ValueLen ), static_cast<string>("Different xattr values: ") + ValueSet + " : " + ValueGot );
+			
 		</Code>
 	</Test>
 	<GlobalFooter>
