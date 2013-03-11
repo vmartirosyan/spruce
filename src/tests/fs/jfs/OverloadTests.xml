@@ -114,18 +114,34 @@
 		</Code>
 	</Test>	
 	
-	<Test Name="ManySmallWrittenFiles" FaultSimulationReady="true">
-		<Description>Trying to create some small files, and write the data.</Description>
+	<Test Name="ManyBigWrittenFiles" FaultSimulationReady="true">
+		<Description>Trying to create some big files, and write the data.</Description>
 		<File count = "500" />
 		<Code>
 		
-			const int fileSize = 1024;
-			const int dataSize = fileSize - 10;
+			const int dataSize = 10000 * 1024;
 			char * data = new char[dataSize];
 						
 			for(int i = 0; i < 500; ++i)
 			{
-				write(FDs[i], data, dataSize);
+				write(FDs[i], data, dataSize - 10);
+				close(FDs[i]);	
+			}
+			delete data;
+					
+		</Code>
+	</Test>	
+	<Test Name="ManySmallWrittenFiles" FaultSimulationReady="true">
+		<Description>Trying to create some small files, and write the data.</Description>
+		<File count = "1000" />
+		<Code>
+		
+			const int dataSize = 1024;
+			char * data = new char[dataSize - 10];
+						
+			for(int i = 0; i < 1000; ++i)
+			{
+				Unres(write(FDs[i], data, dataSize) == -1, "Cannot write to file");
 				close(FDs[i]);	
 			}
 			delete data;
