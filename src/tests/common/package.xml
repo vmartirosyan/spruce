@@ -65,6 +65,7 @@
 	<TestSet Name="splice"/>
 	<TestSet Name="stat"/>
 	<TestSet Name="statfs"/>
+	<TestSet Name="symlink"/>
 	<TestSet Name="sync"/>
 	<TestSet Name="truncate"/>
 	<TestSet Name="umask"/>
