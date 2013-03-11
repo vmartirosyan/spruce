@@ -3,6 +3,6 @@
 	<TestSet Name="OverloadTests" />
 	<TestSet Name="mount" />
 	<TestSet Name="WriteDirect" />
-	<TestSet Name="XattrGetALot" />
+	<TestSet Name="Xattr" />
 	<TestSet Name="ShowAndStoreFunctions" />
 </TestPackage>
