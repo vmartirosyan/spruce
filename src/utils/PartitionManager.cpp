@@ -822,8 +822,9 @@ bool PartitionManager::SetSuperBlock(void * sb_struct, int size)
 		cerr << "Cannot get filesystem type or device name or mountpoint" << endl;
 		return false;
 	}
-	if( !ReleasePartition(mnt))
-		return false;
+	//just in case
+	ReleasePartition(mnt);
+
 	
 	offset = SBOffsets[fs];
 	fd = open(dev.c_str(), O_RDWR);
@@ -838,12 +839,12 @@ bool PartitionManager::SetSuperBlock(void * sb_struct, int size)
 		close(fd);
 		return false;
 	}
-/*	if( write(fd, sb_struct, size) == -1 )
+	if( write(fd, sb_struct, size) == -1 )
 	{
 		cerr << "Cannot write superblock to the device." << strerror(errno) << endl;
 		close(fd);
 		return false;
-	}*/
+	}
 	close(fd);
 	if(!Mount(dev, mnt, fs, ""))
 		return false;
