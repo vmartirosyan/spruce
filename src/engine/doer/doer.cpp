@@ -83,6 +83,14 @@ map<string, TestPackage*> InitPackages(string fs, vector<string> AllowedPackages
 	return result;
 }
 
+string GetOptionsToEnable(vector<string> TestsToRun);
+
+
+vector<string> TestsToRun;
+vector<string> TestsToExclude;
+string OptionsToEnable;
+string Path; // Represents the path of the current running FS.(Mkfs+Mount)Option.TestPackge.TestSet.Test
+
 int main(int argc, char ** argv)
 {
 	cerr << "Running " << argv[0] << "." << endl;
@@ -94,18 +102,19 @@ int main(int argc, char ** argv)
 	}
 	
 	string LogFolder;
-	vector<string> Packages;	
+	vector<string> Packages;
 	Checks PerformChecks = None;
 	
 	// p - Packages,
 	// c - Checks
 	// f - FS
 	// l - Log Folder
-	const char* optstring = "f:l:p:c:"; 
-	for ( int i = 0; i < 4; ++i )
+	// r - Run tests
+	// e - Exclude tests
+	const char* optstring = "f:l:p:c:r:e:"; 
+	char c;
+	while ( (c = getopt(argc, argv, optstring)) != -1 )
 	{
-		char c = getopt(argc, argv, optstring);
-		
 		switch ( c )
 		{
 			case 'c':
@@ -132,12 +141,23 @@ int main(int argc, char ** argv)
 			case 'l':
 				LogFolder = optarg;
 				break;
+			case 'r':
+				TestsToRun = SplitString(optarg, ';');
+				break;
+			case 'e':
+				TestsToExclude = SplitString(optarg, ';');
+				break;
 			default:
 				Logger::LogError((string)"Unknown option: " + c);
 				return 1;
 		}
 		
 	}
+	
+	Path = FileSystem;
+		
+	if ( SkipTestPath(Path) )
+		return 1;
 	
 	
 	if ( getenv("Partition") )
@@ -155,10 +175,6 @@ int main(int argc, char ** argv)
 	
 	//cerr << "Package count: " << Tests.size() << endl;
 	
-	PartitionManager pm(INSTALL_PREFIX"/share/spruce/config/PartitionManager.cfg", DeviceName, MountPoint, FileSystem, "");
-	
-	PartitionStatus PS = PS_Done;
-	
 	vector<pair<string, string> > MountOptions;
 	
 	bool PerformLeakCheck = PerformChecks & MemoryLeak;
@@ -170,7 +186,7 @@ int main(int argc, char ** argv)
 	
 	Test MemoryLeakTest("Memory Leak", "Checks if there are any possible memory leaks in the filesystem driver.");
 			
-	// Check if KEDR needs to be loaded			
+	// Check if KEDR needs to be loaded
 	if ( PerformLeakCheck || PerformFaultSimulation )
 	{
 		try
@@ -207,25 +223,50 @@ int main(int argc, char ** argv)
 		}
 	}
 	
+	PartitionManager pm(
+		INSTALL_PREFIX"/share/spruce/config/PartitionManager.cfg",
+		DeviceName,
+		MountPoint,
+		FileSystem,
+		( TestsToRun.size() > 0 ? GetOptionsToEnable(TestsToRun) : ""));
 	
-	time_t FSStartTime = time(0);
+	PartitionStatus PS = PS_Success;
 	
 	TestPackage tp("MemoryLeaks");
 	
+	time_t FSStartTime = time(0);
+	
+	string PMCurrentOptionsStripped;
+	string PMCurrentOptions;
+	
 	do
 	{
-		MountOptions.push_back(pair<string,string>(pm.GetCurrentOptions(), pm.GetCurrentOptions(false)));
+		string PMCurrentOptionsStripped = pm.GetCurrentOptions(true);
+		string PMCurrentOptions = pm.GetCurrentOptions();
+		
+		if ( TestsToExclude.size() > 0 )
+		{
+			Path = (string)FileSystem + "." + PMCurrentOptionsStripped;
+			
+			if ( SkipTestPath(Path) )
+			{
+				pm.AdvanceOptionsIndex();
+				continue;
+			}
+		}
+		
+		MountOptions.push_back(pair<string,string>(PMCurrentOptionsStripped, PMCurrentOptions));
 		
 		PS = pm.PreparePartition();
 		
 		if ( PS == PS_Fatal  )
 		{
-			cerr << "Fatal error raised while preparing partition." << endl;
+			Logger::LogFatal("Fatal error raised while preparing partition.");
 			return 1;
 		}
 		if ( PS == PS_Skip )
 		{
-			cerr << "Skipping case." << endl;
+			Logger::LogError("Skipping case.");
 			continue;
 		}
 		if ( PS == PS_Done  )
@@ -236,15 +277,22 @@ int main(int argc, char ** argv)
 		
 		time_t ItemStartTime = time(0);
 		
+		
+		
 		for ( map<string, TestPackage*>::iterator i = Tests.begin(); i != Tests.end(); ++i )
 		{
+			Path = (string)FileSystem + "." + PMCurrentOptions + "." + i->second->GetName();
+			
+			Logger::LogInfo("Executing packages. Path: " + Path);
+
+			if ( SkipTestPath(Path) )
+				continue;
+
 			Status res = i->second->Run(PerformChecks);
 			
 			size_t ItemDuration = time(0) - ItemStartTime;
 			stringstream str;
 			str << ItemDuration;
-			
-			cerr << "Current options: " << pm.GetCurrentOptions(true) << endl;
 			
 			string LogFile = 
 				LogFolder + "/" // LogFolder
@@ -252,7 +300,7 @@ int main(int argc, char ** argv)
 				+ i->first + "_"  // Package name
 				// Add the '_32' suffix to the name in case of compatibility checks
 				+ ( ( strstr(argv[0], "_32") != 0 ) ? "32_" : "" )
-				+ pm.GetCurrentOptions(true) // Current options
+				+ PMCurrentOptionsStripped // Current options
 				+ "_log.xml";
 			
 			XMLGenerator::GenerateLog(LogFile , *i->second, FileSystem, "", str.str());
@@ -293,20 +341,20 @@ int main(int argc, char ** argv)
 		
 	}
 	
-   if ( PerformLeakCheck )
-   {
-     tp.AddTestSet(leakTestSet);
+	if ( PerformLeakCheck )
+	{
+		tp.AddTestSet(leakTestSet);
 	
-     string LogFile = 
-		LogFolder + "/" // LogFolder
-		+ FileSystem + "_"  // FS
-		+ tp.GetName() + "_"  // Package name
-		// Add the '_32' suffix to the name in case of compatibility checks			
-		+ pm.GetCurrentOptions(true) // Current options
-		+ "_log.xml";
-		
-     XMLGenerator::GenerateLog(LogFile , tp, FileSystem, "", "0");
-   }
+		string LogFile = 
+			LogFolder + "/" // LogFolder
+			+ FileSystem + "_"  // FS
+			+ tp.GetName() + "_"  // Package name
+			// Add the '_32' suffix to the name in case of compatibility checks			
+			+ PMCurrentOptionsStripped // Current options
+			+ "_log.xml";
+
+		XMLGenerator::GenerateLog(LogFile , tp, FileSystem, "", "0");
+	}
 	
 	try
 	{
@@ -374,4 +422,55 @@ int main(int argc, char ** argv)
 	cerr << "Doer complete." << endl;
 	
 	return 0;
+}
+
+bool SkipTestPath(string Path)
+{
+	if ( TestsToRun.size() != 0 )
+	{
+		for ( size_t i = 0; i < TestsToRun.size(); ++i)
+		{
+			if (Path.find(TestsToRun[i]) != string::npos ||
+				TestsToRun[i].find(Path) != string::npos)
+				{
+					Logger::LogInfo("\t\tPath `" + Path + "` is included in run_tests value.");
+					return false;
+				}
+		}
+		
+		Logger::LogInfo("Path `" + Path + "` is not included in run_tests value. Skipping.");
+		return true;
+	}
+	else if ( TestsToExclude.size() != 0 )
+	{
+		for ( size_t i = 0; i < TestsToExclude.size(); ++i )
+		{
+			if ( Path == TestsToExclude[i] )
+			{
+				Logger::LogInfo("Path `" + Path + "` is included in exclude_tests value. Skipping.");
+				return true;
+			}
+		}
+		return false;
+	}
+	return false;
+}
+
+string GetOptionsToEnable(vector<string> TestsToRun)
+{
+	string res = "";
+	for ( size_t i = 0; i < TestsToRun.size(); ++i )
+	{
+		size_t pos1 = TestsToRun[i].find('.');
+		if ( pos1 == string::npos )
+			continue;
+			
+		size_t pos2 = TestsToRun[i].find('.', pos1 + 1 );
+		if ( pos2 == string::npos )
+			continue;
+		
+		res += TestsToRun[i].substr(pos1 + 1, pos2 - pos1 - 1) + ";";
+	}
+	Logger::LogError("GetOptionsToEnable res : " + res);
+	return res;
 }

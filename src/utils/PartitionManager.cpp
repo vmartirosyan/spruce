@@ -77,13 +77,61 @@ std::pair<std::string, unsigned long> map2_data[] = {
 
 std::map<string, unsigned long> PartitionManager::SBOffsets(map2_data,
     map2_data + sizeof map2_data / sizeof map2_data[0]);
+    
+void PartitionManager::Initialize(string ConfigFile, string DeviceName, string MountPoint, string FileSystem, string MountOpts)
+{			
+	_ConfigFile = ConfigFile;
+	_DeviceName = DeviceName;
+	_MountPoint = MountPoint;
+	_FileSystem = FileSystem;
+	_MountOpts = MountOpts;		
+	//_CurrentMountOptions = "";
+	_Index = _AdditionalOptions[FS_UNSUPPORTED].end();
+	_FSIndex = FS_UNSUPPORTED;
+	if ( _MountOpts == "" )
+	{
+		LoadConfiguration();
+	}
+	else
+	{
+		Logger::LogError("PartitionManager::Initialize: parsing mount options.");
+		vector<string> vOpts = SplitString(_MountOpts, ';');
+		
+		for ( size_t i = 0; i < vOpts.size(); ++i )
+		{
+			Logger::LogError("PartitionManager::Initialize: " + vOpts[i]);
+			CurrentOptions tmp;
+			tmp.ParseString(vOpts[i].c_str());
+			_AdditionalOptions[GetFSNumber(FileSystem)].insert(tmp);
+		}
+	}
+	_FSIndex = GetFSNumber(_FileSystem);
+	_Index = _AdditionalOptions[_FSIndex].begin();
+	_CurrentOptions = *_Index;
+}
+    
+void PartitionManager::AdvanceOptionsIndex()
+{
+	_Index++;
+	if ( _Index != _AdditionalOptions[_FSIndex].end() )
+	{
+		_CurrentOptions = *_Index;
+	}
+	else
+	{
+		_CurrentOptions.RawData = "";
+		_CurrentOptions.MkfsOptions = "";
+		_CurrentOptions.MountData = "";
+		_CurrentOptions.MountFlags = 0;
+	}
+}
 
 PartitionStatus PartitionManager::PreparePartition()
 {
 	Logger::LogInfo((string)"Preparing partition `" + _DeviceName + "`");
+	
 	if ( _Index == _AdditionalOptions[_FSIndex].end() )
 	{
-		_Index = _AdditionalOptions[_FSIndex].begin();
 		return PS_Done;
 	}
 	
@@ -91,16 +139,6 @@ PartitionStatus PartitionManager::PreparePartition()
 	{
 		return PS_Fatal;
 	}
-	
-	/*if ( _Index < _AdditionalOptions[_FSIndex].size() )
-	{
-		_CurrentMountOptions = _MountOpts + _AdditionalMountOptions[_FSIndex][_Index].Mou;
-		
-		Logger::LogInfo((string)"Mounting with additional option: " + _CurrentMountOptions);
-	}*/
-	
-	_CurrentOptions = *_Index;
-	_Index++;
 	
 	Logger::LogInfo("Preparing partition: " + GetCurrentOptions(false));
 	if ( !CreateFilesystem(_FileSystem, _DeviceName, false, _CurrentOptions.MkfsOptions) )
@@ -119,7 +157,8 @@ PartitionStatus PartitionManager::PreparePartition()
 	{
 		chown( _MountPoint.c_str(), nobody->pw_uid, nobody->pw_gid);			
 	}
-
+	AdvanceOptionsIndex();
+	
 	return PS_Success;
 }
 
@@ -295,6 +334,7 @@ string PartitionManager::GetCurrentOptions(bool Stripped) const
 	}
 	return tmp;
 }
+
 void PartitionManager::ClearCurrentOptions()
 {
 	_Index = _AdditionalOptions[_FSIndex].begin();
@@ -384,7 +424,6 @@ bool PartitionManager::IsMountOptionEnabled(const string & opt)
 	
 	if ( res->GetStatus() != Success )
 	{		
-		Logger::LogWarn("Cannot execute grep.\n" + res->GetOutput());
 		delete res;
 		return false;
 	}	
@@ -463,41 +502,7 @@ bool PartitionManager::LoadConfiguration()
 					break;
 					
 				CurrentOptions cur_opts;
-				cur_opts.RawData = buf;
-				
-				// Split the line and analyze it
-				char * pos = NULL;
-				if ( (pos = strstr(buf, ":") ) != 0 )
-				{
-					// There are some mkfs options... Collect them
-					cur_opts.MkfsOptions = strndup(buf, (pos - buf));
-					// Skip the colon.
-					pos++;
-				}
-				else
-				{
-					pos = buf;
-					cur_opts.MkfsOptions = "";
-				}
-				string mount_opts = strdup(pos);
-				vector<string> opts = SplitString(mount_opts, ',', vector<string>());
-				for ( unsigned int i = 0; i < opts.size(); ++i )
-				{
-					if ( MountFlagMap.find(opts[i]) != MountFlagMap.end() )
-						cur_opts.MountFlags |= MountFlagMap[opts[i]];
-					else
-						cur_opts.MountData.append(opts[i]).append(",");
-				}
-				
-				// Process the %DEVICE_NAME variable
-				string DeviceName = (getenv("Partition") ? getenv("Partition") : "");
-				
-				if (DeviceName != "")
-				{
-					StrReplace( cur_opts.MkfsOptions, "%DEVICE_NAME", DeviceName );
-					StrReplace( cur_opts.MountData, "%DEVICE_NAME", DeviceName );
-					StrReplace( cur_opts.RawData, "%DEVICE_NAME", DeviceName );
-				}
+				cur_opts.ParseString(buf);
 			
 				_AdditionalOptions[_FSIndex].insert(cur_opts);
 			}

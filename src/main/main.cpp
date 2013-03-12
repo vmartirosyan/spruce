@@ -84,7 +84,7 @@ enum ErrorCodes
 	FAULT,
 	NOMODULES
 };
-void GenerateHtml(string logfolder, string fs);
+bool GenerateHtml(string logfolder, string fs);
 void OpenDashboard(string browser, string logfolder, string fs);
 void SignalHandler(int signum);
 
@@ -448,7 +448,7 @@ int main(int argc, char ** argv)
 			cerr << "Error: " << strerror(errno) << endl;
 			return errno;
 		}
-		bool ShowOutput = true;
+		bool ShowOutput = false;
 		
 		for ( vector<string>::iterator fs = FileSystems.begin(); fs != FileSystems.end(); ++fs )
 		{
@@ -487,6 +487,17 @@ int main(int argc, char ** argv)
 			doer_args.push_back("-c"); // Checks
 			doer_args.push_back(strChecks);
 			
+			// Check if some certain tests should be executed
+			if ( configValues.find("run_tests") != configValues.end() )
+			{
+				doer_args.push_back("-r"); // Tests to run
+				doer_args.push_back(configValues["run_tests"]);
+			}
+			else if ( configValues.find("exclude_tests") != configValues.end() )
+			{
+				doer_args.push_back("-e"); // Tests to exclude
+				doer_args.push_back(configValues["exclude_tests"]);
+			}
 			
 			UnixCommand * command = new UnixCommand(INSTALL_PREFIX"/bin/doer", ProcessNoCaptureOutput);			
 			
@@ -494,196 +505,18 @@ int main(int argc, char ** argv)
 			ProcessResult * result = command->Execute(doer_args);
 			delete command;
 			
+			ShowOutput = (result->GetStatus() == Success);
+			
 			if ( !OS_32_BITS && HAVE_MULTILIB )
 			{
 				UnixCommand * command = new UnixCommand(INSTALL_PREFIX"/bin/doer_32", ProcessNoCaptureOutput);
 				
 				ProcessResult * result = command->Execute(doer_args);
 				delete command;
+				
+				ShowOutput = (result->GetStatus() == Success);
 			}
-			/*
-			//PartitionManager * pm = ShmAllocator<PartitionManager>::GetInstance();
-			PartitionManager pm(INSTALL_PREFIX"/share/spruce/config/PartitionManager.cfg", partition, MountAt, *fs, MountOpts);
 			
-			for (vector<string>::iterator module = Modules.begin(); module != Modules.end() && ModuleStatus < Fatal; ++module)
-			{			
-				EXIT_IF_SIGNALED;
-				
-				string ModuleBin = (module->find("fs-spec") == string::npos ? *module : (*fs + module->substr(7, module->size())));
-				if ( *module == "fault-sim" )
-					ModuleBin = "fault_sim";
-				if ( ModuleBin == "fault_sim" && !PerformFaultSimulation )
-				{
-					cerr << "KEDR was not loaded. Skipping fault simulation module." << endl;
-					continue;
-				}
-								
-				PartitionStatus PS = PS_Done;
-				do
-				{
-					EXIT_IF_SIGNALED;
-					// Get the options both escaped and clear forms
-					MountOptions.push_back(pair<string,string>(pm.GetCurrentOptions(), pm.GetCurrentOptions(false)));
-					
-					PS = pm.PreparePartition();
-					cerr << "Current options:  " << pm.GetCurrentOptions(false) << endl;
-					
-					if ( PS == PS_Fatal  )
-					{
-						cerr << "Fatal error raised while preparing partition." << endl;
-						return FAULT;
-					}
-					if ( PS == PS_Skip )
-					{
-						cerr << "\t\tSkipping case." << endl;
-						continue;
-					}
-					if ( PS == PS_Done  )
-					{
-						Logger::LogInfo("End of mount options.");
-						break;
-					}
-					
-					EXIT_IF_SIGNALED;
-					
-					
-					ShowOutput = true;
-					
-					// Check if the module should be executed on this FS with these mount options.
-					bool ModuleShouldNotRun = (TestsToRun.size() > 0);
-					for ( vector<string>::iterator it = TestsToRun.begin(); it != TestsToRun.end(); ++it )
-					{
-						string prefix = *fs + "." + pm.GetCurrentOptions() + "." + *module;
-						if ( (*it).find(prefix) != string::npos )
-						{							
-							ModuleShouldNotRun = false;
-						}
-					}
-					if ( ModuleShouldNotRun )
-					{
-						cerr << "Skipping module: " << *module << " (accoring to key run_tests in configuration file)."	<< endl;
-						continue;
-					}
-					//UnixCommand * command = new UnixCommand((INSTALL_PREFIX"/bin/" + ModuleBin).c_str());
-					UnixCommand * command = new UnixCommand(INSTALL_PREFIX"/bin/doer");
-					
-					string FileName = logfolder + "/" + *fs + "_" + *module + "_" + pm.GetCurrentOptions() + "_log.xml";
-					
-					// Ensure the file is removed.
-					unlink(FileName.c_str());
-					
-					vector<string> module_args;
-					
-					//SpruceLog xmlSpruceLog(FileName, *fs, pm.GetCurrentOptions(), "", *module);
-					//xmlSpruceLog.openTags();
-					//ModuleLog moduleLog(FileName);
-					
-					
-					module_args.push_back(*fs);
-					module_args.push_back(FileName);
-					module_args.push_back(pm.GetCurrentOptions());
-					
-					//XMLFilesToProcess.push_back(FileName);
-					
-					// Find out which tests should be excluded in current module
-					vector<string> ExcludeModuleTests;					
-					for ( vector<string>::iterator it = TestsToExclude.begin(); it != TestsToExclude.end(); ++it )
-					{
-						string prefix = *fs + "." + pm.GetCurrentOptions() + "." + *module;
-						if ( (*it).find(prefix) != string::npos )
-						{
-							ExcludeModuleTests.push_back(it->substr(prefix.size() + 1, it->size() - prefix.size()));
-						}
-					}
-					
-					if ( ExcludeModuleTests.size() > 0 )
-					{
-						module_args.push_back("-exclude");
-						for ( vector<string>::iterator it = ExcludeModuleTests.begin(); it != ExcludeModuleTests.end(); ++it)
-							module_args.push_back(*it);
-					}
-					
-					// Find out which tests should run in current module
-					vector<string> RunModuleTests;					
-					for ( vector<string>::iterator it = TestsToRun.begin(); it != TestsToRun.end(); ++it )
-					{
-						string prefix = *fs + "." + pm.GetCurrentOptions() + "." + *module;
-						
-						if ( (*it).find(prefix) != string::npos )
-						{							
-							RunModuleTests.push_back(it->substr(prefix.size() + 1, it->size() - prefix.size()));							
-						}
-					}
-					
-					if ( RunModuleTests.size() > 0 )
-					{
-						module_args.push_back("-run");
-						for ( vector<string>::iterator it = RunModuleTests.begin(); it != RunModuleTests.end(); ++it)
-						{							
-							module_args.push_back(*it);
-						}
-					}
-					
-					cerr << "Executing " << *module << " on " << *fs << " filesystem" << endl;
-					
-					time_t ItemStartTime = time(0);
-					ProcessResult * result = command->Execute(module_args);
-					delete command;
-					
-					cerr << "Module output: " << result->GetOutput() << endl;
-					
-					size_t ItemDuration = time(0) - ItemStartTime;
-					stringstream str;
-					str << ItemDuration;
-					
-					//xmlSpruceLog.setDuration(str.str());
-					
-					// Process the memory leak checker output
-					if ( PerformLeakCheck && kedr.IsRunning() )
-					{						
-						string relPartOutput = "";
-						string kedrUnloadModOutput = "";
-						if(PartitionManager:: ReleasePartition(MountAt, &relPartOutput) && kedr.UnloadModule(*fs, &kedrUnloadModOutput)) 
-						{
-							LeakChecker leak_check(FileName);
-							lcItem = leak_check.ProcessLeakCheckerOutput(*fs);
-						}
-						else
-						{
-							lcItem.setStatus("Unresolved");
-							if(relPartOutput != "")
-							{
-								lcItem.appendOutput(relPartOutput + "\n");
-							}
-							if(kedrUnloadModOutput != "")
-							{
-								lcItem.appendOutput(kedrUnloadModOutput + "\n");
-							}
-						}
-						
-					}
-						
-					// if leak checker option is specified, then perform leak cheak
-					if(lcItem.getStatus() != "")					
-					{
-						#pragma warning "Do not forget the leak checker"
-							//moduleLog.addItem(lcItem);
-					}
-					//closing xml tags
-					//xmlSpruceLog.closeTags();
-					
-				}
-				while ( PS != PS_Done );
-				
-				
-				
-		
-				
-				//ShmAllocator<PartitionManager>::Free(pm);
-				pm.ClearCurrentOptions();
-			}*/
-
-			// Unload the KEDR framework
 			
 			if ( !ShowOutput )
 			{
@@ -704,13 +537,12 @@ int main(int argc, char ** argv)
 				
 				ProcessResult *res = find.Execute(find_args);
 				
-				if ( !res || res->GetStatus() != Success )
+				if ( res->GetStatus() != Success || res->GetOutput() == "" )
 				{
-					cerr << "No XMl files were found to process.";
+					Logger::LogError("No XML files were found to process.");
 				}
 				else
 				{
-				
 					vector<string> xmls = SplitString(res->GetOutput(), '\n', vector<string>());
 				
 					
@@ -744,8 +576,7 @@ int main(int argc, char ** argv)
 			// we generate html's if it is in need, also if the browser is specified, open the log files in the selected browser.
 			if ( !( (configValues.find("genhtml") != configValues.end() ) && ( configValues["genhtml"] == "false") ) )
 			{
-				GenerateHtml(logfolder, *fs);
-				if( ( browser != "" ) && !terminate_process)
+				if ( GenerateHtml(logfolder, *fs) && ( browser != "" ) && !terminate_process)
 				{
 					OpenDashboard(browser, logfolder, *fs);
 				}
@@ -753,6 +584,7 @@ int main(int argc, char ** argv)
 			//XMLFilesToProcess.erase(XMLFilesToProcess.begin(), XMLFilesToProcess.end());
 			if (  ModuleStatus >= Fatal )
 			{
+				Logger::LogError("Fatal error has rised. Quiting.");
 				break;
 			}
 		}
@@ -767,36 +599,36 @@ int main(int argc, char ** argv)
 }
 
 
-void GenerateHtml(string logfolder, string fs)
+bool GenerateHtml(string logfolder, string fs)
 {
-		ProcessResult * res = NULL;
-		// Process the dashboard file
-		// cout << "Processing file " << fs << ".xml ...";
-		UnixCommand xslt("xsltproc");
-		vector<string> xslt_args;
-		
-		xslt_args.push_back("-o");
-		xslt_args.push_back(logfolder + "/" + fs + ".html");
-		xslt_args.push_back("-novalid");			
-		xslt_args.push_back("--stringparam");
-		xslt_args.push_back("LogFolder");
-		xslt_args.push_back(logfolder + "/");
-		xslt_args.push_back(logfolder + "/xslt/dashboard.xslt");
-		xslt_args.push_back(logfolder + +"/" + fs + ".xml");
-		
-		res = xslt.Execute(xslt_args);
+	if ( access((logfolder + +"/" + fs + ".xml").c_str(), F_OK) != 0 )
+	{
+		Logger::LogError("No Fs xml file is generated.");
+		return false;
+	}
+	ProcessResult * res = NULL;
+	// Process the dashboard file
+	// cout << "Processing file " << fs << ".xml ...";
+	UnixCommand xslt("xsltproc");
+	vector<string> xslt_args;
+	
+	xslt_args.push_back("-o");
+	xslt_args.push_back(logfolder + "/" + fs + ".html");
+	xslt_args.push_back("-novalid");			
+	xslt_args.push_back("--stringparam");
+	xslt_args.push_back("LogFolder");
+	xslt_args.push_back(logfolder + "/");
+	xslt_args.push_back(logfolder + "/xslt/dashboard.xslt");
+	xslt_args.push_back(logfolder + "/" + fs + ".xml");
+	
+	res = xslt.Execute(xslt_args);
 
-		if ( res == NULL )
-		{
-			cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;
-			_exit(1);
-		}
-		
-		if ( res->GetStatus() != Success )
-		{
-			cerr << res->GetOutput() << endl;
-			_exit(1);
-		}			
+	if ( res->GetStatus() != Success )
+	{
+		Logger::LogError( "Cannot open browser: " + res->GetOutput());
+		return false;
+	}
+	return true;
 }
 
 void OpenDashboard(string browser, string logfolder, string fs)

@@ -137,29 +137,14 @@ public:
 		return *this;
 	}
 	
-	void Initialize(string ConfigFile, string DeviceName, string MountPoint, string FileSystem, string MountOpts)
-	{			
-		_ConfigFile = ConfigFile;
-		_DeviceName = DeviceName;
-		_MountPoint = MountPoint;
-		_FileSystem = FileSystem;
-		_MountOpts = MountOpts;		
-		//_CurrentMountOptions = "";
-		_Index = _AdditionalOptions[FS_UNSUPPORTED].end();
-		_FSIndex = FS_UNSUPPORTED;
-		if ( _MountOpts != "" && _MountOpts[_MountOpts.size() - 1] != ',' )
-			_MountOpts += ',';
-			
-		LoadConfiguration();
-		_FSIndex = GetFSNumber(_FileSystem);			
-		_Index = _AdditionalOptions[_FSIndex].begin();
-	}
+	void Initialize(string ConfigFile, string DeviceName, string MountPoint, string FileSystem, string MountOpts);
 	PartitionStatus PreparePartition();
 	static PartitionStatus RestorePartition(string DeviceName, string MountPoint, string FileSystem, bool RecreateFilesystem = false, bool resizeFlag = false);
 	static bool ReleasePartition(string MountPoint, string* output = NULL);
 	static bool Mount(string DeviceName,string MountPoint,string FileSystem,string Options, unsigned long Flags = 0);
 	string GetCurrentOptions(bool Stripped = true) const;
 	void ClearCurrentOptions();
+	void AdvanceOptionsIndex();
 	static bool IsOptionEnabled(string optionName, bool IsMkfsOption = false);
 	static uint64_t GetDeviceSize(string partition);
 	static bool NoMountOptionsEnabled();
@@ -178,6 +163,45 @@ public:
 			MountData(mount_data),
 			RawData("")
 			{}
+		void ParseString( const char* buf )
+		{
+			RawData = strndup(buf, strlen(buf));
+			// Split the line and analyze it
+			const char * pos = NULL;
+			if ( (pos = strstr(buf, ":") ) != 0 )
+			{
+				// There are some mkfs options... Collect them
+				MkfsOptions = strndup(buf, (pos - buf));
+				// Skip the colon.
+				pos++;
+			}
+			else
+			{
+				pos = buf;
+				MkfsOptions = "";
+			}
+			
+			string mount_opts = strdup(pos);
+			vector<string> opts = SplitString(mount_opts, ',', vector<string>());
+			for ( unsigned int i = 0; i < opts.size(); ++i )
+			{
+				if ( MountFlagMap.find(opts[i]) != MountFlagMap.end() )
+					MountFlags |= MountFlagMap[opts[i]];
+				else
+					MountData.append(opts[i]).append(",");
+			}
+			
+			// Process the %DEVICE_NAME variable
+			string DeviceName = (getenv("Partition") ? getenv("Partition") : "");
+			
+			if (DeviceName != "")
+			{
+				StrReplace( MkfsOptions, "%DEVICE_NAME", DeviceName );
+				StrReplace( MountData, "%DEVICE_NAME", DeviceName );
+				StrReplace( RawData, "%DEVICE_NAME", DeviceName );
+			}
+		}
+		
 		bool operator == (const CurrentOptions & cur) const
 		{
 			return (
