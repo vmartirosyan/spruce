@@ -1,0 +1,28 @@
+#######################################################################
+#################Section for DEAD code ONLY############################
+#######################################################################
+SF:fs/jfs/jfs_dmap.c
+FN:dbReAlloc This function works only when block size != 4096
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbExtend This function works only when block size != 4096
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtExtendPage
+LFT:0,211 This function works only when block size != 4096
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtLinelockFreelist This function works only when block size != 4096
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtSplitUp
+LFT:92,135 This code works only when block size != 4096
+end_of_record
+
+#######################################################################
+#################Section for free code marcup##########################
+#######################################################################
