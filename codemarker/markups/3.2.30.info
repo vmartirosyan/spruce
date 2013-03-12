@@ -66,6 +66,12 @@ FN:isReadOnly
 LFT:0,0 This is inline function
 end_of_record
 
+SF:fs/jfs_metapage.h
+FN:_metapage_homeok 
+LFT:0,0 This is inline function
+LFT:4,4 This is inline function
+end_of_record
+
 #######################################################################
 #################Section for free code marcup##########################
 #######################################################################
