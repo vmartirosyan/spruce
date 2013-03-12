@@ -5,4 +5,5 @@
 	<TestSet Name="WriteDirect" />
 	<TestSet Name="Xattr" />
 	<TestSet Name="ShowAndStoreFunctions" />
+	<TestSet Name="ChangeSB" />
 </TestPackage>

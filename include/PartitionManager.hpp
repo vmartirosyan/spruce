@@ -154,6 +154,7 @@ public:
 	static bool IsGroupQuotaEnabled();
 	static bool IsProjectQuotaEnabled();
 	static bool GetSuperBlock(void *, int);
+	static bool SetSuperBlock(void *, int);
 	
 	struct CurrentOptions
 	{

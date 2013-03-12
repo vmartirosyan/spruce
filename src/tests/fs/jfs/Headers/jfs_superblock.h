@@ -39,7 +39,7 @@
 /*
  *	aggregate superblock
  */
-struct superblock {
+struct jfs_superblock {
 	char s_magic[4];	/* 4: magic number */
 	uint32_t s_version;	/* 4: version number */
 
