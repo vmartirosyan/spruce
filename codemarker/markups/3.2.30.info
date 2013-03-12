@@ -1,0 +1,68 @@
+#######################################################################
+#################Section for DEAD code ONLY############################
+#######################################################################
+SF:fs/jfs/jfs_dmap.c
+FN:dbReAlloc This function works only when block size != 4096
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbExtend This function works only when block size != 4096
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtExtendPage
+LFT:0,211 This function works only when block size != 4096
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtLinelockFreelist This function works only when block size != 4096
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtSplitUp
+LFT:92,135 This code works only when block size != 4096
+LFT:275,275 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtUpdate This function is being invoked from only two functions which are defined as NOTYET yet
+end_of_record
+
+SF:fs/jfs/jfs_unicode.h
+FN:UniToupper This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_unicode.h
+FN:UniStrupr This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:ciGetLeafPrefixKey	 
+LFT:25,25 This code is supported only in OS/2
+LFT:32,32 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:ciCompare 
+LFT:61,61 This code is supported only in OS/2
+LFT:81,81 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtSearch 
+LFT:30,30 This code is supported only in OS/2
+LFT:81,81 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diWrite
+LFT:46,53 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diRead
+LFT:62,69 This code is supported only in OS/2
+end_of_record
+#######################################################################
+#################Section for free code marcup##########################
+#######################################################################

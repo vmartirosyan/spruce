@@ -1,0 +1,540 @@
+<TestSet Name="Ioctl">
+	<Requires>sys/ioctl.h</Requires>
+	<Requires>fcntl.h</Requires>
+	<Requires>linux/fs.h</Requires>
+	<Requires>xfs.h</Requires>	
+	<Test Name="SetFlagsNotOwner">
+		<Description>Change flag by not the file owner.</Description>
+		<File count="1"/>
+		<Code>
+			int flags;			
+			ENoAccessTest(ioctl(FDs[0], XFS_IOC_SETXFLAGS, &flags ), -1);
+		</Code>
+	</Test>
+	<Test Name="Unsupported" Shallow="true">
+		<Description>Unsupported operation.</Description>
+		<File count="1"/>
+		<Code>
+			int rv = ioctl(FDs[0], -100, 0);
+			
+			Check(rv == 0, "ioctl returns 0 on unsupported operation.");
+			
+			Check( !( errno == ENOTTY || errno == EINVAL ), "ioctl returns incorrect errno.");
+		</Code>
+	</Test>
+	
+	
+	<Test Name="XFS_IOC_ALLOCSP" Shallow="true">
+		<Description>XFS_IOC_ALLOCSP</Description>
+		<File count="1"/>
+		<Code>
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			Fail(ioctl(FDs[0], XFS_IOC_ALLOCSP, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_FREESP" Shallow="true">
+		<Description>XFS_IOC_FREESP</Description>
+		<File count="1"/>
+		<Code>
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			Fail (ioctl(FDs[0], XFS_IOC_FREESP, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_RESVSP" Shallow="true">
+		<Description>XFS_IOC_RESVSP</Description>
+		<File count="1"/>
+		<Code>
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.l_len = 100;
+			Fail ( ioctl(FDs[0], XFS_IOC_RESVSP, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_UNRESVSP" Shallow="true">
+		<Description>XFS_IOC_UNRESVSP</Description>
+		<File count="1"/>
+		<Code>
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.l_len = 100;
+			Fail (ioctl(FDs[0], XFS_IOC_UNRESVSP, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_ALLOCSP64" Shallow="true">
+		<Description>XFS_IOC_ALLOCSP64</Description>
+		<File count="1"/>
+		<Code>
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			Fail (ioctl(FDs[0], XFS_IOC_ALLOCSP64, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_FREESP64" Shallow="true">
+		<Description>XFS_IOC_FREESP64</Description>
+		<File count="1"/>
+		<Code>
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			Fail (ioctl(FDs[0], XFS_IOC_FREESP64, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_RESVSP64" Shallow="true">
+		<Description>XFS_IOC_RESVSP64</Description>
+		<File count="1"/>
+		<Code>
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.l_len = 100;
+			Fail (ioctl(FDs[0], XFS_IOC_RESVSP64, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_UNRESVSP64" Shallow="true">
+		<Description>XFS_IOC_UNRESVSP64</Description>
+		<File count="1"/>
+		<Code>
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			Fail (ioctl(FDs[0], XFS_IOC_UNRESVSP64, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_ZERO_RANGE" Shallow="true">
+		<Description>XFS_IOC_ZERO_RANGE</Description>
+		<Requires KernelVersion="2.6.37" />
+		<File count="1"/>
+		<Code>
+			xfs_flock64_t arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.l_len = 100;
+			Unres ( ioctl(FDs[0], XFS_IOC_RESVSP, &arg) == -1, "Cannot reserve space");
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_ZERO_RANGE, &arg) == -1, "Ioctl failed");
+		</Code>		
+	</Test>
+	<Test Name="XFS_IOC_DIOINFO" Shallow="true">
+		<Description>XFS_IOC_DIOINFO</Description>
+		<File count="1"/>
+		<Code>
+			struct dioattr arg;
+			Fail(ioctl(FDs[0], XFS_IOC_DIOINFO, &arg) != 0, "dioinfo failed");
+		</Code>
+	</Test>
+	<!-- Needs to be refactored Test Name="XFS_IOC_FSBULKSTAT_SINGLE" Shallow="true">
+		<Description>XFS_IOC_FSBULKSTAT_SINGLE</Description>
+		<File count="1"/>
+		<Code>
+			xfs_fsop_bulkreq_t arg;
+			memset(&arg, 0, sizeof(arg));
+			int out_count;
+			__u64 ip = 0;
+			
+			arg.lastip = &ip;
+			arg.icount = 1;
+			arg.ubuffer = malloc(sizeof(xfs_bstat_t) * arg.icount);
+			arg.ocount = &out_count;
+			
+			Fail (ioctl(FDs[0], XFS_IOC_FSBULKSTAT_SINGLE, &arg) == -1, "Ioctl failed.");
+		</Code>
+	</Test-->
+	<Test Name="XFS_IOC_FSBULKSTAT" Shallow="true">
+		<Description>XFS_IOC_FSBULKSTAT</Description>
+		<File count="1"/>
+		<Code>
+			xfs_fsop_bulkreq_t arg;
+			memset(&arg, 0, sizeof(arg));
+			int out_count;
+			__u64 ip = 3;
+			
+			arg.lastip = &ip;
+			arg.icount = 3;
+			arg.ubuffer = malloc(sizeof(xfs_bstat_t) * arg.icount);
+			arg.ocount = &out_count;
+			
+			Fail (ioctl(FDs[0], XFS_IOC_FSBULKSTAT, &arg) == -1, "Ioctl failed.");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_FSINUMBERS" Shallow="true">
+		<Description>XFS_IOC_FSINUMBERS</Description>
+		<File count="1"/>
+		<Code>
+			xfs_fsop_bulkreq_t arg;
+			memset(&arg, 0, sizeof(arg));
+			int out_count;
+			__u64 ip = 0;
+			
+			arg.lastip = &ip;
+			arg.icount = 3;
+			arg.ubuffer = malloc(sizeof(xfs_inogrp_t) * arg.icount);
+			arg.ocount = &out_count;
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_FSINUMBERS, &arg) == -1, "Ioctl failed.");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_FSGEOMETRY_V1" Shallow="true">
+		<Description>XFS_IOC_FSGEOMETRY_V1</Description>
+		<File count="1"/>
+		<Code>
+			xfs_fsop_geom_t arg;
+			Fail ( ioctl(FDs[0], XFS_IOC_FSGEOMETRY_V1, &arg) == -1, "Ioctl failed.");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_FSGEOMETRY" Shallow="true">
+		<Description>XFS_IOC_FSGEOMETRY</Description>
+		<File count="1"/>
+		<Code>
+			xfs_fsop_geom_t arg;
+			Fail (ioctl(FDs[0], XFS_IOC_FSGEOMETRY, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_GETVERSION" Shallow="true">
+		<Description>XFS_IOC_GETVERSION</Description>
+		<File count="1"/>
+		<Code>
+			int version;
+			Fail (ioctl(FDs[0], XFS_IOC_GETVERSION, &version) == -1, "Ioctl failed.");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_FSGET_SETXATTR" Shallow="true">
+		<Description>XFS_IOC_FSGETXATTR and XFS_IOC_FSSETXATTR</Description>
+		<File count="1"/>
+		<Code>
+			struct fsxattr old_attr, set_attr, get_attr;
+			memset(&old_attr, 0, sizeof(fsxattr));
+			memset(&set_attr, 0, sizeof(fsxattr));
+			memset(&get_attr, 0, sizeof(fsxattr));
+			
+			Unres ( ioctl(FDs[0], XFS_IOC_FSGETXATTR, &old_attr) == -1, "Cannot get original attributes.");
+			
+			set_attr.fsx_xflags = old_attr.fsx_xflags | XFS_XFLAG_NODEFRAG;
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_FSSETXATTR, &set_attr) == -1, "Cannot set new xattrs.");
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_FSGETXATTR, &get_attr) == -1, "Cannot get new xattrs.");
+			
+			Unres ( ioctl(FDs[0], XFS_IOC_FSSETXATTR, &old_attr) == -1, "Cannot restore old xattrs.");
+			
+			Check( set_attr.fsx_xflags != get_attr.fsx_xflags, "Xattrs are different." );
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_FSGET_SETXATTRA">
+		<Description>XFS_IOC_FSGETXATTRA and XFS_IOC_FSSETXATTR</Description>
+		<File count="1"/>
+		<Code>
+			struct fsxattr old_attr, set_attr, get_attr;
+			memset(&old_attr, 0, sizeof(fsxattr));
+			memset(&set_attr, 0, sizeof(fsxattr));
+			memset(&get_attr, 0, sizeof(fsxattr));
+			
+			Unres ( ioctl(FDs[0], XFS_IOC_FSGETXATTRA, &old_attr) == -1, "Cannot get original attributes.");
+			
+			set_attr.fsx_xflags = old_attr.fsx_xflags | XFS_XFLAG_NODEFRAG;
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_FSSETXATTR, &set_attr) == -1, "Cannot set new xattrs.");
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_FSGETXATTRA, &get_attr) == -1, "Cannot get new xattrs.");
+			
+			Unres ( ioctl(FDs[0], XFS_IOC_FSSETXATTR, &old_attr) == -1, "Cannot restore old xattrs.");
+			
+			Check( set_attr.fsx_xflags != get_attr.fsx_xflags, "Xattrs are different." );
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_GET_SETXFLAGS">
+		<Description>XFS_IOC_GETXFLAGS</Description>
+		<File count="1"/>
+		<Code>
+			unsigned int old_flags, set_flags = FS_SYNC_FL, get_flags;
+			
+			Unres (ioctl(FDs[0], XFS_IOC_GETXFLAGS, &old_flags) == -1, "Cannot get old flags.");
+			
+			Fail (ioctl(FDs[0], XFS_IOC_SETXFLAGS, &set_flags) == -1, "Cannot set new flags");
+			
+			Fail (ioctl(FDs[0], XFS_IOC_GETXFLAGS, &get_flags) == -1, "Cannot get new flags");
+			
+			Unres (ioctl(FDs[0], XFS_IOC_SETXFLAGS, &old_flags) == -1, "Cannot restore old flags.");
+			
+			Check( set_flags != get_flags, "Flag values are different." );
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_FSSETDM" Shallow="true">
+		<Description>XFS_IOC_FSSETDM</Description>
+		<File count="1"/>
+		<Code>
+			
+			xfs_fsop_bulkreq_t arg;
+			memset(&arg, 0, sizeof(arg));
+			int out_count;
+			__u64 ip = 1;
+			
+			arg.lastip = &ip;
+			arg.icount = 1;
+			arg.ubuffer = malloc(sizeof(xfs_bstat_t) * arg.icount);
+			arg.ocount = &out_count;
+			
+			Unres (ioctl(FDs[0], XFS_IOC_FSBULKSTAT, &arg) == -1, "Ioctl failed.");
+			
+			struct fsdmidata dmi_args;
+			memset(&dmi_args, 0, sizeof(struct fsdmidata));
+			
+			dmi_args.fsd_dmevmask = ((xfs_bstat_t*)arg.ubuffer)[0].bs_dmevmask;
+			dmi_args.fsd_dmstate = ((xfs_bstat_t*)arg.ubuffer)[0].bs_dmstate;
+			
+			Fail ( ioctl(FDs[0], XFS_IOC_FSSETDM, &dmi_args) == -1, "Cannot set DMI data.");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_GETBMAP" Shallow="true">
+		<Description>XFS_IOC_GETBMAP</Description>
+		<File count="1"/>
+		<Code>
+			Unres (fallocate(FDs[0], 0, 0, 1024) == -1, "Cannot allocate space in file.");
+			const int BlockCount = 10;
+			struct getbmapx bmx[BlockCount];
+			bmx[0].bmv_count = BlockCount; 
+			bmx[0].bmv_length = -1;
+			bmx[0].bmv_offset = 0;
+			
+			Fail( ioctl(FDs[0], XFS_IOC_GETBMAP, &bmx) == -1, "getbmap failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_GETBMAPA" Shallow="true">
+		<Description>XFS_IOC_GETBMAPA</Description>
+		<File count="1"/>
+		<Code>
+			Unres (fallocate(FDs[0], 0, 0, 1024) == -1, "Cannot allocate space in file.");
+			const int BlockCount = 10;
+			struct getbmapx bmx[BlockCount];
+			bmx[0].bmv_count = BlockCount; 
+			bmx[0].bmv_length = -1;
+			bmx[0].bmv_offset = 0;
+			
+			Fail( ioctl(FDs[0], XFS_IOC_GETBMAPA, &bmx) == -1, "getbmapa failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_GETBMAPX" Shallow="true">
+		<Description>XFS_IOC_GETBMAPX</Description>
+		<File count="1"/>
+		<Code>
+			Unres (fallocate(FDs[0], 0, 0, 1024) == -1, "Cannot allocate space in file.");
+			const int BlockCount = 10;
+			struct getbmapx bmx[BlockCount];
+			bmx[0].bmv_count = BlockCount; 
+			bmx[0].bmv_length = -1;
+			bmx[0].bmv_iflags = BMV_IF_DELALLOC;	
+			bmx[0].bmv_offset = 0;
+					
+			Fail( ioctl(FDs[0], XFS_IOC_GETBMAPX, bmx) == -1, "getbmapx failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_FD_TO_HANDLE" Shallow="true">
+		<Description>XFS_IOC_FD_TO_HANDLE</Description>
+		<File count="1"/>
+		<Code>
+			xfs_fsop_handlereq_t arg;
+			xfs_handle_t handle;
+			arg.fd = FDs[0];
+			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
+			int size = XFS_HSIZE(handle);
+			arg.ohandle = malloc(size);
+			uint32_t olen;
+			arg.ohandlen = &olen;
+			Fail (ioctl(FDs[0], XFS_IOC_FD_TO_HANDLE, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_PATH_TO_HANDLE" Shallow="true">
+		<Description>XFS_IOC_PATH_TO_HANDLE</Description>
+		<File count="1"/>
+		<Code>
+			xfs_fsop_handlereq_t arg;
+			xfs_handle_t handle;
+			arg.path = static_cast<void*>(const_cast<char*>(FilePaths[0].c_str()));
+			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
+			int size = XFS_HSIZE(handle);
+			arg.ohandle = malloc(size);
+			uint32_t olen;
+			arg.ohandlen = &olen;
+			Fail( ioctl(FDs[0], XFS_IOC_PATH_TO_HANDLE, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_PATH_TO_FSHANDLE" Shallow="true">
+		<Description>XFS_IOC_PATH_TO_FSHANDLE</Description>
+		<File count="1"/>
+		<Code>
+			xfs_fsop_handlereq_t arg;
+			xfs_handle_t handle;
+			arg.path = static_cast<void*>(const_cast<char*>(FilePaths[0].c_str()));
+			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
+			int size = XFS_HSIZE(handle);
+			arg.ohandle = malloc(size);
+			uint32_t olen;
+			arg.ohandlen = &olen;
+			Fail( ioctl(FDs[0], XFS_IOC_PATH_TO_FSHANDLE, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_OPEN_BY_HANDLE" Shallow="true">
+		<Description>XFS_IOC_OPEN_BY_HANDLE</Description>	
+		<Dir count="1"/>
+		<File count="1"/>
+		<Code>
+			xfs_fsop_handlereq_t arg;
+			xfs_handle_t handle;
+			arg.fd = FDs[0];
+			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
+			int size = XFS_HSIZE(handle);
+			arg.ohandle = malloc(size);
+			uint32_t olen;
+			arg.ohandlen = &olen;
+			int rv = ioctl(FDs[0], XFS_IOC_FD_TO_HANDLE, &arg);
+			Unres(rv != 0, "Ioctl XFS_IOC_FD_TO_HANDLE failed");
+			
+			arg.ihandle = arg.ohandle;			
+			arg.ihandlen = olen;
+			Fail( ioctl(DirDs[0], XFS_IOC_OPEN_BY_HANDLE, &arg) == -1, "Ioctl open by handle failed");
+		</Code>
+	</Test>
+	<!--Test Name="XFS_IOC_FSSETDM_BY_HANDLE" Shallow="true">
+		<Description>XFS_IOC_FSSETDM_BY_HANDLE</Description>
+		<File count="1"/>
+		<Code>
+			char buf[2];
+			ioctl(FDs[0], XFS_IOC_FSSETDM_BY_HANDLE, buf);
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_READLINK_BY_HANDLE" Shallow="true">
+		<Description>XFS_IOC_READLINK_BY_HANDLE</Description>
+		<File count="1"/>
+		<Code>
+			char buf[2];
+			ioctl(FDs[0], XFS_IOC_READLINK_BY_HANDLE, buf);
+		</Code>
+	</Test-->
+	<!--Test Name="XFS_IOC_ATTRLIST_BY_HANDLE" Shallow="true">
+		<Description>XFS_IOC_ATTRLIST_BY_HANDLE</Description>
+		<Dir count="1"/>
+		<Code>
+			/*xfs_fsop_handlereq_t arg;
+			xfs_handle_t handle;
+			arg.fd = DirDs[0];
+			handle.ha_fid.fid_len = sizeof(xfs_fid_t) - sizeof(handle.ha_fid.fid_len);
+			int size = XFS_HSIZE(handle);
+			arg.ohandle = malloc(size);
+			int rv = ioctl(DirDs[0], XFS_IOC_FD_TO_HANDLE, &arg);
+			Unres(rv == -1, "Ioctl fd to handle failed");
+			
+			arg.ihandle = static_cast<void*>(arg.ohandle);
+			arg.ihandlen = *(arg.ohandlen);
+			
+			xfs_fsop_attrlist_handlereq_t alhreq;
+			
+			alhreq.hreq.fd       = 0;
+			alhreq.hreq.path     = NULL;
+			alhreq.hreq.oflags   = O_LARGEFILE;
+			alhreq.hreq.ihandle  = arg;
+			alhreq.hreq.ihandlen = hlen;
+			alhreq.hreq.ohandle  = NULL;
+			alhreq.hreq.ohandlen = NULL;
+			*/
+			/*
+			//memset(&attrlist_arg, 0, sizeof(attrlist_arg));
+			attrlist_arg.hreq = arg;
+			attrlist_arg.buflen = attrlist_arg.flags = 0;
+			attrlist_arg.pos.opaque[0] = 0;
+			attrlist_arg.pos.opaque[1] = 0;
+			attrlist_arg.pos.opaque[3] = 0;
+			//memset(&(attrlist_arg.pos), 0, sizeof(attrlist_arg.pos));
+			*/
+			
+			Fail( ioctl(DirDs[0], XFS_IOC_ATTRLIST_BY_HANDLE, &attrlist_arg) == -1, "Ioctl atrrlist by handle failed");
+		</Code>
+	</Test-->
+	<!--Test Name="XFS_IOC_ATTRMULTI_BY_HANDLE" Shallow="true">
+		<Description>XFS_IOC_ATTRMULTI_BY_HANDLE</Description>
+		<File count="1"/>
+		<Code>	
+			char buf[2];
+			ioctl(FDs[0], XFS_IOC_ATTRMULTI_BY_HANDLE, buf);
+		</Code>
+	</Test-->
+	<!--Test Name="XFS_IOC_SWAPEXT" Shallow="true">
+		<Description>XFS_IOC_SWAPEXT</Description>
+		<File count="1"/>
+		<Code>
+			char buf[2];
+			ioctl(FDs[0], XFS_IOC_SWAPEXT, buf);
+		</Code>
+	</Test-->
+	<Test Name="XFS_IOC_FSCOUNTS" Shallow="true">
+		<Description>XFS_IOC_FSCOUNTS</Description>
+		<File count="1"/>
+		<Code>
+			xfs_fsop_counts_t arg;
+			Fail (ioctl(FDs[0], XFS_IOC_FSCOUNTS, &arg) == -1, "Ioctl failed");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_SET_GET_RESBLKS">
+		<Description>XFS_IOC_SET_RESBLKS</Description>
+		<File count="1"/>
+		<Code>			
+			xfs_fsop_resblks_t arg;
+			xfs_fsop_resblks_t arg_out;
+			memset(&arg, 0, sizeof(arg));
+			arg.resblks = 10;
+			Fail (ioctl(FDs[0], XFS_IOC_SET_RESBLKS, &arg) == -1, "Cannot set reserved blocks");
+	
+			Fail ( ioctl(FDs[0], XFS_IOC_GET_RESBLKS, &arg_out) == -1, "Cannot get reserved blocks");
+			
+			Check ( arg.resblks != arg_out.resblks, "Reserved block count differ." );
+		</Code>
+	</Test>
+	<!-- Internal operations. Test Name="XFS_IOC_FSGROWFSDATA" Shallow="true">
+		<Description>XFS_IOC_FSGROWFSDATA</Description>
+		<File count="1"/>
+		<Code>
+			xfs_growfs_data_t arg;
+			arg.newblocks = 1000;
+			arg.imaxpct = 5;
+			
+			Fail (ioctl(FDs[0], XFS_IOC_FSGROWFSDATA, &arg) == -1, "Ioctl failed.");
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_FSGROWFSLOG" Shallow="true">
+		<Description>XFS_IOC_FSGROWFSLOG</Description>
+		<File count="1"/>
+		<Code>
+			char buf[2];
+			ioctl(FDs[0], XFS_IOC_FSGROWFSLOG, buf);
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_FSGROWFSRT" Shallow="true">
+		<Description>XFS_IOC_FSGROWFSRT</Description>
+		<File count="1"/>
+		<Code>
+			char buf[2];
+			ioctl(FDs[0], XFS_IOC_FSGROWFSRT, buf);
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_GOINGDOWN" Shallow="true">
+		<Description>XFS_IOC_GOINGDOWN</Description>
+		<File count="1"/>
+		<Code>
+			char buf[2];
+			ioctl(FDs[0], XFS_IOC_GOINGDOWN, buf);
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_ERROR_INJECTION" Shallow="true">
+		<Description>XFS_IOC_ERROR_INJECTION</Description>
+		<File count="1"/>
+		<Code>
+			char buf[2];
+			ioctl(FDs[0], XFS_IOC_ERROR_INJECTION, buf);
+		</Code>
+	</Test>
+	<Test Name="XFS_IOC_ERROR_CLEARALL" Shallow="true">
+		<Description>XFS_IOC_ERROR_CLEARALL</Description>
+		<File count="1"/>
+		<Code>
+			char buf[2];
+			ioctl(FDs[0], XFS_IOC_ERROR_CLEARALL, buf);
+		</Code>
+	</Test-->
+</TestSet>
+
