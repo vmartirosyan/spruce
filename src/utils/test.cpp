@@ -29,6 +29,8 @@
 #include <KedrIntegrator.hpp>
 #include <memory>
 
+extern string Path; // Defined in doer.cpp
+
 ProcessResult * Test::Execute(vector<string> args)
 {
 	Logger::LogInfo("Test: " + _name);
@@ -146,6 +148,8 @@ void TestSet::Merge(TestSet & tc)
 
 Status TestSet::Run(Checks checks)
 {
+	string OrigPath = Path;
+	
 	Status result = Success;
 	Status st = Success;
 	
@@ -153,8 +157,17 @@ Status TestSet::Run(Checks checks)
 		if ( (st = _StartUpFunc()) != Success )
 			return st;
 	
-	for ( map<string, Test>::iterator i = _tests.begin(); i != _tests.end(); ++i)
+	map<string, Test>::iterator i = _tests.begin();
+	while ( i != _tests.end())
 	{
+		Path = OrigPath + "." + i->first;
+		
+		if ( SkipTestPath(Path) )
+		{
+			_tests.erase(i++);
+			continue;
+		}
+		
 		i->second.SetChecks(checks);
 		
 		if ( i->second.GetEffectiveChecks() == None )
@@ -243,19 +256,32 @@ Status TestSet::Run(Checks checks)
 				}
 			}
 		}
+		++i;
 	}	
 	
 	if ( _CleanUpFunc )
 		_CleanUpFunc();
+		
+	Path = OrigPath;
 	
 	return result;
 }
 
 Status TestPackage::Run(Checks checks)
 {
+	string OrigPath = Path;
 	Status result = Success;
-	for ( map<string, TestSet>::iterator i = _testsets.begin(); i != _testsets.end(); ++i)
+	map<string, TestSet>::iterator i = _testsets.begin();
+	while ( i != _testsets.end() )
 	{
+		Path = OrigPath + "." + i->first;
+		
+		if ( SkipTestPath(Path) )
+		{			
+			_testsets.erase(i++);
+			continue;
+		}
+		
 		Status st = i->second.Run(checks);		
 		
 		if ( st > result )
@@ -264,8 +290,12 @@ Status TestPackage::Run(Checks checks)
 		// If Fatal error has rised quit!
 		if ( st == Fatal )
 			break;
-		
-	}	
+
+		++i;
+	}
+	
+	//Restore the path
+	Path = OrigPath;	
 	
 	return result;
 }

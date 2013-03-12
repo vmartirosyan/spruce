@@ -382,5 +382,7 @@ TestSet Init_##package_name##_##test_set_name()\
 vector<string> SplitString(string str, char delim, vector<string> AllowedValues = vector<string>());
 void StrReplace(string& str, string val1, string val2);
 
+bool SkipTestPath(string Path);
+
 #endif /* COMMON_HPP */
 
