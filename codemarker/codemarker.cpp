@@ -11,6 +11,7 @@
 using namespace std;
 
 const char marker[] = "123456789";
+const int info_buf_length = 512;
 
 const char regx_sf[] = "^SF:(.*)";
 const char regx_eor[] = "^end_of_record";
@@ -118,12 +119,12 @@ int main (int argc, char* argv[])
 	regmatch_t match_arr[nmatch];
 	
 
-	char info_buf[100];
+	char info_buf[info_buf_length];
 	vector<LFT_ST> cur_LFT; 
 	
 	while(!db.eof())
 	{
-		db.getline(info_buf, 100);
+		db.getline(info_buf, info_buf_length);
 		
 		memset(match_arr, 0, sizeof(match_arr));
 		if(regexec(&cregx_sf, info_buf, nmatch, match_arr, 0) == 0)
@@ -191,7 +192,7 @@ int main (int argc, char* argv[])
 	
 	while(!info.eof())
 	{
-		info.getline(info_buf, 100);
+		info.getline(info_buf, info_buf_length);
 		
 		memset(match_arr, 0, sizeof(match_arr));
 		if(regexec(&cregx_sf, info_buf, nmatch, match_arr, 0) == 0)
@@ -209,7 +210,7 @@ int main (int argc, char* argv[])
 			{				
 				for(;;)
 				{
-					info.getline(info_buf, 100);
+					info.getline(info_buf, info_buf_length);
 					fout<<info_buf<<endl;
 					if(regexec(&cregx_eor, info_buf, nmatch, match_arr, 0) == 0)  // end_of_record
 						break;
@@ -222,7 +223,7 @@ int main (int argc, char* argv[])
 			vector<LFT_ST>aviableLft; 
 			while(!info.eof())
 			{
-				info.getline(info_buf, 100);
+				info.getline(info_buf, info_buf_length);
 				
 				memset(match_arr, 0, sizeof(match_arr));			
 
@@ -269,7 +270,7 @@ int main (int argc, char* argv[])
 								int fpos = info.tellg();	
 								
 								//Find next function start line 						
-								info.getline(info_buf, 100);
+								info.getline(info_buf, info_buf_length);
 								memset(match_arr, 0, sizeof(match_arr));			
 								// FN: 
 								if(regexec(&ciregex_fn, info_buf, nmatch, match_arr, 0) == 0)	
