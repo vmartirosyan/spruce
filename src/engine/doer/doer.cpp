@@ -218,8 +218,7 @@ int main(int argc, char ** argv)
 				MemoryLeakTest.AddResult(MemoryLeak, ProcessResult(Unresolved, "Cannot load KEDR framework."));
 				leakTestSet.AddTest(MemoryLeakTest);
 			}
-			PerformFaultSimulation = false;
-			PerformLeakCheck = false;
+			PerformFaultSimulation = false;			
 		}
 	}
 	
@@ -232,7 +231,7 @@ int main(int argc, char ** argv)
 	
 	PartitionStatus PS = PS_Success;
 	
-	TestPackage tp("MemoryLeaks");
+	TestPackage tp((string)"MemoryLeaks" + ( ( strstr(argv[0], "_32") != 0 ) ? "_32" : "" ));
 	
 	time_t FSStartTime = time(0);
 	
@@ -305,10 +304,7 @@ int main(int argc, char ** argv)
 			
 			XMLGenerator::GenerateLog(LogFile , *i->second, FileSystem, "", str.str());
 		}
-		
-		// Prepare the pseudo-package for memory leak check 
-		// Process the memory leak checker output
-		
+
 	}
 	while ( PS != PS_Done );
 	
@@ -411,7 +407,11 @@ int main(int argc, char ** argv)
 	// Add the memory leak test package
 	if ( PerformLeakCheck )
 	{
-		fs_xml << "\t\t<Package>" + tp.GetName() + "</Package>\n";
+		if ( strstr(argv[0], "_32") != 0 ) 
+		{
+			fs_xml << "\t\t<Package>MemoryLeaks_32</Package>\n";
+		}
+		fs_xml << "\t\t<Package>MemoryLeaks</Package>\n";
 	}
 	fs_xml << "\t</Packages>\n";
 	fs_xml << "</SpruceDashboard>";
