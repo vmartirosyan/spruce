@@ -26,10 +26,14 @@
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
 		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
 		<Code>
-			const int BlockSize = 4096;
-			int Mult;
-			Mult = ((PartitionManager::GetDeviceSize(DeviceName)/1024 < 3000000)?100000:500000);
-			char* WriteBuf = new char[Mult*BlockSize];
+			int BlockSize;
+			int AGSize;
+			jfs_superblock sb;
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Can't read superblock");
+			BlockSize = sb.s_bsize;
+			AGSize = sb.s_agsize;
+			int size = (AGSize+1)*BlockSize;
+			char* WriteBuf = new char[size];
 			// Align to block size
 			char * WriteStart = reinterpret_cast<char*>(((reinterpret_cast<long>(WriteBuf) / BlockSize) + 1) * BlockSize);
 			WriteStart[0] = 'A';
@@ -37,14 +41,14 @@
 			char* ReadBuf = new char[2*BlockSize];
 			char * ReadStart = reinterpret_cast<char*>(((reinterpret_cast<long>(ReadBuf) / BlockSize) + 1) * BlockSize);
 			
-			Fail ( write(FDs[0], WriteStart, Mult*BlockSize) == -1, "Cannot write to file.");
+			Fail ( write(FDs[0], WriteStart, size) == -1, "Cannot write to file.");
 			
 			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
 			
 			Fail( read(FDs[0], ReadStart, BlockSize) == -1, "Cannot read from file.");
 			
 			Check( ReadStart[0] != WriteStart[0], "Different values were written and read.");
-			
+
 		</Code>
 	</Test>
 </TestSet>

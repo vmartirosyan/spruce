@@ -72,7 +72,7 @@ std::pair<std::string, unsigned long> map2_data[] = {
     std::make_pair("ext4",1024),
 	std::make_pair("btrfs",64000),
 	std::make_pair("xfs",0),
-	std::make_pair("jfs",4096)
+	std::make_pair("jfs",32768)
 };
 
 std::map<string, unsigned long> PartitionManager::SBOffsets(map2_data,
@@ -804,3 +804,49 @@ bool PartitionManager::GetSuperBlock(void * sb_struct, int size)
 		
 }
 
+bool PartitionManager::SetSuperBlock(void * sb_struct, int size)
+{
+	string fs;
+	string dev;
+	string mnt;
+	int fd;
+	unsigned long offset;
+	if( getenv("FileSystem") && getenv("Partition") && getenv("MountAt"))
+	{
+		fs = getenv("FileSystem");
+		dev = getenv("Partition");
+		mnt = getenv("MountAt");
+	}
+	else
+	{
+		cerr << "Cannot get filesystem type or device name or mountpoint" << endl;
+		return false;
+	}
+	if( !ReleasePartition(mnt))
+		return false;
+	
+	offset = SBOffsets[fs];
+	fd = open(dev.c_str(), O_RDWR);
+	if(fd == -1)
+	{
+		cerr << "Cannot open device." << strerror(errno) << endl;
+		return false;
+	}
+	if( lseek(fd, offset, SEEK_SET) == -1 )
+	{
+		cerr << "Cannot seek in device." << strerror(errno) << endl;
+		close(fd);
+		return false;
+	}
+/*	if( write(fd, sb_struct, size) == -1 )
+	{
+		cerr << "Cannot write superblock to the device." << strerror(errno) << endl;
+		close(fd);
+		return false;
+	}*/
+	close(fd);
+	if(!Mount(dev, mnt, fs, ""))
+		return false;
+	return true;
+		
+}
