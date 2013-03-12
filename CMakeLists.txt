@@ -104,6 +104,7 @@ add_subdirectory (include)
 add_subdirectory (src)
 add_subdirectory (config)
 add_subdirectory (doc)
+add_subdirectory (codemarker)
 
 # Uninstall the system
 configure_file(

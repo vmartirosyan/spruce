@@ -62,6 +62,8 @@
 #   2008-08-13 / Peter Oberparleiter: modified function coverage
 #                implementation (now enabled per default),
 #                introduced sorting option (enabled per default)
+#   2013-03-12 / Giorgi Gulabyan <gulabyang @ gmail.com>: Added new functionality for 
+#				 code markup
 #
 
 use strict;
