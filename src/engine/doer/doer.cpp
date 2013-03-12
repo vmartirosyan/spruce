@@ -293,9 +293,11 @@ int main(int argc, char ** argv)
 		
 	}
 	
-	tp.AddTestSet(leakTestSet);
+   if ( PerformLeakCheck )
+   {
+     tp.AddTestSet(leakTestSet);
 	
-	string LogFile = 
+     string LogFile = 
 		LogFolder + "/" // LogFolder
 		+ FileSystem + "_"  // FS
 		+ tp.GetName() + "_"  // Package name
@@ -303,7 +305,8 @@ int main(int argc, char ** argv)
 		+ pm.GetCurrentOptions(true) // Current options
 		+ "_log.xml";
 		
-	XMLGenerator::GenerateLog(LogFile , tp, FileSystem, "", "0");
+     XMLGenerator::GenerateLog(LogFile , tp, FileSystem, "", "0");
+   }
 	
 	try
 	{
