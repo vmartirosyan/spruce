@@ -31,8 +31,11 @@
 			string DirPath = DirToReadPath + "/some_dir";
 			int fd;
 			DIR *dir;
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			Unres ( chdir("/") == -1, "Cannot change directory." );
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
-			sb.s_flag &= ~0x00200000;
+			//sb.s_flag &= ~0x00200000;//JFS_DIR_INDEX
 			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
 			Unres(mkdir(DirToReadPath.c_str(), 0444) == -1, "Cannot create directory");
 			Unres(mkdir(DirPath.c_str(), 0444) == -1, "Cannot create directory");
@@ -49,6 +52,48 @@
 			rmdir(DirPath.c_str());
 			unlink(FilePath.c_str());
 			rmdir(DirToReadPath.c_str());
+			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success,"Mount failed" );
+			
+		</Code>
+	</Test>
+	<Test Name="ciOperations" FaultSimulationReady="true">
+		<Description>Set JFS_OS2 flag.</Description>
+		<Code>
+			jfs_superblock sb;
+			string FilePath = DirPrefix +"1";
+			string DirPath = DirPrefix + "2";
+			int fd;
+			const char * NewFileName = "FileRenameNormal";
+			const char * NewDirName = "DirRenameNormal";		
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			Unres ( chdir("/") == -1, "Cannot change directory." );
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			sb.s_flag |= 0x40000000;//JFS_OS2
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			Unres(mkdir(DirPath.c_str(), 0444) == -1, "Cannot create directory");
+			if((fd = creat(FilePath.c_str(), 0777)) == -1)
+			{
+				rmdir(DirPath.c_str());
+				Unres(1, "Cannot create file.");
+			}
+				
+			if(  rename(FilePath.c_str(), NewFileName) == -1)
+			{
+				rmdir(DirPath.c_str());
+				unlink(FilePath.c_str());
+				Fail(1, "Rename failed.");
+			}
+			if( rename(DirPath.c_str(), NewDirName) == -1)
+			{
+				rmdir(DirPath.c_str());
+				unlink(FilePath.c_str());
+				Fail(1, "Rename failed.");
+			}	
+			close(fd);
+			rmdir(DirPath.c_str());
+			unlink(FilePath.c_str());
 			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success,"Mount failed" );
 			
 		</Code>
