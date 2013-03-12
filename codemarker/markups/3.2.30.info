@@ -63,6 +63,17 @@ SF:fs/jfs/jfs_imap.c
 FN:diRead
 LFT:62,69 This code is supported only in OS/2
 end_of_record
+
+SF:fs/jfs/jfs_incore.h
+FN:JFS_SBI 
+LFT:0,3 This function is inline and has very primitive body, that's why the compiler perform this functions duties instead of its invoke. See the isReadOnly function below. 
+end_of_record
+
+SF:fs/jfs/jfs_incore.h
+FN:isReadOnly 
+LFT:0,0 This is inline function
+end_of_record
+
 #######################################################################
 #################Section for free code marcup##########################
 #######################################################################
