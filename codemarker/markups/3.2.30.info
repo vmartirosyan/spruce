@@ -53,6 +53,16 @@ FN:dtSearch
 LFT:30,30 This code is supported only in OS/2
 LFT:81,81 This code is supported only in OS/2
 end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diWrite
+LFT:46,53 This code is for OS/2
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diRead
+LFT:62,69 This code is for OS/2
+end_of_record
 #######################################################################
 #################Section for free code marcup##########################
 #######################################################################
