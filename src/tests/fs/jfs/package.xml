@@ -6,4 +6,5 @@
 	<TestSet Name="Xattr" />
 	<TestSet Name="ShowAndStoreFunctions" />
 	<TestSet Name="ChangeSB" />
+	<TestSet Name="Unicode" />
 </TestPackage>
