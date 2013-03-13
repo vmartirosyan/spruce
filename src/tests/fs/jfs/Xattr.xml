@@ -107,6 +107,43 @@
 			Check ( strncmp(ValueSet, ValueGot, ValueLen ), static_cast<string>("Different xattr values: ") + ValueSet + " : " + ValueGot );
 			
 		</Code>
+		</Test>
+	<Test Name="XattrListOS2" FaultSimulationReady="true">
+		<Description>List extended attribute names.</Description>
+		<File count="1"/>
+		<Code>
+			const char * AttrName = "os2.XattrSetGetTest";
+			const char * ValueSet = "asdf";
+			const int ValueLen = strlen(ValueSet);			
+						
+			if ( removexattr(FilePaths[0].c_str(), AttrName) == -1 && errno != ENOATTR )
+			{
+				if ( errno == ENOTSUP )
+				{					
+					Error("Xattrs are not supported.", Unsupported);
+				}
+				Unres(true, "Cannot remove xattr.");
+			}
+			
+			Unres ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			
+			char ValueGot[1000];
+			
+			int size = 0;
+			Fail ( (size = listxattr(FilePaths[0].c_str(), ValueGot, 1000 )) < 1, "Cannot list xattrs.");
+			
+			// Merge the attribute names
+			for (  int i = 0; i < size; ++i )
+			{
+				if ( ValueGot[i] == '\0' )
+				{
+					ValueGot[i] = ';';					
+				}
+			}
+			
+			string XattrList = ValueGot;			
+			Check( XattrList.find(AttrName) == string::npos, "The attribute name is not listed." );			
+		</Code>
 	</Test>
 	<GlobalFooter>
 #endif
