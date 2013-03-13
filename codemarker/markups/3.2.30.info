@@ -67,3 +67,18 @@ end_of_record
 #######################################################################
 FREECODE:
 
+SF:fs/jfs/jfs_namei.c
+FN:jfs_fh_to_dentry The function is exported. Can be called only from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_namei.c
+FN:jfs_fh_to_parent The function is exported. Can be called only from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_namei.c
+FN:jfs_nfs_get_inode The function is exported. Can be called only from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_namei.c
+FN:jfs_get_parent The function is exported. Can be called only from kernel space.
+end_of_record
