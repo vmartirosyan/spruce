@@ -34,18 +34,6 @@ LFT:25,25 This code is supported only in OS/2
 LFT:32,32 This code is supported only in OS/2
 end_of_record
 
-SF:fs/jfs/jfs_dtree.c
-FN:ciCompare 
-LFT:61,61 This code is supported only in OS/2
-LFT:81,81 This code is supported only in OS/2
-end_of_record
-
-SF:fs/jfs/jfs_dtree.c
-FN:dtSearch 
-LFT:30,30 This code is supported only in OS/2
-LFT:81,81 This code is supported only in OS/2
-end_of_record
-
 SF:fs/jfs/jfs_imap.c
 FN:diWrite
 LFT:46,53 This code is supported only in OS/2
