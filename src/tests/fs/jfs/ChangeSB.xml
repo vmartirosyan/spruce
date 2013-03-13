@@ -21,12 +21,16 @@
 //      MA 02110-1301, USA.
 -->
 <TestSet Name="ChangeSB">
+	<StartUp>
+		Unres ( !PartitionManager::NoOptionsEnabled(),
+			"These tests should run only when no options are provided." );
+	</StartUp>
 	<Requires>dirent.h</Requires>	
 	<Test Name="JFS_DIR_INDEX" FaultSimulationReady="true">
 		<Description>Unset JFS_DIR_INDEX flag and read a directory.</Description>
 		<Code>
 			jfs_superblock sb;
-			string DirToReadPath = "Dir_to_read";
+			string DirToReadPath = DirPrefix + "Dir_to_read";
 			string FilePath = DirToReadPath + "/some_file";
 			string DirPath = DirToReadPath + "/some_dir";
 			int fd;
@@ -37,6 +41,7 @@
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
 			//sb.s_flag &= ~0x00200000;//JFS_DIR_INDEX
 			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
 			Unres(mkdir(DirToReadPath.c_str(), 0444) == -1, "Cannot create directory");
 			Unres(mkdir(DirPath.c_str(), 0444) == -1, "Cannot create directory");
 			Unres((fd = creat(FilePath.c_str(), 0777)) == -1, "Cannot create file.");
