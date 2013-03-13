@@ -1354,8 +1354,14 @@ sub read_info_file($)
 				{
 					$negative = 1;
 				}
+				
+				if($2 == 123456788)
+				{
+					$count = 0;
+				}
 				# Execution count found, add to structure
 				# Add summary counts
+				
 				$sumcount->{$1} += $count;
 
 				# Add test-specific counts
@@ -2998,6 +3004,10 @@ sub write_css_file()
 	{
 	  background-color: Orange;
 	}
+	span.lineFree
+	{
+	  background-color: lightgreen;
+	}
 	
 	/* Source code view: format for Cov legend */
 	span.coverLegendCov
@@ -3911,6 +3921,7 @@ sub write_source_line(*$$$$$$$)
 	my $count_field_width = $line_field_width - 1;
 	my @br_html;
 	my $html;
+	my $marker = $count;
 
 	# Get branch HTML data for this line
 	@br_html = get_branch_html($brdata) if ($br_coverage);
@@ -3931,6 +3942,14 @@ sub write_source_line(*$$$$$$$)
 		$count = 0;
 		$result		= $count;
 		$source_format	= '<span class="lineDead">';
+		$count_format	= format_count($count, $count_field_width);
+	}
+	elsif ( $count == 123456788)
+	# Hack
+	{
+		$count = 0;
+		$result		= $count;
+		$source_format	= '<span class="lineFree">';
 		$count_format	= format_count($count, $count_field_width);
 	}
 	elsif ($converted && defined($highlight)) {
@@ -3959,7 +3978,14 @@ sub write_source_line(*$$$$$$$)
 	if ( defined($desc) )
 	{
 		$html .= "</pre>\n";
-		$html .= "<div class=\"text-centr\"><p>$desc</p></div>";
+		if($marker == 123456789)
+		{
+			$html .= "<div class=\"text-centr\"><p>$desc</p></div>";
+		}
+		else
+		{
+			$html .= "<div class=\"text-centr\" style=\"background:lightgreen;\"><p>$desc</p></div>";
+		}
 		$html .= "<pre class=\"source\">\n";
 	}
 	
