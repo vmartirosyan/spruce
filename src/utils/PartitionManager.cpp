@@ -142,14 +142,17 @@ PartitionStatus PartitionManager::PreparePartition()
 	
 	Logger::LogInfo("Preparing partition: " + GetCurrentOptions(false));
 	if ( !CreateFilesystem(_FileSystem, _DeviceName, false, _CurrentOptions.MkfsOptions) )
-	{			
+	{		
+		AdvanceOptionsIndex();	
 		return PS_Skip;
 	}
 	Logger::LogInfo((string)"File system " + _FileSystem + " is created successfully.");	
 	
 	if( !Mount(_DeviceName,_MountPoint,_FileSystem, _CurrentOptions.MountData, _CurrentOptions.MountFlags) )
+	{
+		AdvanceOptionsIndex();
 		return PS_Skip;
-	
+	}
 	// Change the owner to the 'nobody' user. Makes some tests (like Access) to cleanup correctly
 	struct passwd * nobody = getpwnam("nobody");
 	
