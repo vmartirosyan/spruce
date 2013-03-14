@@ -32,17 +32,16 @@
         <Requires>PartitionManager.hpp</Requires>
         <Requires>dirent.h</Requires>
                 
-        <Test Name="SysfsTests">              
+        <Test Name="SysfsTests" NonFunctional="true">              
                 <Description>Read sysfs files.</Description>
                 <Code>
                         DIR * dir;
                         string devname = (string)DeviceName;
-                        string path = "/sys/fs/ext4/" + devname.substr(4);
-                        
-                        cerr << "path: " << path << endl;
+                        string path = "/sys/fs/ext4/" + devname.substr(4);                   
                         
                         dir = opendir(path.c_str());
-                        Unres(dir == 0, "Can not open directory");
+                        if(dir == 0)
+							Unsupp("Can not open directory");
                         
                         struct dirent *ent;
                         char buf[1024]; 
@@ -96,7 +95,7 @@
 						closedir(dir);
                 </Code>
         </Test>
-        <Test Name="ProcfsTests">
+        <Test Name="ProcfsTests" NonFunctional="true">
                 <Description>Read procfs files.</Description>
                 <Code>
                         DIR * dir;
@@ -104,7 +103,8 @@
                         string path = "/proc/fs/ext4/" + devname.substr(4);
                         
                         dir = opendir(path.c_str());
-                        Unres(dir == 0, "Can not open directory");
+                        if(dir == 0)
+							Unsupp("Can not open directory");
                         
                         struct dirent *ent;
                         char buf[1024]; 
