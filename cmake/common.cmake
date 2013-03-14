@@ -207,11 +207,10 @@ function (add_test_package name )
 			list(APPEND compat_package_sources ${compat_source_file})
 		endforeach()
 		
-		message("Compat files: ${compat_package_sources}")
-		
 		# generate the compat version of the library
-		set_source_files_properties(${compat_package_sources} PROPERTIES COMPILE_FLAGS "-DCOMPAT")
-		set_source_files_properties(${compat_package_sources} PROPERTIES COMPILE_FLAGS "-m32")
+		
+		
+		set_source_files_properties(${compat_package_sources} PROPERTIES COMPILE_FLAGS "-m32 -DCOMPAT")
 		add_library(${name}_32 ${compat_package_sources})
 		
 		add_dependencies(${name}_32 generator)

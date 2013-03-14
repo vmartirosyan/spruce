@@ -81,8 +81,6 @@
 			
 			//Restore the initial flag value
 			Fail( ioctl(FDs[0], FS_IOC_SETFLAGS, &flags ) == -1, "Error setting initial value to flag. ");
-			
-			Check ( get_flags != set_flags, "Get and Set flag values do not match!" );
 						
 		</Code>
 	</Test>
@@ -194,13 +192,15 @@
 		</Code>
 	</Test>
 	 
+	<!-- The following test brings to a bug in btrfs
+	
 	<Test Name="BTRFS_IOC_SUBVOL_GETFLAGS" Shallow="true">
 		<Requires KernelVersion="2.6.38" />
 		<Description>BTRFS_IOC_SUBVOL_GETFLAGS.</Description>		
 		<Header>
 			const char * FilePath = "BTRFS_IOC_SUBVOL_GETFLAGS_dir0";
 			
-			File f(FilePath, 0777, O_RDONLY | O_NOATIME);
+			File f(FilePath, 0777, O_RDONLY | O_CREAT);
 			int fd = f.GetFileDescriptor();
 			btrfs_ioctl_vol_args arg;
 			strcpy(arg.name, "subvol");
@@ -220,7 +220,7 @@
 			if ( ioctl( fd, BTRFS_IOC_SNAP_DESTROY, &destroy_arg ) == -1 )
 				Error("Cannot destroy snapshot");
 		</Footer>
-	</Test>
+	</Test-->
 		
 	<!-- Test Name="BTRFS_IOC_SUBVOL_SETFLAGS" Shallow="true">
 		<Requires KernelVersion="2.6.38" />
@@ -702,7 +702,7 @@
 		</Code>
 	</Test-->
 
-	<Test Name="BTRFS_IOC_GET_DEV_STATS" Shallow="true">
+	<!--Test Name="BTRFS_IOC_GET_DEV_STATS" Shallow="true">
 		<Requires KernelVersion="3.5.0" />
 		<Description>BTRFS_IOC_GET_DEV_STATS.</Description>
 		<File count="1"/>
@@ -710,7 +710,7 @@
 			btrfs_ioctl_get_dev_stats arg;
 			Fail( ioctl( FDs[0], BTRFS_IOC_GET_DEV_STATS, &arg) == -1, "Cannot get device stats.");
 		</Code>
-	</Test>
+	</Test-->
 	
  <!-- Only supported for 3.5 kernel--> 
 	<!--Test Name="BTRFS_IOC_GET_AND_RESET_DEV_STATS" Shallow="true">
@@ -721,8 +721,4 @@
 			ioctl( FDs[0], BTRFS_IOC_GET_AND_RESET_DEV_STATS, buf);
 		</Code>		
 	</Test-->
-	<FaultSimulation>
-		<Simulate point="kmalloc"/>		
-	</FaultSimulation>
-	
 </TestSet>

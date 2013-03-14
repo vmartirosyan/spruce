@@ -57,27 +57,47 @@ map<string, TestPackage*> InitPackages(string fs, vector<string> AllowedPackages
 	static map<string, TestPackage> packages;
 	if ( !Initialized )
 	{
-		packages["common"] = Initcommon();
-		packages["btrfs"] = Initbtrfs();
-		packages["ext4"] = Initext4();
-		packages["jfs"] = Initjfs();
-		packages["xfs"] = Initxfs();
+		TestPackage pkgCommon = Initcommon();
+		packages[pkgCommon.GetName()] = pkgCommon;
+		TestPackage pkgBtrfs = Initbtrfs();
+		packages[pkgBtrfs.GetName()] = pkgBtrfs;
+		TestPackage pkgExt4 = Initext4();
+		packages[pkgExt4.GetName()] = pkgExt4;
+		TestPackage pkgJfs = Initjfs();
+		packages[pkgJfs.GetName()] = pkgJfs;
+		TestPackage pkgXfs = Initxfs();
+		packages[pkgXfs.GetName()] = pkgXfs;
 		Initialized = true;
 	}
 	
 	map<string, TestPackage*> result;
 	
+	
+#ifdef COMPAT
+	if ( find(AllowedPackages.begin(), AllowedPackages.end(), (string)"common_32") != AllowedPackages.end() )
+	{
+		result["common_32"] = &packages["common_32"];
+	}
+#else
 	if ( find(AllowedPackages.begin(), AllowedPackages.end(), (string)"common") != AllowedPackages.end() )
 	{
 		result["common"] = &packages["common"];
 	}
+#endif
 	
 	if ( find(AllowedPackages.begin(), AllowedPackages.end(), (string)"fs-spec") != AllowedPackages.end() )
 	{
+#ifdef COMPAT
+		if ( packages.find(fs+"_32") != packages.end() )
+		{
+			result[packages[fs+"_32"].GetName()] = &packages[fs+"_32"];
+		}
+#else
 		if ( packages.find(fs) != packages.end() )
 		{
 			result[packages[fs].GetName()] = &packages[fs];
 		}
+#endif
 	}
 	
 	return result;
@@ -134,6 +154,14 @@ int main(int argc, char ** argv)
 			}
 			case 'p':
 				Packages = SplitString(optarg, ';');
+				// Add the compat versions of the mentioned packages
+#ifdef COMPAT
+				{
+					size_t PackagesSize = Packages.size();
+					for ( size_t i = 0; i < PackagesSize; ++i )
+						Packages.push_back(Packages[i] + "_32");
+				}
+#endif
 				break;
 			case 'f':
 				FileSystem = optarg;
@@ -233,8 +261,6 @@ int main(int argc, char ** argv)
 	
 	TestPackage tp((string)"MemoryLeaks" + ( ( strstr(argv[0], "_32") != 0 ) ? "_32" : "" ));
 	
-	time_t FSStartTime = time(0);
-	
 	string PMCurrentOptionsStripped;
 	string PMCurrentOptions;
 	
@@ -280,7 +306,7 @@ int main(int argc, char ** argv)
 		
 		for ( map<string, TestPackage*>::iterator i = Tests.begin(); i != Tests.end(); ++i )
 		{
-			Path = (string)FileSystem + "." + PMCurrentOptions + "." + i->second->GetName();
+			Path = (string)FileSystem + "." + PMCurrentOptions + "." + i->first;
 			
 			Logger::LogInfo("Executing packages. Path: " + Path);
 
@@ -298,7 +324,7 @@ int main(int argc, char ** argv)
 				+ FileSystem + "_"  // FS
 				+ i->first + "_"  // Package name
 				// Add the '_32' suffix to the name in case of compatibility checks
-				+ ( ( strstr(argv[0], "_32") != 0 ) ? "32_" : "" )
+				// + ( ( strstr(argv[0], "_32") != 0 ) ? "32_" : "" )
 				+ PMCurrentOptionsStripped // Current options
 				+ "_log.xml";
 			
@@ -345,7 +371,6 @@ int main(int argc, char ** argv)
 			LogFolder + "/" // LogFolder
 			+ FileSystem + "_"  // FS
 			+ tp.GetName() + "_"  // Package name
-			// Add the '_32' suffix to the name in case of compatibility checks			
 			+ PMCurrentOptionsStripped // Current options
 			+ "_log.xml";
 
@@ -367,15 +392,8 @@ int main(int argc, char ** argv)
 	
 	// Produce the <FS>.xml to pass to the dashboard generator
 	// The file contains information about mount options and packages
-	size_t FSDuration = time(0) - FSStartTime;
-	stringstream str;
-	str << FSDuration;
-	string strFSStartTime = ctime(&FSStartTime);
-	ofstream fs_xml((LogFolder + "/" + FileSystem + ".xml").c_str());
-	fs_xml << "<SpruceDashboard FS=\"" + (string)FileSystem + "\">\n";
-	fs_xml << "\t<Start>" + strFSStartTime + "</Start>\n";
-	fs_xml << "\t<Duration>" + str.str() + "</Duration>\n";
-	fs_xml << "\t<Rev>" HG_REV "</Rev>\n";
+	
+	ofstream fs_xml((LogFolder + "/" + FileSystem + ".xml").c_str(), ios_base::app);
 	fs_xml << "\t<Options>\n";
 	
 	for ( unsigned int i = 0; i < MountOptions.size(); ++i )
@@ -394,29 +412,8 @@ int main(int argc, char ** argv)
 			"\" Raw=\"" + MountOptions[i].first + "\"/>\n";
 	}
 	fs_xml << "\t</Options>";
-	
-	fs_xml << "\t<Packages>\n";
-	for ( map<string, TestPackage*>::iterator i = Tests.begin(); i != Tests.end(); ++i )
-	{
-		if (  strstr(argv[0], "_32") != 0 )
-		{
-			fs_xml << "\t\t<Package>" + i->first + "_32</Package>\n";
-		}
-		fs_xml << "\t\t<Package>" + i->first + "</Package>\n";		
-	}
-	// Add the memory leak test package
-	if ( PerformLeakCheck )
-	{
-		if ( strstr(argv[0], "_32") != 0 ) 
-		{
-			fs_xml << "\t\t<Package>MemoryLeaks_32</Package>\n";
-		}
-		fs_xml << "\t\t<Package>MemoryLeaks</Package>\n";
-	}
-	fs_xml << "\t</Packages>\n";
-	fs_xml << "</SpruceDashboard>";
-	
 	fs_xml.close();
+	
 	MountOptions.erase(MountOptions.begin(), MountOptions.end());
 		
 	cerr << "Doer complete." << endl;
@@ -430,16 +427,20 @@ bool SkipTestPath(string Path)
 	{
 		for ( size_t i = 0; i < TestsToRun.size(); ++i)
 		{
-			if (Path.find(TestsToRun[i]) != string::npos ||
-				TestsToRun[i].find(Path) != string::npos)
+			vector<string> TestsToRunComponents = SplitString(TestsToRun[i], '.');
+			vector<string> PathComponents = SplitString(Path, '.');
+			
+			for ( size_t j = 0; j < PathComponents.size() && j < TestsToRunComponents.size(); ++j )
+			{
+				if ( TestsToRunComponents[j] != PathComponents[j] )
 				{
-					Logger::LogInfo("\t\tPath `" + Path + "` is included in run_tests value.");
-					return false;
+					Logger::LogInfo("Path `" + Path + "` is not included in run_tests value. Skipping.");
+					return true;
 				}
+			}
 		}
-		
-		Logger::LogInfo("Path `" + Path + "` is not included in run_tests value. Skipping.");
-		return true;
+		Logger::LogInfo("\t\tPath `" + Path + "` is included in run_tests value.");
+		return false;
 	}
 	else if ( TestsToExclude.size() != 0 )
 	{
@@ -471,6 +472,5 @@ string GetOptionsToEnable(vector<string> TestsToRun)
 		
 		res += TestsToRun[i].substr(pos1 + 1, pos2 - pos1 - 1) + ";";
 	}
-	Logger::LogError("GetOptionsToEnable res : " + res);
 	return res;
 }
