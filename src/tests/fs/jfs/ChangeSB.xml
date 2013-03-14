@@ -39,7 +39,7 @@
 			Unres ( chdir("/") == -1, "Cannot change directory." );
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
-			//sb.s_flag &= ~0x00200000;//JFS_DIR_INDEX
+			sb.s_flag &= ~0x00200000;//JFS_DIR_INDEX
 			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
 			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
 			Unres(mkdir(DirToReadPath.c_str(), 0444) == -1, "Cannot create directory");
