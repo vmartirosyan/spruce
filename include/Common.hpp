@@ -69,7 +69,6 @@ enum Status
 	Skipped,
 	Unsupported,
 	Unresolved,
-	PossibleFail, // Indicates a success in fault simulation process
 	Fail,	
 	Timeout,
 	Signaled,
@@ -156,9 +155,8 @@ struct FSimInfo
 	string msg = static_cast<string>(message) + add_msg;\
 	Logger::LogError(msg);\
 	if ( ((local_errno == ENOTSUP) || (local_errno == ENOTTY)) && (status != -1)) Return(Unsupported);\
-	if ( (status != -1) && (status != Unsupported) && (status != PossibleFail) ) Return(status);\
+	if ( (status != -1) && (status != Unsupported) ) Return(status);\
 	if ( status == Unsupported ) Return(Unsupported);\
-	if ( status == PossibleFail ) _TestStatus = status;\
 }\
 
 #define ERROR_2_ARGS(message, status)\
@@ -187,16 +185,8 @@ struct FSimInfo
 	bool res = (cond);\
 	if ( obj->GetEffectiveChecks() & Stability )\
 		DisableFaultSim();\
-	if ( obj->GetEffectiveChecks() == Stability ) /* It means that fault simulation is activated */\
-	{\
-		if ( !res )\
-			{ Error(message, PossibleFail) }\
-	}\
-	else\
-	{\
-		if ( res )\
-			{ Error(message, Fail) }\
-	}\
+	if ( res )\
+		{ Error(message, Fail) }\
 }\
 
 // The Check macro should be called when a real functional check is being done
