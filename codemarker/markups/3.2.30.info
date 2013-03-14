@@ -51,6 +51,12 @@ FN:isReadOnly
 LFT:0,0 This is inline function
 end_of_record
 
+
+SF:fs/jfs/inode.c
+FN:jfs_get_block 
+LFT:22,43 XAD_NOTRECORDED flag is set only from two places, first is defined as NOTYET and in the second piece before setting the flag a bool value is checked which is always false.
+end_of_record
+
 SF:fs/jfs_metapage.h
 FN:_metapage_homeok 
 LFT:0,0 This is inline function
@@ -61,6 +67,11 @@ SF:fs/jfs/jfs_imap.c
 FN:diRead
 LFT:62,69 This code is supported only in OS/2
 end_of_record
+
+SF:fs/jfs/jfs_extent.c
+FN:extRecord Called only if XAD_NOTRECORDED flag is set and it's set only from two places, first is defined as NOTYET and in the second piece before setting the flag a bool value is checked which is always false.
+end_of_record
+
 
 #######################################################################
 #################Section for free code marcup##########################
