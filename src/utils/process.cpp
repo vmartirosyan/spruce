@@ -35,7 +35,6 @@ string StatusMessages[] = {
 	"Skipped",
 	"Unsupported",
 	"Unresolved",
-	"PossibleFailure",
 	"Failed",	
 	"Timeout",
 	"Signaled",
