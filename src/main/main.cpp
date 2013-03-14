@@ -189,63 +189,6 @@ int main(int argc, char ** argv)
 		}
 		Checks = SplitString(strChecks, ';');
 		
-		/*
-		// Search for the special modules ("fs-spec", "leak-check", "fault-sim" )
-		//bool PerformFS_SpecificTests = false;
-		bool PerformLeakCheck = false;
-		bool PerformFaultSimulation = false;
-		vector<string>::iterator it = Modules.end();
-#if OS_32_BITS==0 && HAVE_MULTILIB
-		if ( (it = find(Modules.begin(), Modules.end(), "fs-spec")) != Modules.end() )
-		{
-			cerr << "FS-specific module is enabled" << endl;
-			Modules.erase(it);
-			Modules.push_back("fs-spec_32");
-			Modules.push_back("fs-spec_64");
-		}
-#endif
-		if ( (it = find(Modules.begin(), Modules.end(), "leak-check")) != Modules.end() )
-		{
-			if ( KEDR_INSTALLED )
-			{	
-				cerr << "Leak checker module is enabled" << endl;
-				PerformLeakCheck = true;
-				Modules.erase(it);
-			}
-			else
-			{
-				cerr << "Leak checker module cannot be enabled because the KEDR framework is not available." << endl;
-				PerformLeakCheck = false;
-				Modules.erase(it);
-			}
-		}		
-		if ( (it = find(Modules.begin(), Modules.end(), "fault-sim")) != Modules.end() )
-		{
-			if ( KEDR_INSTALLED )
-			{	
-				cerr << "Fault simulation module is enabled" << endl;
-				PerformFaultSimulation = true;
-				*it = "fault_sim";
-			}
-			else
-			{
-				cerr << "Fault simulation module cannot be enabled because the KEDR framework is not available." << endl;
-				PerformFaultSimulation = false;
-				Modules.erase(it);
-			}
-		}
-#if OS_32_BITS==0 && HAVE_MULTILIB
-		if ( (it = find(Modules.begin(), Modules.end(), "syscall")) != Modules.end() )
-		{
-			cerr << "Replacing syscall module with pair of <syscall_32, syscall_64> modules" << endl;
-			Modules.erase(it);
-			Modules.push_back("syscall_32");
-			Modules.push_back("syscall_64");
-		}
-#endif
-		*/
-		
-		
 		string partition = "current";
 		string MountAt = "/tmp/spruce_test";
 		string MountOpts;
@@ -501,6 +444,14 @@ int main(int argc, char ** argv)
 			
 			UnixCommand * command = new UnixCommand(INSTALL_PREFIX"/bin/doer", ProcessNoCaptureOutput);			
 			
+			// Produce the <FS>.xml to pass to the dashboard generator
+			// The file contains information about mount options and packages
+			string strFSStartTime = ctime(&FSStartTime);
+			ofstream fs_xml((logfolder + "/" + *fs + ".xml").c_str());
+			fs_xml << "<SpruceDashboard FS=\"" + (string)*fs + "\">\n";
+			fs_xml << "\t<Start>" + strFSStartTime + "</Start>\n";			
+			fs_xml << "\t<Rev>" HG_REV "</Rev>\n";
+			fs_xml.close();
 			
 			ProcessResult * result = command->Execute(doer_args);
 			delete command;
@@ -516,6 +467,39 @@ int main(int argc, char ** argv)
 				
 				ShowOutput = (result->GetStatus() == Success);
 			}
+			
+			size_t FSDuration = time(0) - FSStartTime;
+			stringstream str;
+			str << FSDuration;
+			
+			fs_xml.open((logfolder + "/" + *fs + ".xml").c_str(), ios_base::app);
+			fs_xml << "\t<Duration>" + str.str() + "</Duration>\n";
+			
+			fs_xml << "\t<Packages>\n";
+			for ( size_t i = 0; i < Packages.size(); ++i )
+			{
+				string PackageName = Packages[i];
+				if ( PackageName.find("fs-spec") != string::npos )
+					PackageName.replace(0, 7, *fs);
+				if ( !OS_32_BITS && HAVE_MULTILIB )
+				{
+					fs_xml << "\t\t<Package>" + PackageName + "_32</Package>\n";
+				}
+				fs_xml << "\t\t<Package>" + PackageName + "</Package>\n";		
+			}
+			// Add the memory leak test package
+			if ( strChecks.find(strMemoryLeak) != string::npos )
+			{
+				if ( !OS_32_BITS && HAVE_MULTILIB )
+				{
+					fs_xml << "\t\t<Package>MemoryLeaks_32</Package>\n";
+				}
+				fs_xml << "\t\t<Package>MemoryLeaks</Package>\n";
+			}
+			fs_xml << "\t</Packages>\n";
+			fs_xml << "</SpruceDashboard>";
+			
+			fs_xml.close();
 			
 			
 			if ( !ShowOutput )

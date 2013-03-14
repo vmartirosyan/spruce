@@ -63,8 +63,12 @@ TestPackage Init<xsl:value-of select="$TestPackageName" />()
 	
 	</xsl:for-each>
 
+#ifndef COMPAT
 	TestPackage <xsl:value-of select="$TestPackageName" />Pack("<xsl:value-of select="$TestPackageName" />");
-	
+#else
+	TestPackage <xsl:value-of select="$TestPackageName" />Pack("<xsl:value-of select="$TestPackageName" />_32");
+#endif
+
 	<xsl:for-each select="//TestSet">
 		
 	<xsl:value-of select="$TestPackageName" />Pack.AddTestSet(Init_<xsl:value-of select="$TestPackageName" />_<xsl:value-of select="@Name" />());

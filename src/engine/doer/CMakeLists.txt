@@ -30,9 +30,8 @@ IF (NOT ${OS_32_BITS} AND ${HAVE_MULTILIB})
 		COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/doer.cpp ${CMAKE_CURRENT_BINARY_DIR}/doer_32.cpp
 		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/doer.cpp)
 
-	set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/doer_32.cpp PROPERTIES COMPILE_FLAGS "-DCOMPAT")
-	set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/doer_32.cpp PROPERTIES COMPILE_FLAGS "-m32")
-
+	set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/doer_32.cpp PROPERTIES COMPILE_FLAGS "-DCOMPAT -m32")
+	
 	add_executable(doer_32 ${CMAKE_CURRENT_BINARY_DIR}/doer_32.cpp )
 	
 	target_link_libraries(doer_32 utils_32)

@@ -94,12 +94,10 @@ void PartitionManager::Initialize(string ConfigFile, string DeviceName, string M
 	}
 	else
 	{
-		Logger::LogError("PartitionManager::Initialize: parsing mount options.");
 		vector<string> vOpts = SplitString(_MountOpts, ';');
 		
 		for ( size_t i = 0; i < vOpts.size(); ++i )
 		{
-			Logger::LogError("PartitionManager::Initialize: " + vOpts[i]);
 			CurrentOptions tmp;
 			tmp.ParseString(vOpts[i].c_str());
 			_AdditionalOptions[GetFSNumber(FileSystem)].insert(tmp);
@@ -228,6 +226,7 @@ retry:
 			if ( RetryCount++ < 5 )
 			{
 				Logger::LogWarn((string)"Device was busy.. retrying... ");
+				system("lsof | grep spruce");
 				goto retry;
 			}
 		}

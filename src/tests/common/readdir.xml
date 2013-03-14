@@ -71,7 +71,7 @@
 		</Code>
 	</Test>
 	
-	<Test Name="ReaddirBadFile">
+	<!--Test Name="ReaddirBadFile">
 		<Description>Bad file descriptor.</Description>
 		<Dir count="1"/>
 		<Code>
@@ -80,10 +80,5 @@
 			closedir(dir);
 			ErrorTest( readdir(dir), 0, EBADF);
 		</Code>
-	</Test>
-	<FaultSimulation>
-		<Simulate point="kmalloc" count="1" />
-		<Simulate point="copy_to_user" count="1" />		
-	</FaultSimulation>
-
+	</Test-->
 </TestSet>
