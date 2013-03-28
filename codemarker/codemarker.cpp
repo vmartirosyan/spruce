@@ -499,12 +499,12 @@ int main (int argc, char* argv[])
 							//cout<<((string)info_buf).substr(0, match_arr[4].rm_so) + aviableLft[i].getMarker()<<endl;
 							#endif							
 							fout<<((string)info_buf).substr(0, match_arr[4].rm_so) + aviableLft[i].getMarker()<<endl;
-								
+							line_added = true; 	
 							break;				
 						}
-						else
+/*						else
 							fout<<info_buf<<endl;	
-						line_added = true; 					
+						line_added = true; 					*/
 					}			
 					
 					
