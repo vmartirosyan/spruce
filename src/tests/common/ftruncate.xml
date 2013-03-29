@@ -68,6 +68,32 @@
 			Check ( stat_buf.st_size != length_after_truncate , "Different file size after truncate.");
 		</Code>
 	</Test>
+	<Test Name="TruncateNormalDecreaseUnlinked" FaultSimulationReady="true">
+		<Description>Truncate an unlinked file.</Description>
+		<File count="1"/>
+		<Code>
+			const int length = 10*4096;
+			
+			const char buf[length] = {0};
+			
+			int length_after_truncate = 1;
+			
+			Unres ( write(FDs[0], buf, length) != length, "Cannot write  to the file.");
+			
+			Unres ( fsync(FDs[0]) == -1, "Cannot sync file");
+			
+			Unres ( unlink(FilePaths[0].c_str()) == -1, "Cannot remove file." );
+			
+			Unres ( fsync(FDs[0]) == -1, "Cannot sync file");
+			
+			Fail ( ftruncate(FDs[0], length_after_truncate) != 0, "truncate failed");
+			
+			struct stat stat_buf;
+			Unres ( fstat(FDs[0], &stat_buf) == -1, "Cannot stat file.");
+			
+			Check ( stat_buf.st_size != length_after_truncate, "Wrong file size after truncate.");
+		</Code>
+	</Test>
 	<Test Name="FtruncateBadFile">
 		<Description></Description>
 		<Code>
