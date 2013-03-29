@@ -1,6 +1,6 @@
 <TestPackage Name="jfs" FS="jfs">
 	<TestSet Name="Ioctl" />
-	<TestSet Name="OverloadTests" />
+	<TestSet Name="JfsOverloadTests" />
 	<TestSet Name="mount" />
 	<TestSet Name="WriteDirect" />
 	<TestSet Name="Xattr" />

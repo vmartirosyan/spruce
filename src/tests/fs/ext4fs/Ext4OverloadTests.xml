@@ -21,7 +21,7 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="OverloadTests">
+<TestSet Name="Ext4OverloadTests">
 	<StartUp>
 		if( !PartitionManager::NoOptionsEnabled() )
 		{
