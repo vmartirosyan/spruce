@@ -22,7 +22,20 @@
 -->
 
 <TestSet Name="OverloadTests">
-	<Test Name="DirectoriesInWidth" FaultSimulationReady="true">
+	<StartUp>
+		if( !PartitionManager::NoOptionsEnabled() )
+		{
+			Unsupp("These tests should run only when no options are provided.");
+		}
+	</StartUp>
+	<Test Name="Directories" FaultSimulationReady="true">
+		<Description>Trying to create 1000 opened directories</Description>
+		<Dir count = "1000"/>
+		<Code>
+		</Code>
+	</Test>	
+	
+	<Test Name="DirectoriesInserted" FaultSimulationReady="true">
 		<Description>Trying to create many directories</Description>
 		<Code>
 			char buf[10];
@@ -101,16 +114,16 @@
 	</Test>	
 	
 	<Test Name="ManyBigWrittenFiles" FaultSimulationReady="true">
-		<Description>Trying to create some small files, and write the data.</Description>
-		<File count = "1000" />
+		<Description>Trying to create big files, and write the data.</Description>
+		<File count = "500" />
 		<Code>
 		
-			const int dataSize = 50 * 1024;
+			const int dataSize = 10000 * 1024;
 			char * data = new char[dataSize];
 						
-			for(int i = 0; i < 1000; ++i)
+			for(int i = 0; i < 500; ++i)
 			{
-				Unres(write(FDs[i], data, dataSize - 10) == -1, "Cannot write to file");
+				write(FDs[i], data, dataSize - 1);
 				close(FDs[i]);	
 			}
 			delete data;
@@ -118,7 +131,25 @@
 		</Code>
 	</Test>
 	
-	<Test Name="ManySmallWrittenFiles">
+	<Test Name="ManySmallWrittenFiles" FaultSimulationReady="true">
+		<Description>Trying to create some small files, and write the data.</Description>
+		<File count = "1000" />
+		<Code>
+		
+			const int dataSize = 1024;
+			char * data = new char[dataSize];
+						
+			for(int i = 0; i < 1000; ++i)
+			{
+				Unres(write(FDs[i], data, dataSize - 1) == -1, "Cannot write to file");
+				close(FDs[i]);	
+			}
+			delete data;
+					
+		</Code>
+	</Test>
+	
+	<Test Name="TooManySmallWrittenFiles">
 		<Description>Trying to create too many small files, and write the data.</Description>
 		<Code>
 			if ( PartitionManager::IsOptionEnabled("ro") )
@@ -137,7 +168,7 @@
 				int fd = open(filename.c_str(), O_RDWR | O_CREAT);
 				Unres(fd == -1, "Cannot create file.");
 					
-				Unres(write(fd, data, dataSize - 10) == -1, "Cannot write to file");
+				Unres(write(fd, data, dataSize - 10) == -1, "Cannot write to file.");
 				close(fd);	
 			}
 			delete data;
