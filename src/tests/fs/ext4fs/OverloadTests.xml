@@ -22,6 +22,12 @@
 -->
 
 <TestSet Name="OverloadTests">
+	<StartUp>
+		if( !PartitionManager::NoOptionsEnabled() )
+		{
+			Unsupp("These tests should run only when no options are provided.");
+		}
+	</StartUp>	
 	<Test Name="DirectoriesInWidth" FaultSimulationReady="true">
 		<Description>Trying to create many directories</Description>
 		<Dir count="1000"/>
