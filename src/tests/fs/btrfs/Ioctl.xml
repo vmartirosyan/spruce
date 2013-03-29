@@ -524,6 +524,7 @@
 		<File count="1"/>
 		<Code>
 			btrfs_ioctl_search_args arg;
+			memset(&arg, 0, sizeof(arg));
 			Fail( ioctl( FDs[0], BTRFS_IOC_TREE_SEARCH, &arg ) == -1, "Cannot find the key");
 		</Code>
 	</Test>
