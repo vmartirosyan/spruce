@@ -7,4 +7,5 @@
 	<TestSet Name="ShowAndStoreFunctions" />
 	<TestSet Name="ChangeSB" />
 	<TestSet Name="Unicode" />
+	<TestSet Name="Lookup" />
 </TestPackage>

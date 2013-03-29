@@ -1,0 +1,77 @@
+<!--    Lookup.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+// 			Nellie Danielyan <Nellie.92.d@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="Lookup">	
+	<Requires>sys/stat.h</Requires>
+	<StartUp>
+			Unres ( !PartitionManager::NoOptionsEnabled(),
+				"These tests should run only when no options are provided." );
+	</StartUp>
+	<Test Name="LookupLink" FaultSimulationReady="true">
+		<Description>Create files mount, unmount and try to open them.</Description>
+		<Dir count="1"/>
+		<File count="1"/>
+		<Code>
+			int NameLength =  PATH_MAX - strlen(MountPoint)-1;
+			char * OldFilePath = new char[NameLength];
+			for(int i = 0; i < NameLength; ++i)
+			{
+				OldFilePath[i] = 'a';
+			}
+			const char * NewFilePath = "new_file";
+			const char * NewFilePath2 = "new_file2";
+			const char * NodeName = "new_node";
+			struct stat st_buf;
+			unlink(NewFilePath);
+			unlink(NewFilePath2);
+			Unres( symlink(OldFilePath, NewFilePath) == -1, "Cannot create link.");
+			Unres( symlink(FilePaths[0].c_str(), NewFilePath2) == -1, "Cannot create link.");
+			Unres ( mknod( NodeName, S_IFBLK | 0777, 0 ) == -1, "Mknod failed.");
+			close(FDs[0]);
+			close(DirDs[0]);
+			Unres ( chdir("/") == -1, "Cannot change directory." );
+			int res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem);
+			if( res!= PS_Success )
+			{
+				if( res == PS_Fatal )
+				{
+					Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+					Error("Device too small.");
+					Return(Unresolved);
+				}	
+				Unres ( chdir(MountPoint) == -1, "Cannot change directory." );					
+				Error("Partition mount or umount failed");
+				Return(Unresolved);	
+			}
+			char buff[3];
+			int fd;
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			
+			open(NewFilePath,O_RDWR);
+			open(NewFilePath2,O_RDWR);
+	
+			Fail ( stat( NodeName, &st_buf ) == -1, "Error in stat system call");
+			
+		</Code>
+	</Test>
+</TestSet>
