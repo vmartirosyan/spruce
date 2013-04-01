@@ -72,6 +72,10 @@ SF:fs/jfs/jfs_extent.c
 FN:extRecord Called only if XAD_NOTRECORDED flag is set and it's set only from two places, first is defined as NOTYET and in the second piece before setting the flag a bool value is checked which is always false.
 end_of_record
 
+SF:fs/jfs/resize.c
+FN:jfs_extendfs
+LFT:199,199 calling this code causes bug
+end_of_record
 
 #######################################################################
 #################Section for free code marcup##########################
