@@ -74,7 +74,12 @@ end_of_record
 
 SF:fs/jfs/resize.c
 FN:jfs_extendfs
-LFT:199,199 calling this code causes bug
+LFT:199,199 calling this code causes bug.
+end_of_record
+
+SF:fs/jfs/acl.c
+FN:jfs_set_acl
+LFT:18,18 Never gets here because of a previous check.
 end_of_record
 
 #######################################################################
