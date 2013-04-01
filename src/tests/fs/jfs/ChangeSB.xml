@@ -67,8 +67,8 @@
 		<Description>Set JFS_OS2 flag.</Description>
 		<Code>
 			jfs_superblock sb;
-			string FilePath = DirPrefix +"1";
-			string DirPath = DirPrefix + "2";
+			string FilePath = DirPrefix + "1" + "д" + "ա"; //Add some non-latin chars
+			string DirPath = DirPrefix + "2" + "д" + "ա"; //Add some non-latin chars
 			int fd;
 			const char * NewFileName = "FileRenameNormal";
 			const char * NewDirName = "DirRenameNormal";		

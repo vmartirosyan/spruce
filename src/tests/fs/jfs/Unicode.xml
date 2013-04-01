@@ -57,6 +57,17 @@
 			Unres( chdir(MountPoint) == -1, "Cannot change directory to mount point." );
 			
 			system("ls .");
+			
+			Unres( chdir("/") == -1, "Cannot change directory to root." );
+			
+			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot unmount partition." );
+			
+			Unres( PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "iocharset=ascii") == false, 
+				"Cannot mount partition with `ascii` iocharset" );
+				
+			Unres( chdir(MountPoint) == -1, "Cannot change directory to mount point." );
+			
+			system("ls .");
 		</Code>
 		<Footer>
 			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem) != PS_Success, "Cannot restore partition." );
