@@ -77,6 +77,11 @@ FN:jfs_set_acl
 LFT:18,18 Never gets here because of a previous check.
 end_of_record
 
+SF:fs/jfs/jfs_txnmgr.c
+FN:mapLog
+LFT:2,12 This code is called only in case of block size != 4096
+end_of_record
+
 #######################################################################
 #################Section for free code marcup##########################
 #######################################################################
