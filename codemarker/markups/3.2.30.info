@@ -72,11 +72,6 @@ SF:fs/jfs/jfs_extent.c
 FN:extRecord Called only if XAD_NOTRECORDED flag is set and it's set only from two places, first is defined as NOTYET and in the second piece before setting the flag a bool value is checked which is always false.
 end_of_record
 
-SF:fs/jfs/resize.c
-FN:jfs_extendfs
-LFT:199,199 calling this code causes bug.
-end_of_record
-
 SF:fs/jfs/acl.c
 FN:jfs_set_acl
 LFT:18,18 Never gets here because of a previous check.
@@ -101,4 +96,14 @@ end_of_record
 
 SF:fs/jfs/jfs_namei.c
 FN:jfs_get_parent The function is exported. Can be called only from kernel space.
+end_of_record
+
+SF:fs/jfs/resize.c
+FN:jfs_extendfs
+LFT:199,199 calling this code causes bug.
+end_of_record
+
+SF:fs/jfs/xtree.c
+FN:xtExtend
+LFT:61,125 this code is covered(partially) when we write more than 64GB to file. It takes too long 
 end_of_record
