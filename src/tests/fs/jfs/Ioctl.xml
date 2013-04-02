@@ -1,0 +1,116 @@
+<TestSet Name="Ioctl">
+	<Requires>sys/ioctl.h</Requires>
+	<Requires>fcntl.h</Requires>
+	<Requires>linux/fs.h</Requires>
+	<Requires>jfs_dinode.h</Requires>
+	<Test Name="SetFlagsGetFlags" FaultSimulationReady="true">
+		<Description>Try to set and get some flag values.</Description>
+		<File count="1"/>			
+		<Code>
+			
+			int set_flags = 1; 
+			int get_flags = 0;
+			
+			// Backup the old values just in case
+			int old_flags;
+			Fail ( ioctl(FDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+			
+			// Set our testing flag values
+			Fail ( ioctl(FDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+			
+			// Get the flags back
+			Fail ( ioctl(FDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+			
+			// Restore the original flags
+			Fail ( ioctl(FDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+			
+			// Compare them			
+			Check ( get_flags != set_flags, "Set and Get flags mismatch");			
+		</Code>
+	</Test>	
+	<Test Name="SetGetFSFlagsForDirectory" FaultSimulationReady="true" Shallow="true">
+		<Description>Try to set and get some flag values.</Description>
+		<Dir count="1"/>			
+		<Code>
+			int set_flags = FS_NOATIME_FL | FS_DIRSYNC_FL | FS_APPEND_FL | FS_IMMUTABLE_FL | FS_SYNC_FL; 
+			int get_flags = 0;
+			
+			// Backup the old values just in case
+			int old_flags;
+			Fail ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+			
+			// Set our testing flag values
+			Fail ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+			
+			// Get the flags back
+			Fail ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+			
+			// Restore the original flags
+			Fail ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+		
+		</Code>
+	</Test>
+	<Test Name="SetGetFlagsForDirectory" FaultSimulationReady="true" Shallow="true">
+		<Description>Try to set and get some flag values.</Description>
+		<Dir count="1"/>			
+		<Code>
+			int set_flags = JFS_NOATIME_FL | JFS_DIRSYNC_FL | JFS_APPEND_FL | JFS_IMMUTABLE_FL | JFS_SYNC_FL; 
+			int get_flags = 0;
+			
+			// Backup the old values just in case
+			int old_flags;
+			Fail ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+			
+			// Set our testing flag values
+			Fail ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+			
+			// Get the flags back
+			Fail ( ioctl(DirDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+			
+			// Restore the original flags
+			Fail ( ioctl(DirDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+		
+						
+		</Code>
+	</Test>
+	<Test Name="SetGetAllFlags" FaultSimulationReady="true" Shallow="true">
+		<Description>Try to set and get some flag values.</Description>
+		<File count="1"/>			
+		<Code>
+			int set_flags = JFS_NOATIME_FL |  JFS_APPEND_FL | JFS_IMMUTABLE_FL 
+							| JFS_SYNC_FL | JFS_SECRM_FL; 
+			int get_flags = 0;
+			
+			// Backup the old values just in case
+			int old_flags;
+			Fail ( ioctl(FDs[0], FS_IOC_GETFLAGS, &old_flags ) == -1, "Error backing up old values.");
+			
+			// Set our testing flag values
+			Fail ( ioctl(FDs[0], FS_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+			
+			// Get the flags back
+			Fail ( ioctl(FDs[0], FS_IOC_GETFLAGS, &get_flags ) == -1, "Error getting flag values back.");
+			
+			// Restore the original flags
+			Fail ( ioctl(FDs[0], FS_IOC_SETFLAGS, &old_flags ) == -1, "Error restoring old flag values.");
+		
+						
+		</Code>
+	</Test>		
+	<Test Name="SetFlagsNotOwner">
+		<Description>Change flag by not the file owner.</Description>
+		<File count="1"/>
+		<Code>
+			int flags = 1;			
+			ENoAccessTest(ioctl(FDs[0], FS_IOC_SETFLAGS, &flags ), -1);
+		</Code>
+	</Test>	
+	<Test Name="Unsupported">
+		<Description>Unsupported operation.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(ioctl(FDs[0], -100, 0), -1, ENOTTY);
+		</Code>
+	</Test>
+</TestSet>
+

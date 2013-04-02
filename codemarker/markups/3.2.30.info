@@ -1,0 +1,142 @@
+#######################################################################
+#################Section for DEAD code ONLY############################
+#######################################################################
+DEADCODE:
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbReAlloc This function works only when block size != 4096
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbExtend This function works only when block size != 4096
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtExtendPage
+LFT:0,211 This function works only when block size != 4096
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtLinelockFreelist This function works only when block size != 4096
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtSplitUp
+LFT:92,135 This code works only when block size != 4096
+LFT:275,275 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtUpdate This function is being invoked from only two functions which are defined as NOTYET yet
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:ciGetLeafPrefixKey	 
+LFT:25,25 This code is supported only in OS/2
+LFT:32,32 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diWrite
+LFT:46,53 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_incore.h
+FN:JFS_SBI 
+LFT:0,3 This function is inline and has very primitive body, that's why the compiler perform this functions duties instead of its invoke. See the isReadOnly function below. 
+end_of_record
+
+SF:fs/jfs/jfs_incore.h
+FN:isReadOnly 
+LFT:0,0 This is inline function
+end_of_record
+
+
+SF:fs/jfs/inode.c
+FN:jfs_get_block 
+LFT:22,43 XAD_NOTRECORDED flag is set only from two places, first is defined as NOTYET and in the second piece before setting the flag a bool value is checked which is always false.
+end_of_record
+
+SF:fs/jfs_metapage.h
+FN:_metapage_homeok 
+LFT:0,0 This is inline function
+LFT:4,4 This is inline function
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diRead
+LFT:62,69 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_extent.c
+FN:extRecord Called only if XAD_NOTRECORDED flag is set and it's set only from two places, first is defined as NOTYET and in the second piece before setting the flag a bool value is checked which is always false.
+end_of_record
+
+SF:fs/jfs/acl.c
+FN:jfs_set_acl
+LFT:18,18 Never gets here because of a previous check.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:mapLog
+LFT:2,12 This code is called only in case of block size != 4096
+end_of_record
+
+SF:fs/jfs/resize.c
+FN:jfs_extendfs
+LFT:199,199 calling this code causes bug.
+end_of_record
+
+SF:fs/jfs/xtree.c
+FN:xtExtend
+LFT:61,125 this code can be covered(partially) when we write more than 64GB to file. It takes too long 
+end_of_record
+
+SF:fs/jfs/super.c
+FN:jfs_handle_error
+LFT:10,11 this code can be covered when giving a "errors=PANIC" mount option, but it leads to system failure
+end_of_record
+
+SF:fs/jfs/super.c
+FN:parse_options
+LFT:72,75 this code can be covered when giving a "errors=PANIC" mount option, but it leads to system failure
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_writepage
+LFT:48,68 This code can be covered if local variable (struct bio *bio) is not null, which is never set.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_readpage
+LFT:26,26 This code can be covered if local variable (struct bio *bio) is not null, which is never set.
+end_of_record
+
+#######################################################################
+#################Section for free code marcup##########################
+#######################################################################
+#FREECODE:
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtSearch
+LFT:199,202 Difficult to reproduce in normal coverage.
+end_of_record
+
+SF:fs/jfs/jfs_namei.c
+FN:jfs_fh_to_dentry The function is exported. Can be called only from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_namei.c
+FN:jfs_fh_to_parent The function is exported. Can be called only from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_namei.c
+FN:jfs_nfs_get_inode The function is exported. Can be called only from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_namei.c
+FN:jfs_get_parent The function is exported. Can be called only from kernel space.
+end_of_record
+
+
+

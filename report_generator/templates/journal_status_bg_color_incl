@@ -1,0 +1,1 @@
+<TMPL_IF status_success>rgb(64, 255, 64)</TMPL_IF><TMPL_IF status_failed>rgb(255, 96, 96)</TMPL_IF><TMPL_IF status_warning>rgb(255, 255, 64)</TMPL_IF>

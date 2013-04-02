@@ -1,0 +1,7 @@
+message("-- Configuring code marker.")
+
+ADD_EXECUTABLE(codemarker ${CMAKE_CURRENT_SOURCE_DIR}/codemarker.cpp)
+
+#install (	FILES "${CMAKE_BINARY_DIR}/bin/codemarker"
+#			DESTINATION bin
+#			PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ)
