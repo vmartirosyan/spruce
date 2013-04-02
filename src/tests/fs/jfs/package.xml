@@ -8,4 +8,5 @@
 	<TestSet Name="ChangeSB" />
 	<TestSet Name="Unicode" />
 	<TestSet Name="Lookup" />
+	<TestSet Name="Truncate" />
 </TestPackage>
