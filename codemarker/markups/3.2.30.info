@@ -113,7 +113,7 @@ LFT:26,26 This code can be covered if local variable (struct bio *bio) is not nu
 end_of_record
 
 #######################################################################
-#################Section for free code marcup##########################
+#################Section for free code markup##########################
 #######################################################################
 #FREECODE:
 
@@ -125,6 +125,10 @@ end_of_record
 SF:fs/jfs/jfs_dtree.c
 FN:add_missing_indices 
 LFT:0,51 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.  
+end_of_record
+
+SF:fs/jfs/jfs_btree.h
+FN:BT_STACK_DUMP The function is called only when the btree stack is full which is difficult to produce in normal coverage case.
 end_of_record
 
 SF:fs/jfs/jfs_namei.c
@@ -142,6 +146,3 @@ end_of_record
 SF:fs/jfs/jfs_namei.c
 FN:jfs_get_parent The function is exported. Can be called only from kernel space.
 end_of_record
-
-
-
