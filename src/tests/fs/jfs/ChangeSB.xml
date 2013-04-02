@@ -32,10 +32,6 @@
 		<Description>Unset JFS_DIR_INDEX flag and read a directory.</Description>
 		<Code>
 			jfs_superblock sb;
-			string DirToReadPath = DirPrefix + "Dir_to_read";
-			string FilePath = DirToReadPath + "/some_file";
-			string DirPath = DirToReadPath + "/some_dir";
-			int fd;
 			DIR *dir;
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 			Unres ( chdir("/") == -1, "Cannot change directory." );
@@ -44,10 +40,21 @@
 			sb.s_flag &= ~0x00200000;//JFS_DIR_INDEX
 			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
 			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
-			Unres(mkdir(DirToReadPath.c_str(), 0444) == -1, "Cannot create directory");
-			Unres(mkdir(DirPath.c_str(), 0444) == -1, "Cannot create directory");
-			Unres((fd = creat(FilePath.c_str(), 0777)) == -1, "Cannot create file.");
-			dir = opendir(DirToReadPath.c_str());
+			char buf[10];
+			string dirname = "some_directory";
+			
+			mkdir(dirname.c_str(), 0777);
+			chdir(dirname.c_str());
+			for (int j = 0; j < 10000; ++j)
+			{
+				sprintf(buf, "%d",  j);
+				string dirname = buf;
+				mkdir(dirname.c_str(), 0777);
+				close(open(("1" + dirname).c_str(), O_RDWR | O_CREAT));				
+			}
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			
+			dir = opendir(dirname.c_str());
 			Unres(!dir, "Cannot open directory.");
 			errno = 0;
 			while(readdir(dir))
@@ -55,11 +62,8 @@
 				Fail(errno, "Cannot read directory.");			
 			}
 			closedir(dir);
-			close(fd);
-			rmdir(DirPath.c_str());
-			unlink(FilePath.c_str());
-			rmdir(DirToReadPath.c_str());
-			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success,"Mount failed" );
+		
+			
 			
 		</Code>
 	</Test>
@@ -101,8 +105,10 @@
 			close(fd);
 			rmdir(DirPath.c_str());
 			unlink(FilePath.c_str());
-			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success,"Mount failed" );
 			
 		</Code>
 	</Test>
+	<Footer>
+		Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success,"Mount failed" );
+	</Footer>
 </TestSet>
