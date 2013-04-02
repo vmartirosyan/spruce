@@ -102,6 +102,16 @@ FN:parse_options
 LFT:72,75 this code can be covered when giving a "errors=PANIC" mount option, but it leads to system failure
 end_of_record
 
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_writepage
+LFT:48,68 This code can be covered if local variable (struct bio *bio) is not null, which is never set.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_readpage
+LFT:26,26 This code can be covered if local variable (struct bio *bio) is not null, which is never set.
+end_of_record
+
 #######################################################################
 #################Section for free code marcup##########################
 #######################################################################
