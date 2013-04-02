@@ -93,6 +93,18 @@ isn't covered as mount options are parsed and checked in super.c-->
 							Return(Fatal);
 						}
 				</Code>
-
 		</Test>
+		
+		<Test Name="WrongErrorOption" FaultSimulationReady="true">
+				<Description>.</Description>
+				<Code>
+						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+						Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+						Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+						
+						//this mount should fail as there is no error option "unknown", so there is no need to Restore the partition after.
+						mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=unknown");						
+				</Code>
+		</Test>
+		
 </TestSet>
