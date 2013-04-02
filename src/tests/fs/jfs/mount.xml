@@ -93,8 +93,7 @@ isn't covered as mount options are parsed and checked in super.c-->
 							Return(Fatal);
 						}
 				</Code>
-		</Test>
-		
+		</Test>		
 		<Test Name="WrongErrorOption" FaultSimulationReady="true">
 				<Description>.</Description>
 				<Code>
@@ -106,5 +105,14 @@ isn't covered as mount options are parsed and checked in super.c-->
 						mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=unknown");						
 				</Code>
 		</Test>
-		
+		<Test Name="NoIntegrityOption" FaultSimulationReady="true">
+			<Description>Mount with no integrity option</Description>
+			<Code>
+				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+				
+				mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, "nointegrity");
+			</Code>
+		</Test>
 </TestSet>
