@@ -105,7 +105,12 @@ end_of_record
 #######################################################################
 #################Section for free code marcup##########################
 #######################################################################
-FREECODE:
+#FREECODE:
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtSearch
+LFT:199,202 Difficult to reproduce in normal coverage.
+end_of_record
 
 SF:fs/jfs/jfs_namei.c
 FN:jfs_fh_to_dentry The function is exported. Can be called only from kernel space.
