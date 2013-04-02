@@ -1,0 +1,4 @@
+Kernel module for simulate kernel messages about BUG_ON() macro.
+
+Corresponded operation is executed in module_init() function.
+So 'insmod' utility report error(Segmentation Fault).

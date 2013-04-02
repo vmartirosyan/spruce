@@ -1,0 +1,272 @@
+<!--    acl.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Nellie Danielyan <Nellie.92.d@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="acl">	
+<Requires>sys/acl.h</Requires>
+	<Requires>attr/xattr.h</Requires>	
+
+	<Test Name="ACLInitFree" FaultSimulationReady="true">
+		<Description>Initialize and release ACL memory storage.</Description>		
+		<Header>
+			acl_t acl;
+			acl_t aclCopy;
+		</Header>
+		<Code>
+			Fail ( (acl = acl_init(1)) == NULL, "Cannot initialize ACL working storage." );
+			
+			Fail ( ( aclCopy = acl_dup(acl)) == NULL, "Cannot duplicate the ACL." );
+			
+			Fail( acl_free(acl) == -1, "Cannot release memory." );
+		</Code>
+		<Footer>
+			acl_free(aclCopy);
+		</Footer>
+		
+	</Test>
+	
+	
+	<Test Name="GetSetACLByFD" FaultSimulationReady="true">
+		<Description>Gets or sets file's ACL by file discriptor.</Description>		
+		<Dir count="1" />
+		<Header>
+			acl_t acl;
+		</Header>
+		<Code>
+			Fail ( (acl = acl_get_fd(DirDs[0])) == NULL, "Cannot get file's ACL." );
+			
+			Fail(acl_set_fd(DirDs[0],acl) == -1,"Cannot set file ACL");
+			
+			Fail(acl_delete_def_file(DirPaths[0].c_str()) == -1,"Cannot delete default ACL");
+		</Code>
+		<Footer>
+			acl_free(acl);
+		</Footer>
+	</Test>
+	
+	<Test Name="ACLEntry" FaultSimulationReady="true">
+		<Description>Create, copy, delete ACL entry.</Description>		
+		<File count="1" />
+		<Code>			
+			acl_t acl = acl_get_file(FilePaths[0].c_str(),ACL_TYPE_ACCESS);
+			acl_entry_t srcEntry = NULL;
+			acl_entry_t destEntry = NULL;
+			
+			Unres(acl == NULL, "Cannot initialize ACL working storage.");
+			
+			Fail( acl_create_entry(&acl, &srcEntry) == -1, "Cannot create ACL entry." );
+			Fail( acl_create_entry(&acl, &destEntry) == -1, "Cannot create ACL entry." );
+			Fail( acl_copy_entry(destEntry, srcEntry) == -1, "Cannot copy ACL entry." );
+			Fail( acl_delete_entry(acl, destEntry) == -1, "Cannot delete ACL entry." );
+			acl_free(acl);
+		</Code>		
+	</Test>
+	
+	<Test Name="ACLGetSet" FaultSimulationReady="true">
+		<Description>Intialize an ACL and validate it .</Description>		
+		<File count="1" />
+		<Dir count ="1" />
+		<Code>
+			acl_t acl = acl_init(4);
+			acl_entry_t entry = NULL;
+			int entryId;
+			int res;
+			acl_tag_t tagType[] = {ACL_USER,ACL_USER_OBJ,ACL_GROUP_OBJ,ACL_OTHER,0};
+			acl_permset_t perms = NULL;
+			struct passwd * nobody = getpwnam("nobody");
+			Unres( nobody == NULL, "Cannot obtain nobody user information.");
+			uid_t *uidp;
+			Unres(acl == NULL, "Cannot initialize ACL working storage.");
+			for(int i = 0; i < 4; i++)
+			{
+				Unres( acl_create_entry(&acl, &entry) == -1, "Cannot create ACL entry." );
+				Fail( acl_get_permset(entry, &perms) == -1, "Cannot get permition set" ); 
+				Fail( acl_clear_perms(perms) == -1, "Cannot clear permition set" ); 
+				Fail( acl_add_perm(perms, ACL_READ) == -1, "Cannot add permitions to a permision set" ); 
+				Fail( acl_set_permset(entry, perms) == -1, "Cannot set permition set to an entry" ); 
+				Fail( acl_set_tag_type(entry, tagType[i]) == -1, "Cannot set tag type to an entry" ); 
+				if( i == 0 )
+				{
+					Fail( acl_set_qualifier(entry, &nobody->pw_uid) == -1, "Cannot set qualifier to an entry" ); 
+					Fail ((uidp = (uid_t *)acl_get_qualifier(entry)) == NULL, "Cannot get qualifier of an entry" ); 
+					Check (nobody->pw_uid != *uidp, "Gets wrong uid");
+					Fail( acl_get_tag_type(entry, &tagType[4]) == -1, "Cannot get tag type of an entry" ); 
+					Check( tagType[4] != ACL_USER, "Gets wrong tag_type." ); 
+				}
+				if(i != 3)
+				{
+					Fail( acl_valid(acl) != -1, "ACL isn't valid, but validation says it is" );
+				}
+				else
+				{
+					Fail( acl_calc_mask(&acl) == -1, "Cannot calculate ACL mask" );
+					Fail( acl_valid(acl) != 0, "ACL is valid, but validation says it isn't" );
+				}
+			}
+			Fail(acl_set_file(DirPaths[0].c_str(),ACL_TYPE_DEFAULT,acl) == -1,"Cannot set file default ACL");
+			Fail(acl_set_file(FilePaths[0].c_str(),ACL_TYPE_ACCESS,acl) == -1,"Cannot set file access ACL" );
+			
+			char ValueGot[1000];
+			
+			int size = 0;
+			Unres ( (size = listxattr(FilePaths[0].c_str(), ValueGot, 1000 )) < 1, "Cannot list xattrs.");
+			Unres ( (size = listxattr(DirPaths[0].c_str(), ValueGot, 1000 )) < 1, "Cannot list xattrs.");
+			
+			
+			string FilePath = DirPaths[0] + "/some_file";
+			string DirPath = DirPaths[0] + "/some_dir";
+			
+			Unres(mkdir(DirPath.c_str(), 0444) == -1, "Cannot create directory");
+			Unres(chmod(DirPath.c_str(), 0666) == -1, "Cannot chmod directory");
+			rmdir(DirPath.c_str());
+			
+			int fd;
+			Unres( (fd = creat(FilePath.c_str(), 0777)) == -1, "Cannot create file.");
+			Unres ( fchmod(fd, 0666) == -1, "Cannot chmod file");
+			close(fd);
+			unlink(FilePath.c_str());
+		
+			Fail ( ( acl = acl_get_file(FilePaths[0].c_str(),ACL_TYPE_ACCESS) ) == NULL, "Cannot get file's access ACL." );
+			
+			for( entryId = ACL_FIRST_ENTRY; ;entryId = ACL_NEXT_ENTRY )
+			{
+				res = acl_get_entry(acl,entryId,&entry);
+				if( res == -1)
+				Fail( res == -1, "Cannot get file's access ACL entry." );
+				if( res == 0)
+				{
+					break;
+				}
+			}
+			acl_free(acl);
+		</Code>		
+	</Test>
+		<Test Name="ACLGetNotCached" FaultSimulationReady="true">
+		<Description>Intialize an ACL, set and mount-umount to get not cached acl.</Description>		
+		<File count="1" />
+		<Code>
+			acl_t acl = acl_init(4);
+			acl_entry_t entry = NULL;
+			int res;
+			acl_tag_t tagType[] = {ACL_USER,ACL_USER_OBJ,ACL_GROUP_OBJ,ACL_OTHER,0};
+			acl_permset_t perms = NULL;
+			struct passwd * nobody = getpwnam("nobody");
+			Unres( nobody == NULL, "Cannot obtain nobody user information.");
+			Unres(acl == NULL, "Cannot initialize ACL working storage.");
+			for(int i = 0; i < 4; i++)
+			{
+				Unres( acl_create_entry(&acl, &entry) == -1, "Cannot create ACL entry." );
+				Fail( acl_get_permset(entry, &perms) == -1, "Cannot get permition set" ); 
+				Fail( acl_clear_perms(perms) == -1, "Cannot clear permition set" ); 
+				Fail( acl_add_perm(perms, ACL_READ) == -1, "Cannot add permitions to a permision set" ); 
+				Fail( acl_set_permset(entry, perms) == -1, "Cannot set permition set to an entry" ); 
+				Fail( acl_set_tag_type(entry, tagType[i]) == -1, "Cannot set tag type to an entry" ); 
+				if( i == 0 )
+				{
+					Fail( acl_set_qualifier(entry, &nobody->pw_uid) == -1, "Cannot set qualifier to an entry" ); 
+				}
+				if(i == 3)
+					Fail( acl_calc_mask(&acl) == -1, "Cannot calculate ACL mask" );
+				
+			}
+			Fail(acl_set_file(FilePaths[0].c_str(),ACL_TYPE_ACCESS,acl) == -1,"Cannot set file access ACL" );
+
+			close(FDs[0]);
+			Unres ( chdir("/") == -1, "Cannot change directory." );
+			res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem);
+			if( res!= PS_Success )
+			{
+				if( res == PS_Fatal )
+				{
+					Error("Device too small.");
+					Return(Unresolved);
+				}						
+				Error("Partition mount or umount failed");
+				Return(Unresolved);	
+			}
+		
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			
+			Fail ( ( acl = acl_get_file(FilePaths[0].c_str(),ACL_TYPE_ACCESS) ) == NULL, "Cannot get file's access ACL." );
+		
+			acl_free(acl);
+		</Code>		
+	</Test>
+	<Test Name="ACLTextForms" FaultSimulationReady="true">
+		<Description>Get an ACL from text and then get text back from that ACL.</Description>		
+		<File count="1" />
+		<Header>
+			char *aclText;
+			ssize_t *lenp = NULL;
+			acl_t acl;
+		</Header>
+		<Code>
+			Fail( ( acl = acl_from_text("user::rw-") ) == NULL, "Cannot get ACL from text." );
+			
+			Fail( ( aclText = acl_to_text(acl,lenp) ) == NULL, "Cannot get text from ACL." );
+			
+			Check( strcmp(aclText, "user::rw-\n") != 0, "Wrong text from ACL.");
+		</Code>
+		<Footer>
+			acl_free(acl);
+			delete lenp;
+		</Footer>
+	</Test>
+
+	<Test Name="ACLCopy" FaultSimulationReady="true">
+		<Description> Obtain ACL size and copy ACL into a buffer.</Description>
+		<File count="1" />
+		<Header>
+			acl_t acl;
+			acl = acl_init(1);
+			char * buff = NULL;
+		</Header>
+		<Code>
+			
+			Unres( acl == NULL, "Cannot initialize ACL working storage." );
+			
+			ssize_t aclSize;
+			
+			Unres( ( aclSize = acl_size(acl) ) == -1, "Cannot obtain ACL size." );
+			
+			buff = new char[aclSize];
+			
+			Fail( acl_copy_ext(buff,acl,aclSize) == -1, "Cannot copy ACL to buffer." );
+		</Code>
+		<Footer>
+			acl_free(acl);
+			delete buff;
+		</Footer>
+	</Test>
+	<Test Name="AccessErrAccess">
+		<Description>Set and get default acl to a file not to a directory.</Description>
+		<File count="1" />
+		<Code>
+			acl_t acl;
+			acl_t aclCopy;
+			Unres( (acl = acl_init(1)) == NULL, "Cannot initialize acl.");
+			ErrorTest(acl_set_file(FilePaths[0].c_str(),ACL_TYPE_DEFAULT,acl), -1, EACCES );
+			ErrorTest(acl_get_file(FilePaths[0].c_str(),ACL_TYPE_DEFAULT), NULL, EACCES );
+
+		</Code>
+	</Test>
+</TestSet>
