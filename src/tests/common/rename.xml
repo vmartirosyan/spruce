@@ -80,6 +80,20 @@
 			
 		</Code>
 	</Test>
+	<Test Name="RenameNormalDir3" FaultSimulationReady="true">
+		<Description>If new directory already exists it will be atomically replaced.</Description>
+		<Dir count="1">
+			<Dir count="1"/>
+		</Dir>
+		<Code>
+			Fail ( rename(DirDirPaths[0].c_str(), "New") == -1, "Rename failed." );
+			
+			Check ( access("New", F_OK) == -1, "The new directory is not created." );
+			
+			Check ( access(DirDirPaths[0].c_str(), F_OK) == 0, "The old directory is still there." );
+			
+		</Code>
+	</Test>
 	<Test Name="RenameNormalHardLink" FaultSimulationReady="true">
 		<Description>If  oldpath  and  newpath are existing hard links referring to the same file, then rename() does nothing, and returns a success status.</Description>
 		<File count="1"/>
