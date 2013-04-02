@@ -122,6 +122,10 @@ FN:dtSearch
 LFT:199,202 Difficult to reproduce in normal coverage.
 end_of_record
 
+SF:fs/jfs/jfs_dtree.c
+FN:add_missing_indices This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.  
+end_of_record
+
 SF:fs/jfs/jfs_namei.c
 FN:jfs_fh_to_dentry The function is exported. Can be called only from kernel space.
 end_of_record
