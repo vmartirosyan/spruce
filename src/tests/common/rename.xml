@@ -81,7 +81,7 @@
 		</Code>
 	</Test>
 	<Test Name="RenameNormalDir3" FaultSimulationReady="true">
-		<Description>If new directory already exists it will be atomically replaced.</Description>
+		<Description>Change the location of a directory.</Description>
 		<Dir count="1">
 			<Dir count="1"/>
 		</Dir>
