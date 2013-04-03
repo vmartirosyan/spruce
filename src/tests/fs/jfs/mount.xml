@@ -105,6 +105,31 @@ isn't covered as mount options are parsed and checked in super.c-->
 						mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=unknown");						
 				</Code>
 		</Test>
+		
+		<Test Name="WrongIOCharset" FaultSimulationReady="true">
+			<Description>Mount with wrong charset.</Description>
+			<Code>
+				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+				
+				//this mount should fail as there is no charset value "unknown", so there is no need to Restore the partition after.
+				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=unknown");						
+			</Code>
+		</Test>
+		
+		<Test Name="WrongUmask" FaultSimulationReady="true">
+			<Description>Mount with wrong umask.</Description>
+			<Code>
+				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+				
+				//this mount should fail as there is no umask value "07777", so there is no need to Restore the partition after.
+				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "umask=07777");						
+			</Code>
+		</Test>
+		
 		<Test Name="NoIntegrityOption" FaultSimulationReady="true">
 			<Description>Mount with no integrity option</Description>
 			<Code>
