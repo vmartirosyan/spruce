@@ -155,3 +155,18 @@ end_of_record
 SF:fs/jfs/jfs_namei.c
 FN:jfs_get_parent The function is exported. Can be called only from kernel space.
 end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtSearch 
+LFT:264,266 These lines can be covered only when the xtree stack is full which is difficult to produce in normal coverage terms.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtTruncate 
+LFT:490,492 These lines can be covered only when the xtree stack is full which is difficult to produce in normal coverage terms.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtTruncate_pmap 
+LFT:135,137 These lines can be covered only when the xtree stack is full which is difficult to produce in normal coverage terms.
+end_of_record
