@@ -145,6 +145,69 @@
 			Check( XattrList.find(AttrName) == string::npos, "The attribute name is not listed." );			
 		</Code>
 	</Test>
+	<Test Name="XattrWriteInline" FaultSimulationReady="true">
+		<Description>Twice gets and sets user xattr of a directory.</Description>
+		<Dir count="1"/>
+		<Code>
+				const char * AttrName = "user.x";
+			char * ValueSet = new char[50];
+			for(int i = 0;i < 50;++i)
+			{
+				ValueSet[i] = 'a'; 
+			}		
+			const int ValueLen = 50;
+			char * ValueGot = new char[50];
+	
+			
+			Fail ( setxattr(DirPaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			
+			Fail ( getxattr(DirPaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
+
+			for(int i = 0;i < 50;++i)
+			{
+				ValueSet[i] = 'b'; 
+			}		
+		
+			
+		
+			Fail ( setxattr(DirPaths[0].c_str(), "user.y", ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			
+			Fail ( getxattr(DirPaths[0].c_str(), "user.y", static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
+				
+			
+		</Code>
+	</Test>
+	<Test Name="XattrReadInline" FaultSimulationReady="true">
+		<Description>Twice gets and sets user xattr of a file.</Description>
+		<File count="1"/>
+		<Code>
+			const char * AttrName = "user.x";
+			char * ValueSet = new char[100];
+			for(int i = 0;i < 100;++i)
+			{
+				ValueSet[i] = 'a'; 
+			}		
+			const int ValueLen = 100;
+			char * ValueGot = new char[100];
+	
+			
+			Fail ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			
+			Fail ( getxattr(FilePaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
+
+			for(int i = 0;i < 100;++i)
+			{
+				ValueSet[i] = 'b'; 
+			}		
+		
+			
+		
+			Fail ( setxattr(FilePaths[0].c_str(), "user.y", ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			
+			Fail ( getxattr(FilePaths[0].c_str(), "user.y", static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
+	
+		</Code>
+	</Test>
 	<GlobalFooter>
 #endif
 	</GlobalFooter>
