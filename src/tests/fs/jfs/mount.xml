@@ -28,7 +28,7 @@ It seems the part of resize.c refering to invalid block number checks
 isn't covered as mount options are parsed and checked in super.c-->
 <TestSet Name="mount">
 	<StartUp>
-		Unres ( !PartitionManager::NoOptionsEnabled()
+		Skip ( !PartitionManager::NoOptionsEnabled()
 				&amp;&amp; !PartitionManager::IsOptionEnabled("-j", true),
 			"These tests should run only when no options are provided." );
 	</StartUp>

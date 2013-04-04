@@ -172,7 +172,8 @@ Status TestSet::Run(Checks checks)
 		
 		if ( i->second.GetEffectiveChecks() == None )
 		{
-			Logger::LogWarn("Test " + i->first + " does not support necessary checks. Skipping.");
+			Logger::LogInfo("Test " + i->first + " does not support necessary checks. Skipping.");
+			i++;
 			continue;
 		}
 		
