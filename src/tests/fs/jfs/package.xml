@@ -9,4 +9,5 @@
 	<TestSet Name="Unicode" />
 	<TestSet Name="Lookup" />
 	<TestSet Name="Truncate" />
+	<TestSet Name="Symlink" />
 </TestPackage>
