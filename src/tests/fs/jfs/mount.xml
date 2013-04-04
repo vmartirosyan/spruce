@@ -132,15 +132,17 @@ isn't covered as mount options are parsed and checked in super.c-->
 		
 		<Test Name="NoIntegrityOption" FaultSimulationReady="true" NonFunctional="true">
 			<Description>Mount with no integrity option</Description>
-			<Code>
-				
+			<Code>				
 				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+				
 				Unres(chdir("/") == -1, "Failed to change directory");
-				umount(MountPoint);
-				Fail(PartitionManager:: Mount(DeviceName, MountPoint, FileSystem, "nointegrity", 0) == -1, "Failed to mount");
-				Unres(umount(MountPoint) == -1, "Umount failed");
+				Unres(PartitionManager:: ReleasePartition(MountPoint) == false, "Failed to release partition");
+				system("rmmod jfs.ko");
+				EnableFaultSim();
+				mount(DeviceName, MountPoint, FileSystem, 0, "nointegrity");
+				DisableFaultSim()
 			</Code>
 		</Test>
 </TestSet>
