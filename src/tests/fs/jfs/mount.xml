@@ -145,4 +145,43 @@ isn't covered as mount options are parsed and checked in super.c-->
 				DisableFaultSim()
 			</Code>
 		</Test>
+		<Test Name="MultipleExternalLogs">
+			<Description>Create multiple jfs partiotions with external log</Description>
+			<Code>
+				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+				Unres(chdir("/") == -1, "Failed to change directory");
+				Unres(PartitionManager:: ReleasePartition(MountPoint) == false, "Failed to release partition");
+				
+				string ExtJournalName = string("/dev/ram0");
+				
+				Unres(!PartitionManager:: CreateFilesystem(FileSystem, DeviceName, false, string("-j ") + ExtJournalName), "Failed to create filesystem");
+				Unres(mount(DeviceName, MountPoint, FileSystem, 0, "") == -1, "Failed to mount");
+				
+				//Unres(chdir("/tmp/spruce") == -1, "Failed to change directory");
+				
+				string MountPoint1 = string("/tmp/MultipleExternalLogs_MountPoint1");
+				Directory dir1(MountPoint1);
+				
+				string DeviceName1 = string("/dev/ram1");
+				string ExtJournalName1 = string("/dev/ram2");
+				
+				dev_t devt = makedev(1,1);
+				dev_t devt1 = makedev(1,2);
+				Unres(mknod(DeviceName1.c_str(), S_IFBLK, devt) == -1 && errno != EEXIST, "mknod failed");
+				Unres(mknod(ExtJournalName1.c_str(), S_IFBLK, devt1) == -1 && errno != EEXIST, "mknod failed");
+								
+				Unres(!PartitionManager:: CreateFilesystem(FileSystem, DeviceName1, false, (string("-j ") + ExtJournalName1).c_str()), "Failed to create fs");
+				
+				Fail(PartitionManager:: Mount(DeviceName1, MountPoint1, FileSystem, "", 0) == -1, "Failed to mount");
+				
+				Unres(PartitionManager:: ReleasePartition(MountPoint1) == false, "Failed to release partition");
+				
+				Unres(unlink(DeviceName1.c_str()) == -1, "Failed to unlink");
+				Unres(unlink(ExtJournalName1.c_str()) == -1, "Failed to unlink");
+				
+				//Unres(chdir(MountPoint1) == -1, "Failed to change directory");
+			</Code>
+		</Test>
 </TestSet>
