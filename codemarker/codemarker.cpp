@@ -177,6 +177,7 @@ int main (int argc, char* argv[])
 			continue;
 		}	
 		
+		// Source file
 		if(regexec(&cregx_sf, info_buf, nmatch, match_arr, 0) == 0)
 		{		
 			string sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so);	
@@ -184,6 +185,7 @@ int main (int argc, char* argv[])
 			Function fn;
 			fn.SF = sub;
 			fn.type = mode;
+			fn.FN = "";
 
 			while(!db.eof())
 			{
@@ -255,11 +257,11 @@ int main (int argc, char* argv[])
 		
 		if(regexec(&cregx_sf, info_buf, nmatch, match_arr, 0) == 0)
 		{		
-			string sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so);
+			string currSF = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so);
 			bool notour = true;
 			
 			for(unsigned int i = 0; i < fns.size(); ++i)
-				if(sub.find(fns[i].SF) != string::npos)
+				if(currSF.find(fns[i].SF) != string::npos)
 					notour = false; // File is our
 			
 			fout<<info_buf<<endl;
@@ -282,6 +284,22 @@ int main (int argc, char* argv[])
 			cout<<"Processing file: "<<info_buf<<endl;
 			
 			vector<LFT_ST>aviableLft; 
+			
+			//Add absolute position marckup to aviableLft
+			for(unsigned int i = 0; i < fns.size(); ++i)
+			{
+				if(currSF.find(fns[i].SF) != string::npos)
+				{
+					if(fns[i].FN == "") // if marckup is absolute
+					{
+						for(unsigned int j = 0; j < fns[i].LFT.size(); ++j)
+						{
+							aviableLft.push_back(fns[i].LFT[j]);
+						}
+					}
+				}
+			}
+			
 			while(!info.eof())
 			{
 				info.getline(info_buf, info_buf_length);
@@ -438,7 +456,7 @@ int main (int argc, char* argv[])
 				if(regexec(&ciregex_da, info_buf, nmatch, match_arr, 0) == 0)
 				{						
 					unsigned int line;
-					sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so); // get coverage count	
+					string sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so); // get coverage count	
 					std::stringstream convert;
 					convert << sub;
 					convert>>line;
@@ -484,7 +502,7 @@ int main (int argc, char* argv[])
 				if(regexec(&ciregex_brda, info_buf, nmatch, match_arr, 0) == 0)
 				{						
 					unsigned int line;
-					sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so); // get coverage count	
+					string sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so); // get coverage count	
 					std::stringstream convert;
 					convert << sub;
 					convert>>line;
