@@ -23,10 +23,7 @@
 
 <TestSet Name="JfsOverloadTests">
 	<StartUp>
-		if( !PartitionManager::NoOptionsEnabled() )
-		{
-			Unsupp("These tests should run only when no options are provided.");
-		}
+		Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");		
 	</StartUp>
 	<Test Name="Directories" FaultSimulationReady="true">
 		<Description>Trying to create 1000 opened directories</Description>

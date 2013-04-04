@@ -24,7 +24,7 @@
 	<Requires>dirent.h</Requires>
 	<StartUp>
 		// Temporary solution. Should be removed as soon as the logic of test execution is changed.		
-		Unres ( !PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided." );
+		Skip ( !PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided." );
 	</StartUp>
 	<Test Name="NonUnicodeChars">
 		<Description>Try to create and access files with non-unicode names.</Description>

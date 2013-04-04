@@ -22,10 +22,7 @@
 -->
 <TestSet Name="ChangeSB">
 	<StartUp>
-		if( !PartitionManager::NoOptionsEnabled() )
-		{
-			Unsupp("These tests should run only when no options are provided.");
-		}
+		Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");
 	</StartUp>
 	<Requires>dirent.h</Requires>	
 	<Test Name="JFS_DIR_INDEX" FaultSimulationReady="true">
