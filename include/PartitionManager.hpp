@@ -155,6 +155,7 @@ public:
 	static bool IsProjectQuotaEnabled();
 	static bool GetSuperBlock(void *, int);
 	static bool SetSuperBlock(void *, int);
+	static bool CreateFilesystem(string fs, string partition, bool resizeFlag = false, string mkfs_opts = "");
 	
 	struct CurrentOptions
 	{
@@ -252,7 +253,6 @@ private:
 		static bool IsMountOptionEnabled(const string & opt);
 		static bool IsMkfsOptionEnabled(const string & opt);
 		bool LoadConfiguration();
-		static bool CreateFilesystem(string fs, string partition, bool resizeFlag = false, string mkfs_opts = "");
 		FileSystems GetFSNumber(string FSName);
 		
 		static std::map<string, unsigned long> MountFlagMap;
