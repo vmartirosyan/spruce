@@ -107,8 +107,7 @@ LFT:72,75 this code can be covered when giving a "errors=PANIC" mount option, bu
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
-FN:metapage_writepage
-LFT:48,68 This code can be covered if local variable (struct bio *bio) is not null, which is never set.
+LFT:403,423 This code can be covered if local variable (struct bio *bio) is not null, which is never set.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
@@ -146,6 +145,14 @@ end_of_record
 SF:fs/jfs/jfs_dtree.c
 FN:add_missing_indices 
 LFT:0,51 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.  
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+LFT:3222,3234 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
 end_of_record
 
 SF:fs/jfs/jfs_btree.h
