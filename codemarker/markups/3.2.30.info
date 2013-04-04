@@ -115,18 +115,6 @@ FN:metapage_readpage
 LFT:26,26 This code can be covered if local variable (struct bio *bio) is not null, which is never set.
 end_of_record
 
-SF:fs/jfs_metapage.c
-FN:remove_metapage
-LFT:0,0 This is inline function
-LFT:5,5 This is inline function
-end_of_record
-
-SF:fs/jfs_metapage.c
-FN:page_to_mp
-LFT:0,0 This is inline function
-LFT:3,3 This is inline function
-end_of_record
-
 #######################################################################
 #################Section for free code markup##########################
 #######################################################################
@@ -159,19 +147,19 @@ SF:fs/jfs/jfs_btree.h
 FN:BT_STACK_DUMP The function is called only when the btree stack is full which is difficult to produce in normal coverage case.
 end_of_record
 
-SF:fs/jfs/jfs_namei.c
+SF:fs/jfs/namei.c
 FN:jfs_fh_to_dentry The function is exported. Can be called only from kernel space.
 end_of_record
 
-SF:fs/jfs/jfs_namei.c
+SF:fs/jfs/namei.c
 FN:jfs_fh_to_parent The function is exported. Can be called only from kernel space.
 end_of_record
 
-SF:fs/jfs/jfs_namei.c
+SF:fs/jfs/namei.c
 FN:jfs_nfs_get_inode The function is exported. Can be called only from kernel space.
 end_of_record
 
-SF:fs/jfs/jfs_namei.c
+SF:fs/jfs/namei.c
 FN:jfs_get_parent The function is exported. Can be called only from kernel space.
 end_of_record
 
