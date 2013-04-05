@@ -115,6 +115,18 @@ FN:metapage_readpage
 LFT:26,26 This code can be covered if local variable (struct bio *bio) is not null, which is never set.
 end_of_record
 
+SF:fs/jfs_metapage.c		
+FN:remove_metapage		
+LFT:0,0 This is inline function		
+LFT:5,5 This is inline function		
+end_of_record		
+
+SF:fs/jfs_metapage.c		
+FN:page_to_mp		
+LFT:0,0 This is inline function		
+LFT:3,3 This is inline function		
+end_of_record
+
 #######################################################################
 #################Section for free code markup##########################
 #######################################################################
