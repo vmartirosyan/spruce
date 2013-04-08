@@ -26,6 +26,11 @@ LFT:92,135 This code works only when block size != 4096
 LFT:275,275 This code is supported only in OS/2
 end_of_record
 
+SF:fs/jfs/jfs_dtree.c
+FN:ciCompare
+LFT:49,53 This is a dead code as it is written for internal page entry. But function ciCompare is being called from only a single point and only for a leaf page.
+end_of_record
+
 SF:fs/jfs/jfs_xtree.c
 FN:xtUpdate This function is being invoked from only two functions which are defined as NOTYET yet
 end_of_record
