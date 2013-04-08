@@ -5,6 +5,7 @@
 //      Author:
 //			Nellie Danielyan <Nellie.92.d@gmail.com>
 //      	Vahram Martirosyan <vmartirosyan@gmail.com>
+//          Karen Tsirunyan <ktsirunyan@gmail.com>
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -142,8 +143,15 @@ isn't covered as mount options are parsed and checked in super.c-->
 				system("rmmod jfs.ko");
 				EnableFaultSim();
 				mount(DeviceName, MountPoint, FileSystem, 0, "nointegrity");
-				DisableFaultSim()
+				DisableFaultSim();
 			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem) != PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
 		</Test>
 		<Test Name="MultipleExternalLogs">
 			<Description>Create multiple jfs partiotions with external log</Description>
@@ -184,4 +192,80 @@ isn't covered as mount options are parsed and checked in super.c-->
 				//Unres(chdir(MountPoint1) == -1, "Failed to change directory");
 			</Code>
 		</Test>
+		
+		<Test Name="NoIntegrityOption1" FaultSimulationReady="true">
+			<Description>Mount with no integrity option and remount without it.</Description>
+			<Code>
+				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+				
+				mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, "nointegrity");
+				mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, 0);
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Code>
+		</Test>
+		
+		<Test Name="ErrPanicOption" FaultSimulationReady="true">
+			<Description>Mount with errors=panic option</Description>
+			<Code>
+				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+				
+				mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=panic");
+				umount(DeviceName);
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+		</Test>
+		
+		<Test Name="DoubleIOCharset" FaultSimulationReady="true">
+			<Description>Mount with wrong charset.</Description>
+			<Code>
+				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+				
+				//this mount should fail as there is no charset value "unknown", so there is no need to Restore the partition after.
+				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=ascii,iocharset=cp1251");						
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+		</Test>
+		
+		<Test Name="DoubleIOCharsetUnknown" FaultSimulationReady="true">
+			<Description>Mount with wrong charset.</Description>
+			<Code>
+				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+				
+				//this mount should fail as there is no charset value "unknown", so there is no need to Restore the partition after.
+				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=ascii,unknown");						
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+		</Test>
+		
+		
 </TestSet>
