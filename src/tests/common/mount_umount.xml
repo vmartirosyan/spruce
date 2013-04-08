@@ -38,6 +38,13 @@
 			Fail (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");			
 		</Code>
 	</Test>
+	<Test Name="UmountGeneral" FaultSimulationReady="true">
+		<Description>Trying to unmount the partition.</Description>		
+		<Code>
+			Unres ( mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");			
+			Fail ( umount( MountPoint) == -1, "Unmount failed");			
+		</Code>
+	</Test>
 	<Test Name="RemountGeneral" FaultSimulationReady="true">
 		<Description>Trying to remount the device to the same partition(with MS_REMOUNT flag activated)</Description>
 		<Code>
