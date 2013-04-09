@@ -94,17 +94,8 @@ LFT:61,125 this code can be covered(partially) when we write more than 64GB to f
 end_of_record
 
 SF:fs/jfs/super.c
-FN:jfs_show_options
-LFT:17,17 this code can be covered when giving a "errors=PANIC" mount option, but it leads to system failure
-
-SF:fs/jfs/super.c
 FN:jfs_handle_error
 LFT:10,11 panic() call coverage cannot be extracted because it immediately halts system.
-end_of_record
-
-SF:fs/jfs/super.c
-FN:parse_options
-LFT:72,75 this code can be covered when giving a "errors=PANIC" mount option, but it leads to system failure
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
