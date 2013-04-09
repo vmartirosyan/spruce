@@ -329,7 +329,7 @@
 		Unres (PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition");
 	</Footer>
 	<CleanUp>
-		if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+		if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success )
 		{
 			Error("Restore failed!");
 			_exit(Fatal);
