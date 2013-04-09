@@ -10,4 +10,5 @@
 	<TestSet Name="Lookup" />
 	<TestSet Name="Truncate" />
 	<TestSet Name="Link" />
+	<TestSet Name="Init_Exit" />
 </TestPackage>
