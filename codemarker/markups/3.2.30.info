@@ -127,6 +127,14 @@ SF:fs/jfs/jfs_logmgr.c
 FN:lmLogFileSystem
 LFT:35,37 Code is called only if multiple partitions are mount with the same external journal, which is not possible due to mkfs.
 
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogFileSystem
+LFT:17,17 Code is marked as it was not executed due to compiler optimisations.
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogFileSystem
+LFT:29,29 Code is marked as it was not executed due to compiler optimisations.
+
 #######################################################################
 #################Section for free code markup##########################
 #######################################################################
