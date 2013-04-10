@@ -31,13 +31,9 @@
 			char * cwd;
 			long size;
 			int  ret_chdir;
-			ret_chdir = chdir(DirPaths[0].c_str());
-			if(ret_chdir != 0)
-			{
-				Error("chdir does not change the working directory.", Fail);
-			} 
-			
-			
+			ret_chdir;
+			Fail( (ret_chdir = chdir(DirPaths[0].c_str()) ) != 0, "chdir does not change the working directory." );
+				
 			cwd = NULL;
 			size = pathconf(".", _PC_PATH_MAX);
 			Unres ((cwd = new char[size]) == NULL, "Can not allocate memmory.");
@@ -46,11 +42,8 @@
 			
 			Unres (cwd == NULL, "Can not read changed working directory.");
 			
-			if( strstr(cwd, DirPaths[0].c_str()) == NULL)
-			{
-				delete cwd;
-				Error("Directory change error.", Fail);
-			}
+			Check( strstr(cwd, DirPaths[0].c_str()) == NULL, "Directory change error.");
+		
 			delete cwd;
 			
 			Fail ( chdir("..") != 0, "chdir does not change the working directory.");

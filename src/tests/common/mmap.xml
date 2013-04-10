@@ -34,10 +34,7 @@
 		<File count="1"/>
 		<Code>
 		const string buff = "abc";
-		if(write(FDs[0], buff.c_str(), buff.size()) == -1)
-		{
-			Error("write failed", Unresolved);
- 		}
+		Unres(write(FDs[0], buff.c_str(), buff.size()) == -1, "Write failed");
 		
 		size_t length = buff.size();
 		int prot = PROT_READ;
@@ -173,16 +170,12 @@
 			int flags = MAP_PRIVATE;
 			off_t offset = 0;
 		
-			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
-			if(addr == MAP_FAILED)
-			{
-				Error("System call mmap failed", Unresolved);
-			}
+			void * addr; ;
+			Unres( ( addr = mmap(0, length, prot, flags, FDs[0], offset) ) == MAP_FAILED, "System call mmap failed");
+		
 			
-			if(munmap(addr, length) == -1)
-			{
-				Error("System call munmap failed", Fail);
-			}
+			Fail (munmap(addr, length) == -1, "System call munmap failed");
+			
 			
 		</Code>
 	</Test>
@@ -195,24 +188,13 @@
 			int flags = MAP_PRIVATE;
 			off_t offset = 0;
 		
-			void * addr = mmap(0, length, prot, flags, FDs[0], offset);
-			if(addr == MAP_FAILED)
-			{
-				Error("System call mmap failed", Unresolved);
-			}
+			void * addr;
+			Unres( (addr = mmap(0, length, prot, flags, FDs[0], offset) ) == MAP_FAILED, "System call mmap failed");
 			
-			if(munmap(addr, -1) != -1)
-			{
-				Error("Error expected: length contains invalid value");
-				_TestStatus = Fail;
-			}
+			Fail(munmap(addr, -1) != -1, "Error expected: length contains invalid value");
 			
 			int pageSize = getpagesize();
-			if(munmap(reinterpret_cast<void*>(pageSize + 1), length) != -1)
-			{
-				Error("Error expected: addr contains invalid value");
-				_TestStatus = Fail;
-			}	
+			Fail(munmap(reinterpret_cast<void*>(pageSize + 1), length) != -1, "Error expected: addr contains invalid value");
 			
 		</Code>
 	</Test>
@@ -228,22 +210,14 @@
 			int flags = MAP_PRIVATE;
 			off_t offset = 0;
 		
-			void * oldAddr = mmap(0, length, prot, flags, FDs[0], offset);
-			if(oldAddr == MAP_FAILED)
-			{
-				Error("System call mmap failed", Unresolved);
-			}
+			void * oldAddr;
+			Unres((oldAddr  = mmap(0, length, prot, flags, FDs[0], offset)) == MAP_FAILED, "System call mmap failed");
 			
-			void * newAddr = mremap(oldAddr, length, length + 3, MREMAP_MAYMOVE);
-			if(newAddr == MAP_FAILED)
-			{
-				Error("System call mremap failed", Fail);
-			}
+			void * newAddr ;
+			Fail( (newAddr = mremap(oldAddr, length, length + 3, MREMAP_MAYMOVE) ) == MAP_FAILED, "System call mremap failed");
 			
-			if(strncmp(static_cast<char *>(oldAddr), static_cast<char *>(newAddr), strlen(static_cast<char *>(oldAddr))))
-			{
-				Error("System call mmap failed: mapped content differs from initial content", Fail);
-			}
+			
+			Check(strncmp(static_cast<char *>(oldAddr), static_cast<char *>(newAddr), strlen(static_cast<char *>(oldAddr))), "System call mmap failed: mapped content differs from initial content");
 			
 		</Code>
 	</Test>
@@ -256,11 +230,8 @@
 			int flags = MAP_PRIVATE;
 			off_t offset = 0;
 		
-			void * oldAddr = mmap(0, length, prot, flags, FDs[0], offset);
-			if(oldAddr == MAP_FAILED)
-			{
-				Error("System call mmap failed", Unresolved);
-			}
+			void * oldAddr;
+			Unres( (oldAddr = mmap(0, length, prot, flags, FDs[0], offset) ) == MAP_FAILED, "System call mmap failed");
 			
 			void * newAddr = mremap(oldAddr, length, length + 3, MREMAP_MAYMOVE | MREMAP_FIXED);
 			if(newAddr != MAP_FAILED || errno != EINVAL)
@@ -297,27 +268,18 @@
 		<File count = "1"/>
 		<Code>
 			const string buff = "abc";
-			if(write(FDs[0], buff.c_str(), buff.size()) == -1)
-			{
-				Error("write failed", Unresolved);
-			}
+			Unres(write(FDs[0], buff.c_str(), buff.size()) == -1, "Write failed");
 			
 			size_t length = buff.size();
 			int prot = PROT_READ;
 			int flags = MAP_PRIVATE;
 			off64_t offset = 0;
 		
-			void * addr = mmap64(0, length, prot, flags, FDs[0], offset);
-			if(addr == MAP_FAILED)
-			{
-				Error("System call mmap failed", Fail);
-			}
+			void * addr;
+			if( ( addr = mmap64(0, length, prot, flags, FDs[0], offset) ) == MAP_FAILED, "System call mmap failed");
 			
-			if(strncmp(buff.c_str(), static_cast<char *>(addr), buff.size()))
-			{
-				Error("System call mmap failed: mapped content differs from file content", Fail);
-			}
-			
+			Check(strncmp(buff.c_str(), static_cast<char *>(addr), buff.size()), "System call mmap failed: mapped content differs from file content");
+		
 		</Code>
 	</Test>
 	<Test Name="Mmap2ErrInval">

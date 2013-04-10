@@ -43,10 +43,7 @@
 			char nbuff[5];
 			long _arg = rand() % 99;
 			
-			if( (new_fd = fcntl(FDs[0], F_DUPFD, _arg)) == -1 )
-			{
-				Error("Error in fcntl.", Fail);
-			}
+			Fail( (new_fd = fcntl(FDs[0], F_DUPFD, _arg)) == -1,"Error in fcntl." );
 			
 			Unres ( write(FDs[0], buff, strlen(buff)) == -1, "Error in writing. ");
 		
@@ -56,14 +53,9 @@
 
 			close(new_fd);			
 
-			if( strncmp(buff, nbuff, strlen(buff)) != 0 )
-			{
-				Error("Wrong or corrupted data.", Fail);
-			}
-			if (new_fd < _arg)
-			{				
-				Error("Returned wrong file descriptor", Fail);
-			}
+			Check( strncmp(buff, nbuff, strlen(buff)) != 0,"Wrong or corrupted data." );
+			Check (new_fd < _arg, "Returned wrong file descriptor");
+			
 			
 		</Code>
 	</Test>
@@ -74,24 +66,16 @@
 			long set_flags;
 			long get_flags1, get_flags2;
 			
-			Unres( (get_flags1 = fcntl( FDs[0], F_GETFL )) == -1, "Error in fcntl.");
+			Fail( (get_flags1 = fcntl( FDs[0], F_GETFL )) == -1, "Error in fcntl.");
 			
 			// set File Descriptor Flags
 			set_flags = O_RDONLY | O_WRONLY | O_RDWR | O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC ;
-			if ( fcntl(FDs[0], F_SETFL, set_flags) == -1 )
-			{
-				Error("Error in fcntl. Cannot set flags.", Fail);
-			}
+			Fail ( fcntl(FDs[0], F_SETFL, set_flags) == -1, "Error in fcntl. Cannot set flags." );
 
 			// get File Descriptor Flags
-			if ( (get_flags2 = fcntl(FDs[0], F_GETFL)) == -1 )
-			{
-				Error("Error in fcntl. Cannot get flags.", Fail);
-			}
-			if ( get_flags1 !=  get_flags2 )
-			{
-				Error("The flags should be ignored.", Fail);
-			}
+			Fail ( (get_flags2 = fcntl(FDs[0], F_GETFL)) == -1 , "Error in fcntl. Cannot get flags.");
+			Check ( get_flags1 !=  get_flags2, "The flags should be ignored." );
+			
  	
 			
 		</Code>
@@ -103,10 +87,7 @@
 			long set_flags;
 			long get_flags1, get_flags;
 			
-			if ( (get_flags1 = fcntl( FDs[0], F_GETFL )) == -1 )
-			{
-				Error("Error in fcntl. Cannot get initial flags.", Fail);
-			}
+			Fail ( (get_flags1 = fcntl( FDs[0], F_GETFL )) == -1, "Error in fcntl. Cannot get initial flags." );
 			
 			// set File Descriptor Flags
 			set_flags =  O_APPEND | O_NOATIME | O_NONBLOCK ;
@@ -114,20 +95,12 @@
 			{
 				set_flags |= O_DIRECT;
 			}
-			if ( fcntl(FDs[0], F_SETFL, set_flags) == -1 )
-			{
-				Error("Error in fcntl. Cannot set flags.", Fail);
-			}
-
+			Fail ( fcntl(FDs[0], F_SETFL, set_flags) == -1, "Error in fcntl. Cannot set flags." );
+		
 			// get File Descriptor Flags
-			if( (get_flags = fcntl(FDs[0], F_GETFL)) == -1 )
-			{
-				Error("Error in fcntl. Cannot get finl flags.", Fail);
-			}
-			if( (set_flags | get_flags1) != get_flags)
-			{
-				Error("Can't get right file descriptor flags! ", Fail);
-			}
+			Fail( (get_flags = fcntl(FDs[0], F_GETFL)) == -1, "Error in fcntl. Cannot get finl flags." );
+	
+			Check( (set_flags | get_flags1) != get_flags, "Can't get right file descriptor flags!");
  	
 			
 		</Code>
@@ -138,25 +111,12 @@
 		<Code>
 			long set_flags = FD_CLOEXEC;
 			long get_flags;
-			if ( fcntl(FDs[0], F_SETFD, set_flags) == -1 )
-			{
-				Error("Error in fcntl. Cannot set FD flags.", Fail);
-			}
-
+			Fail ( fcntl(FDs[0], F_SETFD, set_flags) == -1, "Error in fcntl. Cannot set FD flags." );
+	
 			// get File Descriptor Flags
-			if ( (get_flags = fcntl(FDs[0], F_GETFD)) == -1 )
-			{
-				Error("Error in fcntl. Cannot get FD flags.", Fail);
-			}
-
-			if( FD_CLOEXEC == get_flags )
-			{
-				
-			}
-			else
-			{
-				Error("Cannot get right file descriptor flags!", Fail);
-			}
+			Fail ( (get_flags = fcntl(FDs[0], F_GETFD)) == -1, "Error in fcntl. Cannot get FD flags." );
+			
+			Check( FD_CLOEXEC != get_flags, "Cannot get right file descriptor flags!");
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetLock" FaultSimulationReady="true">
@@ -173,18 +133,10 @@
 			flocks.l_pid = getpid();
 			flocks.l_type = F_RDLCK ;
 	   
-			ret_fcntl = fcntl( FDs[0], F_GETLK, &flocks );
-	   
-			if ( ret_fcntl == -1 )
-			{
-				Error("Error in fcntl. Cannot get lock settings.", Fail);
-			}
+			Fail ( (ret_fcntl = fcntl( FDs[0], F_GETLK, &flocks ) ) == -1, "Error in fcntl. Cannot get lock settings." );
 	  
-			if( flocks.l_type != F_UNLCK && flocks.l_whence != SEEK_SET && 
-				flocks.l_start != 0 && flocks.l_len != 0 )
-			{
-				Error("Incompatible locks prevent this lock.", Fail);
-			}
+			Check( flocks.l_type != F_UNLCK && flocks.l_whence != SEEK_SET && 
+				flocks.l_start != 0 && flocks.l_len != 0, "Incompatible locks prevent this lock." )
 			
 		</Code>
 	</Test>
@@ -203,22 +155,11 @@
 			for ( type = 0; type < 2; ++type )
 			{
 				flocks.l_type = type ? F_RDLCK : F_WRLCK;
-				ret_fcntl = fcntl( FDs[0], F_SETLK, &flocks );
-				
-				if ( ret_fcntl == -1 )
-				{
-					Error("Cannot set lock.", Fail);
-				}
-				
+				Fail( (ret_fcntl = fcntl( FDs[0], F_SETLK, &flocks )) == -1, "Cannot set lock.");	
 			}
 			
 			flocks.l_type = F_UNLCK;
-			ret_fcntl = fcntl( FDs[0], F_SETLK, &flocks );
-			if ( ret_fcntl == -1 )
-			{
-				Error("Cannot unlock.", Fail);
-			}
-				
+			Fail ( ( ret_fcntl = fcntl( FDs[0], F_SETLK, &flocks ) ) == -1, "Cannot unlock." );
 			  
 		</Code>
 	</Test>
@@ -237,21 +178,12 @@
 			for ( type = 0; type < 2; ++type )
 			{
 				flocks.l_type = type ? F_RDLCK : F_WRLCK;
-				ret_fcntl = fcntl( FDs[0], F_SETLKW, &flocks );
-				
-				if ( ret_fcntl == -1 )
-				{
-					Error("Cannot set lock with wait.", Fail);
-				}
-				
+								
+				Fail ( ( ret_fcntl = fcntl( FDs[0], F_SETLKW, &flocks ) ) == -1, "Cannot set lock with wait." );
 			}
 			
 			flocks.l_type = F_UNLCK;
-			ret_fcntl = fcntl( FDs[0], F_SETLKW, &flocks );
-			if ( ret_fcntl == -1 )
-			{
-				Error("Cannot unlock.", Fail);
-			}
+			Fail ( ( ret_fcntl = fcntl( FDs[0], F_SETLKW, &flocks ) )== -1, "Cannot unlock." );
 				
 			
 		</Code>
@@ -397,36 +329,20 @@
 			File file2 ( filename2, 0777, O_CREAT | O_RDWR );
 			fd2 = file2.GetFileDescriptor();
 		
-		  
-			if ( fcntl( fd1, F_SETLEASE, F_RDLCK ) == -1 )
-			{
-				Error("Error in fcntl. Cannot set read lease.", Fail);
-			}
+			Fail( fcntl( fd1, F_SETLEASE, F_RDLCK ) == -1 , "Error in fcntl. Cannot set read lease." );
 		
-			if ( fcntl( fd1, F_GETLEASE ) != F_RDLCK )
-			{
-				Error("Get-set lease failed for read lease.", Fail);
-			}
+			Fail( fcntl( fd1, F_GETLEASE ) != F_RDLCK, "Get-set lease failed for read lease." );
 				
 			// write lease ( F_SETLEASE & F_WRLCK )			
-			if ( fcntl ( fd2, F_SETLEASE, F_WRLCK ) == -1 )
-			{
-				Error("Error in fcntl. Cannot set write lease.", Fail);
-			}
-			if ( fcntl( fd2, F_GETLEASE ) != F_WRLCK )
-			{
-				Error("Get-set lease failed for write lease.", Fail);
-			}
+			Fail( fcntl ( fd2, F_SETLEASE, F_WRLCK ) == -1, "Error in fcntl. Cannot set write lease." );
+		
+			Fail( fcntl( fd2, F_GETLEASE ) != F_WRLCK, "Get-set lease failed for write lease." );
+		
 		
 			// removing lease ( F_SETLEASE & F_UNLCK )
-			if ( fcntl ( fd2, F_SETLEASE , F_UNLCK ) == -1 )
-			{
-				Error("Error in fcntl. Cannot remove lease.", Fail);
-			}
-			if ( fcntl ( fd2, F_GETLEASE ) != F_UNLCK )
-			{
-				Error("Get-set lease failed for remove lease.", Fail);		
-			}
+			Fail ( fcntl ( fd2, F_SETLEASE , F_UNLCK ) == -1, "Error in fcntl. Cannot remove lease." );
+	
+			Fail ( fcntl ( fd2, F_GETLEASE ) != F_UNLCK, "Get-set lease failed for remove lease." );
 			
 		</Code>
 	</Test>
@@ -434,29 +350,19 @@
 		<Description>F_GETOWN and F_SETOWN are used to manage I/O availability signals.</Description>
 		<File count="1"/>
 		<Code>
-			if ( fcntl ( FDs[0], F_SETOWN, getpid() ) == -1 )
-			{
-				Error("Error in fcntl. Cannot set owner.", Fail);
-			}
-			if ( fcntl( FDs[0], F_GETOWN ) != getpid() )
-			{
-				Error("Get-set owner failed.", Fail);
-			}
-			;
+			Fail ( fcntl ( FDs[0], F_SETOWN, getpid() ) == -1, "Error in fcntl. Cannot set owner." );
+			Fail( fcntl( FDs[0], F_GETOWN ) != getpid(), "Get-set owner failed." );
+			
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetSig" FaultSimulationReady="true">
 		<Description>F_GETSIG and F_SETSIG are used to manage I/O availability signals.</Description>
 		<File count="1"/>
 		<Code>
-			if ( fcntl( FDs[0], F_SETSIG, SIGIO ) == -1 )
-			{
-				Error("Error in fcntl. Cannot set signal", Fail);
-			}
-			if ( fcntl( FDs[0], F_GETSIG ) != SIGIO )
-			{
-				Error("Get-set signal failed.", Fail);
-			}
+			Fail( fcntl( FDs[0], F_SETSIG, SIGIO ) == -1, "Error in fcntl. Cannot set signal" );
+			
+			Fail ( fcntl( FDs[0], F_GETSIG ) != SIGIO, "Get-set signal failed." );
+			
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetOwn_Ex" FaultSimulationReady="true">
@@ -468,19 +374,11 @@
 
 			owner.type =  F_OWNER_PID;
 			owner.pid = getpid();
-			if ( fcntl( FDs[0], F_SETOWN_EX, &owner ) == -1 )
-			{
-				Error("Error in fcntl. Cannot set extended owner.", Fail);
-			}
+			Fail ( fcntl( FDs[0], F_SETOWN_EX, &owner ) == -1, "Error in fcntl. Cannot set extended owner." );
 
-			if ( fcntl( FDs[0], F_GETOWN_EX, &owner1 ) == -1 )
-			{
-				Error("Error in fcntl. Cannot get extended owner.", Fail);
-			}
-			if ( owner1.type != F_OWNER_PID || owner1.pid != getpid() )
-			{
-				Error("Get-set owner_ex failed.", Fail);
-			}
+			Fail ( fcntl( FDs[0], F_GETOWN_EX, &owner1 ) == -1, "Error in fcntl. Cannot get extended owner." );
+			Check ( owner1.type != F_OWNER_PID || owner1.pid != getpid(), "Get-set owner_ex failed." );
+		
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetPipeSize" FaultSimulationReady="true">
@@ -492,15 +390,11 @@
 			Unres ( pipe ( pipefd ) == -1, "Error in creating pipe.");
 			
 			//setting pipe's capability to be at least arg_ bytes 
-			if ( fcntl( pipefd[1], F_SETPIPE_SZ, 100) == -1 )
-			{
-				Error("Error in fcntl. Cannot set pipe size.", Fail);
-			}
+			Fail ( fcntl( pipefd[1], F_SETPIPE_SZ, 100) == -1, "Error in fcntl. Cannot set pipe size." );
+		
 			// checking whether capability of the pipe is at least equal to arg_
-			if ( fcntl ( pipefd[1], F_GETPIPE_SZ ) < 100 )
-			{
-				Error("Get-set pipe size failed", Fail);
-			}
+			Check ( fcntl ( pipefd[1], F_GETPIPE_SZ ) < 100, "Get-set pipe size failed" );
+			
 		</Code>
 	</Test>
 	<Test Name="FcntlFDDupWithClExFlag" FaultSimulationReady="true">
@@ -508,18 +402,12 @@
 		<File count="1"/>
 		<Code>
 			int flags_, fd2;
-			if ( (fd2 = fcntl( FDs[0],F_DUPFD_CLOEXEC,1)) == -1 )
-			{
-				Error("Error in fcntl. Cannot dulicate file descriptor.", Fail);
-			} 
-			if ( (flags_ = fcntl( fd2, F_GETFD)) == -1 )
-			{
-				Error("Error in fcntl. Cannot get file descriptor flags.", Fail);
-			}
-			if ( flags_ != FD_CLOEXEC )
-			{
-				Error("Setting the close-on-exec flag for the  duplicate  descriptor failed.", Fail);       
-			}
+			Fail ( (fd2 = fcntl( FDs[0],F_DUPFD_CLOEXEC,1)) == -1, "Error in fcntl. Cannot dulicate file descriptor." );
+		
+			Fail ( (flags_ = fcntl( fd2, F_GETFD)) == -1, "Error in fcntl. Cannot get file descriptor flags." );
+		
+			Check ( flags_ != FD_CLOEXEC, "Setting the close-on-exec flag for the  duplicate  descriptor failed." );
+			
 		</Code>
 	</Test>
 	<!-- Error tests -->
@@ -602,10 +490,7 @@
 			flocks.l_type = F_WRLCK ;
 			
 			//setting write lock
-			if ( fcntl ( FDs[0], F_SETLK, &flocks) == -1 )
-			{
-				Error("Error in fcntl. Cannot set lock in parent process.", Fail);
-			}
+			Fail( fcntl ( FDs[0], F_SETLK, &flocks) == -1, "Error in fcntl. Cannot set lock in parent process." );
 			
 			pid = fork();
 			

@@ -195,13 +195,8 @@
 			res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem);
 			if( res!= PS_Success )
 			{
-				if( res == PS_Fatal )
-				{
-					Error("Device too small.");
-					Return(Unresolved);
-				}						
-				Error("Partition mount or umount failed");
-				Return(Unresolved);	
+				Unres( res == PS_Fatal, "Device too small." );						
+				Unres( 1, "Partition mount or umount failed." );
 			}
 		
 			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
