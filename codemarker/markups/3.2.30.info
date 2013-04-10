@@ -116,18 +116,6 @@ FN:page_to_mp Function is inline and its call is usually integrated.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
-FN:lmLogOpen
-LFT:16,29 Code is called only if multiple partitions are mount with the same external journal, which is not possible due to mkfs.
-
-SF:fs/jfs/jfs_logmgr.c
-FN:lmLogFileSystem
-LFT:24,26 Code is called only if multiple partitions are mount with the same external journal, which is not possible due to mkfs.
-
-SF:fs/jfs/jfs_logmgr.c
-FN:lmLogFileSystem
-LFT:35,37 Code is called only if multiple partitions are mount with the same external journal, which is not possible due to mkfs.
-
-SF:fs/jfs/jfs_logmgr.c
 FN:lmLogFileSystem
 LFT:17,17 Code is marked as it was not executed due to compiler optimisations.
 
@@ -205,3 +193,11 @@ end_of_record
 SF:fs/jfs/jfs_logmgr.c
 FN:jfsIOWait
 LFT:15,16 These lines can be covered from kernel space.
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogFileSystem
+LFT:24,26 Code is called only if more than MAX_ACTIVE partitions are mount with the same external journal.
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogFileSystem
+LFT:35,37 Code is called only if more than MAX_ACTIVE partitions are mount with the same external journal.
