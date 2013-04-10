@@ -153,7 +153,7 @@ isn't covered as mount options are parsed and checked in super.c-->
 				}
 			</Footer>
 		</Test>
-		<Test Name="MultipleExternalLogs">
+		<Test Name="MultipleExternalLogs" FaultSimulationReady="true">
 			<Description>Create multiple jfs partiotions with external log</Description>
 			<Code>
 				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
