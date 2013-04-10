@@ -118,7 +118,15 @@ end_of_record
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogOpen
 LFT:16,29 Code is called only if multiple partitions are mount with the same external journal, which is not possible due to mkfs.
- 
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogFileSystem
+LFT:24,26 Code is called only if multiple partitions are mount with the same external journal, which is not possible due to mkfs.
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogFileSystem
+LFT:35,37 Code is called only if multiple partitions are mount with the same external journal, which is not possible due to mkfs.
+
 #######################################################################
 #################Section for free code markup##########################
 #######################################################################
