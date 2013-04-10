@@ -162,6 +162,8 @@ isn't covered as mount options are parsed and checked in super.c-->
 				Unres(chdir("/") == -1, "Failed to change directory");
 				Unres(PartitionManager:: ReleasePartition(MountPoint) == false, "Failed to release partition");
 				
+				system("rmmod jfs.ko");
+				
 				string ExtJournalName = string("/dev/ram0");
 				
 				Unres(!PartitionManager:: CreateFilesystem(FileSystem, DeviceName, false, string("-j ") + ExtJournalName), "Failed to create filesystem");
