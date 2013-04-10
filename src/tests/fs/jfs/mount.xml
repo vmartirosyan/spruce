@@ -84,7 +84,7 @@ isn't covered as mount options are parsed and checked in super.c-->
                 </Code>
         </Test>
           <Footer>
-				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
 				{
 					Error("Mount failed!");
 					Return(Fatal);
