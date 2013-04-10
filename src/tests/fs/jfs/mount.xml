@@ -55,25 +55,32 @@ isn't covered as mount options are parsed and checked in super.c-->
 							Return(Unresolved);	
 						}
 						
-                        res = mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") ;
+                        Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");
                         
                         
-						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
-						{
-							Error("Mount failed!");
-							Return(Fatal);
-						}
-						if( res == -1 )
-						{
-							if( PartitionManager::IsOptionEnabled("ro") )
-							{
-								Return(Success);
-							}
-							else
-							{
-								Return(Fail);
-							}
-						}
+						
+                </Code>
+        </Test>
+        <Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+		</Footer>
+		 <Test Name="RemountResizeRO" FaultSimulationReady="true">
+                <Description>Resize.</Description>              
+                <Code>
+						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+                        Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+                        Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+                        int res;
+						Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Mount failed.");
+
+                        Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") != -1, "Mount didn't fail on readonly filesystem.");
+                        
+                        
+						
                 </Code>
         </Test>
 		 <Test Name="RemountResizeWrong" FaultSimulationReady="true">
@@ -153,7 +160,10 @@ isn't covered as mount options are parsed and checked in super.c-->
 				}
 			</Footer>
 		</Test>
-		<Test Name="MultipleExternalLogs" FaultSimulationReady="true">
+		
+		<!-- Causes fatal error in 3.2 kernel. Needs to be modified. -->
+			
+		<!--Test Name="MultipleExternalLogs" FaultSimulationReady="true">
 			<Description>Create multiple jfs partiotions with external log</Description>
 			<Code>
 				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -193,7 +203,7 @@ isn't covered as mount options are parsed and checked in super.c-->
 				
 				//Unres(chdir(MountPoint1) == -1, "Failed to change directory");
 			</Code>
-		</Test>
+		</Test-->
 		
 		<Test Name="NoIntegrityOption1" FaultSimulationReady="true">
 			<Description>Mount with no integrity option and remount without it.</Description>

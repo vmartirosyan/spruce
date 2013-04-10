@@ -85,7 +85,7 @@ end_of_record
 
 SF:fs/jfs/resize.c
 FN:jfs_extendfs
-LFT:199,199 Calling this code causes bug. log_formatted = 0 only when there is no inline log or when expanding is small, the latter case causes bug as the log is being formated after being previously shut down.
+LFT:61,63 Never gets here because of a previous check of read-only fs in jfs_remount().
 end_of_record
 
 SF:fs/jfs/xtree.c
@@ -130,6 +130,11 @@ LFT:72,72 Code is marked as it was not executed due to compiler optimisations.
 #################Section for free code markup##########################
 #######################################################################
 #FREECODE:
+
+SF:fs/jfs/resize.c
+FN:jfs_extendfs
+LFT:199,199 Calling this code causes bug. log_formatted = 0 only when there is no inline log or when expanding is small, the latter case causes bug as the log is being formated after being previously shut down.
+end_of_record
 
 SF:fs/jfs/jfs_dtree.c
 FN:dtSearch
