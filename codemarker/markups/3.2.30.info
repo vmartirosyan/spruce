@@ -115,6 +115,10 @@ SF:fs/jfs_metapage.c
 FN:page_to_mp Function is inline and its call is usually integrated.
 end_of_record
 
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogOpen
+LFT:16,29 Code is called only if multiple partitions are mount with the same external journal, which is not possible due to mkfs.
+ 
 #######################################################################
 #################Section for free code markup##########################
 #######################################################################
