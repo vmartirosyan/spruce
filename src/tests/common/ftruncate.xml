@@ -57,10 +57,8 @@
 			
 			Unres ( write(FDs[0], buf.c_str(), length) != length, "Cannot writeto the file.");
 			
-			if ( ftruncate(FDs[0], length_after_truncate) != 0 )
-			{
-				Error("ftruncate failed.", Fail);
-			}
+			Fail ( ftruncate(FDs[0], length_after_truncate) != 0, "ftruncate failed." );
+			
 			
 			struct stat stat_buf;
 			Unres ( fstat(FDs[0], &stat_buf) == -1, "Cannot stat file.");

@@ -31,17 +31,10 @@
 			
 			char buf[10];
 			
-			if ( getcwd(buf, 10) == NULL )
-			{
-				Error("Cannot get current working directory", Fail);
-			}
+			Fail ( getcwd(buf, 10) == NULL, "Cannot get current working directory" );
 			
-			if ( dir != static_cast<string>(buf) )
-			{
-				Error("getcwd returned wrong directory.", Fail);
-			}
+			Check ( dir != static_cast<string>(buf), "getcwd returned wrong directory." );
 			
-			;
 		</Code>
 	</Test>
 <!--

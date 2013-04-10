@@ -124,10 +124,7 @@
 		<Description>the existence test (F_OK)</Description>
 		<File count="1" />
 		<Code>
-			if ( access(FilePaths[0].c_str(), F_OK) != 0 )
-			{
-				Error("The file exists but access returns error. ", Fail);
-			}
+			Fail ( access(FilePaths[0].c_str(), F_OK) != 0, "The file exists but access returns error. " );
 		</Code>
 	</Test>
 	<Test Name="AccessErrAccess">
@@ -139,10 +136,8 @@
 			Unres(nobody == NULL, "Cannot obtain nobody user information.");
 			
 			Unres( setuid(nobody->pw_uid) == -1, "Cannot set the effective user ID to nobody.");
-			if ( access(FilePaths[0].c_str(), W_OK) == 0 || errno != EACCES )
-			{
-				Error("access should return EACCES error code but it did not.", Fail);
-			}			
+			Check ( access(FilePaths[0].c_str(), W_OK) == 0 || errno != EACCES, "Access should return EACCES error code but it did not." );
+						
 		</Code>
 	</Test>
 	<Test Name="AccessErrLoop">
