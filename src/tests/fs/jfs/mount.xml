@@ -286,5 +286,30 @@ isn't covered as mount options are parsed and checked in super.c-->
 			</Footer>
 		</Test>
 		
+		<Test Name="Mount444" FaultSimulationReady="true">
+			<Description>Mount with umask=444.</Description>
+			<Code>
+				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+				string dirname = "dir";
+				Unres( mkdir(dirname.c_str(), 444) == -1, "Cannot create directory.");
+				
+				chdir("/");
+				
+				Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
+				
+				Unres( mount( DeviceName, MountPoint, FileSystem, 0, "umask=000") == -1, "Cannot mount device with umask = 000");
+			</Code>
+			<Footer>
+				system("lsof | grep spruce");
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem) != PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+		</Test>
+		
 		
 </TestSet>
