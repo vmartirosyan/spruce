@@ -59,7 +59,6 @@ SF:fs/jfs/jfs_incore.h
 FN:isReadOnly Function is inline and its call is usually integrated.
 end_of_record
 
-
 SF:fs/jfs/inode.c
 FN:jfs_get_block 
 LFT:22,43 XAD_NOTRECORDED flag is set only from two places, first is defined as NOTYET and in the second piece before setting the flag a bool value is checked which is always false.
@@ -121,7 +120,7 @@ end_of_record
 
 SF:fs/jfs_metapage.c		
 FN:remove_metapage Function is inline and its call is usually integrated.	
-end_of_record		
+end_of_record
 
 SF:fs/jfs_metapage.c		
 FN:page_to_mp Function is inline and its call is usually integrated.
@@ -130,14 +129,17 @@ end_of_record
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogFileSystem
 LFT:17,17 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogFileSystem
 LFT:29,29 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:jfs_flush_journal
 LFT:72,72 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
 
 #######################################################################
 #################Section for free code markup##########################
@@ -210,11 +212,18 @@ end_of_record
 SF:fs/jfs/jfs_logmgr.c
 FN:jfsIOWait
 LFT:15,16 These lines can be covered from kernel space.
+end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogFileSystem
 LFT:24,26 Code is called only if more than MAX_ACTIVE partitions are mount with the same external journal.
+end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogFileSystem
 LFT:35,37 Code is called only if more than MAX_ACTIVE partitions are mount with the same external journal.
+end_of_record
+
+SF:fs/jfs/xattr.c
+FN:jfs_initxattrs The function is called when the SELinux package is installed.
+end_of_record
