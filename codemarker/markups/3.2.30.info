@@ -46,6 +46,11 @@ FN:diWrite
 LFT:46,53 This code is supported only in OS/2
 end_of_record
 
+SF:fs/jfs/jfs_imap.c
+FN:diReadSpecial
+LFT:44,46 The function copy_from_dinode always returns 0. The error handling code is dead.
+end_of_record
+
 SF:fs/jfs/jfs_incore.h
 FN:JFS_SBI Function is inline and its call is usually integrated.
 end_of_record
