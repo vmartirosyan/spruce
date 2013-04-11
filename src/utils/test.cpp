@@ -27,9 +27,15 @@
 #include <sys/wait.h>
 #include <algorithm>
 #include <KedrIntegrator.hpp>
+#include <PartitionManager.hpp>
 #include <memory>
 
-extern string Path; // Defined in doer.cpp
+// Defined in doer.cpp
+extern string Path; 
+extern char * DeviceName;
+extern char * MountPoint;
+extern char * FileSystem;
+						
 
 ProcessResult * Test::Execute(vector<string> args)
 {
@@ -253,6 +259,14 @@ Status TestSet::Run(Checks checks)
 					else
 					{
 						i->second.AddResult(Stability, res );
+					}
+					
+					// Check if the partition has become read-only because of system failures.
+					// In case of fault simulation such a situation is quite common.
+					if ( PartitionManager::IsOptionEnabled("ro") )
+					{
+						Logger::LogWarn("Partition was re-mounted as read-only. Restoring partition.");
+						PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true);
 					}
 				}
 			}
