@@ -86,6 +86,14 @@ end_of_record
 SF:fs/jfs/resize.c
 FN:jfs_extendfs
 LFT:61,63 Never gets here because of a previous check of read-only fs in jfs_remount().
+LFT:333,334 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:471,471 Never gets here because of a previous check of read-only fs in jfs_remount().
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbExtendFS
+LFT:86,87 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:254,259 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
 end_of_record
 
 SF:fs/jfs/xtree.c
