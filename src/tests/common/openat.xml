@@ -31,7 +31,7 @@
 			
 			int ret_val;
 			
-			Fail( ( ret_val = openat(DirDs[0], filename, O_CREAT, S_IRUSR)) == -1,
+			Check( ( ret_val = openat(DirDs[0], filename, O_CREAT, S_IRUSR)) == -1,
 				"openat returned error in case of noraml filename.");
 			
 			close(ret_val);
