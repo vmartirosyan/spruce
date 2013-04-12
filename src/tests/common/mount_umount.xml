@@ -54,7 +54,7 @@
 		<Code>
 			Unres (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed.");
 			
-			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, 0) == -1, "Remount failed.");
+			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
 		</Code>		
 	</Test>
 	<Test Name="RemountReadOnly" FaultSimulationReady="true">
@@ -68,70 +68,70 @@
 	<Test Name="NoATimeGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_NOATIME flag attempted.</Description>
 		<Code>
-			Fail(mount( DeviceName, MountPoint, FileSystem, MS_NOATIME, 0) == -1, "Mount with MS_NOATIME flag attempted failed");
+			Check(mount( DeviceName, MountPoint, FileSystem, MS_NOATIME, 0) == -1, "Mount with MS_NOATIME flag attempted failed");
 		</Code>		
 	</Test>
 	<Test Name="NoDevGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_NODEV flag attempted.</Description>
 		<Code>
-			Fail (mount( DeviceName, MountPoint, FileSystem, MS_NODEV, 0) == -1,
+			Check (mount( DeviceName, MountPoint, FileSystem, MS_NODEV, 0) == -1,
 				"Mount with MS_NODEV flag attempted failed");
 		</Code>		
 	</Test>
 	<Test Name="NoDirATimeGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_NODIRATIME flag attempted.</Description>		
 		<Code>
-			Fail (mount( DeviceName, MountPoint, FileSystem, MS_NODIRATIME, 0) == -1, "Mount with MS_NODIRATIME flag attempted failed");
+			Check (mount( DeviceName, MountPoint, FileSystem, MS_NODIRATIME, 0) == -1, "Mount with MS_NODIRATIME flag attempted failed");
 		</Code>		
 	</Test>
 	<Test Name="NoExecGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_NOEXEC flag attempted.</Description>
 		<Code>
-			Fail(mount( DeviceName, MountPoint, FileSystem, MS_NOEXEC, 0) == -1, "Mount with MS_NOEXEC flag attempted failed");
+			Check(mount( DeviceName, MountPoint, FileSystem, MS_NOEXEC, 0) == -1, "Mount with MS_NOEXEC flag attempted failed");
 		</Code>
 	</Test>
 	<Test Name="NoSUIDGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_NOSUID flag attempted.</Description>
 		<Code>
-			Fail (mount( DeviceName, MountPoint, FileSystem, MS_NOSUID, 0) == -1, "Mount with MS_NOSUID flag attempted failed");					
+			Check (mount( DeviceName, MountPoint, FileSystem, MS_NOSUID, 0) == -1, "Mount with MS_NOSUID flag attempted failed");					
 		</Code>
 	</Test>
 	<Test Name="MountRdOnlyGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_RDONLY flag attempted.</Description>		
 		<Code>
-			Fail(mount( DeviceName, MountPoint, FileSystem, MS_RDONLY, 0) == -1, "Mount with MS_RDONLY flag attempted failed");			
+			Check(mount( DeviceName, MountPoint, FileSystem, MS_RDONLY, 0) == -1, "Mount with MS_RDONLY flag attempted failed");			
 		</Code>		
 	</Test>
 	<Test Name="MountRELATIME" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_RELATIME flag attempted.</Description>		
 		<Code>
-			Fail (mount( DeviceName, MountPoint, FileSystem, MS_RELATIME, 0) == -1, "Mount with MS_RELATIME flag attempted failed");
+			Check (mount( DeviceName, MountPoint, FileSystem, MS_RELATIME, 0) == -1, "Mount with MS_RELATIME flag attempted failed");
 		</Code>		
 	</Test>
 	
 	<Test Name="MountMS_SILENT" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_SILENT flag attempted.</Description>		
 		<Code>
-			Fail (mount( DeviceName, MountPoint, FileSystem, MS_SILENT, 0) == -1, "Mount with MS_SILENT flag attempted failed");
+			Check (mount( DeviceName, MountPoint, FileSystem, MS_SILENT, 0) == -1, "Mount with MS_SILENT flag attempted failed");
 		</Code>		
 	</Test>
 	
 	<Test Name="MountMS_STRICTATIME" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_STRICTATIME flag attempted.</Description>		
 		<Code>
-			Fail (mount( DeviceName, MountPoint, FileSystem, MS_STRICTATIME, 0) == -1, "Mount with MS_STRICTATIME flag attempted failed");
+			Check (mount( DeviceName, MountPoint, FileSystem, MS_STRICTATIME, 0) == -1, "Mount with MS_STRICTATIME flag attempted failed");
 		</Code>
 	</Test>
 	<Test Name="MountMS_SYNCHRONOUS" FaultSimulationReady="true">
 		<Description>Trying to mount the device with MS_SYNCHRONOUS flag attempted.</Description>		
 		<Code>
-			Fail (mount( DeviceName, MountPoint, FileSystem, MS_SYNCHRONOUS, 0) == -1, "Mount with MS_SYNCHRONOUS flag attempted failed");
+			Check (mount( DeviceName, MountPoint, FileSystem, MS_SYNCHRONOUS, 0) == -1, "Mount with MS_SYNCHRONOUS flag attempted failed");
 		</Code>	
 	</Test>
 	<Test Name="MountWrongOption" FaultSimulationReady="true">
 		<Description>Trying to mount the device to another partition</Description>		
 		<Code>
-			Fail( mount( DeviceName, MountPoint, FileSystem, 0, "NotAnOption") == 0, "Mount should fail, but it did not");
+			Check( mount( DeviceName, MountPoint, FileSystem, 0, "NotAnOption") == 0, "Mount should fail, but it did not");
 		</Code>
 	</Test>
 	<Test Name="UmountInval">

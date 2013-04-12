@@ -22,7 +22,7 @@
 -->
 
 <TestSet Name="WriteDirect">	
-<Test Name="ReadWriteDirect" FaultSimulationReady="true">
+	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
 		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
 		<Code>
@@ -49,6 +49,33 @@
 			
 			Check( ReadStart[0] != WriteStart[0], "Different values were written and read.");
 
+		</Code>
+	</Test>
+	<Test Name="dbAllocNext" FaultSimulationReady="true">
+		<Description>Writes big amount of data directly to enable some parts of dbAllocNext function.</Description>
+		<Code>
+			system(("rm -rf " + (string)MountPoint + "*").c_str());
+			
+			int fd;
+	
+			Unres( mkdir("dir", 0777) == -1, "Cannot create directory.");
+			
+			fd = open("dir/file", O_RDWR | O_CREAT | O_DIRECT, S_IRUSR | S_IWUSR );
+			if ( fd == -1 )
+			{
+				cerr << "Cannot open file. Error: " << strerror(errno) << endl;
+				return 10;
+			}
+			
+			const int BlockSize = 4096;
+			int size = 250*30*BlockSize;
+			
+			char* WriteBuf = new char[size];
+			// Align to block size
+			char * WriteStart = reinterpret_cast<char*>(((reinterpret_cast<long>(WriteBuf) / BlockSize) + 1) * BlockSize);
+			WriteStart[0] = 'A';
+			
+			Check ( write(fd, WriteStart, size) == -1, "Cannot write to file.");
 		</Code>
 	</Test>
 </TestSet>

@@ -68,6 +68,7 @@
 		<Code>
 			xfs_flock64_t arg;
 			memset(&arg, 0, sizeof(arg));
+			arg.l_len = 100;
 			Fail (ioctl(FDs[0], XFS_IOC_ALLOCSP64, &arg) == -1, "Ioctl failed");
 		</Code>
 	</Test>
@@ -96,6 +97,7 @@
 		<Code>
 			xfs_flock64_t arg;
 			memset(&arg, 0, sizeof(arg));
+			arg.l_len = 100;
 			Fail (ioctl(FDs[0], XFS_IOC_UNRESVSP64, &arg) == -1, "Ioctl failed");
 		</Code>
 	</Test>

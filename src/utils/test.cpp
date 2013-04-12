@@ -35,7 +35,7 @@ extern string Path;
 extern char * DeviceName;
 extern char * MountPoint;
 extern char * FileSystem;
-						
+					
 
 ProcessResult * Test::Execute(vector<string> args)
 {
@@ -188,7 +188,6 @@ Status TestSet::Run(Checks checks)
 			KedrIntegrator::SetAllIndicators();
 		}
 		
-		
 		TestResult res = *static_cast<TestResult *>(i->second.Execute());
 		if ( i->second.GetEffectiveChecks() & Functional )
 			i->second.AddResult(Functional, res );
@@ -227,6 +226,8 @@ Status TestSet::Run(Checks checks)
 				{
 					cerr << "Test: " << i->first << endl;
 					cerr << "Processing point " << j->first << ". Count: " << j->second << endl;
+					// Temporary solution
+					PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true);
 				}
 				
 				unsigned int Count = j->second;

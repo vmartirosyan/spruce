@@ -63,10 +63,10 @@
 		</Code>
 	</Test>			
 		
-	<!--Test Name="DirectoriesInserted" FaultSimulationReady="true">
+	<Test Name="DirectoriesInserted" FaultSimulationReady="true">
 		<Description>Trying to create many directories</Description>
 		<Code>
-		  char buf[10];
+		    char buf[10];
             string dirname = "some_directory";
             
             mkdir(dirname.c_str(), 0777);
@@ -76,33 +76,9 @@
                 sprintf(buf, "%d",  j);
                 string dirname = buf;
                 mkdir(dirname.c_str(), 0777);
-                close(open(("1" + dirname).c_str(), O_RDWR | O_CREAT));
-                close(open(("2" + dirname).c_str(), O_RDWR | O_CREAT));
-                close(open(("3" + dirname).c_str(), O_RDWR | O_CREAT));
-                close(open(("4" + dirname).c_str(), O_RDWR | O_CREAT));
-                close(open(("5" + dirname).c_str(), O_RDWR | O_CREAT));                        
             }
-            
-            dirname = "some_directory";
-            // Now after we have splitted the page, we need to split the first page one more time.
-            string dirname1 = "directory_other";
-            chdir(dirname.c_str());
-            mkdir(dirname1.c_str(), 0777);
-            chdir(dirname1.c_str());
-            for (int j = 0; j < 100000; ++j)
-            {
-                sprintf(buf, "%d",  j);
-                string dirname = buf;
-                mkdir(dirname.c_str(), 0777);
-                close(open(("1" + dirname).c_str(), O_RDWR | O_CREAT));
-                close(open(("2" + dirname).c_str(), O_RDWR | O_CREAT));
-                close(open(("3" + dirname).c_str(), O_RDWR | O_CREAT));
-                close(open(("4" + dirname).c_str(), O_RDWR | O_CREAT));
-                close(open(("5" + dirname).c_str(), O_RDWR | O_CREAT));                        
-            }
-		
 		</Code>
-	</Test-->	
+	</Test>
 	
 	<Test Name="DirectoryNames" FaultSimulationReady="true">
 		<Description>Trying to create directories with different long names</Description>

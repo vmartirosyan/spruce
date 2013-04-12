@@ -43,7 +43,7 @@
 		<Description>If newpath already exists it will be atomically replaced.</Description>
 		<File count="2"/>
 		<Code>
-			Fail ( rename(FilePaths[0].c_str(), FilePaths[1].c_str()) == -1, "Rename failed." );
+			Check ( rename(FilePaths[0].c_str(), FilePaths[1].c_str()) == -1, "Rename failed." );
 			
 			Check ( access(FilePaths[1].c_str(), F_OK) == -1, "The new file is not created." );
 			
@@ -86,7 +86,7 @@
 			<Dir count="1"/>
 		</Dir>
 		<Code>
-			Fail ( rename(DirDirPaths[0].c_str(), "New") == -1, "Rename failed." );
+			Check ( rename(DirDirPaths[0].c_str(), "New") == -1, "Rename failed." );
 			
 			Check ( access("New", F_OK) == -1, "The new directory is not created." );
 			
@@ -144,7 +144,7 @@
 			unlink(Link);
 			Unres(symlink(FilePaths[0].c_str(), Link) == -1, "Cannot create the link.");
 			
-			Fail ( rename(FilePaths[0].c_str(), Link) == -1, "Rename failed." );
+			Check ( rename(FilePaths[0].c_str(), Link) == -1, "Rename failed." );
 			
 			Check ( access(Link, F_OK) == -1, "The new file is not created." );
 			
