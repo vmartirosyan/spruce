@@ -88,10 +88,10 @@ LFT:18,43 This code is called only in case of block size != 4096
 end_of_record
 
 SF:fs/jfs/resize.c
-FN:jfs_extendfs
-LFT:61,63 Never gets here because of a previous check of read-only fs in jfs_remount().
-LFT:333,334 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
-LFT:471,471 Never gets here because of a previous check of read-only fs in jfs_remount().
+#FN:jfs_extendfs
+LFT:123,125 Never gets here because of a previous check of read-only fs in jfs_remount().
+LFT:395,396 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:533,533 Never gets here because of a previous check of read-only fs in jfs_remount().
 end_of_record
 
 SF:fs/jfs/jfs_dmap.c
@@ -147,8 +147,8 @@ end_of_record
 #FREECODE:
 
 SF:fs/jfs/resize.c
-FN:jfs_extendfs
-LFT:199,199 Calling this code causes bug. log_formatted = 0 only when there is no inline log or when expanding is small, the latter case causes bug as the log is being formated after being previously shut down.
+#FN:jfs_extendfs
+LFT:261,261 Calling this code causes bug. log_formatted = 0 only when there is no inline log or when expanding is small, the latter case causes bug as the log is being formated after being previously shut down.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
