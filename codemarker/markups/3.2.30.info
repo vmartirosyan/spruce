@@ -141,6 +141,11 @@ FN:jfs_flush_journal
 LFT:72,72 Code is marked as it was not executed due to compiler optimisations.
 end_of_record
 
+SF:fs/jfs/jfs_mount.c 
+FN:updateSuper
+LFT:39,39 JFS_DASD_ENABLED flag isn't set and setting it directly in superblock causes superblock state turn not clean.
+end_of_record
+
 #######################################################################
 #################Section for free code markup##########################
 #######################################################################
