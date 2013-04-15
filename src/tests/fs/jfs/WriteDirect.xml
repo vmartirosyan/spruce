@@ -1,0 +1,72 @@
+<!--    read_write.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+// 			Nellie Danielyan <Nellie.92.d@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="WriteDirect">	
+	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
+		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
+		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
+		<Code>
+			int BlockSize;
+			int AGSize;
+			jfs_superblock sb;
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Can't read superblock");
+			BlockSize = sb.s_bsize;
+			AGSize = sb.s_agsize;
+			int size = (AGSize+1)*BlockSize;
+			char* WriteBuf = new char[size];
+			// Align to block size
+			char * WriteStart = reinterpret_cast<char*>(((reinterpret_cast<long>(WriteBuf) / BlockSize) + 1) * BlockSize);
+			
+			char* ReadBuf = new char[2*BlockSize];
+			char * ReadStart = reinterpret_cast<char*>(((reinterpret_cast<long>(ReadBuf) / BlockSize) + 1) * BlockSize);
+			
+			Fail ( write(FDs[0], WriteStart, size) == -1, "Cannot write to file.");
+			
+			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
+			
+			Fail( read(FDs[0], ReadStart, BlockSize) == -1, "Cannot read from file.");
+			
+			Check( ReadStart[0] != WriteStart[0], "Different values were written and read.");
+
+		</Code>
+	</Test>
+	<Test Name="dbAllocNext" FaultSimulationReady="true">
+		<Description>Writes big amount of data directly to enable some parts of dbAllocNext function.</Description>
+		<Code>
+			system(("rm -rf " + (string)MountPoint + "/*").c_str());
+			
+			Unres( mkdir("dir", 0777) == -1, "Cannot create directory.");
+			
+			File f("dir/file", S_IRUSR | S_IWUSR, O_RDWR | O_CREAT | O_DIRECT );
+			
+			const int BlockSize = 4096;
+			int size = 250*30*BlockSize;
+			
+			char* WriteBuf = new char[size];
+			// Align to block size
+			char * WriteStart = reinterpret_cast<char*>(((reinterpret_cast<long>(WriteBuf) / BlockSize) + 1) * BlockSize);
+			
+			Check ( write(f.GetFileDescriptor(), WriteStart, size) == -1, "Cannot write to file.");
+		</Code>
+	</Test>
+</TestSet>

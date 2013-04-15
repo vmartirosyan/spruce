@@ -1,0 +1,44 @@
+test read_write ReadWriteDirect
+expected test_suite syscall
+expected fs btrfs
+version l kernel_version 2.6.35
+
+expected severity Failed
+
+matched test_messages Error: Invalid argument
+
+attribute comment Btrfs doesn't support read() with O_DIRECT flag before kenel 2.6.35
+attribute resolution Filesystem problem
+
+end
+
+test read_write ReadWriteDirect
+expected test_suite syscall
+expected fs ext4
+expected mount_opts data=journal
+version l kernel_version 3.2.30
+
+expected severity Unresolved
+
+matched test_messages Error: Bad file descriptor
+
+attribute comment Ext4 doesn't support direct IO with journaling before kernel 3.2.30.
+attribute resolution Filesystem problem
+
+end
+
+test open OpenDirect
+expected test_suite syscall
+expected fs ext4
+expected mount_opts data=journal
+version l kernel_version 3.2.30
+
+expected severity Failed
+
+matched test_messages Error: Invalid argument
+
+attribute comment Ext4 doesn't support direct IO with journaling before kernel 3.2.30.
+attribute resolution Filesystem problem
+
+end
+

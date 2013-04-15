@@ -1,0 +1,3 @@
+<TestPackage Name="btrfs" FS="btrfs">
+	<TestSet Name="Ioctl" />
+</TestPackage>

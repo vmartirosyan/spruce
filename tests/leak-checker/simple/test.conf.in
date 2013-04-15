@@ -1,0 +1,5 @@
+fs=jfs
+modules=syscall;leak-check
+partition=@TEST_DEVICE@
+logfolder=@CMAKE_CURRENT_BINARY_DIR@/log
+subfolders=false
