@@ -240,8 +240,8 @@ public:
 			return;
 		}
 		
-		if ( pid != -1 )
-			Logger::LogInfo("Setting pid for point " + point );
+		/*if ( pid != -1 )
+			Logger::LogInfo("Setting pid for point " + point );*/
 		
 		string _pid_file = DebugFSPath + "/kedr_fault_simulation/points/"+ point + "/pid";
 		
@@ -262,7 +262,7 @@ public:
 	
 	static void ClearPid(string point)
 	{
-		Logger::LogInfo("Clearing pid for point " + point );
+		//Logger::LogInfo("Clearing pid for point " + point );
 		SetPid(point, -1);
 	}
 	
@@ -524,8 +524,6 @@ protected:
 		
 		ProcessResult * res = 
 		rmmod.Execute(args);
-		
-		//cerr << res->GetOutput() << endl;
 	}
 };
 #endif // #ifndef KEDR_INTEGRATOR

@@ -224,8 +224,10 @@ Status TestSet::Run(Checks checks)
 			{
 				if ( j->second )
 				{
-					cerr << "Test: " << i->first << endl;
-					cerr << "Processing point " << j->first << ". Count: " << j->second << endl;
+					stringstream str;
+					str << "Test: " << i->first << ".\tProcessing point " 
+						<< j->first << ". Count: " << j->second;
+					Logger::LogInfo(str.str());
 					// Temporary solution
 					PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true);
 				}
