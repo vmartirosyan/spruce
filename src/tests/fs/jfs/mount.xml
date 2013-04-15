@@ -302,6 +302,9 @@ isn't covered as mount options are parsed and checked in super.c-->
 				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 				string dirname = "dir";
+				
+				system(("rm -rf " + (string)MountPoint + "/*").c_str());
+				
 				Unres( mkdir(dirname.c_str(), 444) == -1, "Cannot create directory.");
 				
 				chdir("/");
