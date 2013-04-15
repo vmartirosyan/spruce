@@ -22,9 +22,11 @@
 -->
 <TestSet Name="ChangeSB">
 	<StartUp>
-		Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");
+		Skip(!PartitionManager::NoOptionsEnabled() &amp;&amp; !PartitionManager::IsOptionEnabled("nointegrity"),
+		 "These tests should run only when no options are provided.");
 	</StartUp>
 	<Requires>dirent.h</Requires>	
+	<Requires>jfs_filsys.h</Requires>	
 	<Test Name="JFS_DIR_INDEX" FaultSimulationReady="true">
 		<Description>Unset JFS_DIR_INDEX flag and read a directory.</Description>
 		<Code>
@@ -34,7 +36,7 @@
 			Unres ( chdir("/") == -1, "Cannot change directory." );
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
-			sb.s_flag &= ~0x00200000;//JFS_DIR_INDEX
+			sb.s_flag &= ~JFS_DIR_INDEX;
 			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
 			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
 			char buf[10];
@@ -60,8 +62,23 @@
 			}
 			closedir(dir);
 		
-			
-			
+		</Code>
+	</Test>
+	<Test Name="DirtyState" FaultSimulationReady="true">
+		<Description>Set jfs superblock state dirty and try to mount.</Description>
+		<Code>
+			jfs_superblock sb;
+			DIR *dir;
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			Unres(! strcmp(DeviceName, ""), "No device name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No device name is provided.");
+			Unres ( chdir("/") == -1, "Cannot change directory." );
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			sb.s_state = FM_DIRTY;
+			PartitionManager::SetSuperBlock(&sb,sizeof(sb));
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+	
 		</Code>
 	</Test>
 	<Footer>
