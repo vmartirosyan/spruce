@@ -60,12 +60,7 @@
 	
 			Unres( mkdir("dir", 0777) == -1, "Cannot create directory.");
 			
-			fd = open("dir/file", O_RDWR | O_CREAT | O_DIRECT, S_IRUSR | S_IWUSR );
-			if ( fd == -1 )
-			{
-				cerr << "Cannot open file. Error: " << strerror(errno) << endl;
-				return 10;
-			}
+			File f("dir/file", O_RDWR | O_CREAT | O_DIRECT, S_IRUSR | S_IWUSR );
 			
 			const int BlockSize = 4096;
 			int size = 250*30*BlockSize;
