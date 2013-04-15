@@ -77,6 +77,12 @@
                 string dirname = buf;
                 mkdir(dirname.c_str(), 0777);
             }
+            for (int j = 0; j < 50005; ++j)
+            {
+                sprintf(buf, "%d",  j);
+                string dirname = buf;
+                Fail(mkdir(dirname.c_str(), 0777) == -1,"mkdir failed.");
+            }
 		</Code>
 	</Test>
 	
