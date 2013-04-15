@@ -73,6 +73,12 @@ FN:diRead
 LFT:62,69 This code is supported only in OS/2
 end_of_record
 
+SF:fs/jfs/jfs_imap.c
+FN:diExtendFS
+LFT:38,39 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:43,46 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+end_of_record
+
 SF:fs/jfs/jfs_extent.c
 FN:extRecord Called from jfs_get_block+39.
 end_of_record
