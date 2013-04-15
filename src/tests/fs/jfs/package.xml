@@ -1,0 +1,14 @@
+<TestPackage Name="jfs" FS="jfs">
+	<TestSet Name="Ioctl" />
+	<TestSet Name="JfsOverloadTests" />
+	<TestSet Name="mount" />
+	<TestSet Name="WriteDirect" />
+	<TestSet Name="Xattr" />
+	<TestSet Name="ShowAndStoreFunctions" />
+	<TestSet Name="ChangeSB" />
+	<TestSet Name="Unicode" />
+	<TestSet Name="Lookup" />
+	<TestSet Name="Truncate" />
+	<TestSet Name="Link" />
+	<TestSet Name="Init_Exit" />
+</TestPackage>

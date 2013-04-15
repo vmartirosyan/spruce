@@ -1,0 +1,12 @@
+Check, that test, corresponded to LeakChecker, has 'Failed' or
+'Unresolved' status in case of unallocated frees detected by KEDR LeakChecker.
+
+For simulate leaks, additional KEDR LeakCheck payload is used for process
+bio_put() calls as frees.
+
+It is assumed that btrfs driver uses that function when new files are created.
+
+NB: 'Unresolved' status seems to be more appropriate for that case,
+because it means that problem may be in test itself.
+Unallocated frees means that KEDR LeakChecker doesn't detect corresponded
+allocations, so instrument is needed to be fixed.

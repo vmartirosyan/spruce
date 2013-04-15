@@ -1,0 +1,26 @@
+<TestSet Name="readahead">
+	<Requires>fcntl.h</Requires>
+	<Requires>unistd.h</Requires>
+	<Test Name="ReadaheadNormal" FaultSimulationReady="true">
+		<Description>perform file readahead into page cache</Description>
+		<File count="1"/>
+		<Code>
+			Fail(readahead(FDs[0], 0, getpagesize()) == -1, "readahead failed");
+		</Code>
+	</Test>
+	<Test Name="ReadaheadErrBadF">
+		<Description>fd is not a valid file descriptor or is not open for reading</Description>
+		<File count="1" flags="O_WRONLY | O_CREAT" mode="S_IRWXU"/>
+		<Code>
+			Fail(readahead(FDs[0], 0, getpagesize()) != -1 || errno != EBADF,
+				"EBADF error expected: file was opened read only");
+			
+			Unres(close(FDs[0]) == -1, "close failed");
+			
+			FDs[0] = -1;	// make FDs[0] invalid file descriptor anyway (for the next test case) 
+			
+			Fail(readahead(FDs[0], 0, getpagesize()) != -1 || errno != EBADF,
+				"EBADF error expected: invalid file descriptor");
+		</Code>
+	</Test>
+</TestSet>

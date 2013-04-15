@@ -1,0 +1,87 @@
+<!--    OverloadTests.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Nellie Danielyan <Nellie.92.d@gmail.com>
+//
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+<TestSet Name="ChangeSB">
+	<StartUp>
+		Skip(!PartitionManager::NoOptionsEnabled(),
+		 "These tests should run only when no options are provided.");
+	</StartUp>
+	<Requires>dirent.h</Requires>	
+	<Requires>jfs_filsys.h</Requires>	
+	<Test Name="JFS_DIR_INDEX" FaultSimulationReady="true">
+		<Description>Unset JFS_DIR_INDEX flag and read a directory.</Description>
+		<Code>
+			jfs_superblock sb;
+			DIR *dir;
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			Unres ( chdir("/") == -1, "Cannot change directory." );
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			sb.s_flag &= ~JFS_DIR_INDEX;
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			char buf[10];
+			string dirname = "some_directory";
+			
+			mkdir(dirname.c_str(), 0777);
+			chdir(dirname.c_str());
+			for (int j = 0; j < 10000; ++j)
+			{
+				sprintf(buf, "%d",  j);
+				string dirname = buf;
+				mkdir(dirname.c_str(), 0777);
+				close(open(("1" + dirname).c_str(), O_RDWR | O_CREAT));				
+			}
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			
+			dir = opendir(dirname.c_str());
+			Unres(!dir, "Cannot open directory.");
+			errno = 0;
+			while(readdir(dir))
+			{
+				Fail(errno, "Cannot read directory.");			
+			}
+			closedir(dir);
+		
+		</Code>
+	</Test>
+	<Test Name="DirtyState" FaultSimulationReady="true">
+		<Description>Set jfs superblock state dirty and try to mount.</Description>
+		<Code>
+			jfs_superblock sb;
+			DIR *dir;
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			Unres(! strcmp(DeviceName, ""), "No device name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No device name is provided.");
+			Unres ( chdir("/") == -1, "Cannot change directory." );
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			sb.s_state = FM_DIRTY;
+			PartitionManager::SetSuperBlock(&sb,sizeof(sb));
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+	
+		</Code>
+	</Test>
+	<Footer>
+		Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success,"Mount failed" );
+	</Footer>
+</TestSet>

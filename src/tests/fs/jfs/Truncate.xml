@@ -1,0 +1,77 @@
+<!--    Truncate.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="Truncate">
+	<StartUp>
+		Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");
+	</StartUp>
+	<Requires>sys/stat.h</Requires>
+	<Requires>fcntl.h</Requires>
+	<Test Name="xtTruncate" FaultSimulationReady="true">
+		<Description>Covers JFS xtTruncate and related functions.</Description>
+		<Code>
+			system("rm -rf /tmp/spruce_test/*");
+			
+			for ( int i = 0; i < 1; ++i )
+			{
+				char buf[10];
+				for ( int j = 0; j < 1000; ++j )
+				{
+					sprintf(buf, "tmp_dir%d", j);
+					Unres(mkdir(buf, 0777) == -1, "Cannot create directory " + (string)buf);
+				}
+			}
+			
+			File f("test");
+			int fd = f.GetFileDescriptor();
+				
+			const int len = 1024*1024*500;
+			char * buf = new char[len];
+			
+			Unres ( write(fd, buf, len) == -1, "Cannot write to file.");
+		
+			fsync(fd);
+				
+			Unres ( ftruncate(fd, len - 4096) == -1, "Cannot truncate file to len - 4096.");
+				
+			fsync(fd);
+			
+			Unres ( ftruncate(fd, len - 2*4096) == -1, "Cannot truncate file to len - 2*4096.");
+				
+			fsync(fd);
+			
+			Unres ( ftruncate(fd, len - 3*4096) == -1, "Cannot truncate file to len - 3*4096.");
+				
+			Unres ( unlink("test") == -1, "Cannot remove file.");
+			
+			fsync(fd);
+			
+			Unres ( ftruncate(fd, len - 4*4096) == -1, "Cannot truncate file to len - 4*4096.");
+				
+			fsync(fd);
+			
+			Unres ( ftruncate(fd, 4*4096) == -1, "Cannot truncate file to 4*4096.");
+			
+		</Code>
+	</Test>
+</TestSet>

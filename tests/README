@@ -1,0 +1,28 @@
+Tests for Spruce as test management system.
+
+For enable testing, SPRUCE_ENABLE_TESTING variable should be defined
+when configure Spruce. Also, TEST_DEVICE variable should be set to
+block device, which will be used as 'partition' for Spruce.
+
+These tests are implemented as 'CTest' tests, so should be executed using
+'ctest' utility.
+
+Tests assume that Spruce is configured, built and installed.
+Tests itself should be built using
+
+    make build_tests
+
+Some tests make unrevertable operations. Them may not executed again and
+may prevent other tests execution until system is restarted.
+All such tests has names with 'crash' substring.
+
+Command
+
+    make check
+
+executes only normal tests, which may be executed any number of times without
+system restart.
+Other tests should be executed manually, using 'ctest' utility. E.g., list of such
+tests may be requested using
+
+    ctest -N -R crash
