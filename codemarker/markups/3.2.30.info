@@ -243,3 +243,8 @@ end_of_record
 SF:fs/jfs/xattr.c
 FN:jfs_initxattrs The function is called when the SELinux package is installed.
 end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogOpen
+LFT:16,27 Code would be called if jfs/mount/MultiplePartitionsSingleLog didn't failed with fatal.
+end_of_record
