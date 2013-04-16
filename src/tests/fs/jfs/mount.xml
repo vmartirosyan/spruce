@@ -108,7 +108,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 				{
 					stringstream newsize;
 					newsize << (PartSizeInBlocks + i*10000);
-					Logger::LogWarn("New size: " + newsize.str());
 					Unres(mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, ("resize=" + newsize.str()).c_str()) == -1,
 						"Cannot extend partition.");
 				}
@@ -121,8 +120,28 @@ isn't covered as mount options are parsed and checked in super.c-->
 				}
 			</Footer>
 		</Test>
+		 <Test Name="MountResize" FaultSimulationReady="true">
+			<Description>Try to resize without remount flag.</Description>              
+			<Code>
+					Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+					Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+					Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+					Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+					int res;
+
+					Check(mount( DeviceName, MountPoint, FileSystem, 0, "resize") != -1, "Mount didn't fail on readonly filesystem.");
+					
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+        </Test>
 		 <Test Name="RemountResizeRO" FaultSimulationReady="true">
-                <Description>Resize.</Description>              
+                <Description>Resize read-only filesystem.</Description>              
                 <Code>
 						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
                         Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
@@ -145,7 +164,7 @@ isn't covered as mount options are parsed and checked in super.c-->
         </Test>
 
 		 <Test Name="RemountResizeWrong" FaultSimulationReady="true">
-				<Description>.</Description>
+				<Description>Resize error cases.</Description>
 				<Code>
 						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
 						Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
@@ -223,6 +242,10 @@ isn't covered as mount options are parsed and checked in super.c-->
 		</Test>		
         <Test Name="MultipleExternalLogs">
             <Description>Create multiple jfs partiotions with external log</Description>
+               <Header>
+					Skip(PartitionManager::IsOptionEnabled("-j", true), 
+				"These tests should run only when no options are provided.");
+			</Header>
             <Code>
                 Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
                 Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
@@ -271,10 +294,13 @@ isn't covered as mount options are parsed and checked in super.c-->
                
             </Code>
             <Footer>
-                if(mount(DeviceName, MountPoint, FileSystem, 0, "") == -1)
-                {
-                    Error("Failed to restore partition");
-                    Return(Fatal);
+                if(!PartitionManager::IsOptionEnabled("-j", true))
+				{
+					if(mount(DeviceName, MountPoint, FileSystem, 0, "") == -1)
+					{
+						Error("Failed to restore partition");
+						Return(Fatal);
+					}
                 }
             </Footer>
         </Test>
