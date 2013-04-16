@@ -46,6 +46,7 @@
 			int fd = f.GetFileDescriptor();
 			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
 			close(fd);
+			sync();			
 			Fail ( umount( MountPoint) == -1, "Unmount failed");			
 		</Code>
 	</Test>

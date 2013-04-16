@@ -31,46 +31,76 @@
 		<Description>Covers JFS xtTruncate and related functions.</Description>
 		<Code>
 			system("rm -rf /tmp/spruce_test/*");
-			
-			for ( int i = 0; i < 1; ++i )
-			{
-				char buf[10];
-				for ( int j = 0; j < 1000; ++j )
-				{
-					sprintf(buf, "tmp_dir%d", j);
-					Unres(mkdir(buf, 0777) == -1, "Cannot create directory " + (string)buf);
-				}
-			}
-			
+			int count = 0;
+		
 			File f("test");
 			int fd = f.GetFileDescriptor();
+	again:		
+			char buf[10000];
+			for (int i = 0 ; i < 256; ++i)
+			{
+				Unres( lseek64(fd, 100000, SEEK_CUR) == -1, "Cannot seek.");
 				
-			const int len = 1024*1024*500;
-			char * buf = new char[len];
-			
-			Unres ( write(fd, buf, len) == -1, "Cannot write to file.");
+				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
+			}
 		
 			fsync(fd);
+			
+			int size = 256*10000;
+	
+			while ( size )
+			{
+				Unres(ftruncate(fd, size) == -1, "Cannot trunacte.");
+				size -= 1000;
+			}
+			
+			for (int i = 0 ; i < 256; ++i)
+			{
+				Unres( lseek64(fd, 100000, SEEK_CUR) == -1, "Cannot seek.");
 				
-			Unres ( ftruncate(fd, len - 4096) == -1, "Cannot truncate file to len - 4096.");
-				
+				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
+			}
+		
 			fsync(fd);
 			
-			Unres ( ftruncate(fd, len - 2*4096) == -1, "Cannot truncate file to len - 2*4096.");
+			size = 256*10000;
+	
+			while ( size )
+			{
+				Unres(ftruncate(fd, size) == -1, "Cannot trunacte.");
+				size /= 2;
+			}
+			
+			for (int i = 0; i < 256; ++i)
+			{
+				Unres( lseek64(fd, 100000, SEEK_CUR) == -1, "Cannot seek.");
 				
+				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
+			}
+		
 			fsync(fd);
 			
-			Unres ( ftruncate(fd, len - 3*4096) == -1, "Cannot truncate file to len - 3*4096.");
-				
-			Unres ( unlink("test") == -1, "Cannot remove file.");
+			Unres(ftruncate(fd, 100) == -1, "Cannot trunacte.");
 			
+			for (int i = 0; i < 256; ++i)
+			{
+				Unres( lseek64(fd, 100000, SEEK_CUR) == -1, "Cannot seek.");
+				
+				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
+			}
+		
 			fsync(fd);
 			
-			Unres ( ftruncate(fd, len - 4*4096) == -1, "Cannot truncate file to len - 4*4096.");
-				
-			fsync(fd);
+			if ( count == 0)
+			{
 			
-			Unres ( ftruncate(fd, 4*4096) == -1, "Cannot truncate file to 4*4096.");
+				Unres(system("touch test1") != 0, "Cannot create file test1.");
+				
+				Unres(rename("test1", "test") == -1, "Cannot rename file.");
+				
+				count++;
+				goto again;
+			}
 			
 		</Code>
 	</Test>
