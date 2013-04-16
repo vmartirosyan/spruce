@@ -6,6 +6,7 @@
 //			Nellie Danielyan <Nellie.92.d@gmail.com>
 //      	Vahram Martirosyan <vmartirosyan@gmail.com>
 //          Karen Tsirunyan <ktsirunyan@gmail.com>
+//			Ruzanna Karakozova <r.karakozova@gmail.com>
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -179,7 +180,7 @@ isn't covered as mount options are parsed and checked in super.c-->
                 Unres(chdir("/") == -1, "Failed to change directory");
                
                 Unres(umount(MountPoint) == -1, "Failed to release partition");
-                system("mount");
+
                 system("rmmod jfs.ko");
                
                 string Device0 = string("/dev/ram0");
@@ -197,7 +198,12 @@ isn't covered as mount options are parsed and checked in super.c-->
                 dev_t devt1 = makedev(1,1);
                 dev_t devt2 = makedev(1,2);
                 dev_t devt3 = makedev(1,3);
-               
+                
+                Unres(unlink("/dev/ram0") == -1 && errno != ENOENT, "unlink failed");
+				Unres(unlink("/dev/ram1") == -1 && errno != ENOENT, "unlink failed");
+				Unres(unlink("/dev/ram2") == -1 && errno != ENOENT, "unlink failed");
+				Unres(unlink("/dev/ram3") == -1 && errno != ENOENT, "unlink failed");
+                
                 Unres(mknod(Device0.c_str(), S_IFBLK, devt0) == -1 && errno != EEXIST, "mknod failed");
                 Unres(mknod(ExtJournalName0.c_str(), S_IFBLK, devt1) == -1 && errno != EEXIST, "mknod failed");
                 Unres(mknod(Device1.c_str(), S_IFBLK, devt2) == -1 && errno != EEXIST, "mknod failed");
@@ -221,6 +227,62 @@ isn't covered as mount options are parsed and checked in super.c-->
                 }
             </Footer>
         </Test>
+
+        <!--This test causes fatal error, because of BUG-->
+        <!--Test covers code in jfs/jfs_logmgr.c file-->
+        <!--Test Name="MultiplePartitionsSingleLog">
+            <Description>Create multiple jfs partiotions with single log</Description>
+            <Code>
+                Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+                Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+                Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+               
+                Unres(chdir("/") == -1, "Failed to change directory");
+               
+                Unres(umount(MountPoint) == -1, "Failed to release partition");
+                
+                system("rmmod jfs.ko");
+               
+                string Device0 = string("/dev/ram0");
+                string ExtJournalName0 = string("/dev/ram1");
+               
+                string Device1 = string("/dev/ram2");
+                
+                string MountPoint0 = string("/tmp/MultipleExternalLogs_MountPoint0");
+                string MountPoint1 = string("/tmp/MultipleExternalLogs_MountPoint1");
+                Directory dir1(MountPoint0);
+                Directory dir2(MountPoint1);
+               
+				dev_t devt0 = makedev(1,0);
+                dev_t devt1 = makedev(1,1);
+                dev_t devt2 = makedev(1,2);
+                 
+                Unres(unlink("/dev/ram0") == -1 && errno != ENOENT, "unlink failed");
+				Unres(unlink("/dev/ram1") == -1 && errno != ENOENT, "unlink failed");
+				Unres(unlink("/dev/ram2") == -1 && errno != ENOENT, "unlink failed");
+				
+                Unres(mknod(Device0.c_str(), S_IFBLK, devt0) == -1 && errno != EEXIST, "mknod failed");
+                Unres(mknod(ExtJournalName0.c_str(), S_IFBLK, devt1) == -1 && errno != EEXIST, "mknod failed");
+                Unres(mknod(Device1.c_str(), S_IFBLK, devt2) == -1 && errno != EEXIST, "mknod failed");
+                
+                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device0, false, string("-j ") + ExtJournalName0), "Failed to create filesystem")
+                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device1, false, string("-j ") + ExtJournalName0), "Failed to create filesystem");
+                               
+                Unres(mount(Device0.c_str(), MountPoint0.c_str(), FileSystem, 0, "") == -1, "Failed to mount");
+                Unres(mount(Device1.c_str(), MountPoint1.c_str(), FileSystem, 0, "") == -1, "Failed to mount");
+               
+                Unres(umount(MountPoint0.c_str()) == -1, "Failed to release partition");
+                Unres(umount(MountPoint1.c_str()) == -1, "Failed to release partition");
+               
+            </Code>
+            <Footer>
+                if(mount(DeviceName, MountPoint, FileSystem, 0, "") == -1)
+                {
+                    Error("Failed to restore partition");
+                    Return(Fatal);
+                }
+            </Footer>
+        </Test-->
 		<Test Name="NoIntegrityOption1" FaultSimulationReady="true">
 			<Description>Mount with no integrity option and remount without it.</Description>
 			<Code>
