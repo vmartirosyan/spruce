@@ -1445,17 +1445,17 @@ sub spruce_parse_log_file($$)
         return;
     }
     
-    my $module_elem = xml_get_first_child($fs_elem, "Module");
-    unless($module_elem)
+    my $package_elem = xml_get_first_child($fs_elem, "Package");
+    unless($package_elem)
     {
-        &$spruce_report_parse_error("XML element \"Module\" is missed.");
+        &$spruce_report_parse_error("XML element \"Package\" is missed.");
         return;
     }
-
-    my $test_suite = xml_get_attr($module_elem, "Name");
+    
+    my $test_suite = xml_get_attr($package_elem, "Name");
     unless($test_suite)
     {
-        &$spruce_report_parse_error("Attribute \"Name\" of XML element \"Module\" is missed.");
+        &$spruce_report_parse_error("Attribute \"Name\" of XML element \"Package\" is missed.");
         return;
     }
     
@@ -1463,6 +1463,7 @@ sub spruce_parse_log_file($$)
     my $journal_title = $fs . "." . $test_suite;
     if($mount_opts)
     {
+        print "Mount Opts not empty";
         $journal_title .= "." . $mount_opts;
     }
 
@@ -1502,72 +1503,88 @@ sub spruce_parse_log_file($$)
     }
     
     # Add tests to the journal.
-    foreach my $item_elem (xml_get_children($module_elem))
+    foreach my $testset_elem (xml_get_children($package_elem))
     {
-        next unless (xml_get_name($item_elem) eq "Item");
+        next unless (xml_get_name($testset_elem) eq "TestSet");
         
-        my $test_name = xml_get_attr($item_elem, "Name");
+        # TestSet element corresponds to test_name.
+        my $test_name = xml_get_attr($testset_elem, "Name");
         unless(defined $test_name)
         {
-            &$spruce_report_parse_error("Attribute \"Name\" of XML element \"Item\" is missed.");
-            return;
+            &$spruce_report_parse_error("Attribute \"Name\" of XML element \"TestSet\" is missed.");
+            next;
         }
         
-        # Test point is empty by default
-        my $test_point = "";
-        my $operation_elem = xml_get_first_child($item_elem, "Operation");
-		if($operation_elem)
-		{
-            $test_point = xml_get_text($operation_elem);
+        foreach my $test_elem (xml_get_children($testset_elem))
+        {
+            next unless (xml_get_name($test_elem) eq "Test");
+            
+            # Test element corresponds to test_point
+            my $test_point = xml_get_attr($test_elem, "Name");
             unless(defined $test_point)
             {
-                &$spruce_report_parse_error("XML element \"Operation\" contains something other than text.");
+                &$spruce_report_parse_error("Attribute \"Name\" of XML element \"Test\" is missed in testset ${test_name}.");
+                next;
+            }
+            
+            my $results_elem = xml_get_first_child($test_elem, "Results");
+            unless($results_elem)
+            {
+                &$spruce_report_parse_error("XML element \"Results\" is missed in \"Test\" element ${test_name}.${test_point}.");
+                next;
+            }
+
+            # Use result only from first 'check'.
+            my $check_elem = xml_get_first_child($results_elem, "Check");
+            unless($check_elem)
+            {
+                &$spruce_report_parse_error("XML element \"Check\" is missed in \"Results\" element of test ${test_name}.${test_point}.");
+                next;
+            }
+            
+            my $status_elem = xml_get_first_child($check_elem, "Status");
+            unless($status_elem)
+            {
+                &$spruce_report_parse_error("XML element \"Status\" is missed in \"Check\" element of test ${test_name}.${test_point}.");
                 return;
             }
-		}
 
-        my $status_elem = xml_get_first_child($item_elem, "Status");
-        unless($status_elem)
-        {
-            &$spruce_report_parse_error("XML element \"Status\" is missed in \"Item\" element.");
-            return;
+            my $status = xml_get_text($status_elem);
+            unless(defined $status)
+            {
+                &$spruce_report_parse_error("XML element \"Status\" contains something other than text.");
+                return;
+            }
+            
+            # Convert status to severity.
+            my $severity = $spruce_status_severity_map{$status}
+                ? $spruce_status_severity_map{$status}
+                : $status;
+
+            my $output_elem = xml_get_first_child($check_elem, "Output");
+            unless($output_elem)
+            {
+                &$spruce_report_parse_error("XML element \"Output\" is missed in \"Check\" element of test ${test_name}.${test_point}.");
+                return;
+            }
+
+            my $test_messages = xml_get_text($output_elem);
+            unless(defined $test_messages)
+            {
+                &$spruce_report_parse_error("XML element \"Output\" contains something other than text.");
+                return;
+            }
+            
+            my $test = new_test($journal);
+
+            $test->{'test_name'} = $test_name;
+            $test->{'test_point'} = $test_point;
+            $test->{'test_messages'} = $test_messages;
+
+            $test->{'severity'} = $severity;
+            
+            process_test_point_result($journal, $test);
         }
-
-        my $status = xml_get_text($status_elem);
-        unless(defined $status)
-        {
-            &$spruce_report_parse_error("XML element \"Status\" contains something other than text.");
-            return;
-        }
-        
-        # Convert status to severity.
-        my $severity = $spruce_status_severity_map{$status}
-            ? $spruce_status_severity_map{$status}
-            : $status;
-
-        my $output_elem = xml_get_first_child($item_elem, "Output");
-        unless($output_elem)
-        {
-            &$spruce_report_parse_error("XML element \"Output\" is missed in \"Item\" element.");
-            return;
-        }
-
-        my $test_messages = xml_get_text($output_elem);
-        unless(defined $test_messages)
-        {
-            &$spruce_report_parse_error("XML element \"Output\" contains something other than text.");
-            return;
-        }
-        
-        my $test = new_test($journal);
-
-        $test->{'test_name'} = $test_name;
-        $test->{'test_point'} = $test_point;
-        $test->{'test_messages'} = $test_messages;
-
-        $test->{'severity'} = $severity;
-        
-        process_test_point_result($journal, $test);
     }
 }
 # Parse Spruce journals.
