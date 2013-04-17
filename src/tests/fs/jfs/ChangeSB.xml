@@ -26,7 +26,8 @@
 		 "These tests should run only when no options are provided.");
 	</StartUp>
 	<Requires>dirent.h</Requires>	
-	<Requires>jfs_filsys.h</Requires>	
+	<Requires>jfs_filsys.h</Requires>
+	<Requires>JFSCtl.hpp</Requires>	
 	<Test Name="JFS_DIR_INDEX" FaultSimulationReady="true">
 		<Description>Unset JFS_DIR_INDEX flag and read a directory.</Description>
 		<Code>
@@ -81,7 +82,58 @@
 	
 		</Code>
 	</Test>
+	<Test Name="xtExtendFail">
+		<Description>Brings to failure in dbAlloc function.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			const char * FilePath = "test";
+			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			
+			Unres(fd == -1, "Cannot create file.");
+			
+			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
+			
+			fsync(fd);
+			close(fd);
+			sync();
+			
+			JFSCtl jfs;
+			int inode_num = jfs.GetInodeNum(FilePath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinode * inode = jfs.GetInode(DeviceName, inode_num);
+			Unres(inode == NULL, "Cannot get inode.");
+			
+			((xad*)inode->di_xtroot)[2].len = 0xFFFFFF;
+			
+			Unres(jfs.SetInode(DeviceName, inode_num, inode) == false, "Cannot set inode.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			fd = open(FilePath, O_RDWR | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			Unres(fd == -1, "Cannot open file.");
+			
+			char * buf = new char[5000];
+			
+			write(fd, buf, 5000);
+			
+			fsync(fd);
+			close(fd);
+			
+			unlink(FilePath);
+			
+			sync();
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
 	<Footer>
-		Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success,"Mount failed" );
+		Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 	</Footer>
 </TestSet>
