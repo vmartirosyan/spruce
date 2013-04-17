@@ -203,4 +203,35 @@
 		
 		</Code>
 	</Test>	
+	
+	<Test Name="CiGetLeafPrefixKeyFSim">
+		<Description>Trying to create too many small files, and write the data.</Description>
+		<Code>			
+		char path[50];
+		int ret_val;
+		int file_index;
+		for (file_index = 0; file_index < 93; ++file_index)//90-99
+		{
+			sprintf(path, "max_files_test%d", file_index);
+			ret_val = open(path, O_CREAT | O_RDONLY, 0777);
+			if ( ret_val == -1 )
+			{
+				unlink(path);
+				char buf[3];
+				sprintf(buf, "%d-th", file_index);
+				Unres(true, "Cannot create the " + static_cast<string>(buf) + "file");
+			}
+		}
+		
+		sprintf(path, "max_files_test%d", file_index);
+		Fail((ret_val = open(path, O_CREAT | O_RDONLY, 0777)) == -1, "Cannot create file");
+		if ( ret_val == -1 )
+		{
+			unlink(path);
+			char buf[3];
+			sprintf(buf, "%d-th", file_index);
+			Unres(true, "Cannot create the " + static_cast<string>(buf) + "file");
+		}
+		</Code>
+	</Test>	
 </TestSet>
