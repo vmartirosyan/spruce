@@ -202,7 +202,7 @@ off64_t JFSCtl::LocateInode(string DeviceName, int InodeNum)
 		if ( lseek( fd, SUPER1_OFF + PSIZE + iag_key + sizeof(iag) + 16*sizeof(dinode), SEEK_SET ) == -1 )
 			throw Exception("JFSCtl::GetInode: Cannot seek to 16-th inode in aggregate IAG. " + (string)strerror(errno));
 			
-		if ( read ( fd, &_16_th_inode, sizeof(iag) ) != sizeof(iag) )
+		if ( read ( fd, &_16_th_inode, sizeof(dinode) ) != sizeof(dinode) )
 			throw Exception("JFSCtl::GetInode: Cannot read 16-th inode in aggregate IAG. " + (string)strerror(errno));
 			
 		uint64_t FileSetIAGBlock = 0;
