@@ -10,6 +10,10 @@
 #include <limits.h>
 using namespace std;
 
+// FN:1439,diLog.isra.5 
+// FN:1439,diLog
+#define DELETE_ISRA_RECORDS
+
 //Enum for different code types. 
 enum CODE_TYPE {DEAD_CODE, FREE_CODE};
 string dead_marker = "123456789"; // Marker for dead code
@@ -314,6 +318,11 @@ int main (int argc, char* argv[])
 						return 1;
 					}
 					
+					#ifdef DELETE_ISRA_RECORDS
+					if(((string)info_buf).find("isra") != string::npos)
+						continue;
+					#endif
+					
 					string sub = ((string)info_buf).substr(match_arr[2].rm_so, match_arr[2].rm_eo - match_arr[2].rm_so); // get function name
 					bool line_added = false;
 					
@@ -362,7 +371,9 @@ int main (int argc, char* argv[])
 									// Hack for *.isra functions (bug of gcov)
 									if(lft.st == fnst)
 									{
+										#ifndef DELETE_ISRA_RECORDS
 										fout<<info_buf<<endl;
+										#endif
 										goto nextfunction;
 									}
 									
@@ -413,6 +424,31 @@ int main (int argc, char* argv[])
 					string sub = ((string)info_buf).substr(match_arr[2].rm_so, match_arr[2].rm_eo - match_arr[2].rm_so); // get function name
 					bool line_added = false;
 					
+					#ifdef DELETE_ISRA_RECORDS
+					if(sub.find("isra") != string::npos)
+					{
+						string fnda = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so);
+						//cout << "FN NAME "<< sub<<endl;
+						//cout<< "fn data "<<fnda<<endl;
+						
+						char isra_buf[info_buf_length];
+						info.getline(isra_buf, info_buf_length);
+						sub = sub.substr(0, sub.find(".")); // Delete .isra.* 
+						
+						if(((string)isra_buf).find(sub) != string::npos) // FNDA:0,dbExtend
+						{
+							string newfnda = "FNDA:" + fnda + "," + sub;
+							strcpy(info_buf, newfnda.c_str());
+							//cout << info_buf << endl;
+						}
+						else
+						{
+							cerr<<"Uncorrect data in info file, FNDA. DELETE_ISRA_RECORDS mode"<<endl;
+							return 1;
+						}
+					}
+					#endif 
+					
 					for(unsigned int i = 0; i < fns.size(); ++i)
 						if(sub.compare(fns[i].FN) == 0)
 						{
@@ -421,7 +457,7 @@ int main (int argc, char* argv[])
 							sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so); // get coverage count	
 							std::stringstream convert;
 							convert << sub;
-							convert>>cov;
+							convert >> cov;
 							
 							if(fns[i].type == DEAD_CODE)
 							{
@@ -498,7 +534,7 @@ int main (int argc, char* argv[])
 				lastLFTIndex = INT_MAX;
  
 				
-				// BDDA
+				// BRDA
 				if(regexec(&ciregex_brda, info_buf, nmatch, match_arr, 0) == 0)
 				{						
 					unsigned int line;
