@@ -217,6 +217,9 @@
 		char path[50];
 		int ret_val;
 		int file_index;
+		
+		system(("rm -rf " + (string)MountPoint + "/*").c_str());
+		
 		for (file_index = 0; file_index < 93; ++file_index)//90-99
 		{
 			sprintf(path, "max_files_test%d", file_index);
