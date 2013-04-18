@@ -41,47 +41,35 @@
 			char *buf = new char[1024*1024];
 			memcpy(buf, "asdfg", 5);
 				
-			for (int i = 0 ; i < 5000; ++i)
+			for (int i = 0 ; i < 60000; ++i)
 			{
 				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
-				Unres(write(FDs[0], buf, 5000) == -1, "Write failed.");
-			
-			}
-			sync();
-		</Code>
-	</Test>			
-	
-	<Test Name="SplitPage" FaultSimulationReady="true">
-		<Description>Trying to create many directories</Description>
-		<File count = "1"/>
-		<Code>
-	
-			int fd = FDs[0];
-	
-			char *buf = new char[1024*1024];
-			memcpy(buf, "asdfg", 5);
-				
-			for (int i = 0 ; i < 256; ++i)
-			{
-				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
-				Unres(write(FDs[0], buf, 5000) == -1, "Write failed.");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed.");
 			
 			}
 			sync();
 			
 			Unres(lseek64(FDs[0], 5000, SEEK_SET) == -1, "Lseek failed.");
 			
-			for (int i = 0; i < 256; ++i)
+			for (int i = 0; i < 5000; ++i)
 			{
 				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed");
-				Unres(write(FDs[0], buf, 5000) == -1, "Write failed");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed");
 			}		
 			sync();
 			
+			Unres(lseek64(FDs[0], 0, SEEK_SET) == -1, "Lseek failed.");
+			for (int i = 0; i < 1000; ++i)
+			{
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed");
+			}		
+			sync();
+						
 			delete buf;
 		</Code>
 	</Test>			
-		
+	
 	<Test Name="DirectoriesInserted" FaultSimulationReady="true">
 		<Description>Trying to create many directories</Description>
 		<Code>
