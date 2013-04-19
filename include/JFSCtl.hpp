@@ -44,12 +44,14 @@ public:
 	struct jfs_superblock * GetSuperBlock(string DeviceName, bool ReloadFromDisk = false);
 	bool SetSuperBlock(string DeviceName, struct jfs_superblock * SuperBlock);
 	int GetInodeNum(string FilePath);
-	dinomap * GetIAGCP(string, int);
+	struct dinomap * GetIAGCP(string, int);
 	bool SetIAGCP(string, int, dinomap*);
+	struct iag * GetIAG(string, int);
+	bool SetIAG(string, int, iag*);
 private:
 	off64_t LocateInode(string, int);
 	off64_t LocateIAGCP(string, int);
-	uint64_t LocateFSIAG(int, int);
+	uint64_t LocateFSIAG(string, int);
 	map<int, struct dinode *> _InodeCache;
 	struct jfs_superblock * _SuperBlock;
 };
