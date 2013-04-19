@@ -82,6 +82,23 @@
 	
 		</Code>
 	</Test>
+	<Test Name="WrongBlockSize" FaultSimulationReady="true">
+		<Description>Set wrong block size in jfs superblock and try to mount.</Description>
+		<Code>
+			jfs_superblock sb;
+			DIR *dir;
+			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			Unres(! strcmp(DeviceName, ""), "No device name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No device name is provided.");
+			Unres ( chdir("/") == -1, "Cannot change directory." );
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			sb.s_bsize = 1000;
+			PartitionManager::SetSuperBlock(&sb,sizeof(sb));
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+	
+		</Code>
+	</Test>
 	<Test Name="xtExtendFail">
 		<Description>Brings to failure in dbAlloc function.</Description>
 		<Header>
