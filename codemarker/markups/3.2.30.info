@@ -64,6 +64,16 @@ FN:jfs_get_block
 LFT:22,43 XAD_NOTRECORDED flag is set only from two places, first is defined as NOTYET and in the second piece before setting the flag a bool value is checked which is always false.
 end_of_record
 
+SF:fs/jfs/inode.c
+FN:jfs_commit_inode
+LFT:19,23 The code is executed when fsync or extAlloc is called on read-only partition which is impossible.
+end_of_record
+
+SF:fs/jfs/inode.c
+FN:jfs_dirty_inode
+LFT:5,11 The code is executed when when inode is marked as dirty on read-only partition which is impossible.
+end_of_record
+
 SF:fs/jfs_metapage.h
 FN:_metapage_homeok Function is inline and its call is usually integrated.
 end_of_record

@@ -147,7 +147,7 @@ public:
 			ofstream of((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/current_indicator").c_str());
 			of << indicator;
 			of.close();
-			Logger::LogInfo("Indicator is set in " + DebugFSPath + "/kedr_fault_simulation/points/" + point + "/current_indicator");
+			//Logger::LogInfo("Indicator is set in " + DebugFSPath + "/kedr_fault_simulation/points/" + point + "/current_indicator");
 			
 			
 			return true;
@@ -186,7 +186,7 @@ public:
 			ofstream of((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/current_indicator").c_str());
 			of << "none";
 			of.close();
-			Logger::LogInfo("Indicator is cleared.");
+			//Logger::LogInfo("Indicator is cleared.");
 			return true;
 		}
 		catch (...)
