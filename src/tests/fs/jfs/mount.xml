@@ -462,5 +462,24 @@ isn't covered as mount options are parsed and checked in super.c-->
 			</Footer>
 		</Test>
 		
-		
+		<Test Name="RemountRW" FaultSimulationReady="true">
+                <Description>Resize read-only filesystem.</Description>              
+                <Code>
+					
+						Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Mount failed.");
+
+                        Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, 0) == -1, "Remount rw failed.");
+                        
+                        
+						
+                </Code>
+				<Footer>
+					if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+					{
+						Error("Mount failed!");
+						Return(Fatal);
+					}
+				</Footer>
+        </Test>
+
 </TestSet>
