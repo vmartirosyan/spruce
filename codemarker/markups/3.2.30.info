@@ -1,0 +1,263 @@
+#######################################################################
+#################Section for DEAD code ONLY############################
+#######################################################################
+DEADCODE:
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbReAlloc Called from dtSplitUp+106.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbExtend Called from dbRealloc+7.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtExtendPage
+LFT:0,211 Called from dtSplitUp+112.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtLinelockFreelist Called from dtExtendPage+188.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtSplitUp
+LFT:92,135 This code works only when block size != 4096
+LFT:275,275 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:ciCompare
+LFT:49,53 This is a dead code as it is written for internal page entry. But function ciCompare is being called from only a single point and only for a leaf page.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtUpdate Called from extRecord+9. Called from extRealloc, which is not defined by default(because of protection with macro _NOTYET).
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:ciGetLeafPrefixKey﻿   
+LFT:25,25 This code is supported only in OS/2
+LFT:32,32 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diWrite
+LFT:46,53 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diReadSpecial
+LFT:44,47 The function copy_from_dinode always returns 0. The error handling code is dead.
+end_of_record
+
+SF:fs/jfs/jfs_incore.h
+FN:JFS_SBI Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/jfs/jfs_incore.h
+FN:isReadOnly Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/jfs/inode.c
+FN:jfs_get_block 
+LFT:22,43 XAD_NOTRECORDED flag is set only from two places, first is defined as NOTYET and in the second piece before setting the flag a bool value is checked which is always false.
+end_of_record
+
+SF:fs/jfs_metapage.h
+FN:_metapage_homeok Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diRead
+LFT:62,69 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diExtendFS
+LFT:38,39 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:43,46 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+end_of_record
+
+SF:fs/jfs/jfs_extent.c
+FN:extRecord Called from jfs_get_block+39.
+end_of_record
+
+SF:fs/jfs/acl.c
+FN:jfs_set_acl
+LFT:18,18 Never gets here because of a previous check.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:mapLog
+LFT:18,43 This code is called only in case of block size != 4096
+end_of_record
+
+SF:fs/jfs/resize.c
+#FN:jfs_extendfs
+LFT:110,116 VolumeSize is got from vfs superblock and it can't be reached from user-space and if we try to change the value in jfs superblock mount fails.
+LFT:123,125 Never gets here because of a previous check of read-only fs in jfs_remount().
+LFT:156,156 jfs_extendfs is called only once and newLogSize is 0 there.
+LFT:395,396 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:476,477 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:533,533 Never gets here because of a previous check of read-only fs in jfs_remount().
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbExtendFS
+LFT:86,87 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:254,259 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+end_of_record
+
+SF:fs/jfs/xtree.c
+FN:xtExtend
+LFT:61,125 this code can be covered(partially) when we write more than 64GB to file. It takes too long 
+end_of_record
+
+SF:fs/jfs/xtree.c
+FN:xtInsert
+LFT:82,84 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
+end_of_record
+
+SF:fs/jfs/xtree.c
+FN:xtSplitRoot
+LFT:33,34 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
+end_of_record
+
+SF:fs/jfs/super.c
+LFT:82,83 panic() call coverage cannot be extracted because it immediately halts system.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+LFT:403,423 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_readpage
+LFT:26,26 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
+end_of_record
+
+SF:fs/jfs_metapage.c		
+FN:remove_metapage Function is inline and its call is usually integrated.	
+end_of_record
+
+SF:fs/jfs_metapage.c		
+FN:page_to_mp Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogFileSystem
+LFT:17,17 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogFileSystem
+LFT:29,29 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:jfs_flush_journal
+LFT:72,72 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/jfs/jfs_mount.c 
+FN:updateSuper
+LFT:39,39 JFS_DASD_ENABLED flag isn't set and setting it directly in superblock causes superblock state turn not clean.
+end_of_record
+
+#######################################################################
+#################Section for free code markup##########################
+#######################################################################
+#FREECODE:
+
+SF:fs/jfs/resize.c
+#FN:jfs_extendfs
+LFT:261,261 Calling this code causes bug. log_formatted = 0 only when there is no inline log or when expanding is small, the latter case causes bug as the log is being formated after being previously shut down.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtSearch
+LFT:199,202 Difficult to reproduce in normal coverage.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtReadFirst
+LFT:39,43 Difficult to reproduce in normal coverage.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:add_missing_indices 
+LFT:0,51 Called from jfs_readdir+302.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+LFT:3222,3234 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
+end_of_record
+
+SF:fs/jfs/jfs_btree.h
+FN:BT_STACK_DUMP Called from dtSearch+200. Called from dtReadFirst+42.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_fh_to_dentry The function is exported. Can be called only from kernel space.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_fh_to_parent The function is exported. Can be called only from kernel space.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_nfs_get_inode Called from jfs_fh_to_dentry+3.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_get_parent The function is exported. Can be called only from kernel space.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_rename 
+LFT:111,120 This block is dead as it can be executed only in case when there are hard links on directories. Linux does not allow it.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtSearch 
+LFT:264,266 These lines can be covered only when the xtree stack is full which is difficult to produce in normal coverage terms.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtTruncate 
+LFT:490,492 These lines can be covered only when the xtree stack is full which is difficult to produce in normal coverage terms.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtTruncate_pmap 
+LFT:135,137 These lines can be covered only when the xtree stack is full which is difficult to produce in normal coverage terms.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:jfsIOWait
+LFT:15,16 These lines can be covered from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogFileSystem
+LFT:24,26 Code is called only if more than MAX_ACTIVE partitions are mount with the same external journal.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogFileSystem
+LFT:35,37 Code is called only if more than MAX_ACTIVE partitions are mount with the same external journal.
+end_of_record
+
+SF:fs/jfs/xattr.c
+FN:jfs_initxattrs The function is called when the SELinux package is installed.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogOpen
+LFT:16,27 Code would be called if jfs/mount/MultiplePartitionsSingleLog didn't failed with fatal.
+end_of_record

@@ -1,0 +1,175 @@
+<!--    access.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="access">	
+	<Test Name="AccessRead" FaultSimulationReady="true">
+		<Description>access()  checks  whether the calling process can access the file pathname.</Description>
+		<File count="1" />
+		<Code>
+			struct stat parent_st;
+			
+			Unres ( stat(".", &parent_st) == -1, "Cannot get parent folder stat." );
+			
+			// If the search bits of the parent folder are not set
+			// then no need to check access. It will be denied.
+			if ( ( ( parent_st.st_mode & S_IRUSR ) == 0 ) && ( ( parent_st.st_mode & S_IXUSR ) == 0 ) )
+				Unsupp("Path is not accessable!");
+			
+			Unres ( fchmod(FDs[0], 0777) == -1, "Cannot set file mode." );
+			
+			struct passwd * nobody = getpwnam("nobody");
+			
+			Unres( nobody == NULL, "Cannot obtain nobody user information.");
+			
+			Unres( chown( FilePaths[0].c_str(), nobody->pw_uid, nobody->pw_gid ) == -1, "Cannot change file owner to 'nobody'." );
+			
+			Unres ( setuid(nobody->pw_uid) == -1, "Cannot set the user ID to nobody.");
+			
+			struct stat st;
+			Unres ( fstat(FDs[0], &st) == -1, "Cannot stat file." );
+			
+			Fail ( ( st.st_mode & S_IRUSR != 0 ) && ( access(FilePaths[0].c_str(), R_OK) == -1 ), "Read permission is granted but access returns error.");
+			
+			Fail ( ( st.st_mode & S_IRUSR == 0 ) && ( access(FilePaths[0].c_str(), R_OK) == 0 ), "Read permission is not granted but access returns success.");			
+					
+		</Code>		
+	</Test>
+	<Test Name="AccessWrite" FaultSimulationReady="true">
+		<Description>access()  checks  whether the calling process can access the file pathname.</Description>
+		<File count="1" mode="0777" />
+		<Code>
+			struct stat parent_st;
+			
+			Unres ( stat(".", &parent_st) == -1, "Cannot get parent folder stat." );
+			
+			// If the search bits of the parent folder are not set
+			// then no need to check access. It will be denied.
+			if ( ( ( parent_st.st_mode & S_IRUSR ) == 0 ) && ( ( parent_st.st_mode & S_IXUSR ) == 0 ) )
+				Unsupp("Path is not accessable!");
+			
+			Unres ( fchmod(FDs[0], 0777) == -1, "Cannot set file mode." );
+			
+			struct passwd * nobody = getpwnam("nobody");
+			
+			Unres( nobody == NULL, "Cannot obtain nobody user information.");
+			
+			Unres( chown( FilePaths[0].c_str(), nobody->pw_uid, nobody->pw_gid ) == -1, "Cannot change file owner to 'nobody'." );
+			
+			Unres ( setuid(nobody->pw_uid) == -1, "Cannot set the user ID to nobody.");
+			
+			struct stat st;
+			Unres ( fstat(FDs[0], &st) == -1, "Cannot stat file." );
+			
+			Fail ( ( st.st_mode & S_IWUSR != 0 ) && ( access(FilePaths[0].c_str(), W_OK) == -1 ), "Write permission is granted but access returns error.");
+			
+			Fail ( ( st.st_mode & S_IWUSR == 0 ) && ( access(FilePaths[0].c_str(), W_OK) == 0 ), "Write permission is not granted but access returns success.");			
+		</Code>		
+	</Test>
+	<Test Name="AccessExec" FaultSimulationReady="true">
+		<Description>access()  checks  whether the calling process can access the file pathname.</Description>
+		<File count="1" mode="0777" />
+		<Code>
+			if ( PartitionManager::IsOptionEnabled("noexec") )
+				Unsupp("The noexec option is enabled.");
+			
+			struct stat parent_st;
+			
+			Unres ( stat(".", &parent_st) == -1, "Cannot get parent folder stat." );
+			
+			// If the search bits of the parent folder are not set
+			// then no need to check access. It will be denied.
+			if ( ( ( parent_st.st_mode & S_IRUSR ) == 0 ) && ( ( parent_st.st_mode & S_IXUSR ) == 0 ) )
+				Unsupp("Path is not accessable!");
+				
+			Unres ( fchmod(FDs[0], 0777) == -1, "Cannot set file mode." );
+				
+			struct passwd * nobody = getpwnam("nobody");
+			
+			Unres( nobody == NULL, "Cannot obtain nobody user information.");
+			
+			Unres( chown( FilePaths[0].c_str(), nobody->pw_uid, nobody->pw_gid ) == -1, "Cannot change file owner to 'nobody'." );
+			
+			Unres ( setuid(nobody->pw_uid) == -1, "Cannot set the user ID to nobody.");
+			
+			struct stat st;
+			Unres ( fstat(FDs[0], &st) == -1, "Cannot stat file." );
+			
+			Fail ( ( st.st_mode & S_IXUSR != 0 ) && ( access(FilePaths[0].c_str(), X_OK) == -1 ), "Execution permission is granted but access returns error.");
+			
+			Fail ( ( st.st_mode & S_IXUSR == 0 ) && ( access(FilePaths[0].c_str(), X_OK) == 0 ), "Execution permission is not granted but access returns success.");
+			
+		</Code>		
+	</Test>
+	<Test Name="AccessFileExists" FaultSimulationReady="true">
+		<Description>the existence test (F_OK)</Description>
+		<File count="1" />
+		<Code>
+			Fail ( access(FilePaths[0].c_str(), F_OK) != 0, "The file exists but access returns error. " );
+		</Code>
+	</Test>
+	<Test Name="AccessErrAccess">
+		<Description>Permission bits of the file mode do  not  permit  the  requested access.</Description>
+		<File count="1" />
+		<Code>
+			struct passwd * nobody = getpwnam("nobody");
+		
+			Unres(nobody == NULL, "Cannot obtain nobody user information.");
+			
+			Unres( setuid(nobody->pw_uid) == -1, "Cannot set the effective user ID to nobody.");
+			Check ( access(FilePaths[0].c_str(), W_OK) == 0 || errno != EACCES, "Access should return EACCES error code but it did not." );
+						
+		</Code>
+	</Test>
+	<Test Name="AccessErrLoop">
+		<Description>A loop exists in symbolic links encountered during resolution of the path argument.</Description>			
+		<File count="1" />
+		<Code>
+			ELoopTest(access(FilePaths[0].c_str(), W_OK), -1);
+		</Code>
+	</Test>
+	<Test Name="AccessErrNameTooLong">
+		<Description>The length of the path argument exceeds {PATH_MAX} or a pathname component is longer than {NAME_MAX}.</Description>
+		<Code>
+			ENameTooLongTest(access(path, F_OK), -1);
+		</Code>
+	</Test>
+	<Test Name="AccessErrNoEnt1">
+		<Description>A component of path does not name an existing file. or path is an empty string.</Description>
+		<Code>
+			ErrorTest(access("non_existing_file", W_OK), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="AccessErrNoEnt2">
+		<Description>Path is an empty string.</Description>
+		<Code>
+			ErrorTest(access("", W_OK), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="AccessErrNotDir">
+		<Description>A component of the path prefix is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+			ENotDirTest(access(path, W_OK), -1 );
+		</Code>
+	</Test>	
+</TestSet>

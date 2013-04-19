@@ -1,0 +1,4 @@
+/<Item Name="Possible leaks, Unallocated frees"/,/<\/Item>/ ! d
+/<Status>/ ! d
+s/^\s\{0,\}<Status>\(\w\{1,\}\)<\/Status>/\1/
+/Success/ w passed
