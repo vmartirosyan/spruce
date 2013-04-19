@@ -244,4 +244,46 @@
 		}
 		</Code>
 	</Test>	
+	
+	<!--Test Name="xtSplitRootFail" FaultSimulationReady="true">
+		<Description>Get fail in xtSplitRoot function.</Description>
+		<File count = "1"/>
+		<Code>
+		    int fd = FDs[0];
+	
+			char buf[5];
+						
+			for (int i = 0; i < 16; ++i)
+			{
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed.");				
+			}
+			sync();
+			
+			Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+			Fail(write(FDs[0], buf, 1) == -1, "Write failed.");
+						
+		</Code>
+	</Test-->
+		
+	<Test Name="dbAllocFail">
+		<Description>Trying to simulate fail in dbAlloc().</Description>
+		<Code>
+		    char buf[10];
+            string dirname = "some_directory";
+            
+            mkdir(dirname.c_str(), 0777);
+            chdir(dirname.c_str());
+            for (int j = 0; j < 512; ++j)
+            {
+                sprintf(buf, "%d",  j);
+                string dirname = buf;
+                mkdir(dirname.c_str(), 0777);
+            }
+            
+            sprintf(buf, "%d",  513);
+			dirname = buf;
+			Fail(mkdir(dirname.c_str(), 0777) == -1, "Cannot mkdir.");
+		</Code>
+	</Test>		
 </TestSet>

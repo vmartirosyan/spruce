@@ -95,7 +95,7 @@ end_of_record
 
 SF:fs/jfs/resize.c
 #FN:jfs_extendfs
-LFT:110,115 VolumeSize is got from vfs superblock and it can't be reached from user-space and if we try to change the value in jfs superblock mount fails.
+LFT:110,116 VolumeSize is got from vfs superblock and it can't be reached from user-space and if we try to change the value in jfs superblock mount fails.
 LFT:123,125 Never gets here because of a previous check of read-only fs in jfs_remount().
 LFT:156,156 jfs_extendfs is called only once and newLogSize is 0 there.
 LFT:395,396 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
@@ -112,6 +112,16 @@ end_of_record
 SF:fs/jfs/xtree.c
 FN:xtExtend
 LFT:61,125 this code can be covered(partially) when we write more than 64GB to file. It takes too long 
+end_of_record
+
+SF:fs/jfs/xtree.c
+FN:xtInsert
+LFT:82,84 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
+end_of_record
+
+SF:fs/jfs/xtree.c
+FN:xtSplitRoot
+LFT:33,34 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
 end_of_record
 
 SF:fs/jfs/super.c
