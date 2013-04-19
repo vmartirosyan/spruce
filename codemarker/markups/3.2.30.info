@@ -180,6 +180,13 @@ end_of_record
 #######################################################################
 #FREECODE:
 
+SF:fs/jfs/jfs_mount.c 
+FN:jfs_mount_rw
+LFT:18,18 Can be covered if stability-check is run in mount/RemounRW test but it causes system crash.
+LFT:24,24 Can be covered if stability-check is run in mount/RemounRW test but it causes system crash.
+LFT:39,41 Can be covered if stability-check is run in mount/RemounRW test but it causes system crash.
+end_of_record
+
 SF:fs/jfs/resize.c
 #FN:jfs_extendfs
 LFT:261,261 Calling this code causes bug. log_formatted = 0 only when there is no inline log or when expanding is small, the latter case causes bug as the log is being formated after being previously shut down.
