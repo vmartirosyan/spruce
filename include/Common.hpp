@@ -52,12 +52,14 @@ enum Check
 	Functional = 1,
 	Stability = 2,
 	MemoryLeak = 4,
+	Dangerous = 8,
 	All = Functional | Stability | MemoryLeak
 };
 
 const string strFuncional = "func";
 const string strStability = "stability";
 const string strMemoryLeak = "mem-leak";
+const string strDangerous = "dangerous";
 
 // A combination of flags from enum Check
 typedef unsigned int Checks;

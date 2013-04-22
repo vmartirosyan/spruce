@@ -282,15 +282,26 @@ TestSet Init_<xsl:value-of select="$PackageName" />_<xsl:value-of select="/TestS
 
 	TestSet <xsl:value-of select="$TestSetName" />Tests("<xsl:value-of select="/TestSet/@Name" />");
 	
+	Checks check;
+	
 	<xsl:for-each select="Test">
+		
+	check = All;
+	
+	<xsl:if test="@NonFunctional='true'">
+		check = check &amp; ~Functional;
+	</xsl:if>
+	
+	<xsl:if test="@Dangerous='true'">
+		check = check | Dangerous;
+	</xsl:if>
 	
 	<xsl:value-of select="$TestSetName" />Tests.AddTest(Test(
 		"<xsl:value-of select="@Name" />",
 		"<xsl:value-of select="Description" />",
-		<xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" />_<xsl:value-of select="@Name" />Func
-		<xsl:if test="@NonFunctional='true'">
-			,(All &amp; ~Functional) 
-		</xsl:if>));
+		<xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" />_<xsl:value-of select="@Name" />Func,
+		check
+		));
 	
 	</xsl:for-each>
 	

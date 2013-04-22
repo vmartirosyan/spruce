@@ -148,7 +148,9 @@ int main(int argc, char ** argv)
 					else if (*j == strStability)
 						PerformChecks |= Stability;
 					else if (*j == strMemoryLeak)
-						PerformChecks |= MemoryLeak;					
+						PerformChecks |= MemoryLeak;
+					else if (*j == strDangerous)
+						PerformChecks |= Dangerous;					
 				}
 				break;
 			}
