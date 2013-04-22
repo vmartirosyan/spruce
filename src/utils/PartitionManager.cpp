@@ -823,8 +823,6 @@ bool PartitionManager::SetSuperBlock(void * sb_struct, int size)
 		return false;
 	}
 	close(fd);
-	if(!Mount(dev, mnt, fs, ""))
-		return false;
 	return true;
 		
 }

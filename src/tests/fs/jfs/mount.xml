@@ -56,10 +56,37 @@ isn't covered as mount options are parsed and checked in super.c-->
 							Return(Unresolved);	
 						}
 						
-                        Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");
-                        
-                        
+                        Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");					
+                </Code>
+				<Footer>
+						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+						{
+							Error("Mount failed!");
+							Return(Fatal);
+						}
+				</Footer>
+        </Test>
+         <Test Name="RemountResizeFail" FaultSimulationReady="true" Dangerous="true">
+                <Description>Resize.</Description>              
+                <Code>
+						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
+                        Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
+                        Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+                        int res;
+                        Unres ( chdir("/") == -1, "Cannot change directory." );
+						res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+						if( res!= PS_Success )
+						{
+							if( res == PS_Fatal )
+							{
+								Error("Device too small.");
+								Return(Unresolved);
+							}						
+							Error("Partition mount or umount failed");
+							Return(Unresolved);	
+						}
 						
+                        Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");					
                 </Code>
 				<Footer>
 						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
@@ -305,9 +332,8 @@ isn't covered as mount options are parsed and checked in super.c-->
             </Footer>
         </Test>
 
-        <!--This test causes fatal error, because of BUG-->
-        <!--Test covers code in jfs/jfs_logmgr.c file-->
-        <!--Test Name="MultiplePartitionsSingleLog">
+       
+        <Test Name="MultiplePartitionsSingleLog" Dangerous="true">
             <Description>Create multiple jfs partiotions with single log</Description>
             <Code>
                 Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
@@ -359,7 +385,7 @@ isn't covered as mount options are parsed and checked in super.c-->
                     Return(Fatal);
                 }
             </Footer>
-        </Test-->
+        </Test>
 		<Test Name="NoIntegrityOption1" FaultSimulationReady="true">
 			<Description>Mount with no integrity option and remount without it.</Description>
 			<Code>
@@ -462,7 +488,7 @@ isn't covered as mount options are parsed and checked in super.c-->
 			</Footer>
 		</Test>
 		
-		<Test Name="RemountRW" FaultSimulationReady="true">
+		<Test Name="RemountRW" FaultSimulationReady="true" Dangerous="true">
                 <Description>Resize read-only filesystem.</Description>              
                 <Code>
 					

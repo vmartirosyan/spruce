@@ -34,11 +34,14 @@
 			jfs_superblock sb;
 			DIR *dir;
 			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
+			Unres(! strcmp(DeviceName, ""), "No device name is provided.");
+			Unres(! strcmp(FileSystem, ""), "No fs type is provided.");
 			Unres ( chdir("/") == -1, "Cannot change directory." );
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
 			sb.s_flag &= ~JFS_DIR_INDEX;
 			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
+			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, ""), "Cannot mount.");
 			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
 			char buf[10];
 			string dirname = "some_directory";
@@ -77,7 +80,9 @@
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
 			sb.s_state = FM_DIRTY;
-			PartitionManager::SetSuperBlock(&sb,sizeof(sb));
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot set new superblock");
+			PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "");//will fail in this version of jfs, though it's not documented behaviour 
+
 			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
 	
 		</Code>
@@ -94,7 +99,8 @@
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
 			sb.s_bsize = 1000;
-			PartitionManager::SetSuperBlock(&sb,sizeof(sb));
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot set new superblock");
+			PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "");//will fail in this version of jfs, though it's not documented behaviour 
 			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
 	
 		</Code>
