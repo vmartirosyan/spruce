@@ -183,6 +183,11 @@ int main(int argc, char ** argv)
 		}
 		
 	}
+	if ( FileSystem == NULL || !strcmp(FileSystem, "") )
+	{
+		Logger::LogError("Cannot obtain file system name.");
+		return -EFAULT;
+	}
 	
 	Path = FileSystem;
 		
@@ -192,9 +197,19 @@ int main(int argc, char ** argv)
 	
 	if ( getenv("Partition") )
 		DeviceName = getenv("Partition");
+	else
+	{
+		Logger::LogError("Cannot obtain device name.");
+		return -EFAULT;
+	}
 
 	if ( getenv("MountAt") )
 		MountPoint = getenv("MountAt");
+	else
+	{
+		Logger::LogError("Cannot obtain mount point.");
+		return -EFAULT;
+	}
 		
 	FileSystemTypesMap["ext4"] = 0xEF53; //EXT4_SUPER_MAGIC;
 	FileSystemTypesMap["btrfs"] = -1; // does not support?

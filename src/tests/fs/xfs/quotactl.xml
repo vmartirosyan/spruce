@@ -44,9 +44,6 @@
 			( !PartitionManager::IsGroupQuotaEnabled() && !PartitionManager::IsUserQuotaEnabled() && !PartitionManager::IsProjectQuotaEnabled() ))
 				Error("quota mount option is not provided.", Unsupported);
 
-			Unres( strcmp(DeviceName, "") == 0, "No device name is provided." );
-			Unres( strcmp(MountPoint, "") == 0, "No mount point is provided." );	
-				
 	</Header>
 	<Test Name="QuotactlXQuotaOn" FaultSimulationReady="true">
 		<Description>Turn on quotas for an XFS file system.</Description>		

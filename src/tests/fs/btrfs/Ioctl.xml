@@ -395,9 +395,6 @@
 		<Description>BTRFS_IOC_RESIZE.</Description>
 		<Code>
 			chdir("/");
-			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 			
 			// Remount the partition changing it's size
 			int res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);

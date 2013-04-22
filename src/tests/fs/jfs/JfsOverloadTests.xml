@@ -269,8 +269,9 @@
 	<Test Name="dbAllocFail">
 		<Description>Trying to simulate fail in dbAlloc().</Description>
 		<Code>
+			system(("rm -rf " + (string)MountPoint + "/*").c_str());
 		    char buf[10];
-            string dirname = "some_directory";
+            string dirname = "dbAllocFail_dir";
             
             mkdir(dirname.c_str(), 0777);
             chdir(dirname.c_str());

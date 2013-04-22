@@ -150,8 +150,6 @@
 	<Test Name="MountNameTooLong">
 		<Description>Mount: Target name is too long.</Description>
 		<Code>
-			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-			Unres(! strcmp(FileSystem, ""), "No filesystem is provided.");
 			ENameTooLongTest(mount(DeviceName, path, FileSystem, 0, NULL), -1);
 		</Code>
 	</Test>
@@ -171,7 +169,6 @@
 	<Test Name="UmountBusy">
 		<Description>Umount: source is busy.</Description>
 		<Code>
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 			ErrorTest(umount( "/" ), -1, EBUSY);
 		</Code>
 	</Test>
@@ -194,8 +191,6 @@
 	<Test Name="MountLoop2">
 		<Description>Mount: a move was attempted, while target is a descendant of source.</Description>
 		<Code>
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			// sets MS_RDONLY flags for read-only mounted device just in case
 			int rdonlyflag = 0;
 			if(PartitionManager::IsOptionEnabled("ro"))
@@ -210,8 +205,6 @@
 		</Header>		
 		<Description>Mount: a  remount  (MS_REMOUNT) was  attempted,  but  source  was not already mounted on target.</Description>
 		<Code>
-			Unres(! strcmp(DeviceName, ""), "No device name is provided.");		
-			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			// sets MS_RDONLY flags for read-only mounted device just in case
 			int rdonlyflag = 0;
 			
@@ -227,8 +220,6 @@
 	<Test Name="MountInval2">
 		<Description>Mount: a move (MS_MOVE) was attempted, but source was not  a  mount point.</Description>
 		<Code>
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			// sets MS_RDONLY flags for read-only mounted device just in case
 			int rdonlyflag = 0;
 			if(PartitionManager::IsOptionEnabled("ro"))
@@ -245,16 +236,12 @@
 	<Test Name="UmountInval2">
 		<Description>Umount2:  umount2()  was  called  with MNT_EXPIRE and either MNT_DETACH or MNT_FORCE.</Description>
 		<Code>
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-			
 			ErrorTest(umount2( MountPoint, MNT_EXPIRE | MNT_DETACH ), -1, EINVAL);
 		</Code>
 	</Test>
 	<Test Name="MountNotBlock">
 		<Description>Mount: source is not a block device.</Description>
 		<Code>
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			// sets MS_RDONLY flags for read-only mounted device just in case
 			int rdonlyflag = 0;
 			if(PartitionManager::IsOptionEnabled("ro"))
@@ -265,8 +252,6 @@
 	<Test Name="MountNoEnt1">
 		<Description>Mount: A pathname was empty.</Description>
 		<Code>
-			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			// sets MS_RDONLY flags for read-only mounted device just in case
 			int rdonlyflag = 0;
 			if(PartitionManager::IsOptionEnabled("ro"))
@@ -277,8 +262,6 @@
 	<Test Name="MountNoEnt2">
 		<Description>Mount: A pathname had a nonexistent component.</Description>
 		<Code>
-			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			// sets MS_RDONLY flags for read-only mounted device just in case
 			int rdonlyflag = 0;
 			if(PartitionManager::IsOptionEnabled("ro"))
@@ -289,8 +272,6 @@
 	<Test Name="MountNoDev">
 		<Description>Mount: filesystemtype not configured in the kernel.</Description>
 		<Code>
-			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 			// sets MS_RDONLY flags for read-only mounted device just in case
 			int rdonlyflag = 0;
 			if(PartitionManager::IsOptionEnabled("ro"))
@@ -302,8 +283,6 @@
 		<Description>Mount: target, or a prefix of source, is not a directory.</Description>
 		<File count="1"/>
 		<Code>
-			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
 			// sets MS_RDONLY flags for read-only mounted device just in case
 			int rdonlyflag = 0;
 			if(PartitionManager::IsOptionEnabled("ro"))
@@ -314,9 +293,6 @@
 	<Test Name="MountNoPerm">
 		<Description>Mount: The caller does not have the required privileges.</Description>
 		<Code>
-			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 			// sets MS_RDONLY flags for read-only mounted device just in case
 			int rdonlyflag = 0;
 			if(PartitionManager::IsOptionEnabled("ro"))
@@ -327,9 +303,6 @@
 	<Test Name="UmountNoPerm">
 		<Description>Umount: The caller does not have the required privileges.</Description>
 		<Code>
-			Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-			Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 			// sets MS_RDONLY flags for read-only mounted device just in case
 			int rdonlyflag = 0;
 			if(PartitionManager::IsOptionEnabled("ro"))
