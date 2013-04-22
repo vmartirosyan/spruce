@@ -47,142 +47,13 @@ bool JFSCtl::SetInode(string DeviceName, string FilePath, struct dinode * inode)
 	return SetInode(DeviceName, InodeNum, inode);
 }
 
-dinomap * JFSCtl::GetIAGCP(string DeviceName, int InodeNum)
+int JFSCtl::GetInodeNum(string FilePath)
 {
-	try
-	{
-		off64_t IagCPAddr = LocateIAGCP(DeviceName, InodeNum);
-		if ( IagCPAddr == -1 )
-			throw Exception("Cannot locate iag control page on disk");
-			
-		File f(DeviceName, S_IRUSR, O_RDONLY);
-		int fd = f.GetFileDescriptor();
+	struct stat st;
+	if ( stat(FilePath.c_str(), &st) == -1 )
+		return -1;
 		
-		if ( lseek( fd, IagCPAddr, SEEK_SET ) == -1)
-		{
-			throw Exception("Cannot seek to iag control page." + string(strerror(errno)));
-		}
-		struct dinomap * IagCP = new dinomap;
-		if ( read ( fd, IagCP, sizeof(dinomap) ) == -1)
-		{
-			throw Exception("Cannot read iag control page from disk." + string(strerror(errno)));
-		}
-		
-		
-		
-		return IagCP;
-	}
-	catch(Exception e)
-	{
-		Logger::LogError("JFSCtl::GetInode: Cannot get iag control page. " + e.GetMessage());
-		return NULL;
-	}
-}
-
-bool JFSCtl::SetIAGCP(string DeviceName, int InodeNum, dinomap *IAGCP)
-{
-	try
-	{
-		off64_t IagCPAddr = LocateIAGCP(DeviceName, InodeNum);
-		if ( IagCPAddr == -1 )
-			throw Exception("Cannot locate iag control page on disk");
-			
-		File f(DeviceName, S_IRUSR, O_WRONLY);
-		int fd = f.GetFileDescriptor();
-		
-		if ( lseek( fd, IagCPAddr, SEEK_SET ) == -1)
-		{
-			throw Exception("Cannot seek to iag control page." + string(strerror(errno)));
-		}
-		
-		if ( write ( fd, IAGCP, sizeof(dinomap) ) == -1)
-		{
-			throw Exception("Cannot write iag control page to disk." + string(strerror(errno)));
-		}
-		
-		
-		return true;
-	}
-	catch(Exception e)
-	{
-		Logger::LogError("JFSCtl::SetInode: Cannot get iag control page. " + e.GetMessage());
-		return false;
-	}
-}
-
-iag * JFSCtl::GetIAG(string DeviceName, int InodeNum)
-{
-	try
-	{
-		const int INODERPERIAG = EXTSPERIAG*32;
-		int iag_key = (InodeNum / INODERPERIAG);
-		File f(DeviceName, S_IRUSR, O_RDONLY);
-		int fd = f.GetFileDescriptor();
-		uint64_t FileSetIAGBlock = LocateFSIAG(DeviceName, iag_key);
-		if ( FileSetIAGBlock == 0 )
-		{
-			throw Exception("Cannot get FileSet IAG Address." + string(strerror(errno)));
-		}
-		uint64_t FileSetIAGAddr = ( FileSetIAGBlock )* PSIZE;
-		if( iag_key == 0 )
-		{
-			FileSetIAGAddr += PSIZE;		 // Skip the control page at once
-		}
-		if ( lseek( fd, FileSetIAGAddr, SEEK_SET ) == -1)
-		{
-			throw Exception("Cannot seek to FileSet IAG Address." + string(strerror(errno)));
-		}
-		struct iag *FileSetIag;
-		if ( read ( fd, FileSetIag, sizeof(FileSetIag) ) == -1)
-		{
-			throw Exception("Cannot read FileSet IAG from disk." + string(strerror(errno)));
-		}
-
-		return FileSetIag;
-	}
-	catch(Exception e)
-	{
-		Logger::LogError("JFSCtl::GetInode: Cannot get iag control page. " + e.GetMessage());
-		return NULL;
-	}
-}
-
-bool JFSCtl::SetIAG(string DeviceName, int InodeNum, iag *IAG)
-{
-	try
-	{
-		const int INODERPERIAG = EXTSPERIAG*32;
-		int iag_key = (InodeNum / INODERPERIAG);
-		
-		File f(DeviceName, S_IRUSR, O_RDONLY);
-		int fd = f.GetFileDescriptor();
-		
-		uint64_t FileSetIAGBlock = LocateFSIAG(DeviceName, iag_key);
-		if ( FileSetIAGBlock == 0 )
-		{
-			throw Exception("Cannot get FileSet IAG Address." + string(strerror(errno)));
-		}
-		
-		uint64_t FileSetIAGAddr = ( FileSetIAGBlock )* PSIZE;
-		if( iag_key == 0 )
-		{
-			FileSetIAGAddr += PSIZE;		 // Skip the control page at once
-		}
-		if ( lseek( fd, FileSetIAGAddr, SEEK_SET ) == -1)
-		{
-			throw Exception("Cannot seek to FileSet IAG Address." + string(strerror(errno)));
-		}
-		if ( write ( fd, IAG, sizeof(iag) ) == -1)
-		{
-			throw Exception("Cannot write iag control page to disk." + string(strerror(errno)));
-		}
-		return true;
-	}
-	catch(Exception e)
-	{
-		Logger::LogError("JFSCtl::SetInode: Cannot get iag control page. " + e.GetMessage());
-		return false;
-	}
+	return st.st_ino;
 }
 
 struct dinode * JFSCtl::GetInode(string DeviceName, int InodeNum, bool ReloadFromDisk)
@@ -200,8 +71,8 @@ struct dinode * JFSCtl::GetInode(string DeviceName, int InodeNum, bool ReloadFro
 			
 		File f(DeviceName, S_IRUSR, O_RDONLY);
 		int fd = f.GetFileDescriptor();
-		
-		if ( lseek( fd, InodeAddr, SEEK_SET ) == -1)
+		cerr<<"Inodeaddr:	"<<InodeAddr<<endl;
+		if ( lseek64( fd, InodeAddr, SEEK_SET ) == -1)
 		{
 			throw Exception("Cannot seek to file inode." + string(strerror(errno)));
 		}
@@ -233,7 +104,7 @@ bool JFSCtl::SetInode(string DeviceName, int InodeNum, struct dinode * inode)
 		File f(DeviceName, S_IRUSR, O_WRONLY);
 		int fd = f.GetFileDescriptor();
 		
-		if ( lseek( fd, InodeAddr, SEEK_SET ) == -1)
+		if ( lseek64( fd, InodeAddr, SEEK_SET ) == -1)
 		{
 			throw Exception("Cannot seek to file inode." + string(strerror(errno)));
 		}
@@ -250,11 +121,150 @@ bool JFSCtl::SetInode(string DeviceName, int InodeNum, struct dinode * inode)
 	}
 	catch(Exception e)
 	{
-		Logger::LogError("JFSCtl::SetInode: Cannot get inode. " + e.GetMessage());
+		Logger::LogError("JFSCtl::SetInode: Cannot set inode. " + e.GetMessage());
 		return false;
 	}
 }
-	
+
+dinomap * JFSCtl::GetIAGCP(string DeviceName, int InodeNum)
+{
+	try
+	{
+		off64_t IagCPAddr = LocateIAGCP(DeviceName, InodeNum);
+		if ( IagCPAddr == -1 )
+			throw Exception("Cannot locate iag control page on disk");
+			
+		File f(DeviceName, S_IRUSR, O_RDONLY);
+		int fd = f.GetFileDescriptor();
+		
+		if ( lseek64( fd, IagCPAddr, SEEK_SET ) == -1)
+		{
+			throw Exception("Cannot seek to iag control page." + string(strerror(errno)));
+		}
+		struct dinomap * IagCP = new dinomap;
+		if ( read ( fd, IagCP, sizeof(dinomap) ) == -1)
+		{
+			throw Exception("Cannot read iag control page from disk." + string(strerror(errno)));
+		}
+		
+		
+		
+		return IagCP;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::GetIAGCP: Cannot get iag control page. " + e.GetMessage());
+		return NULL;
+	}
+}
+
+bool JFSCtl::SetIAGCP(string DeviceName, int InodeNum, dinomap *IAGCP)
+{
+	try
+	{
+		off64_t IagCPAddr = LocateIAGCP(DeviceName, InodeNum);
+		if ( IagCPAddr == -1 )
+			throw Exception("Cannot locate iag control page on disk");
+			
+		File f(DeviceName, S_IRUSR, O_WRONLY);
+		int fd = f.GetFileDescriptor();
+		
+		if ( lseek64( fd, IagCPAddr, SEEK_SET ) == -1)
+		{
+			throw Exception("Cannot seek to iag control page." + string(strerror(errno)));
+		}
+		
+		if ( write ( fd, IAGCP, sizeof(dinomap) ) == -1)
+		{
+			throw Exception("Cannot write iag control page to disk." + string(strerror(errno)));
+		}
+		
+		
+		return true;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::SetIAGCP: Cannot set iag control page. " + e.GetMessage());
+		return false;
+	}
+}
+
+iag * JFSCtl::GetIAG(string DeviceName, int InodeNum)
+{
+	try
+	{
+		const int INODERPERIAG = EXTSPERIAG*32;
+		int iag_key = (InodeNum / INODERPERIAG);
+		uint64_t FileSetIAGBlock = LocateFSIAG(DeviceName, iag_key);
+		if ( FileSetIAGBlock == 0 )
+		{
+			throw Exception("Cannot get FileSet IAG Address." + string(strerror(errno)));
+		}
+		File f(DeviceName, S_IRUSR, O_RDONLY);
+		int fd = f.GetFileDescriptor();
+		uint64_t FileSetIAGAddr = ( FileSetIAGBlock )* PSIZE;
+		if( iag_key == 0 )
+		{
+			FileSetIAGAddr += PSIZE;		 // Skip the control page at once
+		}
+		if ( lseek64( fd, FileSetIAGAddr, SEEK_SET ) == -1)
+		{
+			throw Exception("Cannot seek to FileSet IAG Address." + string(strerror(errno)));
+		}
+		struct iag *FileSetIag = new iag;
+		if ( read ( fd, FileSetIag, sizeof(FileSetIag) ) == -1)
+		{
+			throw Exception("Cannot read FileSet IAG from disk." + string(strerror(errno)));
+		}
+
+		return FileSetIag;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::GetIAG: Cannot get iag . " + e.GetMessage());
+		return NULL;
+	}
+}
+
+bool JFSCtl::SetIAG(string DeviceName, int InodeNum, iag *IAG)
+{
+	try
+	{
+		const int INODERPERIAG = EXTSPERIAG*32;
+		int iag_key = (InodeNum / INODERPERIAG);
+		
+		
+		uint64_t FileSetIAGBlock = LocateFSIAG(DeviceName, iag_key);
+		if ( FileSetIAGBlock == 0 )
+		{
+			throw Exception("Cannot get FileSet IAG Address." + string(strerror(errno)));
+		}
+		File f(DeviceName, S_IRUSR, O_RDONLY);
+		int fd = f.GetFileDescriptor();
+		
+		uint64_t FileSetIAGAddr = ( FileSetIAGBlock )* PSIZE;
+		if( iag_key == 0 )
+		{
+			FileSetIAGAddr += PSIZE;		 // Skip the control page at once
+		}
+		if ( lseek64( fd, FileSetIAGAddr, SEEK_SET ) == -1)
+		{
+			throw Exception("Cannot seek to FileSet IAG Address." + string(strerror(errno)));
+		}
+		if ( write ( fd, IAG, sizeof(iag) ) == -1)
+		{
+			throw Exception("Cannot write iag control page to disk." + string(strerror(errno)));
+		}
+		return true;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::SetIAG: Cannot get iag control page. " + e.GetMessage());
+		return false;
+	}
+}
+
+
 struct jfs_superblock * JFSCtl::GetSuperBlock(string DeviceName, bool ReloadFromDisk)
 {
 	// First check if the super block is already loaded
@@ -270,7 +280,7 @@ struct jfs_superblock * JFSCtl::GetSuperBlock(string DeviceName, bool ReloadFrom
 		File f(DeviceName, S_IRUSR, O_RDONLY);
 		int fd = f.GetFileDescriptor();
 		
-		if ( lseek( fd, SUPER1_OFF, SEEK_SET  ) == -1 )
+		if ( lseek64( fd, SUPER1_OFF, SEEK_SET  ) == -1 )
 			throw Exception("JFSCtl::GetSuperBlock: Cannot seek to superblock start. " + (string)strerror(errno));
 			
 		if ( read ( fd, _SuperBlock, sizeof(jfs_superblock) ) != sizeof(jfs_superblock) )
@@ -299,7 +309,7 @@ bool JFSCtl::SetSuperBlock(string DeviceName, struct jfs_superblock * SuperBlock
 		File f(DeviceName, S_IWUSR, O_WRONLY);
 		int fd = f.GetFileDescriptor();
 		
-		if ( lseek( fd, SUPER1_OFF, SEEK_SET  ) == -1 )
+		if ( lseek64( fd, SUPER1_OFF, SEEK_SET  ) == -1 )
 			throw Exception("Cannot seek to superblock start. " + (string)strerror(errno));
 			
 		if ( write ( fd, _SuperBlock, sizeof(jfs_superblock) ) != sizeof(jfs_superblock) )
@@ -314,22 +324,10 @@ bool JFSCtl::SetSuperBlock(string DeviceName, struct jfs_superblock * SuperBlock
 	}
 }
 
-int JFSCtl::GetInodeNum(string FilePath)
-{
-	struct stat st;
-	if ( stat(FilePath.c_str(), &st) == -1 )
-		return -1;
-		
-	return st.st_ino;
-}
-
 off64_t JFSCtl::LocateInode(string DeviceName, int InodeNum)
 {
 	try
-	{
-		File f(DeviceName, S_IRUSR, O_RDONLY);
-		int fd = f.GetFileDescriptor();
-			
+	{			
 		const int INODERPERIAG = EXTSPERIAG*32;
 		int iag_inode_index = InodeNum % INODERPERIAG;
 		int inode_ext_desc = iag_inode_index / 32;
@@ -340,6 +338,8 @@ off64_t JFSCtl::LocateInode(string DeviceName, int InodeNum)
 		{
 			throw Exception("JFSCtl::LocateInode: Cannot get IAG. " + (string)strerror(errno));
 		}
+		File f(DeviceName, S_IRUSR, O_RDONLY);
+		int fd = f.GetFileDescriptor();
 		pxd_t ext_addr = FileSetIag->inoext[inode_ext_desc];
 		
 		return ext_addr.addr2*PSIZE + inode_offset;
@@ -355,18 +355,15 @@ off64_t JFSCtl::LocateInode(string DeviceName, int InodeNum)
 off64_t JFSCtl::LocateIAGCP(string DeviceName, int InodeNum)
 {
 	try
-	{
-		File f(DeviceName, S_IRUSR, O_RDONLY);
-		int fd = f.GetFileDescriptor();
-			
-		
+	{	
 		uint64_t FileSetIAGBlock = LocateFSIAG(DeviceName, 0);
 		
 		if ( FileSetIAGBlock == 0 )
 		{
 			throw Exception("Cannot get FileSet IAG Address." + string(strerror(errno)));
 		}
-		
+		File f(DeviceName, S_IRUSR, O_RDONLY);
+		int fd = f.GetFileDescriptor();
 		uint64_t FileSetIAGCP = ( FileSetIAGBlock)* PSIZE; 
 
 		return FileSetIAGCP;
@@ -386,7 +383,7 @@ uint64_t JFSCtl::LocateFSIAG(string DeviceName, int iag_key)
 		int fd = f.GetFileDescriptor();
 			
 		struct dinode _16_th_inode;
-		if ( lseek( fd, SUPER1_OFF + 2*PSIZE + sizeof(iag) + 16*sizeof(dinode), SEEK_SET ) == -1 )
+		if ( lseek64( fd, SUPER1_OFF + 2*PSIZE + sizeof(iag) + 16*sizeof(dinode), SEEK_SET ) == -1 )
 			throw Exception("JFSCtl::GetInode: Cannot seek to 16-th inode in aggregate IAG. " + (string)strerror(errno));
 			
 		if ( read ( fd, &_16_th_inode, sizeof(dinode) ) != sizeof(dinode) )
