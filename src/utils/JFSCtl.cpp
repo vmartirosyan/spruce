@@ -52,7 +52,7 @@ int JFSCtl::GetInodeNum(string FilePath)
 	struct stat st;
 	if ( stat(FilePath.c_str(), &st) == -1 )
 		return -1;
-		
+
 	return st.st_ino;
 }
 
@@ -71,7 +71,7 @@ struct dinode * JFSCtl::GetInode(string DeviceName, int InodeNum, bool ReloadFro
 			
 		File f(DeviceName, S_IRUSR, O_RDONLY);
 		int fd = f.GetFileDescriptor();
-		cerr<<"Inodeaddr:	"<<InodeAddr<<endl;
+		
 		if ( lseek64( fd, InodeAddr, SEEK_SET ) == -1)
 		{
 			throw Exception("Cannot seek to file inode." + string(strerror(errno)));
@@ -195,28 +195,34 @@ iag * JFSCtl::GetIAG(string DeviceName, int InodeNum)
 	{
 		const int INODERPERIAG = EXTSPERIAG*32;
 		int iag_key = (InodeNum / INODERPERIAG);
+		
+		
 		uint64_t FileSetIAGBlock = LocateFSIAG(DeviceName, iag_key);
 		if ( FileSetIAGBlock == 0 )
 		{
 			throw Exception("Cannot get FileSet IAG Address." + string(strerror(errno)));
 		}
+		
 		File f(DeviceName, S_IRUSR, O_RDONLY);
 		int fd = f.GetFileDescriptor();
 		uint64_t FileSetIAGAddr = ( FileSetIAGBlock )* PSIZE;
+		
+		
 		if( iag_key == 0 )
 		{
 			FileSetIAGAddr += PSIZE;		 // Skip the control page at once
 		}
+		
 		if ( lseek64( fd, FileSetIAGAddr, SEEK_SET ) == -1)
 		{
 			throw Exception("Cannot seek to FileSet IAG Address." + string(strerror(errno)));
 		}
 		struct iag *FileSetIag = new iag;
-		if ( read ( fd, FileSetIag, sizeof(FileSetIag) ) == -1)
+		if ( read ( fd, FileSetIag, sizeof(iag) ) == -1)
 		{
 			throw Exception("Cannot read FileSet IAG from disk." + string(strerror(errno)));
 		}
-
+		
 		return FileSetIag;
 	}
 	catch(Exception e)
@@ -338,11 +344,17 @@ off64_t JFSCtl::LocateInode(string DeviceName, int InodeNum)
 		{
 			throw Exception("JFSCtl::LocateInode: Cannot get IAG. " + (string)strerror(errno));
 		}
+		
+		
 		File f(DeviceName, S_IRUSR, O_RDONLY);
 		int fd = f.GetFileDescriptor();
 		pxd_t ext_addr = FileSetIag->inoext[inode_ext_desc];
 		
-		return ext_addr.addr2*PSIZE + inode_offset;
+		off64_t addr = ext_addr.addr1;
+		addr = addr << 32;
+		addr += ext_addr.addr2;
+		
+		return addr * PSIZE + inode_offset;
 	}
 	catch(Exception e)
 	{
