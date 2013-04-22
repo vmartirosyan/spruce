@@ -39,7 +39,7 @@
 			char buf[10000];
 			for (int i = 0 ; i < 80000; ++i)
 			{
-				Unres( lseek64(fd, 100000, SEEK_CUR) == -1, "Cannot seek.");
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
 				
 				Unres (write(fd, buf, 100) == -1, "Cannot write.");
 			}
@@ -56,7 +56,7 @@
 	again:			
 			for (int i = 0 ; i < 256; ++i)
 			{
-				Unres( lseek64(fd, 100000, SEEK_CUR) == -1, "Cannot seek.");
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
 				
 				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
 			}
@@ -73,7 +73,7 @@
 			
 			for (int i = 0; i < 256; ++i)
 			{
-				Unres( lseek64(fd, 100000, SEEK_CUR) == -1, "Cannot seek.");
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
 				
 				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
 			}
@@ -84,7 +84,7 @@
 			
 			for (int i = 0; i < 256; ++i)
 			{
-				Unres( lseek64(fd, 100000, SEEK_CUR) == -1, "Cannot seek.");
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
 				
 				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
 			}
