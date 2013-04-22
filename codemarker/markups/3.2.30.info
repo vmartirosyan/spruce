@@ -244,6 +244,21 @@ FN:jfs_rename
 LFT:111,120 This block is dead as it can be executed only in case when there are hard links on directories. Linux does not allow it.
 end_of_record
 
+SF:fs/jfs/namei.c
+FN:jfs_create
+LFT:45,46 Can be covered if SELinux package is installed.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_mknod
+LFT:41,42 Can be covered if SELinux package is installed.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_mkdir
+LFT:50,51 Can be covered if SELinux package is installed.
+end_of_record
+
 SF:fs/jfs/jfs_xtree.c
 FN:xtSearch 
 LFT:264,266 These lines can be covered only when the xtree stack is full which is difficult to produce in normal coverage terms.
