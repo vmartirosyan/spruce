@@ -94,7 +94,7 @@ int main(int argc, char ** argv)
 	sa.sa_handler = SignalHandler;
 	if ((sigaction(SIGINT, &sa, 0) == -1) || (sigaction(SIGQUIT, &sa, 0) == -1) ) // Ctrl+C, Ctrl+4
 	{	
-		cerr << "Cannot set signal handler. " << strerror(errno);
+		Logger::LogError("Cannot set signal handler.");
 		return FAULT;
 	}
 
@@ -136,13 +136,13 @@ int main(int argc, char ** argv)
 		}
 		else
 		{
-			cerr << "No configuration file is given. Aborting" << endl;
+			Logger::LogError("No configuration file is given. Aborting.");
 			return NOCFGFILE;
 		}
 		
 		if ( configValues.empty() )
 		{
-			cerr << "Cannot parse the configuration file. Aborting" << endl;
+			Logger::LogError("Cannot parse the configuration file. Aborting.");
 			return FAULT;
 		}
 
@@ -170,10 +170,6 @@ int main(int argc, char ** argv)
 			strPackages = configValues["packages"];
 		}
 		Packages = SplitString(strPackages, ';');
-		/*
-		for ( int i = 0; i < Modules.size(); ++i )
-			cerr << Modules[i] << " ";
-		cerr << endl;*/
 		
 		// Get the `checks` value
 		vector<string> Checks;
@@ -205,7 +201,7 @@ int main(int argc, char ** argv)
 		}
 		else
 		{
-			cerr << "Error. No partition name provided." << endl;
+			Logger::LogError("No partition name provided. Aborting");
 			return FAULT;
 		}
 
@@ -217,7 +213,7 @@ int main(int argc, char ** argv)
 		}
 		else
 		{
-			cerr << "Notice. No log folder specified. Using " << logfolder << "." << endl;
+			Logger::LogInfo("No log folder specified. Using " + logfolder + ".");
 		}
 				
 		// making the logfolder directory
@@ -225,14 +221,14 @@ int main(int argc, char ** argv)
 		{
 			if(errno != EEXIST)
 			{
-				cerr << "Cannot create logfolder: " << logfolder << ". " << strerror(errno) << endl;
+				Logger::LogError("Cannot create logfolder: " + logfolder + ".");
 				return FAULT;		
 			}	
 		} 
 		//If the subfolders config value is specified by value=false, then we don't need subfolders, and we will overwrite log file each time.		
 		if ( (configValues.find("subfolders") != configValues.end()) && (configValues["subfolders"] == "false" ))
 		{
-			cerr << "Notice. No subfolders will be created. The Log file will be overwritten." << endl;
+			Logger::LogWarn("No subfolders will be created. The Log file will be overwritten.");
 		}
 		else // by default subfolders are to be created
 		{
@@ -245,7 +241,7 @@ int main(int argc, char ** argv)
 			logfolder = logfolder + "/" + buf;
 			if ( mkdir(logfolder.c_str(), 0777) )
 			{
-				cerr << "Cannot create log subfolder: " << logfolder << ". " << strerror(errno) << endl;
+				Logger::LogError("Cannot create log subfolder: " + logfolder + ".");
 				return FAULT;
 			}
 		}	
@@ -266,7 +262,7 @@ int main(int argc, char ** argv)
 		ProcessResult * res = uname.Execute(args);
 		if ( res == NULL || res->GetStatus() )
 		{
-			cerr << "Cannot obtain architecture." << endl;
+			Logger::LogWarn("Cannot obtain architecture.");
 		}
 		else
 			arch = res->GetOutput();
@@ -277,7 +273,7 @@ int main(int argc, char ** argv)
 		res = uname.Execute(args);
 		if ( res == NULL || res->GetStatus() )
 		{
-			cerr << "Cannot obtain kernel version." << endl;
+			Logger::LogWarn("Cannot obtain kernel version.");
 		}
 		else
 			kernel = res->GetOutput();
@@ -289,7 +285,7 @@ int main(int argc, char ** argv)
 		res = lsb_release.Execute(args);
 		if ( res == NULL || res->GetStatus() )
 		{
-			cerr << "Cannot obtain distribution name." << endl;
+			Logger::LogWarn("Cannot obtain distribution name.");
 		}
 		else
 			distro = res->GetOutput();
@@ -300,7 +296,7 @@ int main(int argc, char ** argv)
 		res = lsb_release.Execute(args);
 		if ( res == NULL || res->GetStatus() )
 		{
-			cerr << "Cannot obtain distribution version." << endl;
+			Logger::LogWarn("Cannot obtain distribution version.");
 		}
 		else
 			distro_ver = res->GetOutput();
@@ -324,12 +320,12 @@ int main(int argc, char ** argv)
 		}
 		else
 		{
-			cerr << "Notice. No log level specified. Using `" << loglevel << "` as default." << endl;
+			Logger::LogInfo("No log level specified. Using `" + loglevel + "` as default.");
 		}
 		LogLevel nLogLevel = Logger::Parse(loglevel);
 		if ( LOG_None == nLogLevel)
 			nLogLevel = LOG_Warn;
-		cerr << "Logger::Init(" << logfolder + "/spruce.log" << "," << nLogLevel << ")" << endl; 
+		
 		Logger::Init(logfolder + "/spruce.log", nLogLevel);
 
 		// Find out which browser must be used to view the log file
@@ -341,7 +337,7 @@ int main(int argc, char ** argv)
 		}
 		else
 		{
-			cerr << "Notice. No browser specified. Switching to batch mode." << endl;
+			Logger::LogInfo("Notice. No browser specified. Switching to batch mode.");
 		}
 		
 		// A small hack for firefox to overcome a security problem
@@ -356,7 +352,7 @@ int main(int argc, char ** argv)
 		UnixCommand * copy = new UnixCommand("cp");
 		if ( copy->Execute(args) == NULL )
 		{
-			cerr << "Cannot copy the transformation file. Error " << strerror(errno) << endl;
+			Logger::LogError("Cannot copy the transformation file.");
 			return FAULT;
 		}
 		delete copy;
@@ -365,7 +361,7 @@ int main(int argc, char ** argv)
 		if ( configValues.find("exclude_tests") != configValues.end() &&
 			 configValues.find("run_tests") != configValues.end())
 		{
-			cerr << "Please provide either exclude_tests or run_tests values, not both." << endl;
+			Logger::LogError("Please provide either exclude_tests or run_tests values, not both.");
 			return FAULT;
 		}
 		
@@ -387,8 +383,7 @@ int main(int argc, char ** argv)
 		// Create the mount point	
 		if ( mkdir(MountAt.c_str(), S_IRUSR | S_IWUSR ) == -1 && errno != EEXIST )
 		{
-			cerr << "Cannot create folder " << MountAt << endl;
-			cerr << "Error: " << strerror(errno) << endl;
+			Logger::LogError("Cannot create folder " + MountAt + ".");
 			return errno;
 		}
 		bool ShowOutput = false;
@@ -398,7 +393,8 @@ int main(int argc, char ** argv)
 			EXIT_IF_SIGNALED;
 						
 			time_t FSStartTime = time(0);
-			cerr << endl << "\033[1;32mFilesystem : " << *fs << "\033[0m" << endl;						
+			cerr << endl << "\033[1;32mFilesystem : " << *fs << "\033[0m" << endl;
+			Logger::LogInfo("Filesystem : " + *fs + ".");
 			
 			// Before executing the modules prepare the environment
 			setenv("MountAt", MountAt.c_str(), 1);
@@ -410,11 +406,9 @@ int main(int argc, char ** argv)
 			// Unmount the MountAt folder first (just in case)		
 			if ( umount( MountAt.c_str() ) != 0 && errno != EINVAL)
 			{
-				cerr << "Cannot unmount folder " << MountAt << endl;
-				cerr << "Error: " << strerror(errno) << endl;
+				Logger::LogError("Cannot unmount folder " + MountAt + ".");
 				continue;
-			}			
-			
+			}
 			
 			vector<string> doer_args;
 			
@@ -504,7 +498,7 @@ int main(int argc, char ** argv)
 			
 			if ( !ShowOutput )
 			{
-				cerr << "\033[1;31mNo log file is generated for " << *fs << ".\033[0m" << endl;
+				Logger::LogWarn("\033[1;31mNo log file is generated for " + *fs + ".\033[0m");
 				continue;
 			}
 			
@@ -547,8 +541,7 @@ int main(int argc, char ** argv)
 
 						if ( res == NULL || res->GetStatus() != Success)
 						{
-							cerr << "Error executing xsltproc. Error: " << strerror(errno) << endl;
-							cerr << res->GetOutput() << endl;
+							Logger::LogError("Error executing xsltproc." + res->GetOutput());
 							continue;
 						}
 						
@@ -576,7 +569,7 @@ int main(int argc, char ** argv)
 	}
 	catch (Exception e)
 	{
-		cerr << "Exception is thrown: " << e.GetMessage() << endl;
+		Logger::LogError("Exception is thrown: " + e.GetMessage());
 		return FAULT;
 	}
 	//return 0;
@@ -622,7 +615,7 @@ void OpenDashboard(string browser, string logfolder, string fs)
 	int fork_ret = fork();
 	if ( fork_ret == -1 )
 	{
-		cerr << "Cannot create process for opening Dashboard in browser." << endl;
+		Logger::LogError("Cannot create process for opening Dashboard in browser.");
 		return;
 	}				
 	if(fork_ret == 0)
@@ -634,7 +627,7 @@ void OpenDashboard(string browser, string logfolder, string fs)
 		
 		if ( UserName == NULL )
 		{
-			cerr << "Cannot obtain user name. " << strerror(errno) << endl;
+			Logger::LogError("Cannot obtain user name.");
 			return;
 		}
 		
@@ -643,13 +636,13 @@ void OpenDashboard(string browser, string logfolder, string fs)
 		struct passwd * nobody = getpwnam(UserName);
 		if ( nobody == NULL )
 		{
-			cerr << "Cannot switch to user `" << UserName << "`. Browser won't start. " << strerror(errno) << endl;
+			Logger::LogError("Cannot switch to user `" + (string)UserName + "`. Browser won't start.");
 			return;
 		}
 			
 		if ( setuid(nobody->pw_uid) == -1 )
 		{
-			cerr << "Cannot switch to user `" << UserName << "`. Browser won't start. " << strerror(errno) << endl;
+			Logger::LogError("Cannot switch to user `" + (string)UserName + "`. Browser won't start.");
 			return;
 		}
 		
@@ -662,12 +655,12 @@ void OpenDashboard(string browser, string logfolder, string fs)
 		
 		if ( res == NULL )
 		{
-			cerr << "Cannot execute the browser: " << browser << endl;
+			Logger::LogError("Cannot execute the browser: " + browser + ".");
 			_exit(1);
 		}
 		if ( res->GetStatus() != Success )
 		{
-			cerr << "Error executing " << browser << ". " << strerror(errno) << "\n Output: " << res->GetOutput() << endl;
+			Logger::LogError("Cannot execute the browser: " + browser + ". " + res->GetOutput() + ".");
 			_exit(1);
 		}
 		_exit(0);
@@ -708,14 +701,14 @@ ConfigValues ParseConfigFile(string FilePath)
 		ifstream FileReader(FilePath.c_str());
 		if ( FileReader.fail() )
 		{
-			cerr << "Cannot open configuration file " << FilePath << endl;				
+			Logger::LogError("Cannot open configuration file " + FilePath + ".");
 			return vals;
 		}
 		while ( !FileReader.eof() && FileReader.good() )
 		{			
 			string CurrentLine;
 			FileReader >> CurrentLine;
-			//cerr << "Config line: " << CurrentLine << endl;
+			
 			size_t EqPos = CurrentLine.find('=');
 			if ( EqPos == string::npos ) // wrong formatted line?
 				continue;
@@ -726,7 +719,7 @@ ConfigValues ParseConfigFile(string FilePath)
 	}
 	catch (...)
 	{
-		cerr << "Error occured while reading configuration file " << FilePath << endl;
+		Logger::LogError("Error occured while reading configuration file " + FilePath);
 	}
 	return vals;
 }
@@ -735,6 +728,6 @@ ConfigValues ParseConfigFile(string FilePath)
 void SignalHandler(int signum)
 {
 	if(!terminate_process)
-		cerr<<"Spruce receive INTERRUPT signal. Preparing operations, please wait... Spruce PID = "<<getpid()<<endl;
+		Logger::LogError("Spruce receive INTERRUPT signal. Preparing operations, please wait...");// Spruce PID = " << getpid()<<endl;
 	terminate_process = true;
 }
