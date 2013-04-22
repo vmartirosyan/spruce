@@ -122,7 +122,17 @@
 			// Compare flags		
 			Check ( get_flags != old_flags, "Error get flags != old flags on read only FS.");	
 		</Code>
-	</Test>	
+	</Test>
+	<!-- Brings to system hang -->
+	<Test Name="FreezeFail" Dangerous="true">
+		<Description>Simulate faults in freeze/unfreeze operations.</Description>	
+		<File count="1" />
+		<Code>
+			Fail(ioctl(FDs[0], FIFREEZE , NULL) == -1, "Cannot freeze.");
+			
+			Fail(ioctl(FDs[0], FITHAW , NULL) == -1, "Cannot unfreeze.");
+		</Code>
+	</Test>
 	<Test Name="SetFlagsNotOwner">
 		<Description>Change flag by not the file owner.</Description>
 		<File count="1"/>
