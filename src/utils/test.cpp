@@ -176,6 +176,15 @@ Status TestSet::Run(Checks checks)
 		
 		i->second.SetChecks(checks);
 		
+		// Skip the dangerous tests if it is not clearly mentioned in the configuration file
+		if ( ( ( i->second.GetSupportedChecks() & Dangerous ) != None) && 
+			 ( ( i->second.GetEffectiveChecks() & Dangerous ) == None))
+		{
+			Logger::LogInfo("Test " + i->first + " is dangerous. Skipping.");
+			i++;
+			continue;
+		}
+		
 		if ( i->second.GetEffectiveChecks() == None )
 		{
 			Logger::LogInfo("Test " + i->first + " does not support necessary checks. Skipping.");
@@ -203,12 +212,9 @@ Status TestSet::Run(Checks checks)
 		{	
 			//so we have an emergency situation...
 			i->second.AddResult(Stability, ProcessResult(Fatal, "Status: " + StatusMessages[oopsStatus] + "Output: " + log));
+			break;
 		}
 		
-		// If Fatal error has rised quit!
-		if ( res.GetStatus() == Fatal )
-			break;
-			
 		// See if the stability check should be done
 		
 		if ( i->second.GetEffectiveChecks() & Stability )

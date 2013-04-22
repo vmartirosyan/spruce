@@ -86,6 +86,11 @@ public:
 		return ( _supportedChecks & _performChecks );
 	}
 	
+	Checks GetSupportedChecks() const
+	{
+		return ( _supportedChecks  );
+	}
+	
 	void AddResult(Checks c, ProcessResult t)
 	{
 		_results[c] = t;		
