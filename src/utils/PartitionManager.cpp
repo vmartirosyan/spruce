@@ -243,33 +243,9 @@ retry:
 
 bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSystem,string Options, unsigned long Flags)
 {			
-	/*
-	UnixCommand * mnt = new UnixCommand("mount");
-	vector<string> mnt_args;
-	mnt_args.push_back(DeviceName);
-	mnt_args.push_back(MountPoint);
-	mnt_args.push_back("-t");
-	mnt_args.push_back(FileSystem);
-
-	mnt_args.push_back("-n");
 	
-	mnt_args.push_back("-o");
-	mnt_args.push_back(Options);
-	
-				
-	ProcessResult * res = mnt->Execute(mnt_args);
-	delete mnt;
-	if ( res == NULL || res->GetStatus() != Success )
-	{
-		cerr << "Cannot mount " << DeviceName << " at folder " << MountPoint << endl;
-		cerr << "Error: " << res->GetOutput() << endl;
-		return false;
-	}
-	*/
 	if ( Options[Options.length() - 1] == ',' )
 		Options.erase(Options.begin() + Options.length() - 1);
-	//cerr << "Mounting " << DeviceName << " to " << MountPoint << " (" << FileSystem << ") \nFlags: "
-	//	<< Flags << ", Data: " << Options << endl;
 	
 	const int size = 10;
 	char buf[size];
@@ -316,7 +292,7 @@ bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSyst
 	//cout << "Changed dir" << endl;
 	return true;
 
-	cerr << "Cannot unmount partition " << MountPoint << ". " << strerror(errno) << endl;
+	Logger::LogError("Cannot unmount partition " + MountPoint + ".");
 	return false;
 
 }
@@ -525,7 +501,7 @@ bool PartitionManager::LoadConfiguration()
 	}
 	catch (...)
 	{
-		cerr << "PartitionManager: exception was thrown." << endl;
+		Logger::LogError("PartitionManager: exception was thrown.");
 		result = false;				
 	}
 
@@ -595,12 +571,16 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 		}
 				
 		ProcessResult * res;
-		cerr << "mkfs." << fs << " ";
+		
+		stringstream str;
+		
+		str << "mkfs." << fs << " ";
 		for(int i = 0; i < args.size(); i++)
 		{
-			cerr << args[i] << " ";
+			str << args[i] << " ";
 		}
-		cerr << endl;
+		Logger::LogInfo(str.str());
+		
 		res = mkfs->Execute(args);
 		
 		if ( res->GetStatus() != Success )
@@ -701,12 +681,7 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 			}
 			
 			ProcessResult * res;
-			cerr << "mkfs." << fs << " ";
-			for(int i = 0; i < args.size(); i++)
-			{
-				cerr << args[i] << " ";
-			}
-			cerr << endl;
+			
 			res = mkfs->Execute(args);
 			
 			if ( res->GetStatus() != Success )
@@ -738,7 +713,7 @@ uint64_t PartitionManager::GetDeviceSize(string partition)
 	struct stat st;
 	if ( stat(partition.c_str(), &st) == -1)
 	{
-		cerr << "Cannot get file stats. " << strerror(errno) << endl;
+		Logger::LogError("Cannot get file stats.");
 		return 0;
 	}
 	if (S_ISREG(st.st_mode))
@@ -751,14 +726,14 @@ uint64_t PartitionManager::GetDeviceSize(string partition)
 		int fd = open(partition.c_str(), O_RDONLY);
 		if (fd == -1)
 		{
-			cerr << "Cannot open partition " << strerror(errno) << endl;
+			Logger::LogError("Cannot open partition.");
 			return 0;
 		}
 		
 		if ( ioctl( fd, BLKGETSIZE64, &DeviceSize ) == -1)			
 		{
 			close(fd);
-			cerr << "Cannot get partition size." << strerror(errno) << endl;
+			Logger::LogError("Cannot get partition size.");
 			return 0;
 		}
 		close(fd);
@@ -779,25 +754,25 @@ bool PartitionManager::GetSuperBlock(void * sb_struct, int size)
 	}
 	else
 	{
-		cerr << "Cannot get filesystem type or device name" << endl;
+		Logger::LogError("Cannot get filesystem type or device name.");
 		return false;
 	}
 	offset = SBOffsets[fs];
 	fd = open(dev.c_str(), O_RDONLY);
 	if(fd == -1)
 	{
-		cerr << "Cannot open device." << strerror(errno) << endl;
+		Logger::LogError("Cannot open device.");
 		return false;
 	}
 	if( lseek(fd, offset, SEEK_SET) == -1 )
 	{
-		cerr << "Cannot seek in device." << strerror(errno) << endl;
+		Logger::LogError("Cannot seek in device.");
 		close(fd);
 		return false;
 	}
 	if( read(fd, sb_struct, size) == -1 )
 	{
-		cerr << "Cannot read superblock from the device." << strerror(errno) << endl;
+		Logger::LogError("Cannot read superblock from the device.");
 		close(fd);
 		return false;
 	}
@@ -821,7 +796,7 @@ bool PartitionManager::SetSuperBlock(void * sb_struct, int size)
 	}
 	else
 	{
-		cerr << "Cannot get filesystem type or device name or mountpoint" << endl;
+		Logger::LogError("Cannot get filesystem type or device name or mountpoint.");
 		return false;
 	}
 	//just in case
@@ -832,18 +807,18 @@ bool PartitionManager::SetSuperBlock(void * sb_struct, int size)
 	fd = open(dev.c_str(), O_RDWR);
 	if(fd == -1)
 	{
-		cerr << "Cannot open device." << strerror(errno) << endl;
+		Logger::LogError("Cannot open device.");
 		return false;
 	}
 	if( lseek(fd, offset, SEEK_SET) == -1 )
 	{
-		cerr << "Cannot seek in device." << strerror(errno) << endl;
+		Logger::LogError("Cannot seek in device.");
 		close(fd);
 		return false;
 	}
 	if( write(fd, sb_struct, size) == -1 )
 	{
-		cerr << "Cannot write superblock to the device." << strerror(errno) << endl;
+		Logger::LogError("Cannot write superblock to the device.");
 		close(fd);
 		return false;
 	}
