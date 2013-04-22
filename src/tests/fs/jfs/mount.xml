@@ -39,10 +39,7 @@ isn't covered as mount options are parsed and checked in super.c-->
         <Test Name="RemountResize" FaultSimulationReady="true">
                 <Description>Resize.</Description>              
                 <Code>
-						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-                        Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-                        Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-                        int res;
+						int res;
                         Unres ( chdir("/") == -1, "Cannot change directory." );
 						res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
 						if( res!= PS_Success )
@@ -69,40 +66,33 @@ isn't covered as mount options are parsed and checked in super.c-->
          <Test Name="RemountResizeFail" FaultSimulationReady="true" Dangerous="true">
                 <Description>Resize.</Description>              
                 <Code>
-						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-                        Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-                        Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-                        int res;
-                        Unres ( chdir("/") == -1, "Cannot change directory." );
-						res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
-						if( res!= PS_Success )
+					int res;
+					Unres ( chdir("/") == -1, "Cannot change directory." );
+					res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+					if( res!= PS_Success )
+					{
+						if( res == PS_Fatal )
 						{
-							if( res == PS_Fatal )
-							{
-								Error("Device too small.");
-								Return(Unresolved);
-							}						
-							Error("Partition mount or umount failed");
-							Return(Unresolved);	
-						}
-						
-                        Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");					
+							Error("Device too small.");
+							Return(Unresolved);
+						}						
+						Error("Partition mount or umount failed");
+						Return(Unresolved);	
+					}
+					
+					Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");					
                 </Code>
 				<Footer>
-						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
-						{
-							Error("Mount failed!");
-							Return(Fatal);
-						}
+					if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+					{
+						Error("Mount failed!");
+						Return(Fatal);
+					}
 				</Footer>
         </Test>
 		<Test Name="MultipleResize" FaultSimulationReady="true">
 			<Description>Multiple resize.</Description>
 			<Code>
-				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-				
 				Unres ( chdir("/") == -1, "Cannot change directory." );
 				Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
 				
@@ -150,9 +140,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 		 <Test Name="MountResize" FaultSimulationReady="true">
 			<Description>Try to resize without remount flag.</Description>              
 			<Code>
-					Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-					Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-					Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 					Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
 					int res;
 
@@ -170,16 +157,10 @@ isn't covered as mount options are parsed and checked in super.c-->
 		 <Test Name="RemountResizeRO" FaultSimulationReady="true">
                 <Description>Resize read-only filesystem.</Description>              
                 <Code>
-						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-                        Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-                        Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
                         int res;
 						Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Mount failed.");
 
                         Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") != -1, "Mount didn't fail on readonly filesystem.");
-                        
-                        
-						
                 </Code>
 				<Footer>
 					if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
@@ -193,9 +174,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 		 <Test Name="RemountResizeWrong" FaultSimulationReady="true">
 				<Description>Resize error cases.</Description>
 				<Code>
-						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-						Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-						Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 						int res;
 						uint64_t size = PartitionManager::GetDeviceSize(DeviceName)+100;
 						stringstream ss;
@@ -212,10 +190,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 		<Test Name="WrongErrorOption" FaultSimulationReady="true">
 				<Description>.</Description>
 				<Code>
-						Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-						Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-						Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-						
 						//this mount should fail as there is no error option "unknown", so there is no need to Restore the partition after.
 						mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=unknown");						
 				</Code>
@@ -224,10 +198,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 		<Test Name="WrongIOCharset" FaultSimulationReady="true">
 			<Description>Mount with wrong charset.</Description>
 			<Code>
-				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-				
 				//this mount should fail as there is no charset value "unknown", so there is no need to Restore the partition after.
 				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=unknown");						
 			</Code>
@@ -236,10 +206,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 		<Test Name="WrongUmask" FaultSimulationReady="true">
 			<Description>Mount with wrong umask.</Description>
 			<Code>
-				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-				
 				//this mount should fail as there is no umask value "07777", so there is no need to Restore the partition after.
 				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "umask=07777");						
 			</Code>
@@ -248,11 +214,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 		<Test Name="NoIntegrityOption" FaultSimulationReady="true" NonFunctional="true">
 			<Description>Mount with no integrity option</Description>
 			<Code>				
-				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-				
-				Unres(chdir("/") == -1, "Failed to change directory");
 				Unres(PartitionManager:: ReleasePartition(MountPoint) == false, "Failed to release partition");
 				system("rmmod jfs.ko");
 				EnableFaultSim();
@@ -274,10 +235,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 				"These tests should run only when no options are provided.");
 			</Header>
             <Code>
-                Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-                Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-                Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-               
                 Unres(chdir("/") == -1, "Failed to change directory");
                
                 Unres(umount(MountPoint) == -1, "Failed to release partition");
@@ -332,14 +289,11 @@ isn't covered as mount options are parsed and checked in super.c-->
             </Footer>
         </Test>
 
-       
+        <!--This test causes fatal error, because of BUG-->
+        <!--Test covers code in jfs/jfs_logmgr.c file-->
         <Test Name="MultiplePartitionsSingleLog" Dangerous="true">
             <Description>Create multiple jfs partiotions with single log</Description>
             <Code>
-                Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-                Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-                Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-               
                 Unres(chdir("/") == -1, "Failed to change directory");
                
                 Unres(umount(MountPoint) == -1, "Failed to release partition");
@@ -389,10 +343,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 		<Test Name="NoIntegrityOption1" FaultSimulationReady="true">
 			<Description>Mount with no integrity option and remount without it.</Description>
 			<Code>
-				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-				
 				mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, "nointegrity");
 				mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, 0);
 				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
@@ -406,10 +356,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 		<Test Name="ErrPanicOption" FaultSimulationReady="true">
 			<Description>Mount with errors=panic option</Description>
 			<Code>
-				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-				
 				mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=panic");
 				umount(DeviceName);
 			</Code>
@@ -425,10 +371,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 		<Test Name="DoubleIOCharset" FaultSimulationReady="true">
 			<Description>Mount with wrong charset.</Description>
 			<Code>
-				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-				
 				//this mount should fail as there is no charset value "unknown", so there is no need to Restore the partition after.
 				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=ascii,iocharset=cp1251");						
 			</Code>
@@ -444,10 +386,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 		<Test Name="DoubleIOCharsetUnknown" FaultSimulationReady="true">
 			<Description>Mount with wrong charset.</Description>
 			<Code>
-				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-				
 				//this mount should fail as there is no charset value "unknown", so there is no need to Restore the partition after.
 				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=ascii,unknown");						
 			</Code>
@@ -463,9 +401,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 		<Test Name="Mount444" FaultSimulationReady="true">
 			<Description>Mount with umask=444.</Description>
 			<Code>
-				Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-				Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-				Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
 				string dirname = "dir";
 				
 				system(("rm -rf " + (string)MountPoint + "/*").c_str());
@@ -489,23 +424,18 @@ isn't covered as mount options are parsed and checked in super.c-->
 		</Test>
 		
 		<Test Name="RemountRW" FaultSimulationReady="true" Dangerous="true">
-                <Description>Resize read-only filesystem.</Description>              
-                <Code>
-					
-						Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Mount failed.");
+            <Description>Resize read-only filesystem.</Description>              
+            <Code>
+				Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Mount failed.");
 
-                        Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, 0) == -1, "Remount rw failed.");
-                        
-                        
-						
-                </Code>
-				<Footer>
-					if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
-					{
-						Error("Mount failed!");
-						Return(Fatal);
-					}
-				</Footer>
+				Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, 0) == -1, "Remount rw failed.");
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
         </Test>
-
 </TestSet>

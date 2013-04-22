@@ -120,10 +120,6 @@
 
 				</Header>
                 <Code>
-                
-                        Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-                        Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-                        Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
                         int res;
                         ext4_super_block sb;
                         Unres ( chdir("/") == -1, "Cannot change directory." );
@@ -165,9 +161,6 @@
 
                 </Header>
                 <Code>  
-                        Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-                        Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-                        Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
                         int res;
                         ext4_super_block sb;
                         Unres ( chdir("/") == -1, "Cannot change directory." );
@@ -249,10 +242,6 @@
 
                 </Header>
                 <Code>
-						
-                        Unres(! strcmp(DeviceName, ""), "No partition name is provided.");
-                        Unres(! strcmp(FileSystem, ""), "No file system type is provided.");
-                        Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
                         int res;
                         ext4_super_block sb;
                         Unres ( chdir("/") == -1, "Cannot change directory." );

@@ -33,10 +33,6 @@
 		<Code>
 			jfs_superblock sb;
 			DIR *dir;
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-			Unres(! strcmp(DeviceName, ""), "No device name is provided.");
-			Unres(! strcmp(FileSystem, ""), "No fs type is provided.");
-			Unres ( chdir("/") == -1, "Cannot change directory." );
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
 			sb.s_flag &= ~JFS_DIR_INDEX;
@@ -73,10 +69,6 @@
 		<Code>
 			jfs_superblock sb;
 			DIR *dir;
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-			Unres(! strcmp(DeviceName, ""), "No device name is provided.");
-			Unres(! strcmp(FileSystem, ""), "No device name is provided.");
-			Unres ( chdir("/") == -1, "Cannot change directory." );
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
 			sb.s_state = FM_DIRTY;
@@ -92,10 +84,6 @@
 		<Code>
 			jfs_superblock sb;
 			DIR *dir;
-			Unres(! strcmp(MountPoint, ""), "No mount point is provided.");
-			Unres(! strcmp(DeviceName, ""), "No device name is provided.");
-			Unres(! strcmp(FileSystem, ""), "No device name is provided.");
-			Unres ( chdir("/") == -1, "Cannot change directory." );
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
 			sb.s_bsize = 1000;
@@ -106,7 +94,7 @@
 		</Code>
 	</Test>
 	<Test Name="xtExtendFail">
-		<Description>Brings to failure in dbAlloc function.</Description>
+		<Description>Brings to failure in xtExtend function.</Description>
 		<Header>
 			int fd = -1;
 		</Header>
