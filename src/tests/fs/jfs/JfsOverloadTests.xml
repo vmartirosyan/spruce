@@ -286,5 +286,41 @@
 			dirname = buf;
 			Fail(mkdir(dirname.c_str(), 0777) == -1, "Cannot mkdir.");
 		</Code>
-	</Test>		
+	</Test>
+	<Test Name="diAllocAny">
+		<Description>Try to allocate inode anywhere in the AGs.</Description>
+		<Code>
+			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
+			
+			// The test is targeted on small partitions. Don't run it
+			// if the partition size is more than 2GB
+			Skip(size > (uint64_t)2*1024*1024*1024, "The partition is too big.");
+			
+			system(("rm -rf " + (string)MountPoint + "/*").c_str());
+			
+			char buf[10];
+            string FileName = "diAllocAny";
+            
+			int fd;
+			Unres((fd = open(FileName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)) == -1, "Cannot create dir.");
+			
+			char * buf2 = new char[size];
+			Unres(write(fd, buf2, size - 10) == -1, "Cannot write to file.");
+			
+			fsync(fd);
+			
+			close(fd);
+			
+			sync();
+			
+			for (int j = 0; j < 20; ++j)
+            {
+                sprintf(buf, "%d",  j);
+                FileName = buf;
+                
+                fd = open(FileName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+            }
+		    
+		</Code>
+	</Test>
 </TestSet>
