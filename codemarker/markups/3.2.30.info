@@ -105,7 +105,7 @@ end_of_record
 
 SF:fs/jfs/resize.c
 #FN:jfs_extendfs
-LFT:110,116 VolumeSize is got from vfs superblock and it can't be reached from user-space and if we try to change the value in jfs superblock mount fails.
+LFT:110,117 VolumeSize is got from vfs superblock and it can't be reached from user-space and if we try to change the value in jfs superblock mount fails.
 LFT:123,125 Never gets here because of a previous check of read-only fs in jfs_remount().
 LFT:156,156 jfs_extendfs is called only once and newLogSize is 0 there.
 LFT:395,396 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
@@ -256,7 +256,7 @@ end_of_record
 
 SF:fs/jfs/namei.c
 FN:jfs_mkdir
-LFT:50,51 Can be covered if SELinux package is installed.
+LFT:50,51re Can be covered if SELinux package is installed.
 end_of_record
 
 SF:fs/jfs/namei.c
