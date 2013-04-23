@@ -137,6 +137,53 @@ isn't covered as mount options are parsed and checked in super.c-->
 				}
 			</Footer>
 		</Test>
+		<Test Name="MultipleResizeFail" FaultSimulationReady="true" Dangerous="true">
+			<Description>Multiple resize.</Description>
+			<Code>
+				Unres ( chdir("/") == -1, "Cannot change directory." );
+				Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
+				
+				uint64_t DeviceSize = PartitionManager::GetDeviceSize(DeviceName);
+				
+				uint64_t PartSize = DeviceSize / 20;
+				
+				uint64_t PartSizeInBlocks = PartSize / 4096;
+				
+				stringstream str;
+				str << PartSizeInBlocks;
+				
+				MkfsCommand cmd("mkfs.jfs");
+				
+				vector<string> args;
+				args.push_back(DeviceName);
+				args.push_back("-f");
+				args.push_back(str.str());
+				
+				ProcessResult * res = cmd.Execute(args);
+				
+				Unres( res == NULL || res->GetStatus() != Success, "Cannot create partition. " + res->GetOutput() );
+				
+				delete res;
+				
+				Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false,
+						"Cannot mount partition.");
+				
+				for ( int i = 0; i < 20; ++i ) // Must be more than 18 (XTROOTMAXSLOT)
+				{
+					stringstream newsize;
+					newsize << (PartSizeInBlocks + i*10000);
+					Fail(mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, ("resize=" + newsize.str()).c_str()) == -1,
+						"Cannot extend partition.");
+				}
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+		</Test>
 		 <Test Name="MountResize" FaultSimulationReady="true">
 			<Description>Try to resize without remount flag.</Description>              
 			<Code>

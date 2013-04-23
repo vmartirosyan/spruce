@@ -11,6 +11,17 @@ SF:fs/jfs/jfs_dmap.c
 FN:dbExtend Called from dbRealloc+7.
 end_of_record
 
+SF:fs/jfs/jfs_dmap.c
+FN:dbFindCtl
+LFT:69,69 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocBottomUp
+LFT:28,29 Is covered by test jfs/mount/MultipleResizeFail which is marked as dangerous.
+LFT:40,42 Is covered by test jfs/mount/MultipleResizeFail which is marked as dangerous.
+end_of_record
+
 SF:fs/jfs/jfs_dtree.c
 FN:dtExtendPage
 LFT:0,211 Called from dtSplitUp+112.
