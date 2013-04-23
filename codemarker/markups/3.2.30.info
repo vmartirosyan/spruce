@@ -256,7 +256,7 @@ end_of_record
 
 SF:fs/jfs/namei.c
 FN:jfs_mkdir
-LFT:50,51re Can be covered if SELinux package is installed.
+LFT:50,51 Can be covered if SELinux package is installed.
 end_of_record
 
 SF:fs/jfs/namei.c
