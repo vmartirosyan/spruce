@@ -245,7 +245,7 @@
 		</Code>
 	</Test>	
 	
-	<!--Test Name="xtSplitRootFail" FaultSimulationReady="true">
+	<Test Name="xtSplitRootFail" Dangerous="true">
 		<Description>Get fail in xtSplitRoot function.</Description>
 		<File count = "1"/>
 		<Code>
@@ -264,7 +264,7 @@
 			Fail(write(FDs[0], buf, 1) == -1, "Write failed.");
 						
 		</Code>
-	</Test-->
+	</Test>
 		
 	<Test Name="dbAllocFail" Dangerous="true">
 		<Description>Trying to simulate fail in dbAlloc().</Description>
@@ -290,13 +290,19 @@
 	<Test Name="diAllocAny">
 		<Description>Try to allocate inode anywhere in the AGs.</Description>
 		<Code>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success )
+			{
+				Error("Mount failed!");
+				Return(Fatal);
+			}
+			
+			Unres(chdir(MountPoint) == -1, "Cannot change directory.");
+			
 			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
 			
 			// The test is targeted on small partitions. Don't run it
 			// if the partition size is more than 2GB
 			Skip(size > (uint64_t)2*1024*1024*1024, "The partition is too big.");
-			
-			system(("rm -rf " + (string)MountPoint + "/*").c_str());
 			
 			char buf[10];
             string FileName = "diAllocAny";
