@@ -259,6 +259,11 @@ FN:jfs_mkdir
 LFT:50,51 Can be covered if SELinux package is installed.
 end_of_record
 
+SF:fs/jfs/namei.c
+FN:jfs_mkdir
+LFT:46,46 Can be covered if fault simulation (kmalloc) could be enabled in test jfs/common/acl/ACLGetSet on "mkdir" system call, but there is a kernel bug.
+end_of_record
+
 SF:fs/jfs/jfs_xtree.c
 FN:xtSearch 
 LFT:264,266 These lines can be covered only when the xtree stack is full which is difficult to produce in normal coverage terms.
@@ -296,4 +301,9 @@ end_of_record
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogOpen
 LFT:16,27 Code would be called if jfs/mount/MultiplePartitionsSingleLog didn't failed with fatal.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmGroupCommit
+LFT:8,12 These lines can be covered from kernel space.
 end_of_record
