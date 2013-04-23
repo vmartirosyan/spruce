@@ -44,9 +44,15 @@
 			Unres ( mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");
 			File f((string)MountPoint + "/file");
 			int fd = f.GetFileDescriptor();
-			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
+			char * buf = new char[1024*1024];
+				
+			for ( int i = 0 ; i < 50; ++i )
+				Unres(write(fd, buf, 1024*1024) == -1, "Cannot write.");
+			
 			close(fd);
-			sync();			
+			
+			sync();
+			
 			Fail ( umount( MountPoint) == -1, "Unmount failed");			
 		</Code>
 	</Test>
