@@ -319,6 +319,18 @@ FN:lmGroupCommit
 LFT:8,12 These lines can be covered from kernel space.
 end_of_record
 
+SF:fs/jfs/jfs_dtree.c
+LFT:903,903 This line can be covered using many threads(about 300), which create many directories(about 1000). But this process takes very long time, and the coverage is not constant from execution to execution, because the condition of if statement is not always true.         
+LFT:2179,2179 See the 903 line for more details.
+LFT:2188,2188 See the 903 line for more details.
+LFT:2395,2395 See the 903 line for more details.
+LFT:2778,2778 See the 903 line for more details.
+LFT:2807,2807 See the 903 line for more details.
+LFT:3925,3925 See the 903 line for more details.
+LFT:4273,4273 See the 903 line for more details.
+LFT:4368,4368 See the 903 line for more details.
+end_of_record
+
 SF:fs/jfs/jfs_metapage.c
 FN:__get_metapage
 LFT:14,17 These lines can be covered from kernel space.
