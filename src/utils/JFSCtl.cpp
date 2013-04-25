@@ -26,6 +26,65 @@
 JFSCtl::JFSCtl():
 	_SuperBlock(NULL)
 	{}
+	
+bool JFSCtl::WriteBlock(string DeviceName, void * buf, uint64_t block_no)
+{
+	try
+	{
+		File f(DeviceName, S_IWUSR, O_WRONLY);
+		int fd = f.GetFileDescriptor();
+		
+		if ( lseek64( fd, block_no * PSIZE, SEEK_SET ) == -1)
+		{
+			throw Exception("Cannot seek to file inode." + string(strerror(errno)));
+		}
+		
+		if ( write ( fd, buf, PSIZE ) == -1)
+		{
+			throw Exception("Cannot write block to disk." + string(strerror(errno)));
+		}
+		
+		return true;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::WriteBlock: Cannot write block. " + e.GetMessage());
+		return false;
+	}
+}
+
+void * JFSCtl::ReadBlock(string DeviceName, uint64_t block_no)
+{
+	try
+	{
+		File f(DeviceName, S_IRUSR, O_RDONLY);
+		int fd = f.GetFileDescriptor();
+		
+		char * buf = new char[PSIZE];
+		
+		if ( buf == NULL )
+		{
+			throw Exception("Cannot allocate memory. " + string(strerror(errno)));
+		}
+		
+		if ( lseek64( fd, block_no * PSIZE, SEEK_SET ) == -1)
+		{
+			throw Exception("Cannot seek to file inode. " + string(strerror(errno)));
+		}
+		
+		if ( read ( fd, buf, PSIZE ) == -1)
+		{
+			throw Exception("Cannot read block from disk. " + string(strerror(errno)));
+		}
+		
+		return buf;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::ReadBlock: Cannot read block. " + e.GetMessage());
+		return NULL;
+	}
+}
 
 struct dinode * JFSCtl::GetInode(string DeviceName, string FilePath, bool ReloadFromDisk)
 {

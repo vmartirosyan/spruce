@@ -35,6 +35,9 @@ class JFSCtl
 {
 public:
 	JFSCtl();
+	void * ReadBlock(string DeviceName, uint64_t block_no);
+	bool WriteBlock(string DeviceName, void * buf, uint64_t block_no);
+	
 	struct dinode * GetInode(string DeviceName, string FilePath, bool ReloadFromDisk = false);
 	bool SetInode(string DeviceName, string FilePath, struct dinode * inode);
 	

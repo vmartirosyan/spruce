@@ -96,6 +96,10 @@ struct FSimInfo
 	string Expression;
 };
 
+// We support only Intel x86 architectures where the CPU byte order is le :)
+#define __le32_to_cpu(x) (x)
+#define __cpu_to_le32(x) (x)
+
 #define EXIT_IF_SIGNALED if(terminate_process) { Logger::LogFatal("Exiting from Spruce..."); break; }
 
 //#define MY_WEXITSTATUS(stat) (((*(static_cast<int *>( &(stat)))) >> 8) & 0xff)
