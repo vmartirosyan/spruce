@@ -212,7 +212,7 @@ Status TestSet::Run(Checks checks)
 		{	
 			//so we have an emergency situation...
 			i->second.AddResult(Stability, ProcessResult(Fatal, "Status: " + StatusMessages[oopsStatus] + "Output: " + log));
-			break;
+			//break;
 		}
 		
 		// See if the stability check should be done

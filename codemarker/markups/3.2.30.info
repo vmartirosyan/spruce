@@ -275,6 +275,11 @@ FN:jfs_mkdir
 LFT:46,46 Can be covered if fault simulation (kmalloc) could be enabled in test jfs/common/acl/ACLGetSet on "mkdir" system call, but there is a kernel bug.
 end_of_record
 
+SF:fs/jfs/jfs_xtree.c
+FN:xtTruncate 
+LFT:490,492 Can be covered by test JFS/ChangeSB/xtTruncateFail which is marked as dangerous.
+end_of_record
+
 SF:fs/jfs/jfs_logmgr.c
 FN:jfsIOWait
 LFT:15,16 These lines can be covered from kernel space.
