@@ -376,13 +376,19 @@
 			
 			sync();
 			
-			for (int j = 0; j < 20; ++j)
+			int fds[20];
+			int j;
+			
+			for (j = 0; j < 20; ++j)
             {
                 sprintf(buf, "%d",  j);
                 FileName = buf;
                 
-                close(open(FileName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR));
+                fds[j] = open(FileName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
             }
+            
+            for ( int i = 0; i < j; ++i )
+				close(fds[i]);
 		    
 		</Code>
 		<Footer>
