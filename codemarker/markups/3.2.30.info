@@ -324,6 +324,21 @@ FN:__get_metapage
 LFT:14,17 These lines can be covered from kernel space.
 end_of_record
 
+SF:fs/jfs/jfs_metapage.c
+FN:__get_metapage
+LFT:57,62 These lines can be covered from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:__get_metapage
+LFT:66,66 These lines can be covered from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:__get_metapage
+LFT:104,105 These lines can be covered from kernel space.
+end_of_record
+
 SF:fs/jfs/namei.c
 FN:jfs_mkdir
 LFT:55,57 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail would not fail.
