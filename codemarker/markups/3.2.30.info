@@ -319,7 +319,17 @@ FN:lmGroupCommit
 LFT:8,12 These lines can be covered from kernel space.
 end_of_record
 
-SF:jfs/jfs_metapage.c
+SF:fs/jfs/jfs_metapage.c
 FN:__get_metapage
 LFT:14,17 These lines can be covered from kernel space.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_mkdir
+LFT:55,57 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail would not fail.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_mkdir
+LFT:79,83 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail would not fail.
 end_of_record
