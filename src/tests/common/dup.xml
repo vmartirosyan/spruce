@@ -1,0 +1,276 @@
+<!--    dup.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//      	Narek Saribekyan <narek.saribekyan@gmail.com>
+//      	Ruzanna Karakozova <r.karakozova@gmail.com>			
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="dup">
+	<Requires>unistd.h</Requires>
+	<Requires>fcntl.h</Requires>
+	<Requires>linux/kdev_t.h</Requires>
+	<Internal>
+		bool statsEqual(struct stat stat1, struct stat stat2)
+		{	
+			//dev_t st_dev
+			if(MAJOR(stat1.st_dev) != MAJOR(stat2.st_dev) || MINOR(stat1.st_dev) != MINOR(stat2.st_dev))
+			{
+				return false;
+			}
+			
+			//ino_t st_ino
+			if(stat1.st_ino != stat2.st_ino)
+			{
+				return false;
+			}
+			
+			//mode_t st_mode
+			if(stat1.st_mode != stat2.st_mode)
+			{
+				return false;
+			}
+			
+			//nlink_t st_nlink
+			if(stat1.st_nlink != stat2.st_nlink)
+			{
+				return false;
+			}
+			
+			//uid_t st_uid
+			if(stat1.st_uid != stat2.st_uid)
+			{
+				return false;
+			}
+			
+			//gid_t st_gid
+			if(stat1.st_gid != stat2.st_gid)
+			{
+				return false;
+			}	
+
+			//devt_t st_rdev
+			if(MAJOR(stat1.st_rdev) != MAJOR(stat2.st_rdev) || MINOR(stat1.st_rdev) != MINOR(stat2.st_rdev))
+			{
+				return false;
+			}
+			
+			//off_t st_size
+			if(stat1.st_size != stat2.st_size)
+			{
+				return false;
+			}	
+			
+			//blksize_t st_blksize
+			if(stat1.st_blksize != stat2.st_blksize)
+			{
+				return false;
+			}
+			
+			//blkcnt_t st_blocks
+			if(stat1.st_blocks != stat2.st_blocks)
+			{
+				return false;
+			}
+			
+			//time_t st_atime
+			if(stat1.st_atime != stat2.st_atime)
+			{
+				return false;
+			}
+			
+			//time_t st_mtime
+			if(stat1.st_mtime != stat2.st_mtime)
+			{
+				return false;
+			}
+			
+			//time_t st_ctime
+			if(stat1.st_ctime != stat2.st_ctime)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		bool cloexecFlagOff(int flag)
+		{
+			if((flag & FD_CLOEXEC) == 1)
+			{
+				return false;
+			}	
+			
+			return true;
+		}
+
+		bool statusFlagsEqual(int flag1, int flag2)
+		{
+			if(flag1 != flag2)
+			{
+				return false;
+			}	
+			
+			return true;
+		}	
+	</Internal>
+	<Test Name="DupNormal" FaultSimulationReady="true">
+		<Description>dup() duplicates a file descriptor</Description>
+		<File count="1"/>
+		<Code>			
+			int newFd;
+			Fail( (newFd = dup(FDs[0])) == -1, "System call dup failed");
+			
+			struct stat oldFileStat, newFileStat;
+			Unres(fstat(FDs[0], &oldFileStat ) == -1 || fstat(newFd, &newFileStat ) == -1, 
+				"System call fstat failed");
+				
+			Check(!statsEqual(oldFileStat, newFileStat),
+				"System call dup failed: first and second arguments fd's stats are not equal");
+			
+			int newFlag = fcntl(FDs[0], F_GETFD);
+			Unres(newFlag < 0, "System call fcntl failed");
+			
+			Check(!cloexecFlagOff(newFlag), "System call dup failed: O_CLOEXEC flag isn't off");
+			
+			int statusFlag = fcntl(FDs[0], F_GETFL);
+			int newStatusFlag = fcntl(newFd, F_GETFL);
+			Unres(statusFlag < 0 || newStatusFlag < 0, "System call fcntl failed");
+			
+			Check(!statusFlagsEqual(statusFlag, newStatusFlag), "System call dup failed: first and second arguments fd's status flags are not equal");
+			
+			int fdOffset = lseek(FDs[0], 0, SEEK_CUR);
+			int newFdOffset = lseek(newFd, 0, SEEK_CUR);
+			Unres(fdOffset == -1 || newFdOffset == -1, "System call lseek failed");
+			
+			Check(fdOffset != newFdOffset, "System call dup failed: first and second arguments fd's offsets are not equal");
+			
+		</Code>
+	</Test>
+	<Test Name="Dup2Normal">
+		<Description>dup2() duplicates a file descriptor</Description>
+		<File count="1"/>
+		<Code>
+			int newFd = 7;
+			
+			Fail (dup2(FDs[0], newFd) == -1, "System call dup2 failed.");
+			
+			struct stat oldFileStat, newFileStat;
+			Unres(fstat(FDs[0], &oldFileStat) == -1 || fstat(newFd, &newFileStat) == -1,
+				"System call fstat failed.");
+			
+			Check(!statsEqual(oldFileStat, newFileStat), "System call dup2 failed: first and second arguments fd's stats are not equal");
+			
+			int newFlag = fcntl(FDs[0], F_GETFD);
+			Unres(newFlag < 0, "System call fcntl failed");
+			
+			Check(!cloexecFlagOff(newFlag), "System call dup2 failed: O_CLOEXEC flag isn't off");
+			
+			int statusFlag = fcntl(FDs[0], F_GETFL);
+			int newStatusFlag = fcntl(newFd, F_GETFL);
+			Unres(statusFlag < 0 || newStatusFlag < 0, "System call fcntl failed: first and second arguments fd's status flags are not equal");
+			
+			Check(!statusFlagsEqual(statusFlag, newStatusFlag), "System call dup2 failed");
+				
+			int fdOffset = lseek(FDs[0], 0, SEEK_CUR);
+			int newFdOffset = lseek(newFd, 0, SEEK_CUR);
+			Unres(fdOffset == -1 || newFdOffset == -1, "System call lseek failed");
+			
+			Check(fdOffset != newFdOffset, "System call dup2 failed: first and second arguments fd's offsets are not equal");
+			
+			newFd = FDs[0];
+			int res = dup2(FDs[0], newFd);
+			Check(res == -1, "System call dup2 failed");
+			
+			Check(res != newFd, "System call dup2 failed: second argument fd was not returned");
+		</Code>
+	</Test>
+	<Test Name="Dup3Normal">
+		<Description>dup3() duplicates a file descriptor</Description>
+		<File count="1"/>
+		<Code>
+			int newFd = 7;
+			
+			Fail( dup3(FDs[0], newFd, O_CLOEXEC) == -1, "System call dup3 failed.");
+			
+			
+			struct stat oldFileStat, newFileStat;
+			Unres(fstat(FDs[0], &oldFileStat) == -1 || fstat(newFd, &newFileStat) == -1, "System call fstat failed");
+			
+			Check(!statsEqual(oldFileStat, newFileStat), "System call dup3 failed: first and second arguments fd's stats are not equal");
+			
+			int newFlag = fcntl(FDs[0], F_GETFD);
+			Unres(newFlag < 0, "System call fcntl failed");
+			
+			Check(!cloexecFlagOff(newFlag), "System call dup3 failed: O_CLOEXEC flag isn't off");
+			
+			int statusFlag = fcntl(FDs[0], F_GETFL);
+			int newStatusFlag = fcntl(newFd, F_GETFL);
+			Unres(statusFlag < 0 || newStatusFlag < 0, "System call fcntl failed");
+			
+			Check(!statusFlagsEqual(statusFlag, newStatusFlag), "System call dup failed: first and second arguments fd's status flags are not equal");
+			
+			int fdOffset = lseek(FDs[0], 0, SEEK_CUR);
+			int newFdOffset = lseek(newFd, 0, SEEK_CUR);
+			Check(fdOffset == -1 || newFdOffset == -1, "System call lseek failed");
+			
+			Check(fdOffset != newFdOffset, "System call dup3 failed: first and second arguments fd's offsets are not equal");
+		</Code>
+	</Test>
+	<Test Name="DupErrBadF">
+		<Description>oldfd  isn't  an  open  file  descriptor</Description>
+		<Code>
+			ErrorTest(dup(-1), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="Dup2ErrBadF">
+		<Description>oldfd  isn't  an  open  file  descriptor</Description>
+		<Code>
+			ErrorTest(dup2(-1, -1), -1, EBADF);
+		</Code>
+	</Test>
+		<Test Name="Dup3ErrBadF">
+		<Description>oldfd  isn't  an  open  file  descriptor</Description>
+		<File count ="1"/>
+		<Code>			
+			int newFd = -2;
+	
+			Fail(dup3(-1, newFd, 0) != -1 || errno != EBADF,
+				"EBADF error expected: first argument fd is not an open fd. Error code");
+				
+			newFd = -1;
+		
+			Fail(dup3(FDs[0], newFd, 0) != -1 || errno != EBADF,
+				"EBADF error expected: second argument fd is out of the allowed range for fds");
+		</Code>
+	</Test>
+	<Test Name="Dup3ErrInval">
+	<Description>flags contain an invalid value.  Or, oldfd was equal to newfd</Description>
+	<File count="1"/>
+	<Code>
+		int newFd = FDs[0];
+		Fail(dup3(FDs[0], newFd, 0) != -1 || errno != EINVAL,
+			"EINVAL error expected: first and second arguments fds are equal");
+		
+		newFd = -1;
+		Fail(dup3(FDs[0], newFd, 1) != -1 || errno != EINVAL,
+			"EINVAL error expected: flags contain invalid value");
+	</Code>
+	</Test>
+</TestSet>
