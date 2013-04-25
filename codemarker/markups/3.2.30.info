@@ -318,3 +318,8 @@ SF:fs/jfs/jfs_logmgr.c
 FN:lmGroupCommit
 LFT:8,12 These lines can be covered from kernel space.
 end_of_record
+
+SF:jfs/jfs_metapage.c
+FN:__get_metapage
+LFT:14,17 These lines can be covered from kernel space.
+end_of_record
