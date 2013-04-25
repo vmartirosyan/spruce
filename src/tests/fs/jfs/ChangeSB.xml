@@ -184,6 +184,161 @@
 			close(fd);
 		</Footer>
 	</Test>
+	<Test Name="xtSearchFail">
+		<Description>Brings to failure in xtSearch function due to stack overflow.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			
+			const char * FilePath = "xtSearch_test";
+			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			
+			Unres(fd == -1, "Cannot create file.");
+			
+			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
+			
+			close(fd);
+			
+			sync();
+			
+			Unres( OverflowStack(FilePath) == false, "Cannot prepare stack." );
+			
+			fd = open(FilePath, O_RDWR | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			Unres(fd == -1, "Cannot open file.");
+			
+			char * buf = new char[5000];
+			
+			Unres( lseek(fd, 10000, SEEK_SET) == -1, "Cannot seek." );
+			
+			Check( write(fd, buf, 10) == 0, "Write should fail but it did not.");
+			
+			close(fd);
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
+	<Test Name="xtTruncateFail">
+		<Description>Brings to failure in xtTruncate function due to stack overflow.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );
+			
+			Unres(chdir(MountPoint) == -1, "Cannot change directory back.");
+			
+			const char * FilePath = "xtTruncateFail_test";
+			int fd = open(FilePath, O_RDWR | O_CREAT | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			
+			Unres(fd == -1, "Cannot create file.");
+			
+			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
+			
+			close(fd);
+			
+			sync();
+			
+			Unres( OverflowStack(FilePath) == false, "Cannot prepare stack." );
+			
+			fd = open(FilePath, O_RDWR | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			Unres(fd == -1, "Cannot open file.");
+			
+			char * buf = new char[5000];
+			
+			ftruncate(fd, 10);
+			
+			close(fd);
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
+	<Test Name="xtTruncate_pmapFail">
+		<Description>Brings to failure in xtTruncate_pmap function due to stack overflow.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			
+			const char * FilePath = "xtTruncate_pmapFail_test";
+			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			
+			Unres(fd == -1, "Cannot create file.");
+			
+			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
+			
+			close(fd);
+			
+			sync();
+			
+			Unres( OverflowStack(FilePath) == false, "Cannot prepare stack." );
+			
+			fd = open(FilePath, O_RDWR | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			Unres(fd == -1, "Cannot open file.");
+			
+			unlink(FilePath);
+			
+			fsync(fd);
+			
+			close(fd);
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
+	<Internal>
+		bool OverflowStack(string FilePath)
+		{
+			JFSCtl jfs;
+			int inode_num = jfs.GetInodeNum(FilePath);
+			
+			if(PartitionManager::ReleasePartition(MountPoint) == false)
+				return false;
+			
+			dinode * inode = jfs.GetInode(DeviceName, inode_num);
+			if (inode == NULL)
+				return false;
+			
+			// Add too many levels to the xtree
+			
+			inode->di_size = (1 << 30);
+			
+			xtpage_t * page = (xtpage_t*)&inode->di_xtroot;
+			page->header.flag = BT_ROOT | BT_INTERNAL;
+			
+			// Get the xad describing the data block
+			xad x = ((xad*)inode->di_xtroot)[XTENTRYSTART];
+			
+			int64_t addr = addressXAD(&x);
+			
+			XADoffset(&((xad*)inode->di_xtroot)[XTENTRYSTART], 0);
+			
+			xtpage_t internal_page;
+
+			// The page refers to itself.  During lookup it will cause an infinite loop :)
+			memset(&internal_page, 0, sizeof(xtpage_t));
+			XADoffset(&internal_page.xad[XTENTRYSTART], 0);
+			XADaddress(&internal_page.xad[XTENTRYSTART], addr);
+			internal_page.header.nextindex = XTENTRYSTART + 1;
+			internal_page.header.maxentry = XTPAGEMAXSLOT;
+			internal_page.header.flag = BT_INTERNAL;
+			if ( jfs.WriteBlock(DeviceName, &internal_page, addr) == false )
+				return false;
+									
+			if ( jfs.SetInode(DeviceName, inode_num, inode) == false )
+				return false;
+			
+			if (PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false )
+				return false;
+			
+			if (chdir(MountPoint) == -1)
+				return false;
+			
+			return true;
+		}
+	</Internal>
 	<Footer>
 		Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 	</Footer>
