@@ -144,6 +144,46 @@
 			close(fd);
 		</Footer>
 	</Test>
+	
+	<Test Name="xtGetPageFail">
+		<Description>Brings to failure in XT_GETPAGE.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			
+			const char * FilePath = "StackOverflow_test";
+			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			
+			Unres(fd == -1, "Cannot create file.");
+			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
+			close(fd);
+			sync();
+			
+			JFSCtl jfs;
+			int inode_num = jfs.GetInodeNum(FilePath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+					
+			dinode * inode = jfs.GetInode(DeviceName, inode_num);
+			Unres(inode == NULL, "Cannot get inode.");
+					
+			xtpage_t * page = (xtpage_t*)&inode->di_xtroot;
+			page->header.nextindex = 1;
+			
+			Unres(jfs.SetInode(DeviceName, inode_num, inode) == false, "Cannot set inode.");
+			
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			unlink(FilePath);
+			
+			sync();
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
 	<Footer>
 		Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 	</Footer>
