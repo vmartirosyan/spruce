@@ -25,13 +25,26 @@
 	<StartUp>
 		Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");
 	</StartUp>
-	<Test Name="InitModuleFault" FaultSimulationReady="true">
+	<Test Name="InitModuleFault">
 		<Description>Trying to perform fault simulation when initializing module.</Description>
 		<Code>
 			Unres(chdir("/") == -1, "Cannot chdir.");
 			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot releaase partition." );
 			Unres ( system("rmmod jfs") != 0, "Cannot unload module.");
-			Fail(system("modprobe jfs") != 0, "Cannot insert module");
+			Fail(system("modprobe jfs commit_threads=100") != 0, "Cannot insert module");
+		</Code>
+		<Footer>
+			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,
+					"Failed to restore partition" );
+		</Footer>
+	</Test>	
+	<Test Name="InitModuleMaxThreads">
+		<Description>Trying to initialize module with commit_threads value bigger than max value 64.</Description>
+		<Code>
+			Unres(chdir("/") == -1, "Cannot chdir.");
+			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot releaase partition." );
+			Unres ( system("rmmod jfs") != 0, "Cannot unload module.");
+			Check(system("modprobe jfs commit_threads=100") != 0, "Cannot insert module"); //100 is bigger than MAX_COMMIT_THREADS value.
 		</Code>
 		<Footer>
 			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,
