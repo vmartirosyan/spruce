@@ -46,7 +46,7 @@
 		
 			delete cwd;
 			
-			Fail ( chdir("..") != 0, "chdir does not change the working directory.");
+			Check ( chdir("..") != 0, "chdir does not change the working directory.");
 		</Code>
 	</Test>
 	<Test Name="ChdirErrFault">
