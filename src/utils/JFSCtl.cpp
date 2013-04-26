@@ -304,7 +304,7 @@ bool JFSCtl::SetIAG(string DeviceName, int InodeNum, iag *IAG)
 		{
 			throw Exception("Cannot get FileSet IAG Address." + string(strerror(errno)));
 		}
-		File f(DeviceName, S_IRUSR, O_RDONLY);
+		File f(DeviceName, S_IRUSR, O_RDWR);
 		int fd = f.GetFileDescriptor();
 		
 		uint64_t FileSetIAGAddr = ( FileSetIAGBlock )* PSIZE;
@@ -318,13 +318,13 @@ bool JFSCtl::SetIAG(string DeviceName, int InodeNum, iag *IAG)
 		}
 		if ( write ( fd, IAG, sizeof(iag) ) == -1)
 		{
-			throw Exception("Cannot write iag control page to disk." + string(strerror(errno)));
+			throw Exception("Cannot write iag to disk." + string(strerror(errno)));
 		}
 		return true;
 	}
 	catch(Exception e)
 	{
-		Logger::LogError("JFSCtl::SetIAG: Cannot get iag control page. " + e.GetMessage());
+		Logger::LogError("JFSCtl::SetIAG: Cannot set iag. " + e.GetMessage());
 		return false;
 	}
 }
