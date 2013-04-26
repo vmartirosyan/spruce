@@ -706,8 +706,11 @@ ConfigValues ParseConfigFile(string FilePath)
 		}
 		while ( !FileReader.eof() && FileReader.good() )
 		{			
-			string CurrentLine;
-			FileReader >> CurrentLine;
+			
+			char buf[256];
+			//FileReader >> CurrentLine;
+			FileReader.getline(buf, 256);
+			string CurrentLine(buf);
 			
 			size_t EqPos = CurrentLine.find('=');
 			if ( EqPos == string::npos ) // wrong formatted line?

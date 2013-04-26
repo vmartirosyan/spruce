@@ -284,11 +284,11 @@ int main(int argc, char ** argv)
 	do
 	{
 		string PMCurrentOptionsStripped = pm.GetCurrentOptions(true);
-		string PMCurrentOptions = pm.GetCurrentOptions();
+		string PMCurrentOptions = pm.GetCurrentOptions(false);
 		
 		if ( TestsToExclude.size() > 0 )
 		{
-			Path = (string)FileSystem + "." + PMCurrentOptionsStripped;
+			Path = (string)FileSystem + "." + PMCurrentOptions;
 			
 			if ( SkipTestPath(Path) )
 			{
