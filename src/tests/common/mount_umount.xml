@@ -41,8 +41,14 @@
 	<Test Name="UmountGeneral" FaultSimulationReady="true">
 		<Description>Trying to unmount the partition.</Description>				
 		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,
+				"Cannot restore partition.");
+			
 			Unres ( mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");
-			File f((string)MountPoint + "/file");
+			
+			Unres( chdir(MountPoint) == -1, "Cannot change directory.");
+			
+			File f("file");
 			int fd = f.GetFileDescriptor();
 			char * buf = new char[1024*1024];
 				
@@ -52,6 +58,10 @@
 			close(fd);
 			
 			sync();
+			
+			unlink("file");
+			
+			Unres( chdir("/") == -1, "Cannot change directory to root." );
 			
 			Fail ( umount( MountPoint) == -1, "Unmount failed");			
 		</Code>

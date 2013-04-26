@@ -234,8 +234,6 @@ Status TestSet::Run(Checks checks)
 					str << "Test: " << i->first << ".\tProcessing point " 
 						<< j->first << ". Count: " << j->second;
 					Logger::LogInfo(str.str());
-					// Temporary solution
-					PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true);
 				}
 				
 				unsigned int Count = j->second;
@@ -258,6 +256,9 @@ Status TestSet::Run(Checks checks)
 					Logger::LogInfo("Executing test " + i->first + " in fault simulated environment.");
 					TestResult res = *static_cast<TestResult *>(i->second.Execute());
 					
+					// Temporary solution. Increases the system stability.
+					PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true);
+					
 					oopsStatus = i->second.OopsChecker(log); // log is an output parameter
 					
 					if(oopsStatus != Success)
@@ -272,11 +273,11 @@ Status TestSet::Run(Checks checks)
 					
 					// Check if the partition has become read-only because of system failures.
 					// In case of fault simulation such a situation is quite common.
-					if ( PartitionManager::IsOptionEnabled("ro") )
+					/*if ( PartitionManager::IsOptionEnabled("ro") )
 					{
 						Logger::LogWarn("Partition was re-mounted as read-only. Restoring partition.");
 						PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true);
-					}
+					}*/
 				}
 			}
 		}
