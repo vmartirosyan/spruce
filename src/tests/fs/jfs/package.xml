@@ -11,4 +11,5 @@
 	<TestSet Name="Truncate" />
 	<TestSet Name="Link" />
 	<TestSet Name="Init_Exit" />
+	<TestSet Name="MountWithOptions" />
 </TestPackage>
