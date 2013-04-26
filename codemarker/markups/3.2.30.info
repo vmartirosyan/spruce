@@ -360,3 +360,8 @@ SF:fs/jfs/jfs_xtree.c
 FN:xtSplitUp
 LFT:148,149 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitUp. 
 end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtSplitPage
+LFT:133,134 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitPage. 
+end_of_record
