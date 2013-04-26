@@ -36,7 +36,6 @@
 		<Description>Trying to split the parent page.</Description>
 		<File count = "1"/>
 		<Code>
-		    int fd = FDs[0];
 	
 			char *buf = new char[1024*1024];
 			memcpy(buf, "asdfg", 5);
@@ -265,7 +264,32 @@
 						
 		</Code>
 	</Test>
-		
+	<Test Name="xtSplitUpFailGetPage">
+		<Description>xtGetPage macro fails in xtSplitUp.</Description>
+		<File count = "1"/>
+		<Code>
+			char buf[10] = "sdaasasda";			
+			for (int i = 0 ; i < 25000; ++i)
+			{
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed.");
+			
+			}
+			sync();
+			
+			Unres(lseek64(FDs[0], 5000, SEEK_SET) == -1, "Lseek failed.");
+			
+			for (int i = 0; i < 19810; ++i)
+			{
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed");
+			}		
+			sync();
+			Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed");
+			Fail(write(FDs[0], buf, 1) == -1, "Write failed");
+			sync();
+		</Code>
+	</Test>	
 	<Test Name="dbAllocFail" Dangerous="true">
 		<Description>Trying to simulate fail in dbAlloc().</Description>
 		<Code>
