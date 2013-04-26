@@ -305,6 +305,11 @@ LFT:16,27 Code would be called if jfs/mount/MultiplePartitionsSingleLog didn't f
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
+FN:lmLogOpen
+LFT:67,67 These lines could be covered if there wouldn't be system crash due to "submit_bio" failure.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
 FN:lmGroupCommit
 LFT:8,12 These lines can be covered from kernel space.
 end_of_record
