@@ -51,6 +51,8 @@ public:
 	bool SetIAGCP(string, int, dinomap*);
 	struct iag * GetIAG(string, int);
 	bool SetIAG(string, int, iag*);
+	struct dinode * Get16thInode(string);
+	bool Set16thInode(string, dinode*);
 private:
 	off64_t LocateInode(string, int);
 	off64_t LocateIAGCP(string, int);

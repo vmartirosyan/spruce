@@ -329,6 +329,53 @@ bool JFSCtl::SetIAG(string DeviceName, int InodeNum, iag *IAG)
 	}
 }
 
+dinode * JFSCtl::Get16thInode(string DeviceName)
+{
+	try
+	{
+		File f(DeviceName, S_IRUSR, O_RDONLY);
+		int fd = f.GetFileDescriptor();
+			
+		struct dinode *_16_th_inode = new dinode;
+		if ( lseek64( fd, SUPER1_OFF + 2*PSIZE + sizeof(iag) + 16*sizeof(dinode), SEEK_SET ) == -1 )
+			throw Exception("JFSCtl::Get16thInode: Cannot seek to 16-th inode in aggregate IAG. " + (string)strerror(errno));
+			
+		if ( read ( fd, _16_th_inode, sizeof(dinode) ) != sizeof(dinode) )
+			throw Exception("JFSCtl::Get16thInode: Cannot read 16-th inode in aggregate IAG. " + (string)strerror(errno));
+			
+		
+		return _16_th_inode;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::Get16thInode: Cannot get 16th inode. " + e.GetMessage());
+		return NULL;
+	}
+}
+
+bool JFSCtl::Set16thInode(string DeviceName, dinode *_16_th_inode)
+{
+	try
+	{
+		File f(DeviceName, S_IRUSR, O_RDWR);
+		int fd = f.GetFileDescriptor();
+			
+		if ( lseek64( fd, SUPER1_OFF + 2*PSIZE + sizeof(iag) + 16*sizeof(dinode), SEEK_SET ) == -1 )
+			throw Exception("JFSCtl::Set16thInode: Cannot seek to 16-th inode in aggregate IAG. " + (string)strerror(errno));
+			
+		if ( write ( fd, _16_th_inode, sizeof(dinode) ) != sizeof(dinode) )
+			throw Exception("JFSCtl::Set16thInode: Cannot write 16-th inode to aggregate IAG. " + (string)strerror(errno));
+			
+		
+		return true;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::Set16thInode: Cannot set 16th inode." + e.GetMessage());
+		return false;
+	}
+}
+
 
 struct jfs_superblock * JFSCtl::GetSuperBlock(string DeviceName, bool ReloadFromDisk)
 {
@@ -450,19 +497,19 @@ uint64_t JFSCtl::LocateFSIAG(string DeviceName, int iag_key)
 {
 	try
 	{
+		
+		struct dinode *_16_th_inode = Get16thInode(DeviceName);
+		
+		if ( _16_th_inode == NULL )
+		{
+			throw Exception("Cannot get 16th inode." + string(strerror(errno)));
+		}
 		File f(DeviceName, S_IRUSR, O_RDONLY);
 		int fd = f.GetFileDescriptor();
-			
-		struct dinode _16_th_inode;
-		if ( lseek64( fd, SUPER1_OFF + 2*PSIZE + sizeof(iag) + 16*sizeof(dinode), SEEK_SET ) == -1 )
-			throw Exception("JFSCtl::GetInode: Cannot seek to 16-th inode in aggregate IAG. " + (string)strerror(errno));
-			
-		if ( read ( fd, &_16_th_inode, sizeof(dinode) ) != sizeof(dinode) )
-			throw Exception("JFSCtl::GetInode: Cannot read 16-th inode in aggregate IAG. " + (string)strerror(errno));
-			
+		
 		uint64_t FileSetIAGBlock = 0;
 		xad x[8];
-		memcpy(x, _16_th_inode.di_xtroot, 8*sizeof(xad));
+		memcpy(x, _16_th_inode->di_xtroot, 8*sizeof(xad));
 		
 		FileSetIAGBlock = x[XTENTRYSTART+iag_key].addr1;
 		FileSetIAGBlock <<= 32;
