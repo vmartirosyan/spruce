@@ -481,6 +481,7 @@
 		<Description>Trying to create many directories</Description>
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+		    Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
 		    char buf[10];
             string dirname = "some_directory";
             JFSCtl jfs;
@@ -518,6 +519,7 @@
 		<Description>Trying to create many directories</Description>
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+		    Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
 		    char buf[10];
             string dirname = "some_directory";
             JFSCtl jfs;
@@ -556,6 +558,7 @@
 		<Description>Trying to create many directories</Description>
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+		    Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
 		    char buf[10];
             string dirname = "some_directory";
             JFSCtl jfs;
@@ -599,6 +602,7 @@
 		</Header>
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+		    Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
 		    char buf[10];
             string filename = "file";
             JFSCtl jfs;
