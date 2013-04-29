@@ -224,10 +224,16 @@ end_of_record
 
 SF:fs/jfs/jfs_dtree.c
 LFT:3222,3234 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
+LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
-LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
+FN:add_index
+LFT:54,55 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail13 would not fail.
+LFT:74,79 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail13 would not fail.
+LFT:85,89 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail13 would not fail.
+LFT:120,121 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail would not fail.
+LFT:128,128 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail would not fail.
 end_of_record
 
 SF:fs/jfs/jfs_btree.h
@@ -344,16 +350,6 @@ end_of_record
 SF:fs/jfs/jfs_metapage.c
 FN:__get_metapage
 LFT:104,105 These lines can be covered from kernel space.
-end_of_record
-
-SF:fs/jfs/namei.c
-FN:jfs_mkdir
-LFT:55,57 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail would not fail.
-end_of_record
-
-SF:fs/jfs/namei.c
-FN:jfs_mkdir
-LFT:79,83 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail would not fail.
 end_of_record
 
 SF:fs/jfs/jfs_xtree.c
