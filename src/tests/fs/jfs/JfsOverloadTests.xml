@@ -311,6 +311,25 @@
 			Fail(mkdir(dirname.c_str(), 0777) == -1, "Cannot mkdir.");
 		</Code>
 	</Test>
+	
+	<Test Name="dbAllocFail13" Dangerous="true">
+		<Description>Trying to simulate fail in dbAlloc().</Description>
+		<Code>
+			system("rm -rf *");
+			char buf[30];
+			
+			int j;
+			for (j = 0; j < 13; ++j)
+			{
+				sprintf(buf, "dbAllocFail13_%d",  j);
+				mkdir(buf, 0777);
+			}
+			
+			sprintf(buf, "dbAllocFail13_%d",  j);
+			Fail(mkdir(buf, 0777) == -1, "Cannot mkdir.");
+		</Code>
+	</Test>
+	
 	<Test Name="diAllocAny1">
 		<Description>Try to allocate inode anywhere in the AGs.</Description>
 		<Code>
