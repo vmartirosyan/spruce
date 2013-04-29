@@ -445,6 +445,38 @@
 			}
 		</Footer>
 	</Test>
+	<Test Name="add_indexFail">
+		<Description>Corrupt jfs_inode_info in add_index().</Description>
+		<Code>
+			const char * FilePath = "test";
+			Unres( mkdir(FilePath, S_IRUSR | S_IWUSR) == -1, "Cannot create directory.");
+			
+			sync();
+			
+			JFSCtl jfs;
+			int inode_num = jfs.GetInodeNum(FilePath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinode * inode = jfs.GetInode(DeviceName, inode_num);
+			Unres(inode == NULL, "Cannot get inode.");
+			
+			inode->di_next_index = 1;
+			
+			Unres(jfs.SetInode(DeviceName, inode_num, inode) == false, "Cannot set inode.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			Unres(chdir(FilePath) == -1, "Cannot chdir to FilePath.");
+			
+			int fd;
+			Check ( (fd = open("add_indexFail",  O_CREAT | O_RDWR, 0777)) == -1, "Cannot create directory.");
+			Unres(close(fd) == -1, "Cannot close file");
+	
+		</Code>
+	</Test>
 	<Internal>
 		bool OverflowStack(string FilePath)
 		{
