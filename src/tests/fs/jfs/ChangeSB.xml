@@ -64,7 +64,7 @@
 		
 		</Code>
 	</Test>
-	<Test Name="DirtyState">
+	<Test Name="DirtyState" FaultSimulationReady="true">
 		<Description>Set jfs superblock state dirty and try to mount.</Description>
 		<Code>
 			jfs_superblock sb;
@@ -79,106 +79,11 @@
 	
 		</Code>
 	</Test>
-	<Test Name="MountBadSait" FaultSimulationReady="true">
-		<Description>Set jfs superblock flags to JFS_BAD_SAIT.</Description>
-		<Code>
-			jfs_superblock sb;
-			
-			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
-			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
-			
-			sb.s_flag = JFS_BAD_SAIT;
-			
-			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot set new superblock");
-			PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "");//will fail in this version of jfs, though it's not documented behaviour 
-
-			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
-	
-		</Code>
-	</Test>
-	<Test Name="CorruptSecondarySB">
-		<Description>Corrupt secondary SB</Description>
-		<Code>
-			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
-			
-			char zero[PSIZE];
-			memset(zero, 0, PSIZE);
-			
-			JFSCtl jfs;
-			
-			Unres( jfs.WriteBlock(DeviceName, zero, SUPER2_OFF) == false, "Cannot write block." );
-			
-			Fail ( mount(DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Cannot mount." );
-	
-		</Code>
-	</Test>
-	<Test Name="MkdirFail">
-		<Description>Corrupt secondary SB</Description>
-		<Code>
-			const char * FilePath = "test";
-			Unres( mkdir(FilePath, S_IRUSR | S_IWUSR) == -1, "Cannot create directory.");
-			
-			sync();
-			
-			JFSCtl jfs;
-			int inode_num = jfs.GetInodeNum(FilePath);
-			
-			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
-			
-			dinode * inode = jfs.GetInode(DeviceName, inode_num);
-			Unres(inode == NULL, "Cannot get inode.");
-			
-			inode->di_next_index = INT_MAX;
-			
-			Unres(jfs.SetInode(DeviceName, inode_num, inode) == false, "Cannot set inode.");
-			
-			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
-			
-			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			
-			Unres(chdir(FilePath) == -1, "Cannot chdir to FilePath.");
-			
-			mkdir("test", 0777);//Will fail
-	
-		</Code>
-	</Test>
-	<Test Name="dtInsertFail">
-		<Description>Corrupt secondary SB</Description>
-		<Code>
-			const char * FilePath = "xtInsertFail";
-			Unres( mkdir(FilePath, S_IRUSR | S_IWUSR) == -1, "Cannot create directory.");
-			
-			sync();
-			
-			JFSCtl jfs;
-			int inode_num = jfs.GetInodeNum(FilePath);
-			
-			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
-					
-			dinode * inode = jfs.GetInode(DeviceName, inode_num);
-			Unres(inode == NULL, "Cannot get inode.");
-					
-			dtpage_t * page = (dtpage_t*)&inode->di_xtroot;
-			page->header.freecnt = 0;
-			
-			Unres(jfs.SetInode(DeviceName, inode_num, inode) == false, "Cannot set inode.");
-			
-			
-			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
-			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			Unres(chdir(FilePath) == -1, "Cannot chdir to FilePath.");
-			
-			Fail ( mkdir("test", 0777), "Cannot create directory." );
-			
-			sync();
-	
-		</Code>
-	</Test>
 	<Test Name="WrongBlockSize" FaultSimulationReady="true">
 		<Description>Set wrong block size in jfs superblock and try to mount.</Description>
 		<Code>
 			jfs_superblock sb;
-			
+			DIR *dir;
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
 			sb.s_bsize = 1000;
@@ -195,7 +100,7 @@
 		</Header>
 		<Code>
 			const char * FilePath = "test";
-			fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			
@@ -248,7 +153,7 @@
 		<Code>
 			
 			const char * FilePath = "StackOverflow_test";
-			fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
@@ -287,7 +192,7 @@
 		<Code>
 			
 			const char * FilePath = "xtSearch_test";
-			fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			
@@ -325,7 +230,7 @@
 			Unres(chdir(MountPoint) == -1, "Cannot change directory back.");
 			
 			const char * FilePath = "xtTruncateFail_test";
-			fd = open(FilePath, O_RDWR | O_CREAT | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			int fd = open(FilePath, O_RDWR | O_CREAT | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			
@@ -358,7 +263,7 @@
 		<Code>
 			
 			const char * FilePath = "xtTruncate_pmapFail_test";
-			fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			
@@ -383,6 +288,526 @@
 			close(fd);
 		</Footer>
 	</Test>
+	<Test Name="newIAGxtInsertFail" FaultSimulationReady="true">
+		<Description>Trying to create many directories</Description>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+		    char buf[10];
+            string dirname = "some_directory";
+            JFSCtl jfs;
+            mkdir(dirname.c_str(), 0777);
+            chdir(dirname.c_str());
+            mkdir(dirname.c_str(), 0777);
+            int inode_num = jfs.GetInodeNum(dirname);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinode * inode = jfs.Get16thInode(DeviceName);
+			
+			Unres(imap == NULL, "Cannot get control page.");
+			Unres(inode == NULL, "Cannot get control page inode.");
+			xtpage_t * page = (xtpage_t*)&inode->di_xtroot;
+			
+			page->header.maxentry = page->header.nextindex;
+			
+			imap->in_freeiag = 0;
+			
+			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			Unres(jfs.Set16thInode(DeviceName, inode) == false, "Cannot set control page inode.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			chdir(dirname.c_str());
+   
+			mkdir("b", 0777);
+            Fail( mkdir("a", 0777) == -1, "Cannot mkdir.");
+            
+		</Code>
+	</Test>
+	<Test Name="newIAGFail" FaultSimulationReady="true">
+		<Description>Trying to create many directories</Description>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+		    char buf[10];
+            string dirname = "some_directory";
+            JFSCtl jfs;
+            mkdir(dirname.c_str(), 0777);
+            chdir(dirname.c_str());
+            mkdir(dirname.c_str(), 0777);
+            int inode_num = jfs.GetInodeNum(dirname);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinode * inode = jfs.Get16thInode(DeviceName);
+			
+			Unres(imap == NULL, "Cannot get control page.");
+			Unres(inode == NULL, "Cannot get control page inode.");
+			inode->di_size = (imap->in_nextiag + 1)*PSIZE+PSIZE;
+			imap->in_freeiag = 0;
+			
+			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			Unres(jfs.Set16thInode(DeviceName, inode) == false, "Cannot set control page inode.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			chdir(dirname.c_str());
+   
+            mkdir("a", 0777);
+            mkdir("b", 0777);
+
+           
+		</Code>
+	</Test>
+	<Test Name="newIAGFail2" FaultSimulationReady="true">
+		<Description>Trying to create many directories</Description>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+		    char buf[10];
+            string dirname = "some_directory";
+            JFSCtl jfs;
+            mkdir(dirname.c_str(), 0777);
+            chdir(dirname.c_str());
+            mkdir(dirname.c_str(), 0777);
+            int inode_num = jfs.GetInodeNum(dirname);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinode * inode = jfs.Get16thInode(DeviceName);
+			
+			Unres(imap == NULL, "Cannot get control page.");
+			Unres(inode == NULL, "Cannot get control page inode.");
+			imap->in_nextiag = 3000000;
+			inode->di_size = (int64_t)(imap->in_nextiag + 1)*PSIZE;
+			imap->in_freeiag = 0;
+			
+			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			Unres(jfs.Set16thInode(DeviceName, inode) == false, "Cannot set control page inode.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			chdir(dirname.c_str());
+   
+            mkdir("a", 0777);
+            mkdir("b", 0777);
+
+           
+		</Code>
+	</Test>
+	<Test Name="diFreeFail1" FaultSimulationReady="true">
+		<Description>Trying to bring to fail in diFree.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+		    const char * FilePath = "diFreeFail1_file";		    
+		    JFSCtl jfs;
+		    
+		    fd = open(FilePath, O_CREAT | O_RDWR, 0777);
+		    Unres(fd == -1, "Cannot create file.");
+		    
+		    char * buf = new char[1000*1000];
+		    
+		    Unres(write(fd, "asdf", 4) == -1, "Cannot write.");
+		    	
+			close(fd);
+			
+			sync();
+		    
+		    int inode_num = jfs.GetInodeNum(FilePath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			
+			Unres(imap == NULL, "Cannot get control page.");
+			imap->in_nextiag = 0;
+			
+			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			fd = open(FilePath, O_RDWR, 0777);
+			Unres(fd == -1, "Cannot open file.");
+		    
+		    for ( int i = 0;i < 10; ++i )
+				Unres(write(fd, buf, 1000*1000) == -1, "Cannot write.");
+				
+			close(fd);
+			
+			unlink(FilePath);
+			
+			umount(MountPoint); // Calls diFree indirectly
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
+	
+	<Test Name="diFreeFail2" FaultSimulationReady="true">
+		<Description>Trying to bring to fail in diFree.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+		    const char * FilePath = "diFreeFail1_file";		    
+		    JFSCtl jfs;
+		    
+		    fd = open(FilePath, O_CREAT | O_RDWR, 0777);
+		    Unres(fd == -1, "Cannot create file.");
+		    
+		    char * buf = new char[1000*1000];
+		    
+		    Unres(write(fd, "asdf", 4) == -1, "Cannot write.");
+		    	
+			close(fd);
+			
+			sync();
+		    
+		    int inode_num = jfs.GetInodeNum(FilePath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			iag * iag = jfs.GetIAG(DeviceName, inode_num);
+			
+			Unres(imap == NULL, "Cannot get control page.");
+			
+			Unres(iag == NULL, "Cannot get IAG.");
+			//imap->in_nextiag = 0;
+			iag->wmap[inode_num / INOSPEREXT] = 0;
+			
+			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
+			
+			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			fd = open(FilePath, O_RDWR, 0777);
+			Unres(fd == -1, "Cannot open file.");
+		    
+		    for ( int i = 0;i < 10; ++i )
+				Unres(write(fd, buf, 1000*1000) == -1, "Cannot write.");
+				
+			close(fd);
+			
+			unlink(FilePath);
+			
+			umount(MountPoint); // Calls diFree indirectly
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
+	
+	<Test Name="diFreeFail3" FaultSimulationReady="true">
+		<Description>Trying to bring to fail in diFree.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+		    const char * FilePath = "diFreeFail1_file";		    
+		    JFSCtl jfs;
+		    
+		    fd = open(FilePath, O_CREAT | O_RDWR, 0777);
+		    Unres(fd == -1, "Cannot create file.");
+		    
+		    char * buf = new char[1000*1000];
+		    
+		    Unres(write(fd, "asdf", 4) == -1, "Cannot write.");
+		    	
+			close(fd);
+			
+			sync();
+		    
+		    int inode_num = jfs.GetInodeNum(FilePath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			iag * iag = jfs.GetIAG(DeviceName, inode_num);
+			
+			Unres(imap == NULL, "Cannot get control page.");
+			
+			Unres(iag == NULL, "Cannot get IAG.");
+			int agno = iag->agstart / PSIZE;
+			imap->in_agctl[agno].numfree = imap->in_agctl[agno].numinos + 1;
+			
+			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
+			
+			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			fd = open(FilePath, O_RDWR, 0777);
+			Unres(fd == -1, "Cannot open file.");
+		    
+		    for ( int i = 0;i < 10; ++i )
+				Unres(write(fd, buf, 1000*1000) == -1, "Cannot write.");
+				
+			close(fd);
+			
+			unlink(FilePath);
+			
+			umount(MountPoint); // Calls diFree indirectly
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
+	
+	<Test Name="diFreeFail4" FaultSimulationReady="true">
+		<Description>Trying to bring to fail in diFree.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+		    const char * FilePath = "diFreeFail1_file";		    
+		    JFSCtl jfs;
+		    
+		    fd = open(FilePath, O_CREAT | O_RDWR, 0777);
+		    Unres(fd == -1, "Cannot create file.");
+		    
+		    char * buf = new char[1000*1000];
+		    
+		    Unres(write(fd, "asdf", 4) == -1, "Cannot write.");
+		    	
+			close(fd);
+			
+			sync();
+		    
+		    int inode_num = jfs.GetInodeNum(FilePath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			iag * iag = jfs.GetIAG(DeviceName, inode_num);
+			
+			Unres(imap == NULL, "Cannot get control page.");
+			
+			Unres(iag == NULL, "Cannot get IAG.");
+			
+			iag->nfreeinos = 0;
+			iag->wmap[inode_num / INOSPEREXT] = 0;
+			int agno = iag->agstart / PSIZE;
+			imap->in_agctl[agno].numfree = 100;
+			imap->in_agctl[agno].numinos = 500;
+			imap->in_agctl[agno].inofree = 10;
+			
+			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
+			
+			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			fd = open(FilePath, O_RDWR, 0777);
+			Unres(fd == -1, "Cannot open file.");
+		    
+		    for ( int i = 0;i < 10; ++i )
+				Unres(write(fd, buf, 1000*1000) == -1, "Cannot write.");
+				
+			close(fd);
+			
+			unlink(FilePath);
+			
+			umount(MountPoint); // Calls diFree indirectly
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
+	
+	<Test Name="diFreeFail5" FaultSimulationReady="true">
+		<Description>Trying to bring to fail in diFree.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+		    const char * FilePath = "diFreeFail1_file";		    
+		    JFSCtl jfs;
+		    
+		    fd = open(FilePath, O_CREAT | O_RDWR, 0777);
+		    Unres(fd == -1, "Cannot create file.");
+		    
+		    char * buf = new char[1000*1000];
+		    
+		    Unres(write(fd, "asdf", 4) == -1, "Cannot write.");
+		    	
+			close(fd);
+			
+			sync();
+		    
+		    int inode_num = jfs.GetInodeNum(FilePath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			iag * iag = jfs.GetIAG(DeviceName, inode_num);
+			
+			Unres(imap == NULL, "Cannot get control page.");
+			
+			Unres(iag == NULL, "Cannot get IAG.");
+			
+			int agno = iag->agstart / PSIZE;
+			
+			iag->nfreeexts = 0;
+			iag->wmap[inode_num / INOSPEREXT] = 0;
+			imap->in_agctl[agno].numfree = 300;
+			imap->in_agctl[agno].numinos = 500;
+			imap->in_agctl[agno].extfree = 10;
+			
+			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
+			
+			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			fd = open(FilePath, O_RDWR, 0777);
+			Unres(fd == -1, "Cannot open file.");
+		    
+		    for ( int i = 0;i < 10; ++i )
+				Unres(write(fd, buf, 1000*1000) == -1, "Cannot write.");
+				
+			close(fd);
+			
+			unlink(FilePath);
+			
+			umount(MountPoint); // Calls diFree indirectly
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
+	
+	<Test Name="diReadFail" FaultSimulationReady="true">
+		<Description>Trying to bring to fail in diRead.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+		    const char * FilePath = "diFreeFail1_file";		    
+		    JFSCtl jfs;
+		    
+		    fd = open(FilePath, O_CREAT | O_RDWR, 0777);
+		    Unres(fd == -1, "Cannot create file.");
+		    
+		    char * buf = new char[1000*1000];
+		    
+		    Unres(write(fd, "asdf", 4) == -1, "Cannot write.");
+		    	
+			close(fd);
+			
+			sync();
+		    
+		    int inode_num = jfs.GetInodeNum(FilePath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			iag * iag = jfs.GetIAG(DeviceName, inode_num);
+			
+			Unres(imap == NULL, "Cannot get control page.");
+			
+			Unres(iag == NULL, "Cannot get IAG.");
+			//imap->in_nextiag = 0;
+			PXDaddress(&iag->inoext[inode_num / INOSPEREXT], 0);
+			
+			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
+			
+			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			
+			mount(DeviceName, MountPoint, FileSystem, 0, 0); //Will fail
+			
+			
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
+	
+	<Test Name="newExtFail" FaultSimulationReady="true">
+		<Description>Trying to create many directories</Description>
+		<Header>
+			int fd = -1;
+		
+		</Header>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+		    char buf[10];
+            string filename = "file";
+            JFSCtl jfs;
+            fd = creat(filename.c_str(), 0777);
+            
+            
+            int inode_num = jfs.GetInodeNum(filename);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			iag * iagp = jfs.GetIAG(DeviceName, inode_num);
+
+			Unres(iagp == NULL, "Cannot get control page.");
+			iagp->nfreeexts = 0;
+			
+			Unres(jfs.SetIAG(DeviceName, inode_num, iagp) == false, "Cannot set iag.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			char buf2[2];
+			for(int i = 0; i < 30; i++)
+			{
+				sprintf(buf2, "%d",  i);
+				fd = creat(buf2,0777);
+				
+				close(fd);
+				fsync(fd);
+			}
+
+           
+		</Code>
+		<Footer>
+			close(fd);
+		
+		</Footer>
+	</Test>
+	
 	<Test Name="diAllocBitFail">
 		<Description>Makes diAllocBit function fail.</Description>
 		<Header>
@@ -445,8 +870,41 @@
 			}
 		</Footer>
 	</Test>
-	<Test Name="add_indexFail">
-		<Description>Corrupt jfs_inode_info in add_index().</Description>
+	<Test Name="MountBadSait" FaultSimulationReady="true">
+		<Description>Set jfs superblock flags to JFS_BAD_SAIT.</Description>
+		<Code>
+			jfs_superblock sb;
+			
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			
+			sb.s_flag = JFS_BAD_SAIT;
+			
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot set new superblock");
+			PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "");//will fail in this version of jfs, though it's not documented behaviour 
+
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+	
+		</Code>
+	</Test>
+	<Test Name="CorruptSecondarySB">
+		<Description>Corrupt secondary SB</Description>
+		<Code>
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			
+			char zero[PSIZE];
+			memset(zero, 0, PSIZE);
+			
+			JFSCtl jfs;
+			
+			Unres( jfs.WriteBlock(DeviceName, zero, SUPER2_OFF) == false, "Cannot write block." );
+			
+			Fail ( mount(DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Cannot mount." );
+	
+		</Code>
+	</Test>
+	<Test Name="MkdirFail">
+		<Description>Mkdir fail</Description>
 		<Code>
 			const char * FilePath = "test";
 			Unres( mkdir(FilePath, S_IRUSR | S_IWUSR) == -1, "Cannot create directory.");
@@ -461,7 +919,7 @@
 			dinode * inode = jfs.GetInode(DeviceName, inode_num);
 			Unres(inode == NULL, "Cannot get inode.");
 			
-			inode->di_next_index = 1;
+			inode->di_next_index = INT_MAX;
 			
 			Unres(jfs.SetInode(DeviceName, inode_num, inode) == false, "Cannot set inode.");
 			
@@ -471,178 +929,74 @@
 			
 			Unres(chdir(FilePath) == -1, "Cannot chdir to FilePath.");
 			
-			int fd;
-			Check ( (fd = open("add_indexFail",  O_CREAT | O_RDWR, 0777)) == -1, "Cannot create directory.");
-			Unres(close(fd) == -1, "Cannot close file");
+			mkdir("test", 0777); // Will fail
 	
 		</Code>
 	</Test>
-	<Test Name="newIAG" FaultSimulationReady="true">
-		<Description>Trying to create many directories</Description>
+	<Test Name="dtInsertFail">
+		<Description>Corrupt secondary SB</Description>
 		<Code>
-			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
-		    Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-		    char buf[10];
-            string dirname = "some_directory";
-            JFSCtl jfs;
-            mkdir(dirname.c_str(), 0777);
-            chdir(dirname.c_str());
-            mkdir(dirname.c_str(), 0777);
-            int inode_num = jfs.GetInodeNum(dirname);
+			const char * FilePath = "xtInsertFail";
+			Unres( mkdir(FilePath, S_IRUSR | S_IWUSR) == -1, "Cannot create directory.");
+			
+			sync();
+			
+			JFSCtl jfs;
+			int inode_num = jfs.GetInodeNum(FilePath);
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+					
+			dinode * inode = jfs.GetInode(DeviceName, inode_num);
+			Unres(inode == NULL, "Cannot get inode.");
+					
+			dtpage_t * page = (dtpage_t*)&inode->di_xtroot;
+			page->header.freecnt = 0;
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
-			dinode * inode = jfs.Get16thInode(DeviceName);
+			Unres(jfs.SetInode(DeviceName, inode_num, inode) == false, "Cannot set inode.");
 			
-			Unres(imap == NULL, "Cannot get control page.");
-			Unres(inode == NULL, "Cannot get control page inode.");
-			inode->di_size = (imap->in_nextiag + 1)*PSIZE+PSIZE;
-			imap->in_freeiag = 0;
-			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
-			Unres(jfs.Set16thInode(DeviceName, inode) == false, "Cannot set control page inode.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
-			
 			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			Unres(chdir(FilePath) == -1, "Cannot chdir to FilePath.");
 			
-			chdir(dirname.c_str());
-   
-            mkdir("a", 0777);
-            mkdir("b", 0777);
-
-           
+			Fail ( mkdir("test", 0777), "Cannot create directory." );
+			
+			sync();
+	
 		</Code>
 	</Test>
-	<Test Name="newIAG2" FaultSimulationReady="true">
-		<Description>Trying to create many directories</Description>
+	<Test Name="add_indexFail">
+		<Description>Corrupt jfs_inode_info in add_index().</Description>
 		<Code>
-			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
-		    Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-		    char buf[10];
-            string dirname = "some_directory";
-            JFSCtl jfs;
-            mkdir(dirname.c_str(), 0777);
-            chdir(dirname.c_str());
-            mkdir(dirname.c_str(), 0777);
-            int inode_num = jfs.GetInodeNum(dirname);
-			
-			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
-			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
-			dinode * inode = jfs.Get16thInode(DeviceName);
-			
-			Unres(imap == NULL, "Cannot get control page.");
-			Unres(inode == NULL, "Cannot get control page inode.");
-			imap->in_nextiag = 3000000;
-			inode->di_size = (int64_t)(imap->in_nextiag + 1)*PSIZE;
-			imap->in_freeiag = 0;
-			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
-			Unres(jfs.Set16thInode(DeviceName, inode) == false, "Cannot set control page inode.");
-			
-			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
-			
-			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			
-			chdir(dirname.c_str());
-   
-            mkdir("a", 0777);
-            mkdir("b", 0777);
-
-           
-		</Code>
-	</Test>
-	<Test Name="newIAGxtInsertFail" FaultSimulationReady="true">
-		<Description>Trying to create many directories</Description>
-		<Code>
-			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
-		    Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-		    char buf[10];
-            string dirname = "some_directory";
-            JFSCtl jfs;
-            mkdir(dirname.c_str(), 0777);
-            chdir(dirname.c_str());
-            mkdir(dirname.c_str(), 0777);
-            int inode_num = jfs.GetInodeNum(dirname);
-			
-			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
-			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
-			dinode * inode = jfs.Get16thInode(DeviceName);
-			
-			Unres(imap == NULL, "Cannot get control page.");
-			Unres(inode == NULL, "Cannot get control page inode.");
-			xtpage_t * page = (xtpage_t*)&inode->di_xtroot;
-			
-			page->header.maxentry = page->header.nextindex;
-			
-			imap->in_freeiag = 0;
-			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
-			Unres(jfs.Set16thInode(DeviceName, inode) == false, "Cannot set control page inode.");
-			
-			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
-			
-			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			
-			chdir(dirname.c_str());
-   
-			mkdir("b", 0777);
-            Fail( mkdir("a", 0777) == -1, "Cannot mkdir.");
-            
-		</Code>
-	</Test>
-	<Test Name="newExt" FaultSimulationReady="true">
-		<Description>Trying to create many directories</Description>
-		<Header>
-			int fd = -1;
-		
-		</Header>
-		<Code>
-			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
-		    Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-		    char buf[10];
-            string filename = "file";
-            JFSCtl jfs;
-            fd = creat(filename.c_str(), 0777);
-            Unres(fd == -1,"Cannot create");
-            close(fd);
-            
-            int inode_num = jfs.GetInodeNum(filename);
-			
-			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
-			
-			iag * iagp = jfs.GetIAG(DeviceName, inode_num);
-
-			Unres(iagp == NULL, "Cannot get control page.");
-			iagp->nfreeexts = 0;
-			
-			Unres(jfs.SetIAG(DeviceName, inode_num, iagp) == false, "Cannot set iag.");
-			
-			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
-			
-			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			
-			char buf2[2];
-			for(int i = 0; i < 30; i++)
-			{
-				sprintf(buf2, "%d",  i);
-				fd = creat(buf2,0777);
+				const char * FilePath = "test";
+				Unres( mkdir(FilePath, S_IRUSR | S_IWUSR) == -1, "Cannot create directory.");
 				
-				close(fd);
-				fsync(fd);
-			}
+				sync();
+				
+				JFSCtl jfs;
+				int inode_num = jfs.GetInodeNum(FilePath);
+				
+				Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+				
+				dinode * inode = jfs.GetInode(DeviceName, inode_num);
+				Unres(inode == NULL, "Cannot get inode.");
+				
+				inode->di_next_index = 1;
+				
+				Unres(jfs.SetInode(DeviceName, inode_num, inode) == false, "Cannot set inode.");
+				
+				Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+				
+				Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+				
+				Unres(chdir(FilePath) == -1, "Cannot chdir to FilePath.");
+				
+				int fd;
+				Check ( (fd = open("add_indexFail",  O_CREAT | O_RDWR, 0777)) == -1, "Cannot create directory.");
+				Unres(close(fd) == -1, "Cannot close file");
 
-           
 		</Code>
-		<Footer>
-			close(fd);
-		
-		</Footer>
-	
-	</Test>
+    </Test>
 	<Internal>
 		bool OverflowStack(string FilePath)
 		{
