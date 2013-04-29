@@ -325,11 +325,13 @@ LFT:903,903 This line can be covered using many threads(about 300), which create
 LFT:2179,2179 See the 903 line for more details.
 LFT:2188,2188 See the 903 line for more details.
 LFT:2395,2395 See the 903 line for more details.
+LFT:2406,2407 See the 903 line for more details.
 LFT:2778,2778 See the 903 line for more details.
 LFT:2807,2807 See the 903 line for more details.
-LFT:3925,3925 See the 903 line for more details.
+LFT:3926,3926 See the 903 line for more details.
 LFT:4273,4273 See the 903 line for more details.
 LFT:4368,4368 See the 903 line for more details.
+LFT:4397,4398 See the 903 line for more details.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
