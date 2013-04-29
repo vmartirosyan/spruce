@@ -64,7 +64,7 @@
 		
 		</Code>
 	</Test>
-	<Test Name="DirtyState" FaultSimulationReady="true">
+	<Test Name="DirtyState">
 		<Description>Set jfs superblock state dirty and try to mount.</Description>
 		<Code>
 			jfs_superblock sb;
@@ -79,11 +79,106 @@
 	
 		</Code>
 	</Test>
+	<Test Name="MountBadSait" FaultSimulationReady="true">
+		<Description>Set jfs superblock flags to JFS_BAD_SAIT.</Description>
+		<Code>
+			jfs_superblock sb;
+			
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			
+			sb.s_flag = JFS_BAD_SAIT;
+			
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot set new superblock");
+			PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "");//will fail in this version of jfs, though it's not documented behaviour 
+
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+	
+		</Code>
+	</Test>
+	<Test Name="CorruptSecondarySB">
+		<Description>Corrupt secondary SB</Description>
+		<Code>
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			
+			char zero[PSIZE];
+			memset(zero, 0, PSIZE);
+			
+			JFSCtl jfs;
+			
+			Unres( jfs.WriteBlock(DeviceName, zero, SUPER2_OFF) == false, "Cannot write block." );
+			
+			Fail ( mount(DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Cannot mount." );
+	
+		</Code>
+	</Test>
+	<Test Name="MkdirFail">
+		<Description>Corrupt secondary SB</Description>
+		<Code>
+			const char * FilePath = "test";
+			Unres( mkdir(FilePath, S_IRUSR | S_IWUSR) == -1, "Cannot create directory.");
+			
+			sync();
+			
+			JFSCtl jfs;
+			int inode_num = jfs.GetInodeNum(FilePath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinode * inode = jfs.GetInode(DeviceName, inode_num);
+			Unres(inode == NULL, "Cannot get inode.");
+			
+			inode->di_next_index = INT_MAX;
+			
+			Unres(jfs.SetInode(DeviceName, inode_num, inode) == false, "Cannot set inode.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			Unres(chdir(FilePath) == -1, "Cannot chdir to FilePath.");
+			
+			Fail ( mkdir("test", 0777) == -1, "Cannot create directory.");
+	
+		</Code>
+	</Test>
+	<Test Name="dtInsertFail">
+		<Description>Corrupt secondary SB</Description>
+		<Code>
+			const char * FilePath = "xtInsertFail";
+			Unres( mkdir(FilePath, S_IRUSR | S_IWUSR) == -1, "Cannot create directory.");
+			
+			sync();
+			
+			JFSCtl jfs;
+			int inode_num = jfs.GetInodeNum(FilePath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+					
+			dinode * inode = jfs.GetInode(DeviceName, inode_num);
+			Unres(inode == NULL, "Cannot get inode.");
+					
+			dtpage_t * page = (dtpage_t*)&inode->di_xtroot;
+			page->header.freecnt = 0;
+			
+			Unres(jfs.SetInode(DeviceName, inode_num, inode) == false, "Cannot set inode.");
+			
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			Unres(chdir(FilePath) == -1, "Cannot chdir to FilePath.");
+			
+			Fail ( mkdir("test", 0777), "Cannot create directory." );
+			
+			sync();
+	
+		</Code>
+	</Test>
 	<Test Name="WrongBlockSize" FaultSimulationReady="true">
 		<Description>Set wrong block size in jfs superblock and try to mount.</Description>
 		<Code>
 			jfs_superblock sb;
-			DIR *dir;
+			
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
 			sb.s_bsize = 1000;
@@ -100,7 +195,7 @@
 		</Header>
 		<Code>
 			const char * FilePath = "test";
-			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			
@@ -153,7 +248,7 @@
 		<Code>
 			
 			const char * FilePath = "StackOverflow_test";
-			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
@@ -192,7 +287,7 @@
 		<Code>
 			
 			const char * FilePath = "xtSearch_test";
-			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			
@@ -230,7 +325,7 @@
 			Unres(chdir(MountPoint) == -1, "Cannot change directory back.");
 			
 			const char * FilePath = "xtTruncateFail_test";
-			int fd = open(FilePath, O_RDWR | O_CREAT | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			fd = open(FilePath, O_RDWR | O_CREAT | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			
@@ -263,7 +358,7 @@
 		<Code>
 			
 			const char * FilePath = "xtTruncate_pmapFail_test";
-			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			
