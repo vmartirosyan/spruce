@@ -100,6 +100,27 @@ LFT:38,39 Can be covered if stability-check is run in mount/RemounResize test bu
 LFT:43,46 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
 end_of_record
 
+SF:fs/jfs/jfs_imap.c
+FN:diFreeSpecial
+LFT:3,3 Never gets here because of a previous check.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diIAGRead
+LFT:14,14 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diNewIAG
+LFT:44,44 Code is marked as it was not executed due to compiler optimisations. 
+LFT:59,59 Code is marked as it was not executed due to compiler optimisations. 
+LFT:74,74 Code is marked as it was not executed due to compiler optimisations. 
+LFT:97,97 Code is marked as it was not executed due to compiler optimisations. 
+LFT:122,122 Code is marked as it was not executed due to compiler optimisations. 
+LFT:183,183 Code is marked as it was not executed due to compiler optimisations. 
+LFT:199,199 Code is marked as it was not executed due to compiler optimisations. 
+end_of_record
+
 SF:fs/jfs/jfs_extent.c
 FN:extRecord Called from jfs_get_block+39.
 end_of_record
