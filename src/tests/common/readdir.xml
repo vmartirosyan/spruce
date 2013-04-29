@@ -25,6 +25,16 @@
 <TestSet Name="readdir">
 	<Requires>dirent.h</Requires>
 	<Requires>sys/syscall.h</Requires>
+	<Header>
+		struct linux_dirent {
+		unsigned long  d_ino;     /* Inode number */
+		unsigned long  d_off;     /* Offset to next linux_dirent */
+		unsigned short d_reclen;  /* Length of this linux_dirent */
+		char           d_name[];  /* Filename (null-terminated) */
+						   /* length is actually (d_reclen - 2 -
+							  offsetof(struct linux_dirent, d_name) */
+		};
+	</Header>
 	<Test Name="ReaddirNormal" FaultSimulationReady="true">
 		<Description>Read empty directory entry.</Description>
 		<Code>
@@ -68,6 +78,57 @@
 			// 5 dirs + 5 files + "./" + "../" = 12
 			Check(rd_cnt != 12, "Wrong number of entries read.");
 			closedir(dir);
+		</Code>
+	</Test>
+
+	<Test Name="ReaddirShrink" FaultSimulationReady="true">
+		<Description>Shrink directory.</Description>
+		<File count="60"/>
+		<Code>
+			const int BUF_LEN = 100;
+			char buf[BUF_LEN];
+			struct linux_dirent *ent;
+			int fd = open(".", O_DIRECTORY);
+			Unres(fd == -1, "Cannot open directory");
+			
+			int ret = 0;
+			Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");
+			cerr<<"Readdir : bytes read: " << ret << endl;
+			
+			for ( int pos = 0; pos < ret; )
+			{
+				ent = (linux_dirent*)(buf + pos);
+				cerr << "Entry: " << ent->d_name << endl;
+				pos += ent->d_reclen;
+			}
+			
+			Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");			
+			cerr<<"Readdir : bytes read: " << ret << endl;
+			
+			for ( int pos = 0; pos < ret; )
+			{
+				ent = (linux_dirent*)(buf + pos);
+				cerr << "Entry: " << ent->d_name << endl;
+				pos += ent->d_reclen;
+			}
+			
+			
+			for(int i = 0; i < 60; ++i)
+			{
+				Unres(unlink(FilePaths[i].c_str()) == -1, "Cannot remove directory");
+			}
+			
+			sync();
+			Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");			
+			cerr<<"Readdir : bytes read: " << ret << endl;
+			
+			for ( int pos = 0; pos < ret; )
+			{
+				ent = (linux_dirent*)(buf + pos);
+				cerr << "Entry: " << ent->d_name << endl;
+				pos += ent->d_reclen;
+			}
+			
 		</Code>
 	</Test>
 	
