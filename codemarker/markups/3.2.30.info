@@ -226,11 +226,9 @@ end_of_record
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogFileSystem
 LFT:17,17 Code is marked as it was not executed due to compiler optimisations.
-end_of_record
-
-SF:fs/jfs/jfs_logmgr.c
-FN:lmLogFileSystem
 LFT:29,29 Code is marked as it was not executed due to compiler optimisations.
+LFT:24,26 Code is called only if more than MAX_ACTIVE partitions are mount with the same external journal.
+LFT:35,37 Code is called only if more than MAX_ACTIVE partitions are mount with the same external journal.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
@@ -294,19 +292,11 @@ FN:BT_STACK_DUMP Called from dtSearch+200. Called from dtReadFirst+42.
 end_of_record
 
 SF:fs/jfs/namei.c
-FN:jfs_fh_to_dentry The function is exported. Can be called only from kernel space.
+FN:jfs_fh_to_parent This function could be called if "vfs_dentry_acceptable" function wouldn't return "1".
 end_of_record
 
 SF:fs/jfs/namei.c
-FN:jfs_fh_to_parent The function is exported. Can be called only from kernel space.
-end_of_record
-
-SF:fs/jfs/namei.c
-FN:jfs_nfs_get_inode Called from jfs_fh_to_dentry+3.
-end_of_record
-
-SF:fs/jfs/namei.c
-FN:jfs_get_parent The function is exported. Can be called only from kernel space.
+FN:jfs_get_parent Can be called only if we had control member "d_flags" of "dentry" struct from userspace.
 end_of_record
 
 SF:fs/jfs/namei.c
@@ -344,16 +334,6 @@ FN:jfsIOWait
 LFT:15,16 These lines can be covered from kernel space.
 end_of_record
 
-SF:fs/jfs/jfs_logmgr.c
-FN:lmLogFileSystem
-LFT:24,26 Code is called only if more than MAX_ACTIVE partitions are mount with the same external journal.
-end_of_record
-
-SF:fs/jfs/jfs_logmgr.c
-FN:lmLogFileSystem
-LFT:35,37 Code is called only if more than MAX_ACTIVE partitions are mount with the same external journal.
-end_of_record
-
 SF:fs/jfs/xattr.c
 FN:jfs_initxattrs The function is called when the SELinux package is installed.
 end_of_record
@@ -361,10 +341,6 @@ end_of_record
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogOpen
 LFT:16,27 Code would be called if jfs/mount/MultiplePartitionsSingleLog didn't failed with fatal.
-end_of_record
-
-SF:fs/jfs/jfs_logmgr.c
-FN:lmLogOpen
 LFT:67,67 These lines could be covered if there wouldn't be system crash due to "submit_bio" failure.
 end_of_record
 
@@ -392,20 +368,8 @@ end_of_record
 SF:fs/jfs/jfs_metapage.c
 FN:__get_metapage
 LFT:14,17 These lines can be covered from kernel space.
-end_of_record
-
-SF:fs/jfs/jfs_metapage.c
-FN:__get_metapage
 LFT:57,62 These lines can be covered from kernel space.
-end_of_record
-
-SF:fs/jfs/jfs_metapage.c
-FN:__get_metapage
 LFT:66,66 These lines can be covered from kernel space.
-end_of_record
-
-SF:fs/jfs/jfs_metapage.c
-FN:__get_metapage
 LFT:104,105 These lines can be covered from kernel space.
 end_of_record
 
