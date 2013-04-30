@@ -25,6 +25,8 @@
 <TestSet Name="name_to_handle">
 	<GlobalHeader>
 #include <linux/version.h>
+#include <unistd.h>
+#include <sys/syscall.h>
 #if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,39)
 	EmptyTestSet(common, name_to_handle, Unsupported, "name_to_handle_at or/and open_by_handle_at is/are not supported.")
 #else
@@ -44,6 +46,7 @@
 		#endif
 	</GlobalHeader>
 	<Requires>unistd.h</Requires>
+	<Requires>sys/syscall.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>stdio.h</Requires>
 	<Requires>stdlib.h</Requires>
@@ -57,7 +60,7 @@
 			int ret = syscall(__NR_name_to_handle_at, AT_FDCWD, (FilePrefix + "0").c_str(), fh, &mnt_id, 0);
 			if(ret == -1 && errno == EOVERFLOW )
 			{
-				int sz = fh->handle_bytes;				
+				int sz = fh->handle_bytes;
 				free(fh);
 				fh = static_cast<file_handle*>(malloc(sizeof(struct file_handle) + sz));
 				fh->handle_bytes = sz;
