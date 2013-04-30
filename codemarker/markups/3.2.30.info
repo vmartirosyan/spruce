@@ -401,3 +401,24 @@ SF:fs/jfs/jfs_xtree.c
 FN:xtSplitPage
 LFT:133,134 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitPage. 
 end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_rmdir
+LFT:72,72 This is dead code as acl.flag is never set to DXD_EXTENT in source code.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:commitZeroLink
+LFT:41,41 This is dead code as acl.flag is never set to DXD_EXTENT in source code.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_free_zero_link
+LFT:48,62 This is dead code as acl.flag is never set to DXD_EXTENT in source code.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_symlink
+LFT:110,111 These lines are covered when we perform fault simulation on symlink test, but it leads to system crash.
+LFT:121,124 These lines are covered when we perform fault simulation on symlink test, but it leads to system crash.
+end_of_record
