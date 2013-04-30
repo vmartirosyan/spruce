@@ -63,6 +63,11 @@ FN:diReadSpecial
 LFT:44,47 The function copy_from_dinode always returns 0. The error handling code is dead.
 end_of_record
 
+SF:fs/jfs/jfs_imap.c
+FN:diFree
+LFT:75,79 Cannot be covered because of inode modification, as in that case diRead will fail.
+end_of_record
+
 SF:fs/jfs/jfs_incore.h
 FN:JFS_SBI Function is inline and its call is usually integrated.
 end_of_record
