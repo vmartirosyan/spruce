@@ -25,7 +25,7 @@
 <TestSet Name="mount_umount">
 	<StartUp>
 		// Temporary solution. Should be removed as soon as the logic of test execution is changed.		
-		Unres ( !PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided." );
+		Skip ( !PartitionManager::NoOptionsEnabled(), "Mount/Umount tests should run only when no options are provided." );
 			
 	</StartUp>
 	<Header>
@@ -43,8 +43,6 @@
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,
 				"Cannot restore partition.");
-			
-			Unres ( mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");
 			
 			Unres( chdir(MountPoint) == -1, "Cannot change directory.");
 			

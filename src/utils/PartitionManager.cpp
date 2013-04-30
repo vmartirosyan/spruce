@@ -254,7 +254,7 @@ bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSyst
 		Logger::LogError("Cannot get Flags value.");
 		return false;
 	}
-		
+	
 	// There was a problem in BtrFS (old kernels) with mount.
 	// That's why it makes sense to retry mounting several times with a delay.
 	int ret_cnt;
@@ -291,10 +291,6 @@ bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSyst
 	*/
 	//cout << "Changed dir" << endl;
 	return true;
-
-	Logger::LogError("Cannot unmount partition " + MountPoint + ".");
-	return false;
-
 }
 
 string PartitionManager::GetCurrentOptions(bool Stripped) const
@@ -331,7 +327,7 @@ bool PartitionManager::IsOptionEnabled(string optionName, bool IsMkfsOption)
 
 bool PartitionManager::NoOptionsEnabled()
 {
-	return NoMountOptionsEnabled() && NoMkfsOptionsEnabled();
+	return ( NoMountOptionsEnabled() && NoMkfsOptionsEnabled());
 }
 
 
@@ -466,6 +462,7 @@ bool PartitionManager::LoadConfiguration()
 			if ( _FSIndex == -1 )
 				continue;
 			
+			// Add the empty options
 			_AdditionalOptions[_FSIndex].insert(CurrentOptions());
 			char buf[255];
 			// Skip the current line

@@ -96,6 +96,11 @@ public:
 		_results[c] = t;		
 	}
 	
+	void ClearResults()
+	{
+		_results.erase(_results.begin(), _results.end());
+	}
+	
 	string GetCurrentPoint() const
 	{
 		return _currentPoint;

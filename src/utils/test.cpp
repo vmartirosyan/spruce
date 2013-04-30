@@ -154,18 +154,29 @@ void TestSet::Merge(TestSet & tc)
 
 Status TestSet::Run(Checks checks)
 {
+	
 	string OrigPath = Path;
 	
 	Status result = Success;
 	Status st = Success;
 	
-	if ( _StartUpFunc )
-		if ( (st = _StartUpFunc()) != Success )
-			return st;
-	
+	// Clear the test results
 	map<string, Test>::iterator i = _tests.begin();
 	while ( i != _tests.end())
 	{
+		i->second.ClearResults();
+		i++;
+	}
+	
+	if ( _StartUpFunc )
+		if ( (st = _StartUpFunc()) != Success )
+			return st;
+			
+	i = _tests.begin();
+	while ( i != _tests.end())
+	{
+		i->second.ClearResults();
+		
 		Path = OrigPath + "." + i->first;
 		
 		if ( SkipTestPath(Path) )
