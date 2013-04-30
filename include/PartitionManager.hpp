@@ -165,6 +165,12 @@ public:
 			MountData(mount_data),
 			RawData("")
 			{}
+		CurrentOptions(const CurrentOptions & opt):
+			MkfsOptions(opt.MkfsOptions),
+			MountFlags(opt.MountFlags),
+			MountData(opt.MountData),
+			RawData(opt.RawData)
+			{}
 		void ParseString( const char* buf )
 		{
 			RawData = strndup(buf, strlen(buf));
@@ -188,9 +194,13 @@ public:
 			for ( unsigned int i = 0; i < opts.size(); ++i )
 			{
 				if ( MountFlagMap.find(opts[i]) != MountFlagMap.end() )
+				{
 					MountFlags |= MountFlagMap[opts[i]];
+				}
 				else
+				{
 					MountData.append(opts[i]).append(",");
+				}
 			}
 			
 			// Process the %DEVICE_NAME variable
