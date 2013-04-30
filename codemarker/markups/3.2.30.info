@@ -111,6 +111,11 @@ LFT:14,14 Code is marked as it was not executed due to compiler optimisations.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
+FN:diAllocAny
+LFT:22,22 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
 FN:diNewIAG
 LFT:44,44 Code is marked as it was not executed due to compiler optimisations. 
 LFT:59,59 Code is marked as it was not executed due to compiler optimisations. 
