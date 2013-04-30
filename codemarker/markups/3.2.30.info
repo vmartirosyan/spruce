@@ -107,13 +107,11 @@ LFT:3,3 Never gets here because of a previous check.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
-FN:diAllocIno
-LFT:54,57 Never gets here because of a previous check.
+LFT:1840,1843 Never gets here because of a previous check.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
-FN:diAllocExt
-LFT:52,55 Never gets here because of a previous check.
+LFT:1963,1966 Never gets here because of a previous check.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
