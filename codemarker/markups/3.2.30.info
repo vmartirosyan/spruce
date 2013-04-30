@@ -35,6 +35,7 @@ SF:fs/jfs/jfs_dtree.c
 FN:dtSplitUp
 LFT:92,135 This code works only when block size != 4096
 LFT:275,275 This code is supported only in OS/2
+LFT:261,264 These lines could be covered if test jfs/JfsOverloadTests/CiGetLeafPrefixKeyFSim would not fail.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
@@ -254,8 +255,13 @@ LFT:0,51 Called from jfs_readdir+302.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
-LFT:3222,3234 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
-LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
+FN:ciGetLeafPrefixKey
+LFT:16,17 These lines could be covered if test jfs/JfsOverloadTests/CiGetLeafPrefixKeyFSim would not fail.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:add_missing_indices 
+LFT:0,51 Called from jfs_readdir+302.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c

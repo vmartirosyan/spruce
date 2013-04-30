@@ -210,8 +210,8 @@
 		</Code>
 	</Test>	
 	
-	<Test Name="CiGetLeafPrefixKeyFSim">
-		<Description>Trying to create too many small files, and write the data.</Description>
+	<Test Name="CiGetLeafPrefixKeyFSim" Dangerous="true">
+		<Description>Get fail in ciGetLeafPrefixKey function.</Description>
 		<Code>			
 		char path[50];
 		int ret_val;
