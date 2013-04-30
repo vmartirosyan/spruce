@@ -13,6 +13,7 @@ end_of_record
 
 SF:fs/jfs/jfs_dmap.c
 FN:dbFindCtl
+LFT:28,28 Code is marked as it was not executed due to compiler optimisations.
 LFT:69,69 Code is marked as it was not executed due to compiler optimisations.
 end_of_record
 
