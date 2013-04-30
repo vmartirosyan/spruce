@@ -204,6 +204,17 @@ FN:metapage_readpage
 LFT:26,26 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
 end_of_record
 
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_read_end_io
+LFT:5,5 Can be covered if fault simulation in submit_bio would not bring to system crash. 
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_write_end_io
+LFT:9,9 Can be covered if fault simulation in submit_bio would not bring to system crash. 
+end_of_record
+
+
 SF:fs/jfs_metapage.c		
 FN:remove_metapage Function is inline and its call is usually integrated.	
 end_of_record
