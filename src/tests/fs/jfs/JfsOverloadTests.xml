@@ -92,6 +92,33 @@
 		</Code>
 	</Test>
 	
+	<Test Name="RenameToBigFile" FaultSimulationReady="true">
+		<Description>Trying to create many directories</Description>
+		<Code>
+	
+		int fd;
+		const char * file_name = (const char*)"RenameBigFile_file";
+		const char * file_to_rename_name = (const char*)"RenameBigFile_file1";
+		fd = open(file_name, O_RDWR | O_CREAT | O_LARGEFILE , S_IRUSR | S_IWUSR );
+		Unres(fd == -1, "Cannot open file.")
+
+		char *buf = new char[10];
+		for ( int i = 0; i < 15000; ++i )
+		{
+			Unres(lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot lseek.");
+			Unres(write(fd, buf, 10) == -1, "Cannot write.");
+		}
+		fsync(fd);
+		
+		int fd2 = open(file_to_rename_name, O_CREAT);
+		Unres(fd2 == -1, "Cannot create second file.");
+		close(fd2);
+		
+		Check(rename(file_to_rename_name, file_name) == -1, "Cannot Rename file.");
+
+		</Code>
+	</Test>
+		
 	<Test Name="DirectoryNames" FaultSimulationReady="true">
 		<Description>Trying to create directories with different long names</Description>
 		<Code>
