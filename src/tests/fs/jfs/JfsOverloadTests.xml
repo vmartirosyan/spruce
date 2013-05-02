@@ -357,6 +357,24 @@
 		</Code>
 	</Test>
 	
+	<Test Name="dtSplitPageFail" Dangerous="true">
+		<Description></Description>
+		<Code>
+			system("rm -rf *");
+			char buf[30];
+			
+			int j;
+			for (j = 0; j < 61; ++j)
+			{
+				sprintf(buf, "dtSplitPageFail_%d",  j);
+				mkdir(buf, 0777);
+			}
+			
+			sprintf(buf, "dtSplitPageFail_%d",  j);
+			Fail(mkdir(buf, 0777) == -1, "Cannot mkdir.");
+		</Code>
+	</Test>
+	
 	<Test Name="diAllocAny1">
 		<Description>Try to allocate inode anywhere in the AGs.</Description>
 		<Code>
