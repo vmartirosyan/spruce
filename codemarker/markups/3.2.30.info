@@ -232,6 +232,11 @@ LFT:35,37 Code is called only if more than MAX_ACTIVE partitions are mount with 
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
+FN:lmLogInit
+LFT:79,79 Code is covered by test jfs/MountWithOptions/lmLogInitFail3 which is marked as dangerous.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
 FN:jfs_flush_journal
 LFT:72,72 Code is marked as it was not executed due to compiler optimisations.
 end_of_record
@@ -341,17 +346,15 @@ end_of_record
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogOpen
 LFT:16,27 Code would be called if jfs/mount/MultiplePartitionsSingleLog didn't failed with fatal.
-LFT:68,68 These lines could be covered if there wouldn't be system crash due to "submit_bio" failure.
+LFT:67,67 These lines could be covered if there wouldn't be system crash due to "submit_bio" failure.
+LFT:83,84 These lines could be covered if there wouldn't be system crash due to "submit_bio" failure.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmGroupCommit
 LFT:8,12 These lines can be covered from kernel space.
-end_of_record
-
-SF:fs/jfs/jfs_logmgr.c
-FN:lmLogInit
-LFT:169,171 These lines can be covered from kernel space.
+LFT:44,44 These lines can be covered from kernel space.
+LFT:60,60 These lines can be covered from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
@@ -368,11 +371,6 @@ LFT:4368,4368 See the 903 line for more details.
 LFT:4397,4398 See the 903 line for more details.
 LFT:3222,3234 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
 LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
-end_of_record
-
-SF:fs/jfs/jfs_logmgr.c
-FN:lmLogShutdown
-LFT:56,56 These lines can be covered from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
