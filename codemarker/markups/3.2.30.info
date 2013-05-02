@@ -351,11 +351,7 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogInit
-LFT:50,50 These lines could be covered if there wouldn't be system crash due to "submit_bio" failure. Or if the return value of "bio_alloc" function would be checked for NULL value;
-LFT:135,135 These lines can be covered from kernel space.
-LFT:145,145 These lines can be covered from kernel space.
 LFT:169,171 These lines can be covered from kernel space.
-
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
@@ -372,6 +368,11 @@ LFT:4368,4368 See the 903 line for more details.
 LFT:4397,4398 See the 903 line for more details.
 LFT:3222,3234 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
 LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogShutdown
+LFT:56,56 These lines can be covered from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
