@@ -36,7 +36,8 @@ SF:fs/jfs/jfs_dtree.c
 FN:dtSplitUp
 LFT:92,135 This code works only when block size != 4096
 LFT:275,275 This code is supported only in OS/2
-LFT:261,264 These lines could be covered if test jfs/JfsOverloadTests/CiGetLeafPrefixKeyFSim would not fail.
+LFT:261,264 Can be covered by test jfs/JfsOverloadTests/CiGetLeafPrefixKeyFSim which is marked as dangerous.
+LFT:167,167 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
@@ -290,6 +291,11 @@ LFT:74,79 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail1
 LFT:85,89 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail13 would not fail.
 LFT:120,121 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail would not fail.
 LFT:128,128 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail would not fail.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtSplitPage
+LFT:44,45 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
 end_of_record
 
 SF:fs/jfs/jfs_btree.h
