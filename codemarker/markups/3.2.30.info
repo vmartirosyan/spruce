@@ -357,6 +357,11 @@ LFT:44,44 These lines can be covered from kernel space.
 LFT:60,60 These lines can be covered from kernel space.
 end_of_record
 
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogInit
+LFT:169,171 These lines can be covered from kernel space.
+end_of_record
+
 SF:fs/jfs/jfs_dtree.c
 LFT:903,903 This line can be covered using many threads(about 300), which create many directories(about 1000). But this process takes very long time, and the coverage is not constant from execution to execution, because the condition of if statement is not always true.         
 LFT:2179,2179 See the 903 line for more details.
