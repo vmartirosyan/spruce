@@ -769,11 +769,12 @@
 		</Header>
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+		    Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
 		    char buf[10];
             string filename = "file";
             JFSCtl jfs;
             fd = creat(filename.c_str(), 0777);
-            
+            close(fd);
             
             int inode_num = jfs.GetInodeNum(filename);
 			
@@ -816,7 +817,7 @@
 		</Header>
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
-						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
 
 			const char * FilePath = "test";
 			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
