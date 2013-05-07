@@ -399,11 +399,24 @@ end_of_record
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogInit
 LFT:79,79 Code is covered by test jfs/MountWithOptions/lmLogInitFail3 which is marked as dangerous.
+LFT:111,111 This block is not covered because the test implementataion would take too long.
+LFT:169,171 This block is not covered because these lines can be covered only from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:jfs_flush_journal
 LFT:72,72 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogShutdown
+LFT:56,56 This block is not covered because these lines can be covered only from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lbmIODone
+LFT:17,17 This block is not covered because these lines can be covered only from kernel space.
+LFT:19,19 This block is not covered because these lines can be covered only from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_mount.c 
@@ -634,6 +647,22 @@ end_of_record
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogInit
 LFT:169,171 These lines can be covered from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmWriteRecord
+LFT:56,56 This block is not covered because these lines can be covered only from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmPostGC
+LFT:24,24 This block is not covered because these lines can be covered only from kernel space.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogSync
+LFT:64,64 This block is not covered because the test implementataion would take too long.
+LFT:84,85 This block is not covered because the test implementataion would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
