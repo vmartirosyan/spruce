@@ -345,7 +345,7 @@ int main(int argc, char ** argv)
 				+ PMCurrentOptionsStripped // Current options
 				+ "_log.xml";
 			
-			XMLGenerator::GenerateLog(LogFile , *i->second, FileSystem, "", str.str());
+			XMLGenerator::GenerateLog(LogFile , *i->second, FileSystem, PMCurrentOptionsStripped, str.str());
 		}
 
 	}
@@ -391,7 +391,7 @@ int main(int argc, char ** argv)
 			+ PMCurrentOptionsStripped // Current options
 			+ "_log.xml";
 
-		XMLGenerator::GenerateLog(LogFile , tp, FileSystem, "", "0");
+		XMLGenerator::GenerateLog(LogFile , tp, FileSystem, PMCurrentOptionsStripped, "0");
 	}
 	
 	try
