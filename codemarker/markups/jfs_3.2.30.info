@@ -573,11 +573,6 @@ LFT:261,261 Calling this code causes bug. log_formatted = 0 only when there is n
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
-FN:dtSearch
-LFT:199,202 Difficult to reproduce in normal coverage.
-end_of_record
-
-SF:fs/jfs/jfs_dtree.c
 FN:dtReadFirst
 LFT:39,43 Difficult to reproduce in normal coverage.
 end_of_record
@@ -605,10 +600,6 @@ end_of_record
 SF:fs/jfs/jfs_dtree.c
 FN:dtSplitPage
 LFT:44,45 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
-end_of_record
-
-SF:fs/jfs/jfs_btree.h
-FN:BT_STACK_DUMP Called from dtSearch+200. Called from dtReadFirst+42.
 end_of_record
 
 SF:fs/jfs/namei.c
