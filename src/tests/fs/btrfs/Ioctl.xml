@@ -263,6 +263,10 @@
         <Code>
 			if ( PartitionManager::IsOptionEnabled("ro") )
 				Unsupp("Read-only file system.");
+				
+			Skip( PartitionManager::IsOptionEnabled("compress=zlib") || PartitionManager::IsOptionEnabled("compress-force"),
+				"The test is meaningless.");
+				
             uint64_t DeviceSize = 0;
             // Get the real free space.
             struct statvfs stat;

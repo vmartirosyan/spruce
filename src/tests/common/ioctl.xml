@@ -116,6 +116,9 @@
 			{
 				Unsupp("FIEMAP_FLAG_XATTR flag is not supported on ext2 and ext3 file systems");
 			}
+			
+			Skip(!strcmp(FileSystem, "btrfs"), "Test is not implemented.");
+			
 			struct fiemap arg;
 			memset(&arg, 0, sizeof(arg));
 			arg.fm_length = 1;
