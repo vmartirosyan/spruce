@@ -395,6 +395,38 @@
             
 		</Code>
 	</Test>
+	<Test Name="diAllocAGFail" FaultSimulationReady="true">
+		<Description>Fail in diAllocAG.</Description>
+		<Code>
+			//Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+		    char buf[10];
+            string dirname = "some_directory";
+            JFSCtl jfs;
+            mkdir(dirname.c_str(), 0777);
+            
+            int inode_num = jfs.GetInodeNum(dirname);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			
+			Unres(imap == NULL, "Cannot get control page.");
+			
+			for ( int i = 0; i < 100; ++i )
+				imap->in_agctl[i].numfree = imap->in_agctl[i].numinos + 1;
+			
+			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			chdir(dirname.c_str());
+   
+            mkdir("a", 0777);
+                       
+		</Code>
+	</Test>
 	<Test Name="newIAGFail" FaultSimulationReady="true">
 		<Description>Trying to create many directories</Description>
 		<Code>
