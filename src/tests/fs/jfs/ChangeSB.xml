@@ -64,6 +64,23 @@
 		
 		</Code>
 	</Test>
+	<Test Name="ChangeAIM2">
+		<Description>Change the AIM2 address in superblock.</Description>
+		<Code>
+			jfs_superblock sb;
+			
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			
+			PXDlength(&sb.s_aim2, 1000);
+			
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
+			
+			mount(DeviceName, MountPoint, FileSystem, 0, 0);
+		
+		</Code>
+	</Test>
 	<Test Name="DirtyState" FaultSimulationReady="true">
 		<Description>Set jfs superblock state dirty and try to mount.</Description>
 		<Code>

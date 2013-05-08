@@ -5110,7 +5110,7 @@ sub write_source($$$$$$$$)
 		      write_source_line(HTML_HANDLE, $line_number,
 					$_, $count_data{$line_number},
 					$converted->{$line_number},
-					$sumbrcount->{$line_number}, $add_anchor, $descs->{$line_number}, $source_filename, "None", -1));
+					$sumbrcount->{$line_number}, $add_anchor, $descs->{$line_number}, $source_filename, "None", -$func_offset));
 		}
 	}
 
@@ -5698,7 +5698,10 @@ sub get_html_prolog($)
 	{
 		// Get the file name relative to kernel root dir
 		var pos = source.indexOf("fs");
-		var msg = "SF:" + source.substr(pos) + "\\nFN:" + last_func_name + "\\nLFT: " + (line - last_func_start - 2) + ", " + (line - last_func_start - 2) + " This block is not covered because...\\nend_of_record";
+		var msg = "SF:" + source.substr(pos) + "\\n";
+		if ( last_func_name != "" && last_func_name != "None")
+			msg += "FN:" + last_func_name + "\\n";
+		msg += "LFT:" + (line - last_func_start - 2) + "," + (line - last_func_start - 2) + " This block is not covered because...\\nend_of_record";
 		alert(msg);
 	}
   </script>
