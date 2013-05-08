@@ -1,0 +1,107 @@
+<!--    Truncate.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="Truncate">
+	<StartUp>
+		Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");
+	</StartUp>
+	<Requires>sys/stat.h</Requires>
+	<Requires>fcntl.h</Requires>
+	<Test Name="xtTruncate" FaultSimulationReady="true">
+		<Description>Covers JFS xtTruncate and related functions.</Description>
+		<Code>
+			system("rm -rf /tmp/spruce_test/*");
+			int count = 0;
+		
+			File f("test");
+			int fd = f.GetFileDescriptor();
+		
+			char buf[10000];
+			for (int i = 0 ; i < 80000; ++i)
+			{
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
+				
+				Unres (write(fd, buf, 100) == -1, "Cannot write.");
+			}
+		
+			fsync(fd);
+			
+			int size = 256*10000;
+	
+			while ( size )
+			{
+				Unres(ftruncate(fd, size) == -1, "Cannot trunacte.");
+				size -= 1000;
+			}
+	again:			
+			for (int i = 0 ; i < 256; ++i)
+			{
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
+				
+				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
+			}
+		
+			fsync(fd);
+			
+			size = 256*10000;
+	
+			while ( size )
+			{
+				Unres(ftruncate(fd, size) == -1, "Cannot trunacte.");
+				size /= 2;
+			}
+			
+			for (int i = 0; i < 256; ++i)
+			{
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
+				
+				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
+			}
+		
+			fsync(fd);
+			
+			Unres(ftruncate(fd, 100) == -1, "Cannot trunacte.");
+			
+			for (int i = 0; i < 256; ++i)
+			{
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
+				
+				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
+			}
+		
+			fsync(fd);
+			
+			if ( count == 0)
+			{
+			
+				Unres(system("touch test1") != 0, "Cannot create file test1.");
+				
+				Unres(rename("test1", "test") == -1, "Cannot rename file.");
+				
+				count++;
+				goto again;
+			}
+			
+		</Code>
+	</Test>
+</TestSet>

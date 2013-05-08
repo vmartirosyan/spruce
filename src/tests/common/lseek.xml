@@ -1,0 +1,116 @@
+<!--    lseek.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Ani Tumanyan <ani.tumanyan92@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="lseek">	
+	<Test Name="LseekNormal1" FaultSimulationReady="true">
+		<Description>SEEK_SET - The offset is set to offset bytes.</Description>
+		<File count="1"/>
+		<Code>
+			const string write_buf = "012345";
+			char buf[10];
+			const int SeekCount = 2;
+			
+			Unres(write(FDs[0], write_buf.c_str(), write_buf.size()) == -1, "Cannot write to file.");
+			
+			Fail ( lseek(FDs[0], SeekCount, SEEK_SET) == -1, "Cannot seek.");
+			
+			Unres( read( FDs[0], buf, 1 ) == -1, "Cannot read after seek." );
+			
+			Check ( buf[0] != write_buf[SeekCount], "lseek did not seek to the correct position.");
+		</Code>
+	</Test>
+	<Test Name="LseekNormal2" FaultSimulationReady="true">
+		<Description>SEEK_CUR - The offset is set to its current location plus offset bytes.</Description>
+		<File count="1"/>
+		<Code>
+			const string write_buf = "012345";
+			char buf[10];
+			const int InitialSeekCount = 2;
+			const int AdditionalSeekCount = 2;
+			
+			Unres(write(FDs[0], write_buf.c_str(), write_buf.size()) == -1, "Cannot write to file.");
+			
+			Fail ( lseek(FDs[0], InitialSeekCount, SEEK_SET) == -1, "Cannot make initial seek.");
+			
+			Fail ( lseek(FDs[0], AdditionalSeekCount, SEEK_CUR) == -1, "Cannot make additional seek.");
+			
+			Unres( read( FDs[0], buf, 1 ) == -1, "Cannot read after seek." );
+			
+			Check ( buf[0] != write_buf[InitialSeekCount + AdditionalSeekCount],
+				"lseek did not seek to the correct position.");
+		</Code>
+	</Test>
+	<Test Name="LseekNormal3" FaultSimulationReady="true">
+		<Description>SEEK_END - The offset is set to the size of the file plus offset bytes.</Description>
+		<File count="1"/>
+		<Code>
+			const string write_buf = "012345";
+			char buf[10];
+			const int SeekCount = 2;
+			
+			Unres(write(FDs[0], write_buf.c_str(), write_buf.size()) == -1, "Cannot write to file.");
+			
+			Fail ( lseek(FDs[0], SeekCount, SEEK_END) == -1, "Cannot seek.");
+			
+			Check( read( FDs[0], buf, 1 ) != 0, "Should not be able read after seek to end of file.");
+		</Code>
+	</Test>
+	<Test Name="LseekBadFile">
+		<Description>Bad file descriptor.</Description>
+		<Code>
+			ErrorTest(lseek(-1, SEEK_CUR, 1), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="LseekInvalid1">
+		<Description>Whence is not one of SEEK_SET, SEEK_CUR, SEEK_END.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(lseek(FDs[0], -1, 1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="LseekInvalid2">
+		<Description>The resulting file offset would be negative.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(lseek(FDs[0], SEEK_SET, -1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="LseekInvalid3">
+		<Description>the resulting file offset would be beyond the end of a seekable device.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(lseek(FDs[0], SEEK_SET, 100), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="LseekPipe">
+		<Description>Fd is associated with a pipe, socket, or FIFO.</Description>
+		<Code>
+			int fds[2];
+			
+			Unres(pipe(fds) == -1, "Cannot create pipe.");
+			
+			ErrorTest(lseek(fds[0], SEEK_SET, 1), -1, ESPIPE);
+		</Code>
+	</Test>
+</TestSet>
