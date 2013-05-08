@@ -27,6 +27,7 @@
 	</StartUp>
 	<Requires>sys/stat.h</Requires>
 	<Requires>fcntl.h</Requires>
+	<Requires>JFSCtl.hpp</Requires>	
 	<Test Name="xtTruncate" FaultSimulationReady="true">
 		<Description>Covers JFS xtTruncate and related functions.</Description>
 		<Code>
@@ -103,5 +104,45 @@
 			}
 			
 		</Code>
+	</Test>
+	<Test Name="TruncateFail" FaultSimulationReady="true">
+		<Description>jfs_truncate_nolock fail .</Description>
+		<Header>
+			int fd = -1;
+			char FilePath[] = "TruncateFail_file";
+		</Header>
+		<Code>
+			
+			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
+			const string buf = "1234";
+			const int length = buf.size();
+			int length_after_truncate = 5;
+			
+			Unres ( write(fd, buf.c_str(), length) != length, "Cannot write  to the file.");
+			JFSCtl jfs;
+			int inode_num = jfs.GetInodeNum(FilePath);
+			close(fd);
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinode * inode = jfs.GetInode(DeviceName, inode_num);
+			Unres(inode == NULL, "Cannot get inode.");
+			
+			xtpage_t * page = (xtpage_t*)&inode->di_xtroot;
+			page->header.nextindex = 0;
+			Unres( jfs.SetInode(DeviceName, inode_num, inode) == false, "Setting the inode failed." );
+			
+			Unres (PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Mount failed." );
+	
+			
+			Unres (chdir(MountPoint) == -1, "Changing directory failed.");
+			Unres((fd = open(FilePath, O_RDWR , S_IRUSR | S_IWUSR)) == -1,"Open failed.");
+			Fail ( truncate(FilePath, length_after_truncate) != 0, "truncate failed");
+			
+			
+		</Code>
+		<Footer>
+			unlink(FilePath);
+			close(fd);
+		</Footer>
 	</Test>
 </TestSet>
