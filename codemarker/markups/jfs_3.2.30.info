@@ -398,7 +398,7 @@ SF:fs/jfs/jfs_logmgr.c
 FN:lmLogInit
 LFT:79,79 Code is covered by test jfs/MountWithOptions/lmLogInitFail3 which is marked as dangerous.
 LFT:111,111 This block is not covered because the test implementataion would take too long.
-LFT:169,171 This block is not covered because these lines can be covered only from kernel space.
+LFT:169,171 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
@@ -408,13 +408,13 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogShutdown
-LFT:56,56 This block is not covered because these lines can be covered only from kernel space.
+LFT:56,56 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lbmIODone
-LFT:17,17 This block is not covered because these lines can be covered only from kernel space.
-LFT:19,19 This block is not covered because these lines can be covered only from kernel space.
+LFT:17,17 These lines cannot be covered from user space.
+LFT:19,19 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/jfs_mount.c 
@@ -621,7 +621,7 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:jfsIOWait
-LFT:15,16 These lines can be covered from kernel space.
+LFT:15,16 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/xattr.c
@@ -637,24 +637,24 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmGroupCommit
-LFT:8,12 These lines can be covered from kernel space.
-LFT:44,44 These lines can be covered from kernel space.
-LFT:60,60 These lines can be covered from kernel space.
+LFT:8,12 These lines cannot be covered from user space.
+LFT:44,44 These lines cannot be covered from user space.
+LFT:60,60 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogInit
-LFT:169,171 These lines can be covered from kernel space.
+LFT:169,171 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmWriteRecord
-LFT:56,56 This block is not covered because these lines can be covered only from kernel space.
+LFT:56,56 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmPostGC
-LFT:24,24 This block is not covered because these lines can be covered only from kernel space.
+LFT:24,24 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
@@ -680,11 +680,10 @@ LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted direc
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
-FN:__get_metapage
-LFT:14,17 These lines can be covered from kernel space.
-LFT:57,62 These lines can be covered from kernel space.
-LFT:66,66 These lines can be covered from kernel space.
-LFT:104,105 These lines can be covered from kernel space.
+LFT:611,614 These lines cannot be covered from user space.
+LFT:648,653 These lines cannot be covered from user space.
+LFT:659,659 These lines cannot be covered from user space.
+LFT:695,696 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/namei.c
