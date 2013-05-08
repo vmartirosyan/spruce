@@ -359,8 +359,24 @@ LFT:403,423 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
+FN:__get_metapage
+LFT:14,17 These lines cannot be covered from user space.
+LFT:57,62 These lines cannot be covered from user space.
+LFT:66,66 These lines cannot be covered from user space.
+LFT:104,105 These lines cannot be covered from user space.
+LFT:37,40 This block is not covered because the test development would take too long.
+LFT:74,79 This block is not covered because the test development would take too long.
+LFT:85,85 These lines cannot be covered from user space.
+LFT:121,122 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
 FN:metapage_readpage
 LFT:26,26 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_releasepage
 LFT:65,65 These lines cannot be covered from user space.
 LFT:76,76 These lines cannot be covered from user space.
 end_of_record
@@ -373,12 +389,25 @@ end_of_record
 SF:fs/jfs/jfs_metapage.c
 FN:metapage_write_end_io
 LFT:7,7 Can be covered if fault simulation in submit_bio would not bring to system crash.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_writepage
 LFT:137,137 This block is not covered because these lines cannot be covered from user space.
 end_of_record
 
+SF:fs/jfs/jfs_metapage.c
+FN:last_write_complete
+LFT:7,7 This block is not covered because these lines cannot be covered from user space.
+end_of_record
 
 SF:fs/jfs_metapage.c		
 FN:remove_metapage Function is inline and its call is usually integrated.	
+end_of_record
+
+SF:fs/jfs_metapage.c
+FN:__invalidate_metapages
+LFT:74,74 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs_metapage.c		
