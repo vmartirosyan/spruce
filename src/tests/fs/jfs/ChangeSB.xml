@@ -356,6 +356,28 @@
 			close(fd);
 		</Footer>
 	</Test>
+	
+
+	<Test Name="dtSearchFail">
+		<Description>Brings to failure in dtSearch function due to stack overflow.</Description>
+		<Code>
+			string rm_command = "rm -rf " + (string)MountPoint + "/*";
+			system(rm_command.c_str());
+			
+			Unres( OverflowStackDT(MountPoint) == false, "Cannot prepare stack." );
+			
+			const char * FilePath = "dtSearch_test";
+			char buf[40]; 
+			
+			for(int i = 0; i < 5; i++)
+			{
+			    sprintf(buf, "%s_%d", FilePath, i);
+                if(mkdir(buf, 0777) == -1) 
+					break;
+			}
+		</Code>
+	</Test>
+
 	<Test Name="newIAGxtInsertFail" FaultSimulationReady="true">
 		<Description>Trying to create many directories</Description>
 		<Code>
@@ -1418,6 +1440,54 @@
 			
 			return true;
 		}
+	
+		bool OverflowStackDT(string FilePath)
+		{
+			JFSCtl jfs;
+			int inode_num = jfs.GetInodeNum(FilePath);
+			
+			if(PartitionManager::ReleasePartition(MountPoint) == false)
+				return false;
+			
+			dinode * inode = jfs.GetInode(DeviceName, inode_num);
+			if (inode == NULL)
+				return false;
+			
+			// Add too many levels to the dtree
+			
+			
+			dtroot_t * page = (dtroot_t*)&inode->di_dtroot;
+			page->header.flag = BT_ROOT | BT_INTERNAL;
+			
+			// Get the dir_table_slot describing the data block
+			dir_table_slot x = ((dir_table_slot*)&inode->di_dirtable)[DTENTRYSTART];
+			
+			int64_t addr = addressDTS(&x);
+			
+			
+			dtpage_t internal_page;
+
+			// The page refers to itself.  During lookup it will cause an infinite loop :)
+			memset(&internal_page, 0, sizeof(dtpage_t));
+			PXDaddress((pxd_t*)&internal_page.slot[DTENTRYSTART], addr);
+			internal_page.header.nextindex = DTENTRYSTART + 1;
+			internal_page.header.maxslot = DTENTRYSTART;
+			internal_page.header.flag = BT_INTERNAL;
+			if ( jfs.WriteBlock(DeviceName, &internal_page, addr) == false )
+				return false;
+									
+			if ( jfs.SetInode(DeviceName, inode_num, inode) == false )
+				return false;
+			
+			if (PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false )
+				return false;
+			
+			if (chdir(MountPoint) == -1)
+				return false;
+			
+			return true;
+		}
+
 	</Internal>
 	<Footer>
 		Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
