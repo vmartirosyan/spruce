@@ -803,7 +803,11 @@ SF:fs/jfs/super.c
 FN:jfs_quota_write
 LFT:25,25 This block is not covered because the test development would take too long.
 LFT:44,45 This is self checking/correcting code. 
-LFT:44,45 This block is not covered because the test development would take too long.
+LFT:48,48 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/resize.c
+LFT:321,324 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/xattr.c
