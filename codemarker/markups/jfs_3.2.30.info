@@ -81,7 +81,7 @@ end_of_record
 
 SF:fs/jfs/jfs_dmap.c
 FN:dbAdjCtl
-LFT:19,22 This block is not covered because the test development would take too long.
+LFT:19,19 This block is not covered because the test development would take too long.
 LFT:101,105 This block is not covered because it is just a self check.
 LFT:120,120 This block is not covered because it is just a self check.
 end_of_record
@@ -103,11 +103,6 @@ end_of_record
 
 SF:fs/jfs/jfs_dmap.c
 LFT:3919,3919 This block is not covered because the test development would take too long.
-end_of_record
-
-SF:fs/jfs/jfs_dmap.c
-FN:dbAllocDmapBU
-LFT:98,98 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
@@ -142,10 +137,19 @@ LFT:25,25 This code is supported only in OS/2
 LFT:32,32 This code is supported only in OS/2
 end_of_record
 
+SF:fs/jfs/jfs_imap.c
+FN:diWrite
+LFT:46,53 This code is supported only in OS/2
+end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:diReadSpecial
 LFT:44,47 The function copy_from_dinode always returns 0. The error handling code is dead.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diFree
+LFT:75,79 Cannot be covered because of inode modification, as in that case diRead will fail.
 end_of_record
 
 SF:fs/jfs/jfs_incore.h
@@ -232,13 +236,11 @@ end_of_record
 SF:fs/jfs/jfs_imap.c
 FN:diWrite
 LFT:29,29 This block is not covered because the test development would take too long.
-LFT:46,53 This code is supported only in OS/2
 LFT:176,176 This block is not covered because it is just a self check.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:diFree
-LFT:75,79 Cannot be covered because of inode modification, as in that case diRead will fail.
 LFT:249,252 This block is not covered because the test development would take too long.
 LFT:259,259 This block is not covered because the test development would take too long.
 LFT:339,339 This block is not covered because the test development would take too long.
@@ -252,13 +254,13 @@ end_of_record
 SF:fs/jfs/jfs_imap.c
 FN:diAlloc
 LFT:81,81 This block is not covered because it is just a self check.
-LFT:199,205 This block is not covered because the test development would take too long.
+LFT:199,199 This block is not covered because the test development would take too long.
 LFT:216,216 This block is not covered because the test development would take too long.
 LFT:252,255 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
-FN:diAllocIno
+FN:diAllocAny
 LFT:144,145 This block is not covered because the test development would take too long.
 end_of_record
 
@@ -293,7 +295,7 @@ end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:duplicateIXtree
-LFT:29,31 This block is not covered because the test development would take too long.
+LFT:29,29 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_extent.c
@@ -365,6 +367,8 @@ end_of_record
 SF:fs/jfs/jfs_metapage.c
 FN:metapage_readpage
 LFT:26,26 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
+LFT:65,65 These lines can be covered only from kernel space.
+LFT:76,76 These lines can be covered only from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
@@ -374,7 +378,8 @@ end_of_record
 
 SF:fs/jfs/jfs_metapage.c
 FN:metapage_write_end_io
-LFT:9,9 Can be covered if fault simulation in submit_bio would not bring to system crash. 
+LFT:7,7 Can be covered if fault simulation in submit_bio would not bring to system crash. 
+LFT:137,137 This block is not covered because these lines can be covered only from kernel space.
 end_of_record
 
 
@@ -398,7 +403,7 @@ SF:fs/jfs/jfs_logmgr.c
 FN:lmLogInit
 LFT:79,79 Code is covered by test jfs/MountWithOptions/lmLogInitFail3 which is marked as dangerous.
 LFT:111,111 This block is not covered because the test implementataion would take too long.
-LFT:169,171 These lines cannot be covered from user space.
+LFT:169,171 This block is not covered because these lines can be covered only from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
@@ -408,13 +413,13 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogShutdown
-LFT:56,56 These lines cannot be covered from user space.
+LFT:56,56 This block is not covered because these lines can be covered only from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lbmIODone
-LFT:17,17 These lines cannot be covered from user space.
-LFT:19,19 These lines cannot be covered from user space.
+LFT:17,17 This block is not covered because these lines can be covered only from kernel space.
+LFT:19,19 This block is not covered because these lines can be covered only from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_mount.c 
@@ -621,7 +626,7 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:jfsIOWait
-LFT:15,16 These lines cannot be covered from user space.
+LFT:15,16 These lines can be covered from kernel space.
 end_of_record
 
 SF:fs/jfs/xattr.c
@@ -637,24 +642,24 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmGroupCommit
-LFT:8,12 These lines cannot be covered from user space.
-LFT:44,44 These lines cannot be covered from user space.
-LFT:60,60 These lines cannot be covered from user space.
+LFT:8,12 These lines can be covered from kernel space.
+LFT:44,44 These lines can be covered from kernel space.
+LFT:60,60 These lines can be covered from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogInit
-LFT:169,171 These lines cannot be covered from user space.
+LFT:169,171 These lines can be covered from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmWriteRecord
-LFT:56,56 These lines cannot be covered from user space.
+LFT:56,56 This block is not covered because these lines can be covered only from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmPostGC
-LFT:24,24 These lines cannot be covered from user space.
+LFT:24,24 This block is not covered because these lines can be covered only from kernel space.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
@@ -680,10 +685,20 @@ LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted direc
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
-LFT:611,614 These lines cannot be covered from user space.
-LFT:648,653 These lines cannot be covered from user space.
-LFT:659,659 These lines cannot be covered from user space.
-LFT:695,696 These lines cannot be covered from user space.
+FN:__get_metapage
+LFT:14,17 These lines cannot be covered from user space.
+LFT:57,62 These lines cannot be covered from user space.
+LFT:66,66 These lines cannot be covered from user space.
+LFT:104,105 These lines cannot be covered from user space.
+LFT:37,40 This block is not covered because the test development would take too long.
+LFT:74,79 This block is not covered because the test development would take too long.
+LFT:85,85 These lines cannot be covered from user space.
+LFT:121,122 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:__invalidate_metapages
+LFT:74,74 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/namei.c
