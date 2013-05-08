@@ -233,7 +233,7 @@ sub write_test_table_epilog(*);
 
 sub write_source($$$$$$$$);
 sub write_source_prolog(*);
-sub write_source_line(*$$$$$$$);
+sub write_source_line(*$$$$$$$$$$);
 sub write_source_epilog(*);
 
 sub write_frameset(*$$$);
@@ -3909,10 +3909,10 @@ sub format_count($$)
 # by gen_png()
 #
 
-sub write_source_line(*$$$$$$$)
+sub write_source_line(*$$$$$$$$$$)
 {
 	my ($handle, $line, $source, $count, $converted, $brdata,
-	    $add_anchor, $desc) = @_;
+	    $add_anchor, $desc, $source_filename, $last_func_name, $last_func_start) = @_;
 	my $source_format;
 	my $count_format;
 	my $result;
@@ -3933,7 +3933,7 @@ sub write_source_line(*$$$$$$$)
 	}
 	elsif ($count == 0) {
 		$result		= $count;
-		$source_format	= '<span class="lineNoCov">';
+		$source_format	= '<a onclick="MarkUp(\'' . $source_filename . '\', \'' . $line . '\', \'' . $last_func_name . '\', \'' . $last_func_start . '\');">+</a><span class="lineNoCov">';
 		$count_format	= format_count($count, $count_field_width);
 	}
 	elsif ( $count == 123456789)
@@ -5041,7 +5041,9 @@ sub write_source($$$$$$$$)
 	my $descs = $_[7];
 	my $datafunc = get_hash_reverse($funcdata);
 	my $add_anchor;
-
+	my $last_func_start;
+	my $last_func_name;
+	
 	if ($_[2])
 	{
 		%count_data = %{$_[2]};
@@ -5051,7 +5053,7 @@ sub write_source($$$$$$$$)
             write_source_prolog(*HTML_HANDLE);
             push (@result,
                      write_source_line(HTML_HANDLE, 0,
-                                       "(missing file)", 0, 0, 0, 0, ""));
+                                       "(missing file)", 0, 0, 0, 0, "", "", "", 0));
             write_source_epilog(*HTML_HANDLE);
             return (@result);
         }
@@ -5060,7 +5062,8 @@ sub write_source($$$$$$$$)
 		or die("ERROR: cannot open $source_filename for reading!\n");
 	
 	write_source_prolog(*HTML_HANDLE);
-
+	
+	
 	for ($line_number = 1; <SOURCE_HANDLE> ; $line_number++)
 	{
 		chomp($_);
@@ -5088,13 +5091,27 @@ sub write_source($$$$$$$$)
 			} elsif (defined($datafunc->{$line_number +
 						     $func_offset})) {
 				$add_anchor = 1;
+				$last_func_start = $line_number;
+				$last_func_name = $datafunc->{$line_number +
+						     $func_offset};
 			}
 		}
-		push (@result,
+		if ( defined($last_func_name) )
+		{
+			push (@result,
 		      write_source_line(HTML_HANDLE, $line_number,
 					$_, $count_data{$line_number},
 					$converted->{$line_number},
-					$sumbrcount->{$line_number}, $add_anchor, $descs->{$line_number}));
+					$sumbrcount->{$line_number}, $add_anchor, $descs->{$line_number}, $source_filename, $last_func_name, $last_func_start));
+		}
+		else
+		{
+			push (@result,
+		      write_source_line(HTML_HANDLE, $line_number,
+					$_, $count_data{$line_number},
+					$converted->{$line_number},
+					$sumbrcount->{$line_number}, $add_anchor, $descs->{$line_number}, $source_filename, "None", -1));
+		}
 	}
 
 	close(SOURCE_HANDLE);
@@ -5676,6 +5693,15 @@ sub get_html_prolog($)
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>\@pagetitle\@</title>
   <link rel="stylesheet" type="text/css" href="\@basedir\@gcov.css">
+	<script>
+	function MarkUp(source, line, last_func_name, last_func_start)
+	{
+		// Get the file name relative to kernel root dir
+		var pos = source.indexOf("fs");
+		var msg = "SF:" + source.substr(pos) + "\\nFN:" + last_func_name + "\\nLFT: " + (line - last_func_start - 2) + ", " + (line - last_func_start - 2) + " This block is not covered because...\\nend_of_record";
+		alert(msg);
+	}
+  </script>
 </head>
 
 <body>
