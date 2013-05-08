@@ -266,21 +266,6 @@ LFT:86,87 Can be covered if stability-check is run in mount/RemounResize test bu
 LFT:254,259 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
 end_of_record
 
-SF:fs/jfs/xtree.c
-FN:xtExtend
-LFT:61,125 this code can be covered(partially) when we write more than 64GB to file. It takes too long 
-end_of_record
-
-SF:fs/jfs/xtree.c
-FN:xtInsert
-LFT:82,84 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
-end_of_record
-
-SF:fs/jfs/xtree.c
-FN:xtSplitRoot
-LFT:33,34 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
-end_of_record
-
 SF:fs/jfs/super.c
 LFT:82,83 panic() call coverage cannot be extracted because it immediately halts system.
 end_of_record
@@ -534,17 +519,8 @@ end_of_record
 
 SF:fs/jfs/namei.c
 FN:jfs_mkdir
-LFT:50,51 Can be covered if SELinux package is installed.
-end_of_record
-
-SF:fs/jfs/namei.c
-FN:jfs_mkdir
 LFT:46,46 Can be covered if fault simulation (kmalloc) could be enabled in test jfs/common/acl/ACLGetSet on "mkdir" system call, but there is a kernel bug.
-end_of_record
-
-SF:fs/jfs/jfs_xtree.c
-FN:xtTruncate 
-LFT:490,492 Can be covered by test JFS/ChangeSB/xtTruncateFail which is marked as dangerous.
+LFT:50,51 Can be covered if SELinux package is installed.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
@@ -599,16 +575,6 @@ LFT:66,66 These lines can be covered from kernel space.
 LFT:104,105 These lines can be covered from kernel space.
 end_of_record
 
-SF:fs/jfs/jfs_xtree.c
-FN:xtSplitUp
-LFT:148,149 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitUp. 
-end_of_record
-
-SF:fs/jfs/jfs_xtree.c
-FN:xtSplitPage
-LFT:133,134 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitPage. 
-end_of_record
-
 SF:fs/jfs/namei.c
 FN:jfs_rmdir
 LFT:72,72 This is dead code as acl.flag is never set to DXD_EXTENT in source code.
@@ -631,6 +597,66 @@ LFT:121,124 These lines are covered when we perform fault simulation on symlink 
 end_of_record
 
 SF:fs/jfs/jfs_xtree.c
+FN:xtSearch
+LFT:82,84 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtInsert
+LFT:55,56 This block is not covered because the test development would take too long.
+LFT:82,84 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtSplitUp
+LFT:44,45 This block is not covered because the test development would take too long.
+LFT:148,149 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitUp. 
+LFT:185,185 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtSplitPage
+LFT:133,134 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitPage. 
+LFT:239,240 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitPage.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtSplitRoot
+LFT:33,34 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
+LFT:71,72 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtExtend
+LFT:28,30 This block would be covered if we cover the lines 82-84 in xtSearch, but that development would take too long.
+LFT:61,125 this code can be covered(partially) when we write more than 64GB to file. It takes too long 
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtAppend
+LFT:47,47 This block is not covered because the test development would take too long.
+LFT:103,105 This block could be covered if we perform fault simulation while extending partition, but it leads to system failure.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtTruncate
+LFT:297,297 This block is not covered because the test development would take too long.
+LFT:323,323 This line could be covered if we corrupt the inode, but in that case the failure comes up earlier. 
+LFT:350,354 This block is not covered because the test development would take too long.
+LFT:391,391 This block is not covered because the test development would take too long.
+LFT:455,455 This block is not covered because the test development would take too long.
+LFT:490,492 Can be covered by test JFS/ChangeSB/xtTruncateFail which is marked as dangerous.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
 FN:xtTruncate_pmap
+LFT:29,29 This block is not covered because the test development would take too long.
+LFT:34,37 This block would be covered if we cover the lines 82-84 in xtSearch, but that development would take too long.
 LFT:98,98 This line could be covered if we corrupt the inode, but in that case the failure comes upper in the same function. 
 end_of_record
+
+SF:fs/jfs/xattr.c
+FN:ea_write_inline
+LFT:26,33 This block is not covered because the test development would take too long.
+end_of_record
+
