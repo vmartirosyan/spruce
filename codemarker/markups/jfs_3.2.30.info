@@ -802,6 +802,19 @@ FN:jfs_fill_super
 LFT:121,121 This line could be covered if lbmread function fails, which fails while fault simulating with submit_bio payload.
 end_of_record
 
+SF:fs/jfs/super.c
+FN:jfs_quota_read
+LFT:26,26 This block is not covered because sometimes compiler marks it as nonexecutable code.
+LFT:28,28 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/super.c
+FN:jfs_quota_write
+LFT:25,25 This block is not covered because the test development would take too long.
+LFT:44,45 This is self checking/correcting code. 
+LFT:44,45 This block is not covered because the test development would take too long.
+end_of_record
+
 SF:fs/jfs/xattr.c
 FN:ea_write_inline
 LFT:26,33 This block is not covered because the test development would take too long.
