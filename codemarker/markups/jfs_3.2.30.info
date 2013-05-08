@@ -81,7 +81,7 @@ end_of_record
 
 SF:fs/jfs/jfs_dmap.c
 FN:dbAdjCtl
-LFT:19,19 This block is not covered because the test development would take too long.
+LFT:19,22 This block is not covered because the test development would take too long.
 LFT:101,105 This block is not covered because it is just a self check.
 LFT:120,120 This block is not covered because it is just a self check.
 end_of_record
@@ -103,6 +103,11 @@ end_of_record
 
 SF:fs/jfs/jfs_dmap.c
 LFT:3919,3919 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocDmapBU
+LFT:98,98 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
