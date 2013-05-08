@@ -89,6 +89,11 @@ LFT:19,23 The code is executed when fsync or extAlloc is called on read-only par
 end_of_record
 
 SF:fs/jfs/inode.c
+FN:jfs_write_inode
+LFT:18,18 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/inode.c
 FN:jfs_dirty_inode
 LFT:5,11 The code is executed when when inode is marked as dirty on read-only partition which is impossible.
 end_of_record
@@ -228,6 +233,16 @@ end_of_record
 SF:fs/jfs/acl.c
 FN:jfs_set_acl
 LFT:18,18 Never gets here because of a previous check.
+end_of_record
+
+SF:fs/jfs/acl.c
+FN:jfs_get_acl
+LFT:35,35 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/acl.c
+FN:jfs_init_acl
+LFT:10,10 Called if jfs_get_acl+35 is covered.
 end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
