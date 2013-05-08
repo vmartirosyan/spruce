@@ -536,4 +536,11 @@ isn't covered as mount options are parsed and checked in super.c-->
 				}
 			</Footer>
         </Test>
+        <Test Name="MountfailWithNls" FaultSimulationReady="true">
+		<Description>Trying to mount the device with iocahrset and perform fault simulation.</Description>
+		<Code>
+			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
+			Fail (mount( DeviceName, MountPoint, FileSystem, 0, "iocharset=cp1251") == -1, "Mount failed");			
+		</Code>
+	</Test>
 </TestSet>

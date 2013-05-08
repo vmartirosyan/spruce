@@ -792,6 +792,21 @@ LFT:34,37 This block would be covered if we cover the lines 82-84 in xtSearch, b
 LFT:98,98 This line could be covered if we corrupt the inode, but in that case the failure comes upper in the same function. 
 end_of_record
 
+SF:fs/jfs/super.c
+FN:jfs_destroy_inode
+LFT:8,10 This is self checking/correcting code. 
+end_of_record
+
+SF:fs/jfs/super.c
+FN:jfs_put_super
+LFT:11,11 This line could be covered if lbmread function fails, which fails while fault simulating with submit_bio payload.
+end_of_record
+
+SF:fs/jfs/super.c
+FN:jfs_fill_super
+LFT:121,121 This line could be covered if lbmread function fails, which fails while fault simulating with submit_bio payload.
+end_of_record
+
 SF:fs/jfs/xattr.c
 FN:ea_write_inline
 LFT:26,33 This block is not covered because the test development would take too long.
