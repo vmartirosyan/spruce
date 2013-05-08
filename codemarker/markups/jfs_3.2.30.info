@@ -137,19 +137,10 @@ LFT:25,25 This code is supported only in OS/2
 LFT:32,32 This code is supported only in OS/2
 end_of_record
 
-SF:fs/jfs/jfs_imap.c
-FN:diWrite
-LFT:46,53 This code is supported only in OS/2
-end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:diReadSpecial
 LFT:44,47 The function copy_from_dinode always returns 0. The error handling code is dead.
-end_of_record
-
-SF:fs/jfs/jfs_imap.c
-FN:diFree
-LFT:75,79 Cannot be covered because of inode modification, as in that case diRead will fail.
 end_of_record
 
 SF:fs/jfs/jfs_incore.h
@@ -236,11 +227,13 @@ end_of_record
 SF:fs/jfs/jfs_imap.c
 FN:diWrite
 LFT:29,29 This block is not covered because the test development would take too long.
+LFT:46,53 This code is supported only in OS/2
 LFT:176,176 This block is not covered because it is just a self check.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:diFree
+LFT:75,79 Cannot be covered because of inode modification, as in that case diRead will fail.
 LFT:249,252 This block is not covered because the test development would take too long.
 LFT:259,259 This block is not covered because the test development would take too long.
 LFT:339,339 This block is not covered because the test development would take too long.
@@ -254,13 +247,13 @@ end_of_record
 SF:fs/jfs/jfs_imap.c
 FN:diAlloc
 LFT:81,81 This block is not covered because it is just a self check.
-LFT:199,199 This block is not covered because the test development would take too long.
+LFT:199,205 This block is not covered because the test development would take too long.
 LFT:216,216 This block is not covered because the test development would take too long.
 LFT:252,255 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
-FN:diAllocAny
+FN:diAllocIno
 LFT:144,145 This block is not covered because the test development would take too long.
 end_of_record
 
@@ -295,7 +288,7 @@ end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:duplicateIXtree
-LFT:29,29 This block is not covered because the test development would take too long.
+LFT:29,31 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_extent.c
