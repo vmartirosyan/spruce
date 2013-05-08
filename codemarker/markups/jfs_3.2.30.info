@@ -15,12 +15,94 @@ SF:fs/jfs/jfs_dmap.c
 FN:dbFindCtl
 LFT:28,28 Code is marked as it was not executed due to compiler optimisations.
 LFT:69,69 Code is marked as it was not executed due to compiler optimisations.
+LFT:46,48 This block is not covered because it is just a self check.
 end_of_record
 
 SF:fs/jfs/jfs_dmap.c
 FN:dbAllocBottomUp
+LFT:21,21 This block is not covered because the test development would take too long.
 LFT:28,29 Is covered by test jfs/mount/MultipleResizeFail which is marked as dangerous.
 LFT:40,42 Is covered by test jfs/mount/MultipleResizeFail which is marked as dangerous.
+LFT:98,98 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbFree
+LFT:48,51 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbUpdatePMap
+LFT:114,114 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAlloc
+LFT:27,28 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocNear
+LFT:7,9 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocAG
+LFT:12,15 This block is not covered because the test development would take too long.
+LFT:45,48 This block is not covered because the test development would take too long.
+LFT:65,68 This block is not covered because the test development would take too long.
+LFT:106,109 This block is not covered because it is just a self check.
+LFT:117,117 This block is not covered because the test development would take too long.
+LFT:119,119 This block is not covered because the test development would take too long.
+LFT:145,149 This block is not covered because the test development would take too long.
+LFT:159,161 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocAny
+LFT:18,20 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocCtl
+LFT:98,100 This block is not covered because it requires double fault-simulation.
+LFT:110,113 This block is not covered because it requires double fault-simulation.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbFreeDmap
+LFT:23,33 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocBits
+LFT:76,79 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAdjCtl
+LFT:19,19 This block is not covered because the test development would take too long.
+LFT:101,105 This block is not covered because it is just a self check.
+LFT:120,120 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbBackSplit
+LFT:36,36 This block is not covered because it is just a self check.
+LFT:58,58 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+LFT:3081,3081 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbFinalizeBmap
+LFT:48,48 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+LFT:3919,3919 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
@@ -263,6 +345,9 @@ end_of_record
 SF:fs/jfs/jfs_dmap.c
 FN:dbExtendFS
 LFT:86,87 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:115,124 This block is not covered because the test development would take too long.
+LFT:237,237 This block is not covered because the test development would take too long.
+LFT:251,251 This block is not covered because it is just a self check.
 LFT:254,259 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
 end_of_record
 
