@@ -359,15 +359,10 @@ LFT:403,423 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
-FN:__get_metapage
-LFT:14,17 These lines cannot be covered from user space.
-LFT:57,62 These lines cannot be covered from user space.
-LFT:66,66 These lines cannot be covered from user space.
-LFT:104,105 These lines cannot be covered from user space.
-LFT:37,40 This block is not covered because the test development would take too long.
-LFT:74,79 This block is not covered because the test development would take too long.
-LFT:85,85 These lines cannot be covered from user space.
-LFT:121,122 These lines cannot be covered from user space.
+LFT:611,614 This block is not covered because the test development would take too long.
+LFT:648,653 This block is not covered because the test development would take too long.
+LFT:659,659 These lines cannot be covered from user space.
+LFT:695,696 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
@@ -377,8 +372,8 @@ end_of_record
 
 SF:fs/jfs/jfs_metapage.c
 FN:metapage_releasepage
-LFT:65,65 These lines cannot be covered from user space.
-LFT:76,76 These lines cannot be covered from user space.
+LFT:10,10 These lines cannot be covered from user space.
+LFT:21,21 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
@@ -393,12 +388,12 @@ end_of_record
 
 SF:fs/jfs/jfs_metapage.c
 FN:metapage_writepage
-LFT:137,137 This block is not covered because these lines cannot be covered from user space.
+LFT:123,123 This block is not covered because these lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
 FN:last_write_complete
-LFT:7,7 This block is not covered because these lines cannot be covered from user space.
+LFT:27,27 This block is not covered because these lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs_metapage.c		
@@ -407,7 +402,7 @@ end_of_record
 
 SF:fs/jfs_metapage.c
 FN:__invalidate_metapages
-LFT:74,74 These lines cannot be covered from user space.
+LFT:26,26 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs_metapage.c		
