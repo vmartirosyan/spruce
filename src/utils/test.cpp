@@ -211,6 +211,12 @@ Status TestSet::Run(Checks checks)
 		TestResult res = *static_cast<TestResult *>(i->second.Execute());
 		if ( i->second.GetEffectiveChecks() & Functional )
 			i->second.AddResult(Functional, res );
+			
+		// Get the last fault information
+		if ( i->second.GetEffectiveChecks() & Stability )
+		{
+			Logger::LogWarn("Last fault: " + KedrIntegrator::GetLastFaultMsg());
+		}
 		
 		if ( result < res.GetStatus() )
 			result = res.GetStatus();
@@ -221,9 +227,10 @@ Status TestSet::Run(Checks checks)
 		
 		if(oopsStatus != Success)
 		{	
+			Logger::LogError("BUG: " + log);
 			//so we have an emergency situation...
 			i->second.AddResult(Stability, ProcessResult(Fatal, "Status: " + StatusMessages[oopsStatus] + "Output: " + log));
-			//break;
+			break;
 		}
 		
 		// See if the stability check should be done
@@ -266,6 +273,9 @@ Status TestSet::Run(Checks checks)
 					
 					Logger::LogInfo("Executing test " + i->first + " in fault simulated environment.");
 					TestResult res = *static_cast<TestResult *>(i->second.Execute());
+					
+					// Get the last fault information
+					Logger::LogWarn("Last fault: " + KedrIntegrator::GetLastFaultMsg());
 					
 					// Temporary solution. Increases the system stability.
 					PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true);

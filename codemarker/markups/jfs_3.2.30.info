@@ -351,7 +351,7 @@ end_of_record
 
 SF:fs/jfs/super.c
 FN:jfs_unfreeze
-LFT:9,9 The line is covered by test jfs/Ioctl/FreezeFail which is marked as dangerous.
+LFT:9,9 The line is covered by test jfs/Ioctl/UnfreezeFail which is marked as dangerous.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
@@ -562,9 +562,9 @@ end_of_record
 
 SF:fs/jfs/jfs_mount.c 
 FN:jfs_mount_rw
-LFT:18,18 Can be covered if stability-check is run in mount/RemounRW test but it causes system crash.
-LFT:24,24 Can be covered if stability-check is run in mount/RemounRW test but it causes system crash.
-LFT:39,41 Can be covered if stability-check is run in mount/RemounRW test but it causes system crash.
+LFT:18,18 Can be covered if stability-check is run in mount/RemountRW test but it causes system crash.
+LFT:24,24 Can be covered if stability-check is run in mount/RemountRW test but it causes system crash.
+LFT:39,41 Can be covered if stability-check is run in mount/RemountRW test but it causes system crash.
 end_of_record
 
 SF:fs/jfs/resize.c
@@ -792,7 +792,6 @@ LFT:323,323 This line could be covered if we corrupt the inode, but in that case
 LFT:350,354 This block is not covered because the test development would take too long.
 LFT:391,391 This block is not covered because the test development would take too long.
 LFT:455,455 This block is not covered because the test development would take too long.
-LFT:490,492 Can be covered by test JFS/ChangeSB/xtTruncateFail which is marked as dangerous.
 end_of_record
 
 SF:fs/jfs/jfs_xtree.c

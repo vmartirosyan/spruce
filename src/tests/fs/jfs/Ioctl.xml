@@ -123,15 +123,33 @@
 			Check ( get_flags != old_flags, "Error get flags != old flags on read only FS.");	
 		</Code>
 	</Test>
-	<!-- Brings to system hang -->
-	<Test Name="FreezeFail" Dangerous="true">
-		<Description>Simulate faults in freeze/unfreeze operations.</Description>	
-		<File count="1" />
+	<Test Name="FreezeFail">
+		<Description>Simulate faults in freeze operation.</Description>	
+		<Header>
+			int fd = open("FreezeFail_file", O_CREAT | O_RDWR);
+		</Header>
 		<Code>
-			Fail(ioctl(FDs[0], FIFREEZE , NULL) == -1, "Cannot freeze.");
-			
-			Fail(ioctl(FDs[0], FITHAW , NULL) == -1, "Cannot unfreeze.");
+			Fail(ioctl(fd, FIFREEZE , NULL) == -1, "Cannot freeze.");
 		</Code>
+		<Footer>
+			ioctl(fd, FITHAW , NULL);
+			close(fd);
+		</Footer>
+	</Test>
+	<Test Name="UnfreezeFail" Dangerous="true">
+		<Description>Simulate faults in unfreeze operation.</Description>	
+		<Header>
+			int fd = open("UnfreezeFail_file", O_CREAT | O_RDWR);
+		</Header>
+		<Code>
+			Unres(ioctl(fd, FIFREEZE , NULL) == -1, "Cannot freeze.");
+			
+			Fail(ioctl(fd, FITHAW , NULL) == -1, "Cannot unfreeze.");
+		</Code>
+		<Footer>
+			ioctl(fd, FITHAW , NULL);
+			close(fd);
+		</Footer>
 	</Test>
 	<Test Name="SetFlagsNotOwner">
 		<Description>Change flag by not the file owner.</Description>

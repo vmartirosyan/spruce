@@ -220,7 +220,7 @@
 		<Code>
 			
 			const char * FilePath = "StackOverflow_test";
-			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
@@ -259,7 +259,7 @@
 		<Code>
 			
 			const char * FilePath = "xtSearch_test";
-			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			
@@ -286,7 +286,7 @@
 			close(fd);
 		</Footer>
 	</Test>
-	<Test Name="xtTruncateFail" Dangerous="true">
+	<Test Name="xtTruncateFail">
 		<Description>Brings to failure in xtTruncate function due to stack overflow.</Description>
 		<Header>
 			int fd = -1;
@@ -297,7 +297,7 @@
 			Unres(chdir(MountPoint) == -1, "Cannot change directory back.");
 			
 			const char * FilePath = "xtTruncateFail_test";
-			int fd = open(FilePath, O_RDWR | O_CREAT | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			fd = open(FilePath, O_RDWR | O_CREAT | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			
@@ -330,7 +330,7 @@
 		<Code>
 			
 			const char * FilePath = "xtTruncate_pmapFail_test";
-			int fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
+			fd = open(FilePath, O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			
 			Unres(fd == -1, "Cannot create file.");
 			
