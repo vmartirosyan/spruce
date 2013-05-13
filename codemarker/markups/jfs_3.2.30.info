@@ -819,8 +819,14 @@ end_of_record
 
 SF:fs/jfs/super.c
 FN:jfs_quota_read
+LFT:16,16 This block is not covered because the test development would take too long.
 LFT:26,26 This block is not covered because sometimes compiler marks it as nonexecutable code.
 LFT:28,28 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/super.c
+FN:parse_options
+LFT:55,55 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/super.c
