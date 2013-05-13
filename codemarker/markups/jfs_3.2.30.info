@@ -611,18 +611,8 @@ FN:jfs_get_parent Can be called only if we had control member "d_flags" of "dent
 end_of_record
 
 SF:fs/jfs/namei.c
-FN:jfs_rename 
-LFT:111,120 This block is dead as it can be executed only in case when there are hard links on directories. Linux does not allow it.
-end_of_record
-
-SF:fs/jfs/namei.c
 FN:jfs_create
 LFT:45,46 Can be covered if SELinux package is installed.
-end_of_record
-
-SF:fs/jfs/namei.c
-FN:jfs_mknod
-LFT:41,42 Can be covered if SELinux package is installed.
 end_of_record
 
 SF:fs/jfs/namei.c
@@ -699,11 +689,6 @@ LFT:695,696 These lines cannot be covered from user space.
 end_of_record
 
 SF:fs/jfs/namei.c
-FN:jfs_rmdir
-LFT:72,72 This is dead code as acl.flag is never set to DXD_EXTENT in source code.
-end_of_record
-
-SF:fs/jfs/namei.c
 FN:commitZeroLink
 LFT:41,41 This is dead code as acl.flag is never set to DXD_EXTENT in source code.
 end_of_record
@@ -717,7 +702,46 @@ SF:fs/jfs/namei.c
 FN:jfs_symlink
 LFT:110,111 These lines are covered when we perform fault simulation on symlink test, but it leads to system crash.
 LFT:121,124 These lines are covered when we perform fault simulation on symlink test, but it leads to system crash.
+LFT:144,144 These lines are covered when we perform fault simulation on symlink test, but it leads to system crash.
 end_of_record
+
+SF:fs/jfs/namei.c
+FN:free_ea_wmap
+LFT:6,7 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_rmdir
+LFT:45,45 This block is not covered because the test development would take too long.
+LFT:72,72 This is dead code as acl.flag is never set to DXD_EXTENT in source code.
+LFT:93,93 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_unlink
+LFT:38,38 This block is not covered because the test development would take too long.
+LFT:100,101 This block is not covered because the test development would take too long.
+LFT:119,119 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_rename
+LFT:111,120 This block is dead as it can be executed only in case when there are hard links on directories. Linux does not allow it.
+LFT:245,246 This block is not covered because the test development would take too long.
+LFT:266,269 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_nfs_get_inode
+LFT:12,13 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_mknod
+LFT:41,42 Can be covered if SELinux package is installed.
+LFT:57,58 This block is not covered because the test development would take too long.
+end_of_record
+
 
 SF:fs/jfs/jfs_xtree.c
 FN:xtSearch
