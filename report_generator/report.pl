@@ -1463,7 +1463,7 @@ sub spruce_parse_log_file($$)
     my $journal_title = $fs . "." . $test_suite;
     if($mount_opts)
     {
-        print "Mount Opts not empty";
+        # print "Mount Opts not empty";
         $journal_title .= "." . $mount_opts;
     }
 

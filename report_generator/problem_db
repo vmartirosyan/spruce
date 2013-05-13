@@ -1,5 +1,5 @@
 test read_write ReadWriteDirect
-expected test_suite syscall
+expected test_suite common
 expected fs btrfs
 version l kernel_version 2.6.35
 
@@ -13,7 +13,7 @@ attribute resolution Filesystem problem
 end
 
 test read_write ReadWriteDirect
-expected test_suite syscall
+expected test_suite common
 expected fs ext4
 expected mount_opts data=journal
 version l kernel_version 3.2.30
@@ -28,7 +28,7 @@ attribute resolution Filesystem problem
 end
 
 test open OpenDirect
-expected test_suite syscall
+expected test_suite common
 expected fs ext4
 expected mount_opts data=journal
 version l kernel_version 3.2.30
