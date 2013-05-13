@@ -397,6 +397,7 @@ public:
 		UnixCommand rmmod("rmmod");
 		vector<string> args;
 		args.push_back(module);
+		//args.push_back("-f");
 		
 		ProcessResult * res = 
 		rmmod.Execute(args);
@@ -414,6 +415,15 @@ public:
 		}
 		return true;
 	}
+	
+	static string GetLastFaultMsg()
+	{
+		char buf[5000];
+		ifstream f((DebugFSPath + "/kedr_fault_simulation/last_fault").c_str(), ifstream::in);
+		f.read(buf, 5000);
+		return (string)buf;
+	}
+	
 	
 protected:
 	string TargetModule;
