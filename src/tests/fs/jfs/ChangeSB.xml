@@ -194,8 +194,7 @@
 			
 			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
 			
-			fd = open(FilePath, O_RDWR | O_LARGEFILE, S_IRUSR | S_IWUSR);
-			Unres(fd == -1, "Cannot open file.");
+			fd = open(FilePath, O_RDWR | O_LARGEFILE, S_IRUSR | S_IWUSR);//will fail
 			
 			char * buf = new char[5000];
 			
