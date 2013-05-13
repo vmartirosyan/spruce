@@ -845,3 +845,24 @@ FN:ea_write_inline
 LFT:26,33 This block is not covered because the test development would take too long.
 end_of_record
 
+SF:fs/jfs/xattr.c
+FN:ea_get
+LFT:112,114 This block could be covered if we corrupt the inode, but in that case the failure comes earlier invokation of ea_read(line 552 of xattr.c).
+LFT:132,137 This is self checking/correcting code. 
+end_of_record
+
+SF:fs/jfs/xattr.c
+FN:ea_release
+LFT:9,10 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/xattr.c
+FN:ea_put
+LFT:8,9 This block is not covered because the test development would take too long.
+LFT:47,51 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/xattr.c
+FN:__jfs_setxattr
+LFT:110,115 This is self checking/debuging code. 
+end_of_record
