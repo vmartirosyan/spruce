@@ -1,0 +1,868 @@
+#######################################################################
+#################Section for DEAD code ONLY############################
+#######################################################################
+DEADCODE:
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbReAlloc Called from dtSplitUp+106.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbExtend Called from dbRealloc+7.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbFindCtl
+LFT:28,28 Code is marked as it was not executed due to compiler optimisations.
+LFT:69,69 Code is marked as it was not executed due to compiler optimisations.
+LFT:46,48 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocBottomUp
+LFT:21,21 This block is not covered because the test development would take too long.
+LFT:28,29 Is covered by test jfs/mount/MultipleResizeFail which is marked as dangerous.
+LFT:40,42 Is covered by test jfs/mount/MultipleResizeFail which is marked as dangerous.
+LFT:98,98 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbFree
+LFT:48,51 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbUpdatePMap
+LFT:114,114 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAlloc
+LFT:27,28 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocNear
+LFT:7,9 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocAG
+LFT:12,15 This block is not covered because the test development would take too long.
+LFT:45,48 This block is not covered because the test development would take too long.
+LFT:65,68 This block is not covered because the test development would take too long.
+LFT:106,109 This block is not covered because it is just a self check.
+LFT:117,117 This block is not covered because the test development would take too long.
+LFT:119,119 This block is not covered because the test development would take too long.
+LFT:145,149 This block is not covered because the test development would take too long.
+LFT:159,161 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocAny
+LFT:18,20 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocCtl
+LFT:98,100 This block is not covered because it requires double fault-simulation.
+LFT:110,113 This block is not covered because it requires double fault-simulation.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbFreeDmap
+LFT:23,33 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocBits
+LFT:76,79 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAdjCtl
+LFT:19,22 This block is not covered because the test development would take too long.
+LFT:101,105 This block is not covered because it is just a self check.
+LFT:120,120 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbBackSplit
+LFT:36,36 This block is not covered because it is just a self check.
+LFT:58,58 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+LFT:3081,3081 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbFinalizeBmap
+LFT:48,48 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+LFT:3919,3919 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbAllocDmapBU
+LFT:98,98 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtExtendPage
+LFT:0,211 Called from dtSplitUp+112.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtLinelockFreelist Called from dtExtendPage+188.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtSplitUp
+LFT:92,135 This code works only when block size != 4096
+LFT:275,275 This code is supported only in OS/2
+LFT:261,264 Can be covered by test jfs/JfsOverloadTests/CiGetLeafPrefixKeyFSim which is marked as dangerous.
+LFT:167,167 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:ciCompare
+LFT:49,53 This is a dead code as it is written for internal page entry. But function ciCompare is being called from only a single point and only for a leaf page.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtUpdate Called from extRecord+9. Called from extRealloc, which is not defined by default(because of protection with macro _NOTYET).
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:ciGetLeafPrefixKey﻿   
+LFT:25,25 This code is supported only in OS/2
+LFT:32,32 This code is supported only in OS/2
+end_of_record
+
+
+SF:fs/jfs/jfs_imap.c
+FN:diReadSpecial
+LFT:44,47 The function copy_from_dinode always returns 0. The error handling code is dead.
+end_of_record
+
+SF:fs/jfs/jfs_incore.h
+FN:JFS_SBI Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/jfs/jfs_incore.h
+FN:isReadOnly Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/jfs/inode.c
+FN:jfs_get_block 
+LFT:22,43 XAD_NOTRECORDED flag is set only from two places, first is defined as NOTYET and in the second piece before setting the flag a bool value is checked which is always false.
+end_of_record
+
+SF:fs/jfs/inode.c
+FN:jfs_commit_inode
+LFT:19,23 The code is executed when fsync or extAlloc is called on read-only partition which is impossible.
+end_of_record
+
+SF:fs/jfs/inode.c
+FN:jfs_write_inode
+LFT:18,18 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/inode.c
+FN:jfs_dirty_inode
+LFT:5,11 The code is executed when when inode is marked as dirty on read-only partition which is impossible.
+end_of_record
+
+SF:fs/jfs_metapage.h
+FN:_metapage_homeok Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diRead
+LFT:62,69 This code is supported only in OS/2
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diExtendFS
+LFT:38,39 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:43,46 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:51,52 This block is not covered because the test development would take too long.
+LFT:74,82 This block is not covered because the test development would take too long.
+LFT:100,108 This block is not covered because the test development would take too long.
+LFT:121,123 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diFreeSpecial
+LFT:3,3 Never gets here because of a previous check.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+LFT:1840,1843 Never gets here because of a previous check.
+LFT:1866,1867 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+LFT:1963,1966 Never gets here because of a previous check.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diIAGRead
+LFT:14,14 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diAllocAny
+LFT:22,22 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diNewIAG
+LFT:44,44 Code is marked as it was not executed due to compiler optimisations. 
+LFT:59,59 Code is marked as it was not executed due to compiler optimisations. 
+LFT:74,74 Code is marked as it was not executed due to compiler optimisations. 
+LFT:97,97 Code is marked as it was not executed due to compiler optimisations. 
+LFT:122,122 Code is marked as it was not executed due to compiler optimisations. 
+LFT:183,183 Code is marked as it was not executed due to compiler optimisations. 
+LFT:199,199 Code is marked as it was not executed due to compiler optimisations. 
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diWrite
+LFT:29,30 This block is not covered because the test development would take too long.
+LFT:46,53 This code is supported only in OS/2
+LFT:176,176 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diFree
+LFT:75,79 Cannot be covered because of inode modification, as in that case diRead will fail.
+LFT:249,252 This block is not covered because the test development would take too long.
+LFT:259,259 This block is not covered because the test development would take too long.
+LFT:339,339 This block is not covered because the test development would take too long.
+LFT:375,375 This block is not covered because the test development would take too long.
+LFT:433,433 This block is not covered because the test development would take too long.
+LFT:435,435 This block is not covered because the test development would take too long.
+LFT:437,437 This block is not covered because the test development would take too long.
+LFT:439,439 This block is not covered because the test development would take too long.
+end_of_record	
+
+SF:fs/jfs/jfs_imap.c
+FN:diAlloc
+LFT:81,81 This block is not covered because it is just a self check.
+LFT:199,205 This block is not covered because the test development would take too long.
+LFT:216,216 This block is not covered because the test development would take too long.
+LFT:252,255 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diAllocBit
+LFT:26,27 This block is not covered because the test development would take too long.
+LFT:51,51 This block is not covered because the test development would take too long.
+LFT:53,53 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diNewExt
+LFT:39,41 This block is not covered because the test development would take too long.
+LFT:45,47 This block is not covered because the test development would take too long.
+LFT:59,61 This block is not covered because the test development would take too long.
+LFT:87,91 This block is not covered because the test development would take too long.
+LFT:144,144 This block is not covered because the test development would take too long.
+LFT:147,147 This block is not covered because the test development would take too long.
+LFT:159,159 This block is not covered because the test development would take too long.
+LFT:219,219 This block is not covered because the test development would take too long.
+LFT:221,221 This block is not covered because the test development would take too long.
+LFT:232,232 This block is not covered because the test development would take too long.
+LFT:234,234 This block is not covered because the test development would take too long.
+LFT:236,236 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:diUpdatePMap
+LFT:52,52 This block is not covered because the test development would take too long.
+LFT:74,78 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_imap.c
+FN:duplicateIXtree
+LFT:29,31 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_extent.c
+FN:extRecord Called from jfs_get_block+39.
+end_of_record
+
+SF:fs/jfs/jfs_extent.c
+FN:extAlloc
+LFT:15,15 This block is not covered because it is just a self check/correction code.
+end_of_record
+
+SF:fs/jfs/jfs_extent.c
+FN:extHint
+LFT:27,28 This block is not covered because the test implementataion would take too long.
+end_of_record
+
+SF:fs/jfs/acl.c
+FN:jfs_set_acl
+LFT:18,18 Never gets here because of a previous check.
+end_of_record
+
+SF:fs/jfs/acl.c
+FN:jfs_get_acl
+LFT:35,35 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/acl.c
+FN:jfs_init_acl
+LFT:10,10 Called if jfs_get_acl+35 is covered.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:mapLog
+LFT:18,43 This code is called only in case of block size != 4096
+end_of_record
+
+SF:fs/jfs/resize.c
+#FN:jfs_extendfs
+LFT:110,117 VolumeSize is got from vfs superblock and it can't be reached from user-space and if we try to change the value in jfs superblock mount fails.
+LFT:123,125 Never gets here because of a previous check of read-only fs in jfs_remount().
+LFT:156,156 jfs_extendfs is called only once and newLogSize is 0 there.
+LFT:395,396 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:476,477 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:533,533 Never gets here because of a previous check of read-only fs in jfs_remount().
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
+FN:dbExtendFS
+LFT:86,87 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+LFT:115,124 This block is not covered because the test development would take too long.
+LFT:237,237 This block is not covered because the test development would take too long.
+LFT:251,251 This block is not covered because it is just a self check.
+LFT:254,259 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
+end_of_record
+
+SF:fs/jfs/super.c
+LFT:82,83 panic() call coverage cannot be extracted because it immediately halts system.
+end_of_record
+
+SF:fs/jfs/super.c
+FN:jfs_unfreeze
+LFT:9,9 The line is covered by test jfs/Ioctl/FreezeFail which is marked as dangerous.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+LFT:403,423 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+LFT:611,614 This block is not covered because the test development would take too long.
+LFT:648,653 This block is not covered because the test development would take too long.
+LFT:659,659 These lines cannot be covered from user space.
+LFT:695,696 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_readpage
+LFT:26,26 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_releasepage
+LFT:10,10 These lines cannot be covered from user space.
+LFT:21,21 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_read_end_io
+LFT:5,5 Can be covered if fault simulation in submit_bio would not bring to system crash. 
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_write_end_io
+LFT:7,7 Can be covered if fault simulation in submit_bio would not bring to system crash.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:metapage_writepage
+LFT:123,123 This block is not covered because these lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+FN:last_write_complete
+LFT:27,27 This block is not covered because these lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs_metapage.c		
+FN:remove_metapage Function is inline and its call is usually integrated.	
+end_of_record
+
+SF:fs/jfs_metapage.c
+FN:__invalidate_metapages
+LFT:26,26 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs_metapage.c		
+FN:page_to_mp Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogFileSystem
+LFT:17,17 Code is marked as it was not executed due to compiler optimisations.
+LFT:29,29 Code is marked as it was not executed due to compiler optimisations.
+LFT:24,26 Code is called only if more than MAX_ACTIVE partitions are mount with the same external journal.
+LFT:35,37 Code is called only if more than MAX_ACTIVE partitions are mount with the same external journal.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogInit
+LFT:79,79 Code is covered by test jfs/MountWithOptions/lmLogInitFail3 which is marked as dangerous.
+LFT:111,111 This block is not covered because the test implementataion would take too long.
+LFT:169,171 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:jfs_flush_journal
+LFT:72,72 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogShutdown
+LFT:56,56 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lbmIODone
+LFT:17,17 These lines cannot be covered from user space.
+LFT:19,19 These lines cannot be covered from user space.
+end_of_record
+
+
+SF:fs/jfs/jfs_mount.c
+FN:updateSuper
+LFT:17,17 This block is not covered because it is an internal self-check. The function updateSuper() is never called with a wrong state.
+LFT:39,39 JFS_DASD_ENABLED flag isn't set and setting it directly in superblock causes superblock state turn not clean.
+end_of_record
+
+SF:fs/jfs/jfs_mount.c
+FN:readSuper
+LFT:12,12 This block is not covered because it needs double fault simulation to be executed.
+end_of_record
+
+SF:fs/jfs/jfs_unicode.h
+LFT:65,65 This block is not covered because the length value always matches the string passed. It's just a backup.
+LFT:97,97 This block is not covered because the length value always matches the string passed. It's just a backup.
+LFT:114,114 This block is not covered because the length value always matches the string passed. It's just a backup.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:txLockAlloc
+LFT:6,6 This block is not covered because the test development would take too long.
+LFT:10,10 This block is not covered because the test development would take too long.
+LFT:14,17 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:txLockFree
+LFT:7,9 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:txInit
+LFT:14,14 This block is not covered because it depends on the RAM size.
+LFT:15,18 This block is not covered because it will be covered on double initialization. But the function is called only from init_jfs_fs function.
+LFT:25,25 This block is not covered because it is just a self check/correction.
+LFT:27,27 This block is not covered because it is just a self check/correction.
+LFT:29,29 This block is not covered because it is just a self check/correction.
+LFT:31,31 This block is not covered because it is just a self check/correction.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:txBegin
+LFT:32,34 This block is not covered because the test development would take too long.
+LFT:42,44 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:txBeginAnon
+LFT:24,25 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:txLock
+LFT:76,83 This block is not covered because the test development would take too long.
+LFT:224,224 This block is not covered because it is just a self check.
+LFT:241,270 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:txMaplock
+LFT:47,53 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:txLinelock
+LFT:21,21 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:txCommit
+LFT:27,27 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:txLog
+LFT:45,45 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:diLog
+LFT:70,70 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:dtLog
+LFT:31,31 This block is not covered because it is called when the block size != 4096.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:xtLog
+LFT:67,67 This block is not covered because it is just a self check.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:txFreelock
+LFT:10,32 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:jfs_lazycommit
+LFT:55,55 This block is not covered because the test development would take too long.
+LFT:69,69 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:txQuiesce
+LFT:12,32 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_txnmgr.c
+FN:jfs_sync
+LFT:12,56 This block is not covered because the test development would take too long.
+LFT:64,64 This block is not covered because the test development would take too long.
+end_of_record
+
+#######################################################################
+#################Section for free code markup##########################
+#######################################################################
+#FREECODE:
+
+SF:fs/jfs/jfs_mount.c 
+FN:jfs_mount_rw
+LFT:18,18 Can be covered if stability-check is run in mount/RemounRW test but it causes system crash.
+LFT:24,24 Can be covered if stability-check is run in mount/RemounRW test but it causes system crash.
+LFT:39,41 Can be covered if stability-check is run in mount/RemounRW test but it causes system crash.
+end_of_record
+
+SF:fs/jfs/resize.c
+#FN:jfs_extendfs
+LFT:261,261 Calling this code causes bug. log_formatted = 0 only when there is no inline log or when expanding is small, the latter case causes bug as the log is being formated after being previously shut down.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtReadFirst
+LFT:39,43 Difficult to reproduce in normal coverage.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:add_missing_indices 
+LFT:0,51 Called from jfs_readdir+302.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:ciGetLeafPrefixKey
+LFT:16,17 These lines could be covered if test jfs/JfsOverloadTests/CiGetLeafPrefixKeyFSim would not fail.
+end_of_record
+
+
+SF:fs/jfs/jfs_dtree.c
+FN:add_index
+LFT:54,55 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail13 would not fail.
+LFT:74,79 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail13 would not fail.
+LFT:85,89 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail13 would not fail.
+LFT:120,121 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail would not fail.
+LFT:128,128 These lines could be covered if test jfs/JfsOverloadTests/dbAllocFail would not fail.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:dtSplitPage
+LFT:44,45 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_fh_to_parent This function could be called if "vfs_dentry_acceptable" function wouldn't return "1".
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_get_parent Can be called only if we had control member "d_flags" of "dentry" struct from userspace.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_create
+LFT:45,46 Can be covered if SELinux package is installed.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_mkdir
+LFT:46,46 Can be covered if fault simulation (kmalloc) could be enabled in test jfs/common/acl/ACLGetSet on "mkdir" system call, but there is a kernel bug.
+LFT:50,51 Can be covered if SELinux package is installed.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:jfsIOWait
+LFT:15,16 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/xattr.c
+FN:jfs_initxattrs The function is called when the SELinux package is installed.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogOpen
+LFT:16,27 Code would be called if jfs/mount/MultiplePartitionsSingleLog didn't failed with fatal.
+LFT:67,67 These lines could be covered if there wouldn't be system crash due to "submit_bio" failure.
+LFT:83,84 These lines could be covered if there wouldn't be system crash due to "submit_bio" failure.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmGroupCommit
+LFT:8,12 These lines cannot be covered from user space.
+LFT:44,44 These lines cannot be covered from user space.
+LFT:60,60 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogInit
+LFT:169,171 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmWriteRecord
+LFT:56,56 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmPostGC
+LFT:24,24 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/jfs_logmgr.c
+FN:lmLogSync
+LFT:64,64 This block is not covered because the test implementataion would take too long.
+LFT:84,85 This block is not covered because the test implementataion would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+LFT:903,903 This line can be covered using many threads(about 300), which create many directories(about 1000). But this process takes very long time, and the coverage is not constant from execution to execution, because the condition of if statement is not always true.         
+LFT:2179,2179 See the 903 line for more details.
+LFT:2188,2188 See the 903 line for more details.
+LFT:2395,2395 See the 903 line for more details.
+LFT:2406,2407 See the 903 line for more details.
+LFT:2778,2778 See the 903 line for more details.
+LFT:2807,2807 See the 903 line for more details.
+LFT:3926,3926 See the 903 line for more details.
+LFT:4273,4273 See the 903 line for more details.
+LFT:4368,4368 See the 903 line for more details.
+LFT:4397,4398 See the 903 line for more details.
+LFT:3222,3234 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
+LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
+end_of_record
+
+SF:fs/jfs/jfs_metapage.c
+LFT:611,614 These lines cannot be covered from user space.
+LFT:648,653 These lines cannot be covered from user space.
+LFT:659,659 These lines cannot be covered from user space.
+LFT:695,696 These lines cannot be covered from user space.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:commitZeroLink
+LFT:41,41 This is dead code as acl.flag is never set to DXD_EXTENT in source code.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_free_zero_link
+LFT:48,62 This is dead code as acl.flag is never set to DXD_EXTENT in source code.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_symlink
+LFT:110,111 These lines are covered when we perform fault simulation on symlink test, but it leads to system crash.
+LFT:121,124 These lines are covered when we perform fault simulation on symlink test, but it leads to system crash.
+LFT:144,144 These lines are covered when we perform fault simulation on symlink test, but it leads to system crash.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:free_ea_wmap
+LFT:6,7 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_rmdir
+LFT:45,45 This block is not covered because the test development would take too long.
+LFT:72,72 This is dead code as acl.flag is never set to DXD_EXTENT in source code.
+LFT:93,93 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_unlink
+LFT:38,38 This block is not covered because the test development would take too long.
+LFT:100,101 This block is not covered because the test development would take too long.
+LFT:119,119 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_rename
+LFT:111,120 This block is dead as it can be executed only in case when there are hard links on directories. Linux does not allow it.
+LFT:245,246 This block is not covered because the test development would take too long.
+LFT:266,269 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_nfs_get_inode
+LFT:12,13 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/namei.c
+FN:jfs_mknod
+LFT:41,42 Can be covered if SELinux package is installed.
+LFT:57,58 This block is not covered because the test development would take too long.
+end_of_record
+
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtSearch
+LFT:82,84 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtInsert
+LFT:55,56 This block is not covered because the test development would take too long.
+LFT:82,84 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtSplitUp
+LFT:44,45 This block is not covered because the test development would take too long.
+LFT:148,149 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitUp. 
+LFT:185,185 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtSplitPage
+LFT:133,134 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitPage. 
+LFT:239,240 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitPage.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtSplitRoot
+LFT:33,34 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
+LFT:71,72 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtExtend
+LFT:28,30 This block would be covered if we cover the lines 82-84 in xtSearch, but that development would take too long.
+LFT:61,125 this code can be covered(partially) when we write more than 64GB to file. It takes too long 
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtAppend
+LFT:47,47 This block is not covered because the test development would take too long.
+LFT:103,105 This block could be covered if we perform fault simulation while extending partition, but it leads to system failure.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtTruncate
+LFT:297,297 This block is not covered because the test development would take too long.
+LFT:323,323 This line could be covered if we corrupt the inode, but in that case the failure comes up earlier. 
+LFT:350,354 This block is not covered because the test development would take too long.
+LFT:391,391 This block is not covered because the test development would take too long.
+LFT:455,455 This block is not covered because the test development would take too long.
+LFT:490,492 Can be covered by test JFS/ChangeSB/xtTruncateFail which is marked as dangerous.
+end_of_record
+
+SF:fs/jfs/jfs_xtree.c
+FN:xtTruncate_pmap
+LFT:29,29 This block is not covered because the test development would take too long.
+LFT:34,37 This block would be covered if we cover the lines 82-84 in xtSearch, but that development would take too long.
+LFT:98,98 This line could be covered if we corrupt the inode, but in that case the failure comes upper in the same function. 
+end_of_record
+
+SF:fs/jfs/super.c
+FN:jfs_destroy_inode
+LFT:8,10 This is self checking/correcting code. 
+end_of_record
+
+SF:fs/jfs/super.c
+FN:jfs_put_super
+LFT:11,11 This line could be covered if lbmread function fails, which fails while fault simulating with submit_bio payload.
+end_of_record
+
+SF:fs/jfs/super.c
+FN:jfs_fill_super
+LFT:121,121 This line could be covered if lbmread function fails, which fails while fault simulating with submit_bio payload.
+end_of_record
+
+SF:fs/jfs/super.c
+FN:jfs_quota_read
+LFT:16,16 This block is not covered because the test development would take too long.
+LFT:26,26 This block is not covered because sometimes compiler marks it as nonexecutable code.
+LFT:28,28 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/super.c
+FN:parse_options
+LFT:55,55 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/super.c
+FN:jfs_quota_write
+LFT:25,25 This block is not covered because the test development would take too long.
+LFT:44,45 This is self checking/correcting code. 
+LFT:48,48 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/resize.c
+LFT:321,324 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/xattr.c
+FN:ea_write_inline
+LFT:26,33 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/xattr.c
+FN:ea_get
+LFT:112,114 This block could be covered if we corrupt the inode, but in that case the failure comes earlier invokation of ea_read(line 552 of xattr.c).
+LFT:132,137 This is self checking/correcting code. 
+end_of_record
+
+SF:fs/jfs/xattr.c
+FN:ea_release
+LFT:9,10 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/xattr.c
+FN:ea_put
+LFT:8,9 This block is not covered because the test development would take too long.
+LFT:47,51 This block is not covered because the test development would take too long.
+end_of_record
+
+SF:fs/jfs/xattr.c
+FN:__jfs_setxattr
+LFT:110,115 This is self checking/debuging code. 
+end_of_record

@@ -1,0 +1,20 @@
+#######################################################################
+#################Section for DEAD code ONLY############################
+#######################################################################
+DEADCODE:
+
+SF:fs/ext4/super.c
+FN:dquot_to_inode
+LFT:0,0 The function is inline.
+end_of_record
+
+SF:fs/ext4/fsync.c
+FN:dump_completed_IO The function is called from ext4_flush_completed_IO+8 which is marked as non-executable.
+end_of_record
+
+
+#######################################################################
+#################Section for free code markup##########################
+#######################################################################
+#FREECODE:
+
