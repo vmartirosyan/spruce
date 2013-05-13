@@ -31,6 +31,8 @@
 	<Test Name="NonUnicodeChars">
 		<Description>Try to create and access files with non-unicode names.</Description>
 		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true) != PS_Success, "Cannot restore partition." );
+
 			Unres( chdir("/") == -1, "Cannot change directory to root." );
 			
 			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot unmount partition." );
