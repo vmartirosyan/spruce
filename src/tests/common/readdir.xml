@@ -53,6 +53,55 @@
 			Check(errno != 0, "Readdir error");
 		</Code>
 	</Test>
+	<Test Name="ReadDirMega" FaultSimulationReady="true">
+		<Description>Read empty directory entry.</Description>
+		<File count="1000"/>
+		<Code>
+			const int BUF_LEN = 4000;
+			char buf[BUF_LEN];
+			struct linux_dirent *ent;
+			int fd = open(".", O_DIRECTORY);
+			Unres(fd == -1, "Cannot open directory");
+			
+			int ret = 0;
+			Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");
+			cerr<<"Readdir : bytes read: " << ret << endl;
+			
+			for ( int pos = 0; pos < ret; )
+			{
+				ent = (linux_dirent*)(buf + pos);
+				cerr << "Entry: " << ent->d_name << endl;
+				pos += ent->d_reclen;
+			}
+			
+			Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");			
+			cerr<<"Readdir : bytes read: " << ret << endl;
+			
+			for ( int pos = 0; pos < ret; )
+			{
+				ent = (linux_dirent*)(buf + pos);
+				cerr << "Entry: " << ent->d_name << endl;
+				pos += ent->d_reclen;
+			}
+			
+			for(int i = 0; i < 60; ++i)
+			{
+				Unres(unlink(FilePaths[i].c_str()) == -1, "Cannot remove directory");
+			}
+			
+			sync();
+			Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");			
+			cerr<<"Readdir : bytes read: " << ret << endl;
+			
+			for ( int pos = 0; pos < ret; )
+			{
+				ent = (linux_dirent*)(buf + pos);
+				cerr << "Entry: " << ent->d_name << endl;
+				pos += ent->d_reclen;
+			}
+		
+		</Code>
+	</Test>
 	<Test Name="ReaddirNormalNotEmpty" FaultSimulationReady="true">
 		<Description>Read not empty directory entry.</Description>
 		<Dir count="1">
