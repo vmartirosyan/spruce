@@ -587,6 +587,10 @@ FN:ciGetLeafPrefixKey
 LFT:16,17 These lines could be covered if test jfs/JfsOverloadTests/CiGetLeafPrefixKeyFSim would not fail.
 end_of_record
 
+SF:fs/jfs/jfs_dtree.c
+FN:dtSearch
+LFT:104,106 Never gets here because of previous check in VFS.
+end_of_record
 
 SF:fs/jfs/jfs_dtree.c
 FN:add_index
@@ -674,6 +678,7 @@ LFT:2406,2407 See the 903 line for more details.
 LFT:2778,2778 See the 903 line for more details.
 LFT:2807,2807 See the 903 line for more details.
 LFT:3926,3926 See the 903 line for more details.
+LFT:4302,4303 See the 903 line for more details.
 LFT:4273,4273 See the 903 line for more details.
 LFT:4368,4368 See the 903 line for more details.
 LFT:4397,4398 See the 903 line for more details.
