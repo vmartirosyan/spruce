@@ -164,8 +164,16 @@ protected:
 		if ( Output != "" )
 		{
 			// Read the path			
-			int SpacePos = Output.find(' ', 12);
-			DebugFSPath = Output.substr(11, SpacePos - 11 );
+			int StartPos = Output.find(" on ", 0);
+			if ( StartPos == string::npos )
+				return false;
+			StartPos += 4;
+			int SpacePos = Output.find(' ', StartPos);
+			if ( SpacePos == string::npos )
+				return false;
+						
+			DebugFSPath = Output.substr(StartPos, SpacePos - StartPos);
+			Logger::LogDebug("LeakChecker: DebugFSPath = " + DebugFSPath);
 			return true;
 		}
 			
