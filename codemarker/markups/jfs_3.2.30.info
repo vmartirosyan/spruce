@@ -574,7 +574,7 @@ end_of_record
 
 SF:fs/jfs/jfs_dtree.c
 FN:dtReadFirst
-LFT:39,43 Difficult to reproduce in normal coverage.
+LFT:39,43 These lines could be covered if we corrupt the corresponding inode, but in that case error comes up earlier in the code.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
