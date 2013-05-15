@@ -463,14 +463,14 @@ end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
 FN:txLockAlloc
-LFT:6,6 This block is not covered because the test development would take too long.
-LFT:10,10 This block is not covered because the test development would take too long.
-LFT:14,17 This block is not covered because the test development would take too long.
+LFT:6,6 The block can be covered by a lot of concurrent threads performing transaction locks at once.
+LFT:10,10 The block can be covered by a lot of concurrent threads performing transaction locks at once.
+LFT:14,17 The block can be covered by a lot of concurrent threads performing transaction locks at once.
 end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
 FN:txLockFree
-LFT:7,9 This block is not covered because the test development would take too long.
+LFT:7,9 The block can be covered by a lot of concurrent threads performing transaction locks at once.
 end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
@@ -485,25 +485,25 @@ end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
 FN:txBegin
-LFT:32,34 This block is not covered because the test development would take too long.
-LFT:42,44 This block is not covered because the test development would take too long.
+LFT:32,34 The block can be covered by a lot of concurrent threads performing transaction locks at once.
+LFT:42,44 The block can be covered by a lot of concurrent threads performing transaction locks at once.
 end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
 FN:txBeginAnon
-LFT:24,25 This block is not covered because the test development would take too long.
+LFT:24,25 The block can be covered by a lot of concurrent threads performing transaction locks at once.
 end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
 FN:txLock
-LFT:76,83 This block is not covered because the test development would take too long.
-LFT:224,224 This block is not covered because it is just a self check.
-LFT:241,270 This block is not covered because the test development would take too long.
+LFT:76,83 This block is not covered because it is a self check/correcting code.
+LFT:224,224 This block is not covered because it is a self check.
+LFT:241,270 The block can be covered if two concurrent threads try to lock the same page at once, which cannot be controlled.
 end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
 FN:txMaplock
-LFT:47,53 This block is not covered because the test development would take too long.
+LFT:47,53 This block is not covered because it is a self check/correcting code.
 end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
