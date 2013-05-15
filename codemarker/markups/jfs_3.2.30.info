@@ -878,3 +878,8 @@ FN:__jfs_setxattr
 LFT:110,115 This is self checking/debuging code. 
 LFT:122,122 This block is not covered because the test development would take too long.
 end_of_record
+
+SF:fs/jfs/jfs_dtree.c
+FN:find_index
+LFT:11,15 This is self check(just in case). the value of "index" is always checked before invokation of this function.
+end_of_record
