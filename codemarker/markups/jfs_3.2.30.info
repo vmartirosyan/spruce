@@ -125,6 +125,7 @@ LFT:92,135 This code works only when block size != 4096
 LFT:275,275 This code is supported only in OS/2
 LFT:261,264 Can be covered by test jfs/JfsOverloadTests/CiGetLeafPrefixKeyFSim which is marked as dangerous.
 LFT:167,167 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
+LFT:210,210 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
@@ -882,4 +883,5 @@ end_of_record
 SF:fs/jfs/jfs_dtree.c
 FN:find_index
 LFT:11,15 This is self check(just in case). the value of "index" is always checked before invokation of this function.
+LFT:19,19 This is self check(just in case). the value of "index" is always checked before invokation of this function.
 end_of_record
