@@ -25,9 +25,10 @@
 		Skip(!PartitionManager::NoOptionsEnabled(),
 		 "These tests should run only when no options are provided.");
 	</StartUp>
-	<Requires>dirent.h</Requires>	
+	<Requires>dirent.h</Requires>
 	<Requires>jfs_filsys.h</Requires>
-	<Requires>JFSCtl.hpp</Requires>	
+	<Requires>JFSCtl.hpp</Requires>
+	<Requires>sys/syscall.h</Requires>
 	<Test Name="JFS_DIR_INDEX" FaultSimulationReady="true">
 		<Description>Unset JFS_DIR_INDEX flag and read a directory.</Description>
 		<Code>
@@ -1119,6 +1120,88 @@
 
 		</Code>
     </Test>
+    <Test Name="ReadDirFailInternal">
+		<Header>
+			struct linux_dirent {
+			unsigned long  d_ino;     /* Inode number */
+			unsigned long  d_off;     /* Offset to next linux_dirent */
+			unsigned short d_reclen;  /* Length of this linux_dirent */
+			char           d_name[];  /* Filename (null-terminated) */
+							   /* length is actually (d_reclen - 2 -
+								  offsetof(struct linux_dirent, d_name) */
+			};
+		</Header>
+		<Description>Brings to failure in jfs_readdir function.</Description>
+		<Code>
+			const char * DirPath = "ReadDirFailInternal";
+			Unres( mkdir(DirPath, 0777) == -1, "Cannot create directory." );
+			
+			Unres( chdir(DirPath) == -1, "Cannot change dir." );
+			
+			char name_buf[100];
+			for (int j = 0; j < 7; ++j)
+            {
+                sprintf(name_buf, "ReadDirFailInternal_sub_%d",  j);
+                string dirname = name_buf;
+                Unres(mkdir(dirname.c_str(), 0777) == -1, "Cannot create directory.");
+            }
+			
+			Unres( chdir("..") == -1, "Cannot change dir back." );
+			
+			JFSCtl jfs;
+			int inode_num = jfs.GetInodeNum(DirPath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinode * inode = jfs.GetInode(DeviceName, inode_num);
+			Unres(inode == NULL, "Cannot get inode.");
+			
+			dtroot_t * page = (dtroot_t*)&inode->di_dtroot;
+			
+			for ( int i = 0; i < 12; ++i )
+			{
+				dir_table_slot slot = ((dir_table_slot*)&inode->di_dirtable)[i];
+				int64_t bn = addressDTS(&slot);
+				dtpage_t * block = (dtpage_t *)jfs.ReadBlock(DeviceName, bn);
+				Unres( block == NULL, "Cannot read block." );
+				block->header.flag |= BT_INTERNAL;
+				Unres( jfs.WriteBlock(DeviceName, block, bn) == false, "Cannot write block." );
+			}
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			Unres( chdir(DirPath) == -1, "Cannot change dir." );
+			
+			const int BUF_LEN = 100;
+			char buf[BUF_LEN];
+			struct linux_dirent *ent;
+			int fd = open(".", O_DIRECTORY);
+			Unres(fd == -1, "Cannot open directory");
+			
+			int ret = 0;
+			while ( true )
+			{
+				cerr << "Reading directory." << endl;
+				Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");
+					
+				for ( int pos = 0; pos < ret; )
+				{
+					ent = (linux_dirent*)(buf + pos);
+					cerr << "Entry: " << ent->d_name << endl;
+					pos += ent->d_reclen;
+				}
+				
+				if (ret == 0)
+					break;
+
+			}
+			
+			close(fd);
+			
+		</Code>
+	</Test>
     <Test Name="diAllocInoFail">
 		<Description>Makes diAllocIno function fail.</Description>
 		<Header>
