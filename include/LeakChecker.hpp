@@ -33,10 +33,11 @@ using namespace std;
 class LeakChecker
 {
 public:
+	// Assumes that the debugfs is mounted on /sys/kernel/debug
 	LeakChecker():
-		DebugFSPath("")
+		DebugFSPath("/sys/kernel/debug")
 	{
-		MountDebugFS();
+		//MountDebugFS();
 	}
 
 	TestSet ProcessLeakCheckerOutput(string fs)
@@ -82,6 +83,14 @@ public:
 				Test item("Info", "General information about memory leaks.");
 				
 				item.AddResult(MemoryLeak, ProcessResult(Fail, res->GetOutput()) );
+				
+				ts.AddTest(item);
+			}
+			else
+			{
+				Test item("Info", "General information about memory leaks.");
+				
+				item.AddResult(MemoryLeak, ProcessResult(Unresolved, res->GetOutput() + "\nPlease ensure that the debugfs is mounted to `" + DebugFSPath + "`.") );
 				
 				ts.AddTest(item);
 			}
