@@ -125,7 +125,7 @@ LFT:92,135 This code works only when block size != 4096
 LFT:275,275 This code is supported only in OS/2
 LFT:261,264 Can be covered by test jfs/JfsOverloadTests/CiGetLeafPrefixKeyFSim which is marked as dangerous.
 LFT:167,167 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
-LFT:210,210 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
+LFT:210,211 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
 LFT:321,321 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
 LFT:381,381 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
 end_of_record
@@ -688,6 +688,7 @@ LFT:4368,4368 See the 903 line for more details.
 LFT:4397,4398 See the 903 line for more details.
 LFT:3222,3234 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
 LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
+LFT:3254,3260 This is self checking/correcting code.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
