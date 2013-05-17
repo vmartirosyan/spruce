@@ -31,7 +31,6 @@
 		<Code>
 		</Code>
 	</Test>	
-	
 	<Test Name="SplitUp" FaultSimulationReady="true">
 		<Description>Trying to split the parent page.</Description>
 		<File count = "1"/>
@@ -236,7 +235,40 @@
 		
 		</Code>
 	</Test>	
-	
+	<Test Name="MknodFail" FaultSimulationReady="true">
+		<Description>The system call mknod() creates a file system node (file, device special file or named pipe) named pathname, with attributes specified by mode and dev.</Description>
+		<Code>
+			char path[50];
+			int ret_val;
+			int file_index;
+			
+			system(("rm -rf " + (string)MountPoint + "/*").c_str());
+			
+			for (file_index = 0; file_index < 93; ++file_index)//90-99
+			{
+				sprintf(path, "max_files_test%d", file_index);
+				ret_val = mknod( path, S_IFBLK | 0777, 0 );		
+				if ( ret_val == -1 )
+				{
+					unlink(path);
+					char buf[3];
+					sprintf(buf, "%d-th", file_index);
+					Unres(true, "Cannot create the " + static_cast<string>(buf) + "file");
+				}
+			}
+			
+			sprintf(path, "max_files_test%d", file_index);
+			Fail((ret_val = mknod(path, S_IFBLK | 0777, 0)) == -1, "Cannot create node");
+			if ( ret_val == -1 )
+			{
+				unlink(path);
+				char buf[3];
+				sprintf(buf, "%d-th", file_index);
+				Unres(true, "Cannot create the " + static_cast<string>(buf) + "file");
+			}
+				
+		</Code>
+	</Test>
 	<Test Name="CiGetLeafPrefixKeyFSim" Dangerous="true">
 		<Description>Get fail in ciGetLeafPrefixKey function.</Description>
 		<Code>			
