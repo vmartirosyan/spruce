@@ -745,7 +745,6 @@ end_of_record
 SF:fs/jfs/namei.c
 FN:jfs_mknod
 LFT:41,42 Can be covered if SELinux package is installed.
-LFT:57,58 This block is not covered because the test development would take too long.
 end_of_record
 
 
