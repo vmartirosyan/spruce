@@ -724,14 +724,14 @@ end_of_record
 
 SF:fs/jfs/namei.c
 FN:jfs_rmdir
-LFT:45,45 This is impossible to cover with fault simulation, as the simulating point for this function is kmalloc which returns NULL on fault. The only way is to corrupt the inode to fail the DT_GETPAGE, but in that case error does not reach the desired case because of previous check.
+LFT:45,45 This block is impossible to cover with fault simulation, as the retrun value in that case is -ENOMEM.But we need -EIO. The only way is to corrupt the inode to fail the DT_GETPAGE, but in that case error does not reach the desired case because of multiple previous checks.
 LFT:72,72 This is dead code as acl.flag is never set to DXD_EXTENT in source code.
 LFT:93,93 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/namei.c
 FN:jfs_unlink
-LFT:38,38 This is impossible to cover with fault simulation, as the simulating point for this function is kmalloc which returns NULL on fault. The only way is to corrupt the inode to fail the DT_GETPAGE, but we can't corrupt the inode while already simulating fault.
+LFT:38,38 This block is impossible to cover with fault simulation, as the retrun value in that case is -ENOMEM.But we need -EIO. The only way is to corrupt the inode to fail the DT_GETPAGE, but in that case error does not reach the desired case because of multiple previous checks.
 LFT:100,101 This block is not covered because the test development would take too long.
 LFT:119,119 This block is not covered because the test development would take too long.
 end_of_record
@@ -842,7 +842,7 @@ end_of_record
 
 SF:fs/jfs/super.c
 FN:jfs_quota_write
-LFT:25,25 This block is not covered because the test development would take too long.
+LFT:26,26 This block is not covered because the test development would take too long.
 LFT:44,45 This is self checking/correcting code. 
 LFT:48,48 This block is not covered because the test development would take too long.
 end_of_record
