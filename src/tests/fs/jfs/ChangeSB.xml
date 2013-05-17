@@ -1459,64 +1459,7 @@
 			}
 		</Footer>
 	</Test>
-	 <Test Name="diUpdatePMap">
-		<Description>Makes diAllocIno function fail.</Description>
-		<Header>
-			int fd = -1;
-		
-		</Header>
-		<Code>
-			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
-						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
-			const char * FilePath = "test";
-			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
-			
-			Unres(fd == -1, "Cannot create file.");
-			
-			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
-			
-			fsync(fd);
-			close(fd);
-			sync();
-			
-			JFSCtl jfs;
-			int inode_num = jfs.GetInodeNum(FilePath);
-			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
-			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
-			iag * iagp = jfs.GetIAG(DeviceName, inode_num);
-			Unres(imap == NULL, "Cannot get IAG.");
-			Unres(iagp == NULL, "Cannot get IAG.");
-
-		
-			for(int i = 0;i < EXTSPERIAG; ++i)
-			{
-				iagp->pmap[i] = 0XFFFFFFFF;
-			}
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set IAG.");
-			Unres(jfs.SetIAG(DeviceName, inode_num, iagp) == false, "Cannot set IAG.");
-			
-			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
-			
-			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			fd = open("a", O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
-			
-			close(fd);
-			
-			
-			
-		</Code>
-		<Footer>
-			close(fd);
-			
-			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
-			{
-				Error("Mount failed!");
-				Return(Fatal);
-			}
-		</Footer>
-	</Test>
+	
 	<Test Name="diAllocExtFail">
 		<Description>Makes diAllocExt function fail.</Description>
 		<Header>
