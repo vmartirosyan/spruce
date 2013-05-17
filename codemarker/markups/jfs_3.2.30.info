@@ -317,7 +317,7 @@ end_of_record
 
 SF:fs/jfs/acl.c
 FN:jfs_get_acl
-LFT:35,35 This block is not covered because the test development would take too long.
+LFT:35,35 This line can be covered by ACLGetSetFail test which is marked dangerous.
 end_of_record
 
 SF:fs/jfs/acl.c
