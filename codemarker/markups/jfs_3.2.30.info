@@ -231,7 +231,6 @@ end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:diWrite
-LFT:29,30 This block is not covered because the test development would take too long.
 LFT:46,53 This code is supported only in OS/2
 LFT:176,176 This block is not covered because it is just a self check.
 end_of_record
