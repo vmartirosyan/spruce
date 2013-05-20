@@ -36,6 +36,7 @@ isn't covered as mount options are parsed and checked in super.c-->
 	</StartUp>
         <Requires>sys/mount.h</Requires>
         <Requires>sstream</Requires>
+        <Requires>JFSCtl.hpp</Requires>
         <Test Name="RemountResize" FaultSimulationReady="true">
                 <Description>Resize.</Description>              
                 <Code>
@@ -54,6 +55,50 @@ isn't covered as mount options are parsed and checked in super.c-->
 						}
 						
                         Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");					
+                </Code>
+				<Footer>
+						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+						{
+							Error("Mount failed!");
+							Return(Fatal);
+						}
+				</Footer>
+        </Test>
+        <Test Name="RemountResizeModifyIAG" FaultSimulationReady="true">
+                <Description>Resize.</Description>              
+                <Code>
+						int res;
+						JFSCtl jfs;
+                        Unres ( chdir("/") == -1, "Cannot change directory." );
+						res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+						if( res!= PS_Success )
+						{
+							if( res == PS_Fatal )
+							{
+								Error("Device too small.");
+								Return(Unresolved);
+							}						
+							Error("Partition mount or umount failed");
+							Return(Unresolved);	
+						}
+						int fd = creat("a",0777);
+						fsync(fd);
+						int inode_num = jfs.GetInodeNum("a");
+						close(fd);
+
+						Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+						
+						
+						iag * iag = jfs.GetIAG(DeviceName, inode_num);
+						
+						Unres(iag == NULL, "Cannot get IAG.");
+						iag->nfreeexts = EXTSPERIAG;
+						Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");	
+						Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+                        mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize");					
                 </Code>
 				<Footer>
 						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )

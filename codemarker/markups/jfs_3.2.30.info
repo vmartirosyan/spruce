@@ -188,10 +188,8 @@ SF:fs/jfs/jfs_imap.c
 FN:diExtendFS
 LFT:38,39 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
 LFT:43,46 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
-LFT:51,52 This block is not covered because the test development would take too long.
 LFT:74,82 This block is not covered because the test development would take too long.
 LFT:100,108 This block is not covered because the test development would take too long.
-LFT:121,123 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
@@ -332,7 +330,6 @@ LFT:156,156 jfs_extendfs is called only once and newLogSize is 0 there.
 LFT:321,324 Never gets here as this is a self checking code.
 LFT:395,396 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
 LFT:476,477 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
-LFT:533,533 Never gets here because of a previous check of read-only fs in jfs_remount().
 end_of_record
 
 SF:fs/jfs/jfs_dmap.c
