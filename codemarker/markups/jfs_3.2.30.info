@@ -249,7 +249,6 @@ end_of_record
 SF:fs/jfs/jfs_imap.c
 FN:diAlloc
 LFT:81,81 This block is not covered because it is just a self check.
-LFT:199,205 This block is not covered because the test development would take too long.
 LFT:216,216 This block is not covered because the test development would take too long.
 LFT:252,255 This block is not covered because the test development would take too long.
 end_of_record
