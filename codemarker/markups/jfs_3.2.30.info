@@ -684,6 +684,11 @@ LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted direc
 LFT:3254,3260 This is self checking/correcting code.
 end_of_record
 
+SF:fs/jfs/jfs_dtree.c
+FN:dtSplitRoot
+LFT:132,132 Can be covered by test JFS/JfsOverloadTests/dtSplitRootFail which is marked as dangerous.
+end_of_record
+
 SF:fs/jfs/jfs_metapage.c
 LFT:611,614 These lines cannot be covered from user space.
 LFT:648,653 These lines cannot be covered from user space.
