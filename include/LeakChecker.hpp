@@ -72,6 +72,8 @@ public:
 				//of << "\t<Item Name=\"PossibleLeak\" Id=\"" << rand() << "\">\n\t\t<Status>Success</Status><Output>";
 			}
 			
+			// Gather the output
+			Test item("LeakCheck", "Information about memory leaks.");
 			string Output = "";
 
 			UnixCommand cat("cat");
@@ -80,19 +82,15 @@ public:
 			ProcessResult * res = cat.Execute(catArgs);
 			if (res->GetStatus() == Success)
 			{
-				Test item("Info", "General information about memory leaks.");
-				
-				item.AddResult(MemoryLeak, ProcessResult(Fail, res->GetOutput()) );
-				
-				ts.AddTest(item);
+				Output += "Info: \n" + res->GetOutput() + "\n";
 			}
 			else
 			{
-				Test item("Info", "General information about memory leaks.");
-				
 				item.AddResult(MemoryLeak, ProcessResult(Unresolved, res->GetOutput() + "\nPlease ensure that the debugfs is mounted to `" + DebugFSPath + "`.") );
 				
 				ts.AddTest(item);
+				
+				return ts;
 			}
 			//string str = res.GetOutput();
 			//string num = str.substr(string("Possible leaks: ").length(), str.length() - string("Possible leaks: ").length());
@@ -106,11 +104,7 @@ public:
 				
 				if(res->GetStatus() == Success)
 				{
-					Test item("Possible leaks", "Information about possible memory leaks.");
-				
-					item.AddResult(MemoryLeak, ProcessResult(Fail, res->GetOutput()) );
-					
-					ts.AddTest(item);
+					Output += "Possible leaks: \n" + res->GetOutput() + "\n";
 				}
 			}
 			
@@ -123,15 +117,14 @@ public:
 				res = cat.Execute(catArgs);
 				if(resUnallocFrees->GetStatus() == Success)
 				{
-					Test item("Unallocated frees", "Information about unallocated frees.");
-				
-					item.AddResult(MemoryLeak, ProcessResult(Fail, res->GetOutput()) );
+					Output += "Unallocated frees: \n" + res->GetOutput() + "\n";
 					
-					ts.AddTest(item);
 				}
 			}
 			
+			item.AddResult(MemoryLeak, ProcessResult(Fail, Output) );
 			
+			ts.AddTest(item);
 			
 			//of << "</Output></Item></Module>" << endl;
 			
