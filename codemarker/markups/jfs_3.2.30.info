@@ -686,6 +686,11 @@ FN:dtSplitRoot
 LFT:132,132 Can be covered by test JFS/JfsOverloadTests/dtSplitRootFail which is marked as dangerous.
 end_of_record
 
+SF:fs/jfs/jfs_dtree.c
+FN:dtDeleteUp
+LFT:125,125 Can be covered by test JFS/JfsOverloadTests/dtDeleteUpFail2 which is marked as dangerous.
+end_of_record
+
 SF:fs/jfs/jfs_metapage.c
 LFT:611,614 These lines cannot be covered from user space.
 LFT:648,653 These lines cannot be covered from user space.

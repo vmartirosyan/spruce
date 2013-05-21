@@ -451,6 +451,33 @@
 		</Code>
 	</Test>
 	
+	<Test Name="dtDeleteUpFail2" Dangerous="true">
+		<Description>Trying to simulate fail in dtDeleteUpFail().</Description>
+		<Code>
+			system("rm -rf *");
+			char buf[30];
+			
+			Unres(mkdir("a", 0777) == -1, "Cannot create directory");
+			
+			int j;
+			for (j = 0; j < 164; ++j)
+			{
+				sprintf(buf, "a/dtSplitRootFail2_%d",  j);
+				Unres(mkdir(buf, 0777) == -1, "Cannot create directories");
+			}
+			
+			for (j = 0; j < 163; ++j)
+			{
+				sprintf(buf, "a/dtSplitRootFail2_%d",  j);
+				Unres(rmdir(buf) == -1, "Cannot remove directory");	
+			}
+			
+			sprintf(buf, "a/dtSplitRootFail2_%d",  j);
+			Fail(rmdir(buf) == -1, "Cannot remove directory");	
+					
+		</Code>
+	</Test>
+	
 	<Test Name="diAllocAny1">
 		<Description>Try to allocate inode anywhere in the AGs.</Description>
 		<Code>
