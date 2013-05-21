@@ -261,7 +261,7 @@ SF:fs/jfs/jfs_imap.c
 FN:diNewExt
 LFT:41,41 This block is not covered because if we change iagp->extfreefwd value diIAGRead() call above fails.
 LFT:47,47 This block is not covered because if we change iagp->extfreeback value diIAGRead() call above fails.
-LFT:59,61 This block is not covered because the test development would take too long.
+LFT:59,61 This block can be covered by diNewExt3 test which is marked dangerous as the processes goes to D status because of it.
 LFT:87,91 This block is not covered because the test development would take too long.
 LFT:144,144 Covered if jfs_imap.c+41 is covered.
 LFT:147,147 Covered if jfs_imap.c+47 is covered.
