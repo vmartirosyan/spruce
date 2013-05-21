@@ -44,23 +44,25 @@ public:
 				stringstream str;
 				str << rand();
 				
-				xml += "\t\t\t<Test Name=\"" + Validate((*j).second.GetName()) + "\" Id=\"" + Validate(str.str()) + "\">\n";				
-				xml += "\t\t\t\t<Desc>" + Validate((*j).second.GetDescription()) + "</Desc>\n";
-				xml += "\t\t\t\t<Results>\n";
+				
+				//xml += "\t\t\t\t<Results>\n";
 				
 				map<Checks, TestResult> Results = (*j).second.GetResults();
 				
 				for ( map<Checks, TestResult>::iterator k = Results.begin(); k != Results.end(); ++k )
 				{
-					xml += "\t\t\t\t\t<Check Name=\"" + k->second.CheckToString(k->first) + "\">\n";
-					xml += "\t\t\t\t\t\t<Status>" + Validate((*k).second.StatusToString()) + "</Status>\n";
-					xml += "\t\t\t\t\t\t<Output>" + Validate((*k).second.GetOutput()) + "</Output>\n";
-					xml += "\t\t\t\t\t</Check>\n";
-					
+					if ( k->first != Functional )
+						xml += "\t\t\t<Test Name=\"" + Validate((*j).second.GetName()) + "_" + k->second.CheckToString(k->first) + "\" Id=\"" + Validate(str.str()) + "\">\n";
+					else
+						xml += "\t\t\t<Test Name=\"" + Validate((*j).second.GetName()) + "\" Id=\"" + Validate(str.str()) + "\">\n";
+					xml += "\t\t\t\t<Desc>" + k->second.CheckToString(k->first) + " check. " + Validate((*j).second.GetDescription()) + "</Desc>\n";
+					xml += "\t\t\t\t<Status>" + Validate((*k).second.StatusToString()) + "</Status>\n";
+					xml += "\t\t\t\t<Output>" + Validate((*k).second.GetOutput()) + "</Output>\n";
+					xml += "\t\t\t</Test>\n";
 				}
 				
-				xml += "\t\t\t\t</Results>\n";
-				xml += "\t\t\t</Test>\n";
+				//xml += "\t\t\t\t</Results>\n";
+				
 			}
 			
 			xml += "\t\t</TestSet>";
