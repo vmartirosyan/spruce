@@ -249,26 +249,24 @@ end_of_record
 SF:fs/jfs/jfs_imap.c
 FN:diAlloc
 LFT:81,81 This block is not covered because it is just a self check.
-LFT:216,216 This block is not covered because the test development would take too long.
-LFT:252,255 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:diAllocBit
-LFT:26,27 This block is not covered because the test development would take too long.
+LFT:27,27 This block is not covered because the test development would take too long.
 LFT:51,51 This block is not covered because the test development would take too long.
 LFT:53,53 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:diNewExt
-LFT:39,41 This block is not covered because the test development would take too long.
-LFT:45,47 This block is not covered because the test development would take too long.
+LFT:41,41 This block is not covered because if we change iagp->extfreefwd value diIAGRead() call above fails.
+LFT:47,47 This block is not covered because if we change iagp->extfreeback value diIAGRead() call above fails.
 LFT:59,61 This block is not covered because the test development would take too long.
 LFT:87,91 This block is not covered because the test development would take too long.
-LFT:144,144 This block is not covered because the test development would take too long.
-LFT:147,147 This block is not covered because the test development would take too long.
-LFT:159,159 This block is not covered because the test development would take too long.
+LFT:144,144 Covered if jfs_imap.c+41 is covered.
+LFT:147,147 Covered if jfs_imap.c+47 is covered.
+LFT:159,159 Covered if jfs_imap.c+41 is covered.
 LFT:219,219 This block is not covered because the test development would take too long.
 LFT:221,221 This block is not covered because the test development would take too long.
 LFT:232,232 This block is not covered because the test development would take too long.
