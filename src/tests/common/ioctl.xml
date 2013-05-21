@@ -178,6 +178,10 @@
 					Check(1, "FITHAW operation failed.");
 				}
 			}
+			// Check if the FS is unfreezed.
+			int fd = open("IoctlFIFREEZE_file2", O_CREAT);
+			Check(fd == -1, "Cannot create file after unfreeze.");
+			close(fd);
 		</Code>
 	</Test>
 	<Test Name="IoctlBadFile">
