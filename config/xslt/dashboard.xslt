@@ -72,13 +72,13 @@
 									<a>
 										<xsl:attribute name="href"><xsl:value-of select="$LogFileHtml"/></xsl:attribute>
 										<span class="Success">
-											<xsl:value-of select="count(document($LogFile)//Test/Results/Check[Status='Success' or Status='Shallow' or Status='FSimFail'])" /> 
+											<xsl:value-of select="count(document($LogFile)//Test[Status='Success' or Status='Shallow' or Status='FSimFail'])" /> 
 										</span> / 
 										<span class="Failed">
-											<xsl:value-of select="count(document($LogFile)//Test/Results/Check[Status='Fatal' or Status='Failed' or Status='Signaled' or Status='Timeout' or Status='FSimSuccess'])" /> 
+											<xsl:value-of select="count(document($LogFile)//Test[Status='Fatal' or Status='Failed' or Status='Signaled' or Status='Timeout' or Status='FSimSuccess'])" /> 
 										</span> / 
 										<span class="Unresolved">
-											<xsl:value-of select="count(document($LogFile)//Test/Results/Check[Status='Unresolved'])" />
+											<xsl:value-of select="count(document($LogFile)//Test[Status='Unresolved'])" />
 										</span>
 									</a>
 								</xsl:when>
