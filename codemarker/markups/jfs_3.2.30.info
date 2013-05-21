@@ -236,9 +236,8 @@ end_of_record
 SF:fs/jfs/jfs_imap.c
 FN:diFree
 LFT:75,79 Cannot be covered because of inode modification, as in that case diRead will fail.
-LFT:249,252 This block is not covered because the test development would take too long.
-LFT:259,259 This block is not covered because the test development would take too long.
-LFT:339,339 This block is not covered because the test development would take too long.
+LFT:252,252 This block is not covered because if we change iagp->inofreefwd or iagp->inofreefwd values diIAGRead() call above fails.
+LFT:259,259 If we change fwd value, this line won't be covered anyway because of a previos check.
 LFT:375,375 This block is not covered because the test development would take too long.
 LFT:433,433 This block is not covered because the test development would take too long.
 LFT:435,435 This block is not covered because the test development would take too long.
