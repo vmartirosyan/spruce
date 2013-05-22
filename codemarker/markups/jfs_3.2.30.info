@@ -188,8 +188,8 @@ SF:fs/jfs/jfs_imap.c
 FN:diExtendFS
 LFT:38,39 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
 LFT:43,46 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
-LFT:74,82 This block is not covered because the test development would take too long.
-LFT:100,108 This block is not covered because the test development would take too long.
+LFT:74,82 This block is not covered because imap is overwritten.
+LFT:100,108 This block is not covered because imap is overwritten.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
@@ -264,8 +264,8 @@ LFT:87,91 This block is not covered because the test development would take too 
 LFT:144,144 Covered if diNewExt+41 is covered.
 LFT:147,147 Covered if diNewExt+47 is covered.
 LFT:159,159 Covered if diNewExt+41 is covered.
-LFT:219,219 Covered if jfs_imap.c+41 is covered.
-LFT:221,221 Covered if jfs_imap.c+47 is covered.
+LFT:219,219 Covered if diNewExt.c+41 is covered.
+LFT:221,221 Covered if diNewExt.c+47 is covered.
 LFT:232,232 This block is not covered because it is just a self check.
 LFT:234,234 This block is not covered because it is just a self check.
 LFT:236,236 This block is not covered because it is just a self check.
