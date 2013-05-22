@@ -28,7 +28,7 @@ end_of_record
 
 SF:fs/jfs/jfs_dmap.c
 FN:dbFree
-LFT:48,51 This block is not covered because the test development would take too long.
+LFT:48,51 Can be covered by test jfs/ChangeSB/dbAdjCtlFail which is marked as dangerous.
 end_of_record
 
 SF:fs/jfs/jfs_dmap.c
@@ -71,7 +71,7 @@ end_of_record
 
 SF:fs/jfs/jfs_dmap.c
 FN:dbFreeDmap
-LFT:23,33 This block is not covered because the test development would take too long.
+LFT:23,33 Can be covered by test jfs/ChangeSB/dbAdjCtlFail which is marked as dangerous.
 end_of_record
 
 SF:fs/jfs/jfs_dmap.c
