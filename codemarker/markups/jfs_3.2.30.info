@@ -260,7 +260,7 @@ FN:diNewExt
 LFT:41,41 This block is not covered because if we change iagp->extfreefwd value diIAGRead() call above fails.
 LFT:47,47 This block is not covered because if we change iagp->extfreeback value diIAGRead() call above fails.
 LFT:59,61 This block can be covered by diNewExt3 test which is marked dangerous as the processes goes to D status because of it.
-LFT:87,91 This block is not covered because the test development would take too long.
+LFT:87,91 This block could be covered by changing iagp->extfreeback or iagp->extfreefwd values, but in that case we never get here beacase of a previos check.
 LFT:144,144 Covered if diNewExt+41 is covered.
 LFT:147,147 Covered if diNewExt+47 is covered.
 LFT:159,159 Covered if diNewExt+41 is covered.
