@@ -45,7 +45,19 @@ public:
 		TestSet ts("Possible leaks, Unallocated frees");
 				
 		try
-		{			
+		{
+			// Check if the info file is there
+			if ( access((DebugFSPath + string("/kedr_leak_check/") + fs + "/info").c_str(), R_OK) )
+			{
+				Test item("Memory leaks", "Memory leaks");
+				
+				item.AddResult(MemoryLeak, ProcessResult(Unresolved, "The info file could not be found."));
+				
+				ts.AddTest(item);
+				return ts;
+			}
+			
+			
 			UnixCommand grep("grep");
 			vector<string> grepArgs;
 			
@@ -97,6 +109,16 @@ public:
 
 			if(resPosLeaks->GetStatus() == 0) //
 			{
+				// Check if the possible_leaks file is there
+				if ( access((DebugFSPath + string("/kedr_leak_check/") + fs + "/possible_leaks").c_str(), R_OK) )
+				{
+					Test item("Memory leaks", "Memory leaks");
+					
+					item.AddResult(MemoryLeak, ProcessResult(Unresolved, "The possible_leaks file could not be found."));
+					
+					ts.AddTest(item);
+					return ts;
+				}
 				catArgs.clear();
 				catArgs.push_back(DebugFSPath + string("/kedr_leak_check/") + fs + "/possible_leaks");
 				delete res;
@@ -111,6 +133,16 @@ public:
 
 			if(resUnallocFrees->GetStatus() == 0)
 			{
+				// Check if the unallocated_frees file is there
+				if ( access((DebugFSPath + string("/kedr_leak_check/") + fs + "/unallocated_frees").c_str(), R_OK) )
+				{
+					Test item("Memory leaks", "Memory leaks");
+					
+					item.AddResult(MemoryLeak, ProcessResult(Unresolved, "The unallocated_frees file could not be found."));
+					
+					ts.AddTest(item);
+					return ts;
+				}
 				catArgs.clear();
 				catArgs.push_back(DebugFSPath + string("/kedr_leak_check/") + fs + "/unallocated_frees");
 				delete res;
