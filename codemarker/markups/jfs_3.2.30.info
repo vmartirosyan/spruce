@@ -720,7 +720,7 @@ SF:fs/jfs/namei.c
 FN:jfs_rmdir
 LFT:45,45 This block is impossible to cover with fault simulation, as the retrun value in that case is -ENOMEM.But we need -EIO. The only way is to corrupt the inode to fail the DT_GETPAGE, but in that case error does not reach the desired case because of multiple previous checks.
 LFT:72,72 This is dead code as acl.flag is never set to DXD_EXTENT in source code.
-LFT:93,93 This block is not covered because the test development would take too long.
+LFT:93,93 This is self check correcting code. Could be covered if we corrupt the inode but in that case error comes earlier.
 end_of_record
 
 SF:fs/jfs/namei.c
@@ -734,8 +734,7 @@ SF:fs/jfs/namei.c
 FN:jfs_rename
 LFT:111,120 This block is dead as it can be executed only in case when there are hard links on directories. Linux does not allow it.
 LFT:245,246 This block is not covered because the test development would take too long.
-LFT:266,269 This block is not covered because the test development would take too long.
-end_of_record
+LFT:266,269 This block is not covered, even when we rename a directory for which cfalg set to COMMIT_Stale. but still no effect.
 
 SF:fs/jfs/namei.c
 FN:jfs_nfs_get_inode
