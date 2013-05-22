@@ -1810,10 +1810,8 @@
 			for(int i = 0; i < 3101; i++)
 			{
 				sprintf(buf, "%d",  i);
-				fd = creat(buf,0777);
-				
-				close(fd);
-				
+				fd = creat(buf,0777);			
+				close(fd);				
 			}
 			const char * FilePath = "test";
 			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
@@ -1879,8 +1877,7 @@
 			{
 				sprintf(buf, "%d",  i);
 				fd = creat(buf,0777);
-				close(fd);
-				
+				close(fd);			
 			}
 			const char * FilePath = "test";
 			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
@@ -1943,8 +1940,7 @@
 			{
 				sprintf(buf, "%d",  i);
 				fd = creat(buf,0777);
-				close(fd);
-				
+				close(fd);			
 			}
 			const char * FilePath = "test";
 			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
@@ -2000,8 +1996,7 @@
 			for(int i = 0; i < 15000; i++)
 			{
 				sprintf(buf, "%d",  i);
-				fd = creat(buf,0777);
-				
+				fd = creat(buf,0777);		
 				close(fd);
 				
 			}
@@ -2162,10 +2157,8 @@
 			for(int i = 0; i < 3099; i++)
 			{
 				sprintf(buf, "%d",  i);
-				fd = creat(buf,0777);
-				
+				fd = creat(buf,0777);				
 				close(fd);
-				fsync(fd);
 			}
 			const char * FilePath = "test";
 			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);

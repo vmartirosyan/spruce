@@ -251,8 +251,8 @@ end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:diAllocBit
-LFT:51,51 If we change iagp->inoext[extno] value to 0, mount fails, and pmap and wmap changes doesn't help as mask affects the result. 
-LFT:53,53 If we change iagp->inoext[extno] value to 0, mount fails, and pmap and wmap changes doesn't help as mask affects the result. 
+LFT:51,51 If we change iagp->inoext[extno] value to 0, mount fails, and pmap and wmap changes don't help as mask affects the result. 
+LFT:53,53 If we change iagp->inoext[extno] value to 0, mount fails, and pmap and wmap changes don't help as mask affects the result. 
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
@@ -278,7 +278,7 @@ end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:duplicateIXtree
-LFT:29,31 This block is not covered because the test development would take too long.
+LFT:29,31 This function is called when new iag is created only when we create a file, so we can't spoil the inode to make xtInsert fail before the inode is created.
 end_of_record
 
 SF:fs/jfs/jfs_extent.c
