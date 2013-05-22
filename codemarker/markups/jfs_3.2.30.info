@@ -529,8 +529,8 @@ end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
 FN:jfs_lazycommit
-LFT:55,55 This block is not covered because the test development would take too long.
-LFT:69,69 This block is not covered because the test development would take too long.
+LFT:55,55 This block is not covered because it depends on executing threads work time and order.
+LFT:69,69 This block is not covered because it is just a self check messaging code.
 end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c

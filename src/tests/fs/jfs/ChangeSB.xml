@@ -287,7 +287,7 @@
 			close(fd);
 		</Footer>
 	</Test>
-	<Test Name="xtTruncateFail">
+	<Test Name="xtTruncateFail" Dangerous="true">
 		<Description>Brings to failure in xtTruncate function due to stack overflow.</Description>
 		<Header>
 			int fd = -1;
