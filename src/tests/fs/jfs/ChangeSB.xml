@@ -1047,10 +1047,8 @@
 			for(int i = 0; i < 30; i++)
 			{
 				sprintf(buf2, "%d",  i);
-				fd = creat(buf2,0777);
-				
+				fd = creat(buf2,0777);				
 				close(fd);
-				fsync(fd);
 			}
 
            
@@ -1106,10 +1104,8 @@
 			for(int i = 0; i < 2; i++)
 			{
 				sprintf(buf, "%d",  i);
-				fd = creat(buf,0777);
-				
+				fd = creat(buf,0777);				
 				close(fd);
-				fsync(fd);
 			}
 			
 		</Code>
@@ -1354,7 +1350,6 @@
 				fd = creat(buf,0777);
 				
 				close(fd);
-				fsync(fd);
 			}
 			const char * FilePath = "test";
 			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
@@ -1770,7 +1765,7 @@
 			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
 			
 			Unres(iag == NULL, "Cannot get IAG.");
-				iag->nfreeexts =EXTSPERIAG;
+			iag->nfreeexts = EXTSPERIAG;
 			imap->in_agctl[1].extfree = 1;
 		
 			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
@@ -1795,6 +1790,7 @@
 			}
 		</Footer>
 	</Test>
+	
 	<Test Name="diAllocInoFail2">
 		<Description>Makes diAllocIno function fail.</Description>
 		<Header>
@@ -1817,7 +1813,7 @@
 				fd = creat(buf,0777);
 				
 				close(fd);
-				fsync(fd);
+				
 			}
 			const char * FilePath = "test";
 			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
@@ -1862,6 +1858,7 @@
 			}
 		</Footer>
 	</Test>
+
 	<Test Name="diAllocInoFail3">
 		<Description>Makes diAllocIno function fail.</Description>
 		<Header>
@@ -1882,9 +1879,8 @@
 			{
 				sprintf(buf, "%d",  i);
 				fd = creat(buf,0777);
-				
 				close(fd);
-				fsync(fd);
+				
 			}
 			const char * FilePath = "test";
 			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
@@ -1930,6 +1926,164 @@
 			}
 		</Footer>
 	</Test>
+		<Test Name="diAllocInoFail4">
+		<Description>Makes diAllocIno function fail.</Description>
+		<Header>
+			int fd = -1;
+		
+		</Header>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
+			
+			
+			char buf[4];
+			for(int i = 0; i < 3101; i++)
+			{
+				sprintf(buf, "%d",  i);
+				fd = creat(buf,0777);
+				close(fd);
+				
+			}
+			const char * FilePath = "test";
+			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
+			
+			Unres(fd == -1, "Cannot create file.");
+			
+			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
+			
+			fsync(fd);
+			close(fd);
+			sync();
+			
+			JFSCtl jfs;
+			int inode_num = jfs.GetInodeNum(FilePath);
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			iag * iag = jfs.GetIAG(DeviceName, inode_num);
+			Unres(iag == NULL, "Cannot get IAG.");
+			iag->nfreeinos = 1;
+			iag->inofreeback = 1;
+			
+			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			fd = creat("a",0777);
+			close(fd);
+			
+			
+			
+		</Code>
+		<Footer>
+			close(fd);
+			
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+			{
+				Error("Mount failed!");
+				Return(Fatal);
+			}
+		</Footer>
+	</Test>
+	<Test Name="diAllocBit">
+		<Description>Makes diAllocIno function fail.</Description>
+		<Header>
+			int fd = -1;
+		
+		</Header>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			char buf[6];
+			for(int i = 0; i < 15000; i++)
+			{
+				sprintf(buf, "%d",  i);
+				fd = creat(buf,0777);
+				
+				close(fd);
+				
+			}
+			sprintf(buf, "%d",  120);
+			unlink(buf);
+			sprintf(buf, "%d",  12000);
+			unlink(buf);
+			const char * FilePath = "test";
+			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
+			
+			Unres(fd == -1, "Cannot create file.");
+			
+			Unres(write(fd, "asdf", 4) == -1, "Cannot write to file.");
+			
+			fsync(fd);
+			close(fd);
+			sync();
+	
+			
+			Fail( (fd = creat("a",0777)) == -1,"Cannot create file.");
+			close(fd);
+			
+			
+			
+		</Code>
+		<Footer>
+			close(fd);
+			
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+			{
+				Error("Mount failed!");
+				Return(Fatal);
+			}
+		</Footer>
+	</Test>
+	<Test Name="diUpdatePMapFree">
+		<Description>Makes diUpdatePMap function fail.</Description>
+		<Header>
+			int fd = -1;
+		
+		</Header>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			JFSCtl jfs;
+			const char * FilePath = "test";
+			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
+			
+			Unres(fd == -1, "Cannot create file.");
+			int inode_num = jfs.GetInodeNum(FilePath);
+			
+			fsync(fd);
+			close(fd);
+			sync();
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			iag * iag = jfs.GetIAG(DeviceName, inode_num);
+			Unres(iag == NULL, "Cannot get IAG.");
+			for(int i = 0; i < EXTSPERIAG; ++i)
+			{
+				iag->pmap[i] = 0;
+			}
+			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			unlink(FilePath);
+			
+			
+			
+		</Code>
+		<Footer>
+			close(fd);
+			
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+			{
+				Error("Mount failed!");
+				Return(Fatal);
+			}
+		</Footer>
+	</Test>
+
 	 <Test Name="diWrite">
 		<Description>Makes diAllocIno function fail.</Description>
 		<Header>

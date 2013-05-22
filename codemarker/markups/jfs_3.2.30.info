@@ -199,7 +199,6 @@ end_of_record
 
 SF:fs/jfs/jfs_imap.c
 LFT:1840,1843 Never gets here because of a previous check.
-LFT:1866,1867 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
@@ -238,11 +237,11 @@ FN:diFree
 LFT:75,79 Cannot be covered because of inode modification, as in that case diRead will fail.
 LFT:252,252 This block is not covered because if we change iagp->inofreefwd or iagp->inofreefwd values diIAGRead() call above fails.
 LFT:259,259 If we change fwd value, this line won't be covered anyway because of a previos check.
-LFT:375,375 This block is not covered because the test development would take too long.
-LFT:433,433 This block is not covered because the test development would take too long.
-LFT:435,435 This block is not covered because the test development would take too long.
-LFT:437,437 This block is not covered because the test development would take too long.
-LFT:439,439 This block is not covered because the test development would take too long.
+LFT:375,375 Covered if diFree+252 is covered.
+LFT:433,433 This block is not covered because it is just a self check.
+LFT:435,435 This block is not covered because it is just a self check.
+LFT:437,437 This block is not covered because it is just a self check.
+LFT:439,439 This block is not covered because it is just a self check.
 end_of_record	
 
 SF:fs/jfs/jfs_imap.c
@@ -252,9 +251,8 @@ end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:diAllocBit
-LFT:27,27 This block is not covered because the test development would take too long.
-LFT:51,51 This block is not covered because the test development would take too long.
-LFT:53,53 This block is not covered because the test development would take too long.
+LFT:51,51 If we change iagp->inoext[extno] value to 0, mount fails, and pmap and wmap changes doesn't help as mask affects the result. 
+LFT:53,53 If we change iagp->inoext[extno] value to 0, mount fails, and pmap and wmap changes doesn't help as mask affects the result. 
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
@@ -263,20 +261,19 @@ LFT:41,41 This block is not covered because if we change iagp->extfreefwd value 
 LFT:47,47 This block is not covered because if we change iagp->extfreeback value diIAGRead() call above fails.
 LFT:59,61 This block can be covered by diNewExt3 test which is marked dangerous as the processes goes to D status because of it.
 LFT:87,91 This block is not covered because the test development would take too long.
-LFT:144,144 Covered if jfs_imap.c+41 is covered.
-LFT:147,147 Covered if jfs_imap.c+47 is covered.
-LFT:159,159 Covered if jfs_imap.c+41 is covered.
-LFT:219,219 This block is not covered because the test development would take too long.
-LFT:221,221 This block is not covered because the test development would take too long.
-LFT:232,232 This block is not covered because the test development would take too long.
-LFT:234,234 This block is not covered because the test development would take too long.
-LFT:236,236 This block is not covered because the test development would take too long.
+LFT:144,144 Covered if diNewExt+41 is covered.
+LFT:147,147 Covered if diNewExt+47 is covered.
+LFT:159,159 Covered if diNewExt+41 is covered.
+LFT:219,219 Covered if jfs_imap.c+41 is covered.
+LFT:221,221 Covered if jfs_imap.c+47 is covered.
+LFT:232,232 This block is not covered because it is just a self check.
+LFT:234,234 This block is not covered because it is just a self check.
+LFT:236,236 This block is not covered because it is just a self check.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
 FN:diUpdatePMap
-LFT:52,52 This block is not covered because the test development would take too long.
-LFT:74,78 This block is not covered because the test development would take too long.
+LFT:74,78 If we change iagp->pmap[extno] value, diUpdatePMap won't be called because of a previous check.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
