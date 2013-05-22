@@ -2204,6 +2204,46 @@
 			}
 		</Footer>
 	</Test>
+	<Test Name="dbAdjCtlFail" Dangerous="true">
+		<Description>Trying to bring to fail in diFree.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+		    const char * FilePath = "diFreeFail1_file";		    
+		    JFSCtl jfs;
+		    char buf[4];
+		    
+			for(int i = 0; i < 100; i++)
+			{
+				sprintf(buf, "%d",  i);
+				fd = creat(buf,0777);	
+				 
+				Unres(write(fd, "asdf",4) == -1, "Cannot write.");			
+				close(fd);
+			}
+	
+		    	
+			close(fd);
+			
+			sync();
+			int i;
+		    for(i = 0; i < 99; i++)
+			{
+				sprintf(buf, "%d",  i);
+				unlink(buf);
+			}
+			sprintf(buf, "%d",  i);
+			Fail(unlink(buf) == -1,"unlink failed.");
+			
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
 	<Internal>
 		bool OverflowStack(string FilePath)
 		{
