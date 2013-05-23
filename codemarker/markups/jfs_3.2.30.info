@@ -661,6 +661,7 @@ end_of_record
 
 SF:fs/jfs/jfs_dtree.c
 LFT:903,903 This line can be covered using many threads(about 300), which create many directories(about 1000). But this process takes very long time, and the coverage is not constant from execution to execution, because the condition of if statement is not always true.         
+LFT:1604,1604 See the 903 line for more details.
 LFT:2179,2179 See the 903 line for more details.
 LFT:2188,2188 See the 903 line for more details.
 LFT:2395,2395 See the 903 line for more details.
@@ -675,6 +676,7 @@ LFT:4397,4398 See the 903 line for more details.
 LFT:3222,3234 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
 LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
 LFT:3254,3260 This is self checking/correcting code.
+LFT:3150,3150 This is self checking/correcting code.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
@@ -755,7 +757,7 @@ end_of_record
 
 SF:fs/jfs/jfs_xtree.c
 FN:xtInsert
-LFT:55,56 This block could be covered by test jfs/JfsOverloadTests/dbAllocFail, but it is marked as Dangerous.
+LFT:55,56 This block is not covered because the test development would take too long.
 LFT:82,84 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
 end_of_record
 
