@@ -123,7 +123,7 @@
 			Check ( get_flags != old_flags, "Error get flags != old flags on read only FS.");	
 		</Code>
 	</Test>
-	<Test Name="FreezeFail">
+	<Test Name="FreezeFail" Dangerous="true">
 		<Description>Simulate faults in freeze operation.</Description>	
 		<Header>
 			int fd = open("FreezeFail_file", O_CREAT | O_RDWR);
