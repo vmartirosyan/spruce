@@ -755,7 +755,7 @@ end_of_record
 
 SF:fs/jfs/jfs_xtree.c
 FN:xtInsert
-LFT:55,56 This block is not covered because the test development would take too long.
+LFT:55,56 This block could be covered by test jfs/JfsOverloadTests/dbAllocFail, but it is marked as Dangerous.
 LFT:82,84 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
 end_of_record
 

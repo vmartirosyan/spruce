@@ -67,6 +67,25 @@
 			delete buf;
 		</Code>
 	</Test>			
+	<Test Name="SplitUpInsertMiddle" FaultSimulationReady="true">
+		<Description>Trying to split the parent page.</Description>
+		<File count = "1"/>
+		<Code>
+	
+			char buf[10] = "sdaaasda";			
+			for (int i = 0 ; i < 8; ++i)
+			{
+				Unres(lseek64(FDs[0], 3*4096, SEEK_CUR) == -1, "Lseek failed.");
+				Unres(write(FDs[0], buf, 10) == -1, "Write failed.");
+			
+			}
+			sync();
+			
+			Unres(lseek64(FDs[0], 5*4096, SEEK_SET) == -1, "Lseek failed.");
+			Unres(write(FDs[0], buf, 10) == -1, "Write failed.");
+			sync();
+		</Code>
+	</Test>			
 	
 	<Test Name="DirectoriesInserted" FaultSimulationReady="true">
 		<Description>Trying to create many directories</Description>
