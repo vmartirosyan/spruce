@@ -67,6 +67,29 @@
 			delete buf;
 		</Code>
 	</Test>			
+	<Test Name="SplitUpFail" FaultSimulationReady="true">
+		<Description>Trying to split the parent page.</Description>
+		<File count = "1"/>
+		<Code>
+	
+			char *buf = new char[1024*1024];
+			memcpy(buf, "asdfg", 5);
+				
+			for (int i = 0 ; i < 4064; ++i)
+			{
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed.");
+			
+			}
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+				Fail(write(FDs[0], buf, 1) == -1, "Write failed.");
+		
+			sync();
+			delete buf;
+		</Code>
+	</Test>			
+	
+	
 	<Test Name="SplitUpInsertMiddle" FaultSimulationReady="true">
 		<Description>Trying to split the parent page.</Description>
 		<File count = "1"/>
@@ -86,6 +109,30 @@
 			sync();
 		</Code>
 	</Test>			
+	<!--Test Name="SplitRootInsertMiddle" FaultSimulationReady="true">
+		<Description>Trying to split the parent page.</Description>
+		<Code>
+			
+			char buf[10];
+            string dirname = "some_directory";
+			
+			mkdir(dirname.c_str(), 0777);
+            chdir(dirname.c_str());
+            
+            for (int i = 0; i < 2049; ++i)
+            {
+				if(i == 1000)
+				{
+					continue;
+				}
+                sprintf(buf, "%d",  i);
+                string dirname = (string)"aaaaaaaaaaaasdsdsssssaaaaaaadsasdsdasdaasdsadsdasadasaaaaaaaaaaaaaaaaaa_" + (string)buf;
+                Unres(mkdir(dirname.c_str(), 0777) == -1, "Cannot make dir.");
+            }
+			Check(mkdir("aaaaaaaaaaaasdsdsssssaaaaaaadsasdsdasdaasdsadsdasadasaaaaaaaaaaaaaaaaaa_1000", 0777) == -1, "Cannot make dir.");
+			
+		</Code>
+	</Test-->			
 	
 	<Test Name="DirectoriesInserted" FaultSimulationReady="true">
 		<Description>Trying to create many directories</Description>
