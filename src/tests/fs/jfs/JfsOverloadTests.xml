@@ -134,8 +134,24 @@
 		</Code>
 	</Test-->			
 	
-	<Test Name="DirectoriesInserted" FaultSimulationReady="true">
+	<Test Name="DirectoriesInserted">
 		<Description>Trying to create many directories</Description>
+		<Code>
+		    char buf[10];
+            string dirname = "some_directory";
+            
+            mkdir(dirname.c_str(), 0777);
+            chdir(dirname.c_str());
+            for (int j = 0; j < 50000; ++j)
+            {
+                sprintf(buf, "%d",  j);
+                string dirname = buf;
+                mkdir(dirname.c_str(), 0777);
+            }
+		</Code>
+	</Test>
+	<Test Name="DirectoriesInsertedFail" Dangerous="true">
+		<Description>Trying to create many directories with failure.</Description>
 		<Code>
 		    char buf[10];
             string dirname = "some_directory";
