@@ -633,14 +633,14 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmGroupCommit
-LFT:8,12 These lines cannot be covered from user space.
-LFT:44,44 These lines cannot be covered from user space.
-LFT:60,60 These lines cannot be covered from user space.
+LFT:8,12 There is no sure that these lines will be covered, as we can't control the situation then two commit operations of the same block will take place consequentially.
+LFT:44,44 These lines could be covered if there wouldn't be system crash due to submit_bio payload.
+LFT:60,60 These lines could be covered if there wouldn't be system crash due to submit_bio payload.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogInit
-LFT:169,171 These lines cannot be covered from user space.
+LFT:169,171 These lines could be covered if there wouldn't be system crash due to submit_bio payload.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
@@ -650,7 +650,7 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmPostGC
-LFT:24,24 These lines cannot be covered from user space.
+LFT:24,24 These lines could be covered if there wouldn't be system crash due to "submit_bio" failure.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
