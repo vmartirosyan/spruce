@@ -361,7 +361,7 @@ end_of_record
 
 SF:fs/jfs/jfs_metapage.c
 FN:metapage_releasepage
-LFT:10,10 These lines cannot be covered from user space.
+LFT:10,10 These lines are dead code, as "page_to_mp" fails if page is not private, and it is marked private in "insert_metapage" and stays private before call to "remove_metapage".
 LFT:21,21 These lines cannot be covered from user space.
 end_of_record
 
@@ -693,7 +693,7 @@ SF:fs/jfs/jfs_metapage.c
 LFT:611,614 These lines cannot be covered from user space.
 LFT:648,653 These lines cannot be covered from user space.
 LFT:659,659 These lines cannot be covered from user space.
-LFT:695,696 These lines cannot be covered from user space.
+LFT:695,696 These lines cannot be covered as the code that jumps to them is non executable.
 end_of_record
 
 SF:fs/jfs/namei.c
