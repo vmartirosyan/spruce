@@ -1307,21 +1307,13 @@
 			Unres(fd == -1, "Cannot open directory");
 			
 			int ret = 0;
-			while ( true )
+			for (int i = 0 ; i < 10; ++i)
 			{
 				cerr << "Reading directory." << endl;
 				Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");
 					
-				for ( int pos = 0; pos < ret; )
-				{
-					ent = (linux_dirent*)(buf + pos);
-					cerr << "Entry: " << ent->d_name << endl;
-					pos += ent->d_reclen;
-				}
-				
 				if (ret == 0)
 					break;
-
 			}
 			
 			close(fd);
