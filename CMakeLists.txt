@@ -38,15 +38,17 @@ ENDIF ( UNIX )
 # Check if xsltproc is there
 check_executable("xsltproc" XSLTPROC_PATH)
 
+# Default compiler flags.
+if(NOT CMAKE_CXX_FLAGS)
+    set(CMAKE_CXX_FLAGS "-Wall -pedantic -Wno-variadic-macros -Wextra -Weffc++ -fcheck-new -ffor-scope -Wabi -Wstrict-null-sentinel")
+endif(NOT CMAKE_CXX_FLAGS)
 
-# By default install Spruce to /opt/spruce
-set_default( CMAKE_INSTALL_PREFIX "/opt/spruce/")
+# NOTE: currently doesn't used anywhere than config file.
+set(TEST_TIMEOUT 15 CACHE STRING "Timeout value used by tests")
 
-set_default( CMAKE_CXX_FLAGS "-Wall -pedantic -Wno-variadic-macros -Wextra -Weffc++ -fcheck-new -ffor-scope -Wabi -Wstrict-null-sentinel")
+# NOTE: currently doesn't used anywhere than config file.
+set(FIFO_PATH "/tmp/spruce_fifo" CACHE PATH "<Description is required>")
 
-set_default( TEST_TIMEOUT 15 )
-
-set_default( FIFO_PATH "/tmp/spruce_fifo" )
 
 # Check if KEDR framework is there
 check_executable("kedr" KEDR_PATH)
