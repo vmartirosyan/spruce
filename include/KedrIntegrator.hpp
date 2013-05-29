@@ -31,6 +31,8 @@
 #include <sys/utsname.h>
 #include <algorithm>
 
+const string LastFaultMsgNone = "none";
+
 using namespace std;
 
 const string DebugFSPath = "/sys/kernel/debug";

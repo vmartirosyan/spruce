@@ -27,7 +27,7 @@ enum ProcessMode
 {
 	ProcessForeground = 0,
 	ProcessBackground = 1,
-	ProcessNoCaptureOutput = 2,
+	ProcessNoCaptureOutput = 2
 };
 
 #include "Common.hpp"
@@ -109,7 +109,7 @@ public:
 	Process():
 		EnableAlarm(false),
 		_Timeout(0),
-		_mode(ProcessForeground)
+		_mode(ProcessForeground)		
 	{
 		sigemptyset (&BlockSignalMask);
 	}
