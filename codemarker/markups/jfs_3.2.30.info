@@ -677,6 +677,7 @@ LFT:3222,3234 This code can be covered when fschk.jfs recovers a corrupted direc
 LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
 LFT:3254,3260 This is self checking/correcting code.
 LFT:3150,3150 This is self checking/correcting code.
+LFT:3067,3070 This is impossible to cover, as when we corrupt the inodes next index, then the coverage doesn't gain the desired block. Function returns with the previous return statement on line 3063. 
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
