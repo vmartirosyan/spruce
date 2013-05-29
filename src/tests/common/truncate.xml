@@ -1,0 +1,128 @@
+<!--    truncate.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="truncate">	
+	<Test Name="TruncateNormalIncrease" FaultSimulationReady="true">
+		<Description>Truncate a file to a specified length. If the file previously was shorter, it is extended, and the extended part reads as null bytes ('\0').</Description>
+		<File count="1"/>
+		<Code>
+			const string buf = "1234";
+			const int length = buf.size();
+			int length_after_truncate = 5;
+			
+			Unres ( write(FDs[0], buf.c_str(), length) != length, "Cannot write  to the file.");
+			
+			Fail ( truncate(FilePaths[0].c_str(), length_after_truncate) != 0, "truncate failed");
+			
+			struct stat stat_buf;
+			Unres ( fstat(FDs[0], &stat_buf) == -1, "Cannot stat file.");
+			
+			Check ( stat_buf.st_size != length_after_truncate, "Wrong file size after truncate.");
+						
+			char buf_read;
+			Unres ( read(FDs[0], &buf_read, 1) != 1, "Cannot read 1 byte from truncated file");
+			
+			Check ( buf_read != '\0', "After truncation file was not filled with NULLs.");
+		</Code>
+	</Test>
+	<Test Name="TruncateNormalDecrease" FaultSimulationReady="true">
+		<Description>Truncate a file to a specified length. If the file previously was larger than this size,  the  extra  data  is lost.</Description>
+		<File count="1"/>
+		<Code>
+			const string buf = "1234";
+			const int length = buf.size();
+			int length_after_truncate = 1;
+			
+			Unres ( write(FDs[0], buf.c_str(), length) != length, "Cannot write  to the file.");
+			
+			Fail ( truncate(FilePaths[0].c_str(), length_after_truncate) != 0, "truncate failed");
+			
+			struct stat stat_buf;
+			Unres ( fstat(FDs[0], &stat_buf) == -1, "Cannot stat file.");
+			
+			Check ( stat_buf.st_size != length_after_truncate, "Wrong file size after truncate.");
+		</Code>
+	</Test>
+	<Test Name="TruncateNoAccess">
+		<Description>The named file is  not  writable  by  the  user.</Description>
+		<File count="1"/>
+		<Code>
+			Unres(chmod(FilePaths[0].c_str(), 0000) == -1, "Cannot change file permissions.");
+			
+			ENoAccessTest(truncate(FilePaths[0].c_str(), 1), -1);
+		</Code>
+	</Test>
+	<Test Name="TruncateFault">
+		<Description>Path points outside the process's allocated address space.</Description>
+		<Code>
+			ErrorTest(truncate(reinterpret_cast<char*>(-1), 1), -1, EFAULT);
+		</Code>
+	</Test>
+	<!--Test Name="TruncateInval1">
+		<Description>The argument length is larger than the maximum file size.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(truncate(FilePaths[0].c_str(), (off_t)UINT_MAX), -1, EINVAL);
+		</Code>
+	</Test-->
+	<!--Test Name="TruncateInval2">
+		<Description>The argument length is negative.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(truncate(FilePaths[0].c_str(), -1), -1, EINVAL);
+		</Code>
+	</Test-->
+	<Test Name="TruncateIsDir">
+		<Description>The named file is a directory.</Description>
+		<Code>
+			ErrorTest(truncate(".", 1), -1, EISDIR);
+		</Code>
+	</Test>
+	<Test Name="TruncateLoop">
+		<Description>Too  many  symbolic  links  were  encountered in translating the pathname.</Description>
+		<File count="1"/>
+		<Code>
+			ELoopTest(truncate(FilePaths[0].c_str(), 1), -1);
+		</Code>
+	</Test>
+	<Test Name="TruncateNoEnt">
+		<Description>The named file does not exist.</Description>
+		<Code>
+			ErrorTest(truncate("non_existing_file", 1), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="TruncateNotDir">
+		<Description>A component of path prefix is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+			ENotDirTest(truncate(path, 1), -1);
+		</Code>
+	</Test>
+	<Test Name="TruncateTxtBusy">
+		<Description>The file is a pure procedure (shared text) file  that  is  being executed.</Description>
+		<Code>
+			const char * path = INSTALL_PREFIX"/bin/spruce";
+			ErrorTest(truncate(path, 1), -1, ETXTBSY);
+		</Code>
+	</Test>
+</TestSet>

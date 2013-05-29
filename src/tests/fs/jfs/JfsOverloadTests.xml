@@ -1,0 +1,676 @@
+<!--    OverloadTests.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Karen Tsirunyan <ktsirunyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="JfsOverloadTests">
+	<StartUp>
+		Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");		
+	</StartUp>
+	<Test Name="Directories" FaultSimulationReady="true">
+		<Description>Trying to create 1000 opened directories</Description>
+		<Dir count = "1000"/>
+		<Code>
+		</Code>
+	</Test>	
+	<Test Name="SplitUp" FaultSimulationReady="true">
+		<Description>Trying to split the parent page.</Description>
+		<File count = "1"/>
+		<Code>
+	
+			char *buf = new char[1024*1024];
+			memcpy(buf, "asdfg", 5);
+				
+			for (int i = 0 ; i < 60000; ++i)
+			{
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed.");
+			
+			}
+			sync();
+			
+			Unres(lseek64(FDs[0], 5000, SEEK_SET) == -1, "Lseek failed.");
+			
+			for (int i = 0; i < 5000; ++i)
+			{
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed");
+			}		
+			sync();
+			
+			Unres(lseek64(FDs[0], 0, SEEK_SET) == -1, "Lseek failed.");
+			for (int i = 0; i < 1000; ++i)
+			{
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed");
+			}		
+			sync();
+						
+			delete buf;
+		</Code>
+	</Test>			
+	<Test Name="SplitUpFail" FaultSimulationReady="true">
+		<Description>Trying to split the parent page.</Description>
+		<File count = "1"/>
+		<Code>
+	
+			char *buf = new char[1024*1024];
+			memcpy(buf, "asdfg", 5);
+				
+			for (int i = 0 ; i < 4064; ++i)
+			{
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed.");
+			
+			}
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+				Fail(write(FDs[0], buf, 1) == -1, "Write failed.");
+		
+			sync();
+			delete buf;
+		</Code>
+	</Test>			
+	
+	
+	<Test Name="SplitUpInsertMiddle" FaultSimulationReady="true">
+		<Description>Trying to split the parent page.</Description>
+		<File count = "1"/>
+		<Code>
+	
+			char buf[10] = "sdaaasda";			
+			for (int i = 0 ; i < 8; ++i)
+			{
+				Unres(lseek64(FDs[0], 3*4096, SEEK_CUR) == -1, "Lseek failed.");
+				Unres(write(FDs[0], buf, 10) == -1, "Write failed.");
+			
+			}
+			sync();
+			
+			Unres(lseek64(FDs[0], 5*4096, SEEK_SET) == -1, "Lseek failed.");
+			Unres(write(FDs[0], buf, 10) == -1, "Write failed.");
+			sync();
+		</Code>
+	</Test>			
+	<!--Test Name="SplitRootInsertMiddle" FaultSimulationReady="true">
+		<Description>Trying to split the parent page.</Description>
+		<Code>
+			
+			char buf[10];
+            string dirname = "some_directory";
+			
+			mkdir(dirname.c_str(), 0777);
+            chdir(dirname.c_str());
+            
+            for (int i = 0; i < 2049; ++i)
+            {
+				if(i == 1000)
+				{
+					continue;
+				}
+                sprintf(buf, "%d",  i);
+                string dirname = (string)"aaaaaaaaaaaasdsdsssssaaaaaaadsasdsdasdaasdsadsdasadasaaaaaaaaaaaaaaaaaa_" + (string)buf;
+                Unres(mkdir(dirname.c_str(), 0777) == -1, "Cannot make dir.");
+            }
+			Check(mkdir("aaaaaaaaaaaasdsdsssssaaaaaaadsasdsdasdaasdsadsdasadasaaaaaaaaaaaaaaaaaa_1000", 0777) == -1, "Cannot make dir.");
+			
+		</Code>
+	</Test-->			
+	
+	<Test Name="DirectoriesInserted">
+		<Description>Trying to create many directories</Description>
+		<Code>
+		    char buf[10];
+            string dirname = "some_directory";
+            
+            mkdir(dirname.c_str(), 0777);
+            chdir(dirname.c_str());
+            for (int j = 0; j < 50000; ++j)
+            {
+                sprintf(buf, "%d",  j);
+                string dirname = buf;
+                mkdir(dirname.c_str(), 0777);
+            }
+		</Code>
+	</Test>
+	<Test Name="DirectoriesInsertedFail" Dangerous="true">
+		<Description>Trying to create many directories with failure.</Description>
+		<Code>
+		    char buf[10];
+            string dirname = "some_directory";
+            
+            mkdir(dirname.c_str(), 0777);
+            chdir(dirname.c_str());
+            for (int j = 0; j < 50000; ++j)
+            {
+                sprintf(buf, "%d",  j);
+                string dirname = buf;
+                mkdir(dirname.c_str(), 0777);
+            }
+            for (int j = 50000; j < 50005; ++j)
+            {
+                sprintf(buf, "%d",  j);
+                string dirname = buf;
+                Fail(mkdir(dirname.c_str(), 0777) == -1,"mkdir failed.");
+            }
+		</Code>
+	</Test>
+	
+	<Test Name="RenameToBigFile" FaultSimulationReady="true">
+		<Description>Trying to create many directories</Description>
+		<Code>
+	
+		int fd;
+		const char * file_name = (const char*)"RenameBigFile_file";
+		const char * file_to_rename_name = (const char*)"RenameBigFile_file1";
+		fd = open(file_name, O_RDWR | O_CREAT | O_LARGEFILE , S_IRUSR | S_IWUSR );
+		Unres(fd == -1, "Cannot open file.")
+
+		char *buf = new char[10];
+		for ( int i = 0; i < 15000; ++i )
+		{
+			Unres(lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot lseek.");
+			Unres(write(fd, buf, 10) == -1, "Cannot write.");
+		}
+		fsync(fd);
+		
+		int fd2 = open(file_to_rename_name, O_CREAT);
+		Unres(fd2 == -1, "Cannot create second file.");
+		close(fd2);
+		
+		Check(rename(file_to_rename_name, file_name) == -1, "Cannot Rename file.");
+
+		</Code>
+	</Test>
+		
+	<Test Name="DirectoryNames" FaultSimulationReady="true">
+		<Description>Trying to create directories with different long names</Description>
+		<Code>
+			const int dirCount = 100;	//... 
+			const int nameLength = 50;  // the numbers may be refactored. the changes must have point and make sense on coverage improvement
+			char name[nameLength+1];
+			Directory dir[dirCount];
+			int j;
+			
+			for(int i = 0; i < dirCount; ++i)
+			{
+				name[0] = 'a';  // the first character must not be a '-', as it leads to several problems
+				for(j = 1; j < nameLength; ++j)
+				{
+					char randInt = 33 + rand()%94; // all the possible characters possible for using for a file name
+					if(randInt == '/')  // excluding the '/', as slash is not allowed in filenames in Linux. Check out the ASCII table
+						++randInt;
+					name[j] = randInt;
+				}
+				name[j] = 0;   // the end of the name
+				dir[i].Open(name);  //now we have a random name of length 'nameLength'
+			}
+			
+		</Code>
+	</Test>	
+
+	<Test Name="DirectoriesInDepth" FaultSimulationReady="true">
+		<Description>Trying to create many directories inserted</Description>
+		<Code>
+			
+			string Dirpath1;
+			string Dirpath;
+			string Dirpath2;
+			for(char c = 'a'; c < 'z'; ++c)
+			{
+				Dirpath = "dir";
+				Dirpath += c;
+				Unres(mkdir(Dirpath.c_str(), 0777) == -1, "Connot make a directory 1");
+				Dirpath1 = Dirpath;
+				Dirpath2 = Dirpath;
+				Dirpath1 += "/";
+				for(char c1 = 'a'; c1 < 'z'; ++c1)
+				{
+					
+					Dirpath1 += c1;
+					Dirpath2 += "/other";
+					Unres(mkdir(Dirpath1.c_str(), 0777) == -1, "cannot make a directory 2");
+					Dirpath1 += "/";
+					Unres(mkdir(Dirpath2.c_str(), 0777) == -1, "cannot make a directory 3");
+				}
+			}
+
+		</Code>
+	</Test>	
+	
+	<Test Name="ManyBigWrittenFiles" FaultSimulationReady="true">
+		<Description>Trying to create big files, and write the data.</Description>
+		<File count = "500" />
+		<Code>
+		
+			const int dataSize = 10000 * 1024;
+			char * data = new char[dataSize];
+						
+			for(int i = 0; i < 500; ++i)
+			{
+				write(FDs[i], data, dataSize - 1);
+				close(FDs[i]);	
+			}
+			delete data;
+					
+		</Code>
+	</Test>
+	
+	<Test Name="ManySmallWrittenFiles" FaultSimulationReady="true">
+		<Description>Trying to create some small files, and write the data.</Description>
+		<File count = "1000" />
+		<Code>
+		
+			const int dataSize = 1024;
+			char * data = new char[dataSize];
+						
+			for(int i = 0; i < 1000; ++i)
+			{
+				Unres(write(FDs[i], data, dataSize - 1) == -1, "Cannot write to file");
+				close(FDs[i]);	
+			}
+			delete data;
+					
+		</Code>
+	</Test>
+	
+	<Test Name="TooManySmallWrittenFiles">
+		<Description>Trying to create too many small files, and write the data.</Description>
+		<Code>
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
+				
+			string filename = "file";
+			const int dataSize = 1024;
+			char * data = new char[dataSize];
+						
+			for(int i = 0; i < 10000; ++i)
+			{
+				filename += (char)('a' + (rand() % 26));
+				if ( filename.length() == 250  )
+					filename = "qwer";
+					
+				int fd = open(filename.c_str(), O_RDWR | O_CREAT);
+				Unres(fd == -1, "Cannot create file.");
+					
+				Unres(write(fd, data, dataSize - 10) == -1, "Cannot write to file.");
+				close(fd);	
+			}
+			delete data;
+		
+		</Code>
+	</Test>	
+	<Test Name="MknodFail" FaultSimulationReady="true">
+		<Description>The system call mknod() creates a file system node (file, device special file or named pipe) named pathname, with attributes specified by mode and dev.</Description>
+		<Code>
+			char path[50];
+			int ret_val;
+			int file_index;
+			
+			system(("rm -rf " + (string)MountPoint + "/*").c_str());
+			
+			for (file_index = 0; file_index < 93; ++file_index)//90-99
+			{
+				sprintf(path, "max_files_test%d", file_index);
+				ret_val = mknod( path, S_IFBLK | 0777, 0 );		
+				if ( ret_val == -1 )
+				{
+					unlink(path);
+					char buf[3];
+					sprintf(buf, "%d-th", file_index);
+					Unres(true, "Cannot create the " + static_cast<string>(buf) + "file");
+				}
+			}
+			
+			sprintf(path, "max_files_test%d", file_index);
+			Fail((ret_val = mknod(path, S_IFBLK | 0777, 0)) == -1, "Cannot create node");
+			if ( ret_val == -1 )
+			{
+				unlink(path);
+				char buf[3];
+				sprintf(buf, "%d-th", file_index);
+				Unres(true, "Cannot create the " + static_cast<string>(buf) + "file");
+			}
+				
+		</Code>
+	</Test>
+	<Test Name="CiGetLeafPrefixKeyFSim" Dangerous="true">
+		<Description>Get fail in ciGetLeafPrefixKey function.</Description>
+		<Code>			
+		char path[50];
+		int ret_val;
+		int file_index;
+		
+		system(("rm -rf " + (string)MountPoint + "/*").c_str());
+		
+		for (file_index = 0; file_index < 93; ++file_index)//90-99
+		{
+			sprintf(path, "max_files_test%d", file_index);
+			ret_val = open(path, O_CREAT | O_RDONLY, 0777);
+			if ( ret_val == -1 )
+			{
+				unlink(path);
+				char buf[3];
+				sprintf(buf, "%d-th", file_index);
+				Unres(true, "Cannot create the " + static_cast<string>(buf) + "file");
+			}
+		}
+		
+		sprintf(path, "max_files_test%d", file_index);
+		Fail((ret_val = open(path, O_CREAT | O_RDONLY, 0777)) == -1, "Cannot create file");
+		if ( ret_val == -1 )
+		{
+			unlink(path);
+			char buf[3];
+			sprintf(buf, "%d-th", file_index);
+			Unres(true, "Cannot create the " + static_cast<string>(buf) + "file");
+		}
+		</Code>
+	</Test>	
+	
+	<Test Name="xtSplitRootFail" Dangerous="true">
+		<Description>Get fail in xtSplitRoot function.</Description>
+		<File count = "1"/>
+		<Code>
+		    int fd = FDs[0];
+	
+			char buf[5];
+						
+			for (int i = 0; i < 16; ++i)
+			{
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed.");				
+			}
+			sync();
+			
+			Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+			Fail(write(FDs[0], buf, 1) == -1, "Write failed.");
+						
+		</Code>
+	</Test>
+	<Test Name="xtSplitUpFailGetPage">
+		<Description>xtGetPage macro fails in xtSplitUp.</Description>
+		<File count = "1"/>
+		<Code>
+			char buf[10] = "sdaasasda";			
+			for (int i = 0 ; i < 25000; ++i)
+			{
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed.");
+			
+			}
+			sync();
+			
+			Unres(lseek64(FDs[0], 5000, SEEK_SET) == -1, "Lseek failed.");
+			
+			for (int i = 0; i < 19810; ++i)
+			{
+				Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed");
+				Unres(write(FDs[0], buf, 1) == -1, "Write failed");
+			}		
+			sync();
+			Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed");
+			Fail(write(FDs[0], buf, 1) == -1, "Write failed");
+			sync();
+		</Code>
+	</Test>	
+	<Test Name="dbAllocFail" Dangerous="true">
+		<Description>Trying to simulate fail in dbAlloc().</Description>
+		<Code>
+			system(("rm -rf " + (string)MountPoint + "/*").c_str());
+		    char buf[10];
+            string dirname = "dbAllocFail_dir";
+            
+            mkdir(dirname.c_str(), 0777);
+            chdir(dirname.c_str());
+            for (int j = 0; j < 512; ++j)
+            {
+                sprintf(buf, "%d",  j);
+                string dirname = buf;
+                mkdir(dirname.c_str(), 0777);
+            }
+            
+            sprintf(buf, "%d",  513);
+			dirname = buf;
+			Fail(mkdir(dirname.c_str(), 0777) == -1, "Cannot mkdir.");
+		</Code>
+	</Test>
+	
+	<Test Name="dbAllocFail13" Dangerous="true">
+		<Description>Trying to simulate fail in dbAlloc().</Description>
+		<Code>
+			system("rm -rf *");
+			char buf[30];
+			
+			int j;
+			for (j = 0; j < 13; ++j)
+			{
+				sprintf(buf, "dbAllocFail13_%d",  j);
+				mkdir(buf, 0777);
+			}
+			
+			sprintf(buf, "dbAllocFail13_%d",  j);
+			Fail(mkdir(buf, 0777) == -1, "Cannot mkdir.");
+		</Code>
+	</Test>
+	
+	<Test Name="dtSplitPageFail" Dangerous="true">
+		<Description>Trying to simulate fail in dtSplitPageFail().</Description>
+		<Code>
+			system("rm -rf *");
+			char buf[30];
+			
+			int j;
+			for (j = 0; j < 61; ++j)
+			{
+				sprintf(buf, "dtSplitPageFail_%d",  j);
+				mkdir(buf, 0777);
+			}
+			
+			sprintf(buf, "dtSplitPageFail_%d",  j);
+			Fail(mkdir(buf, 0777) == -1, "Cannot mkdir.");
+		</Code>
+	</Test>
+	
+	<Test Name="dtSplitRootFail" Dangerous="true">
+		<Description>Trying to simulate fail in dtSplitRootFail().</Description>
+		<Code>
+			system("rm -rf *");
+			char buf[30];
+			
+			int j;
+			for (j = 0; j < 4; ++j)
+			{
+				sprintf(buf, "dtSplitRootFail_%d",  j);
+				mkdir(buf, 0777);
+			}
+			
+			sprintf(buf, "dtSplitRootFail_%d",  j);
+			Fail(mkdir(buf, 0777) == -1, "Cannot mkdir.");
+		</Code>
+	</Test>
+	
+	<Test Name="dtDeleteUpFail">
+		<Description>Trying to simulate fail in dtDeleteUpFail().</Description>
+		<Code>
+			system("rm -rf *");
+			char buf[30];
+			
+			Unres(mkdir("a", 0777) == -1, "Cannot create directory");
+			
+			int j;
+			for (j = 0; j < 100; ++j)
+			{
+				sprintf(buf, "a/dtSplitRootFail_%d",  j);
+				Unres(mkdir(buf, 0777) == -1, "Cannot create directories");
+			}
+			for (j = 0; j < 37; ++j)
+			{
+				sprintf(buf, "a/dtSplitRootFail_%d",  j);
+				Unres(rmdir(buf) == -1, "Cannot remove directory");	
+			}
+			
+			sprintf(buf, "a/dtSplitRootFail_%d",  j);
+			Fail(rmdir(buf) == -1, "Cannot remove directory");	
+					
+		</Code>
+	</Test>
+	
+	<Test Name="dtDeleteUpFail2" Dangerous="true">
+		<Description>Trying to simulate fail in dtDeleteUpFail().</Description>
+		<Code>
+			system("rm -rf *");
+			char buf[30];
+			
+			Unres(mkdir("a", 0777) == -1, "Cannot create directory");
+			
+			int j;
+			for (j = 0; j < 164; ++j)
+			{
+				sprintf(buf, "a/dtSplitRootFail2_%d",  j);
+				Unres(mkdir(buf, 0777) == -1, "Cannot create directories");
+			}
+			
+			for (j = 0; j < 163; ++j)
+			{
+				sprintf(buf, "a/dtSplitRootFail2_%d",  j);
+				Unres(rmdir(buf) == -1, "Cannot remove directory");	
+			}
+			
+			sprintf(buf, "a/dtSplitRootFail2_%d",  j);
+			Fail(rmdir(buf) == -1, "Cannot remove directory");	
+					
+		</Code>
+	</Test>
+	
+	<Test Name="diAllocAny1">
+		<Description>Try to allocate inode anywhere in the AGs.</Description>
+		<Code>
+			Unres(chdir(MountPoint) == -1, "Cannot change directory.");
+			
+			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
+			
+			// The test is targeted on small partitions. Don't run it
+			// if the partition size is more than 2GB
+			Skip(size > (uint64_t)2*1024*1024*1024, "The partition is too big.");
+			
+			string str = ("rm -rf " + (string)MountPoint + "/*");
+			
+			cerr << "remove command: " << str << endl;
+			
+			system(str.c_str());
+			
+			char buf[10];
+            string FileName = "diAllocAny";
+            
+			int fd;
+			Unres((fd = open(FileName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)) == -1, "Cannot create dir.");
+			
+			char * buf2 = new char[size];
+			Unres(write(fd, buf2, size - 10) == -1, "Cannot write to file.");
+			
+			fsync(fd);
+			
+			close(fd);
+			
+			sync();
+			
+			for (int j = 0; j < 20; ++j)
+            {
+                sprintf(buf, "%d",  j);
+                FileName = buf;
+                
+                close(open(FileName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR));
+            }
+		    
+		    
+		</Code>
+		<Footer>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success )
+			{
+				Error("Cannot restore partition.");
+				Return(Fatal);
+			}
+			unlink("diAllocAny");
+		</Footer>
+	</Test>
+	<Test Name="diAllocAny2">
+		<Description>Try to allocate inode anywhere in the AGs.</Description>
+		<Code>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success )
+			{
+				Error("Cannot restore partition.");
+				Return(Fatal);
+			}
+			
+			Unres(chdir(MountPoint) == -1, "Cannot change directory.");
+			
+			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
+			
+			// The test is targeted on small partitions. Don't run it
+			// if the partition size is more than 2GB
+			Skip(size > (uint64_t)2*1024*1024*1024, "The partition is too big.");
+			
+			string str = ("rm -rf " + (string)MountPoint + "/*");
+			
+			cerr << "remove command: " << str << endl;
+			
+			system(str.c_str());
+			
+			char buf[10];
+            string FileName = "diAllocAny";
+            
+			int fd;
+			Unres((fd = open(FileName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR)) == -1, "Cannot create dir.");
+			
+			char * buf2 = new char[size];
+			Unres(write(fd, buf2, size - 10) == -1, "Cannot write to file.");
+			
+			fsync(fd);
+			
+			close(fd);
+			
+			sync();
+			
+			int fds[20];
+			int j;
+			
+			for (j = 0; j < 20; ++j)
+            {
+                sprintf(buf, "%d",  j);
+                FileName = buf;
+                
+                fds[j] = open(FileName.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+            }
+            
+            for ( int i = 0; i < j; ++i )
+				close(fds[i]);
+		    
+		</Code>
+		<Footer>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success )
+			{
+				Error("Cannot restore partition.");
+				Return(Fatal);
+			}
+			unlink("diAllocAny");
+		</Footer>
+	</Test>
+</TestSet>
