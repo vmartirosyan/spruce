@@ -780,13 +780,13 @@ end_of_record
 
 SF:fs/jfs/jfs_xtree.c
 FN:xtExtend
-LFT:28,30 This block would be covered if we cover the lines 82-84 in xtSearch.
+LFT:28,30 This block would be covered if we cover the lines 82-84 in xtSearch. But it is marked as dead
 LFT:61,125 this code can be covered(partially) when we write more than 64GB to file. It takes too long 
 end_of_record
 
 SF:fs/jfs/jfs_xtree.c
 FN:xtAppend
-LFT:47,47 This block is not covered because the test development would take too long.
+LFT:47,47 This block would be covered if we cover the lines 82-84 in xtSearch. But it is marked as dead
 LFT:103,105 This block could be covered if we perform fault simulation while extending partition, but it leads to system failure.
 end_of_record
 
@@ -802,7 +802,7 @@ end_of_record
 SF:fs/jfs/jfs_xtree.c
 FN:xtTruncate_pmap
 LFT:29,29 This block is not covered because the test development would take too long.
-LFT:34,37 This block would be covered if we cover the lines 82-84 in xtSearch.
+LFT:34,37 This block would be covered if we cover the lines 82-84 in xtSearch. But it is marked as dead
 LFT:98,98 This line could be covered if we corrupt the inode, but in that case the failure comes upper in the same function. 
 end_of_record
 
