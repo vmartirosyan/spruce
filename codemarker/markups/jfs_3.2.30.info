@@ -858,11 +858,6 @@ LFT:9,10 This block is not covered because the test development would take too l
 end_of_record
 
 SF:fs/jfs/xattr.c
-FN:ea_put
-LFT:47,51 This block is not covered because the test development would take too long.
-end_of_record
-
-SF:fs/jfs/xattr.c
 LFT:338,338 Never gets here because of previous check in ea_get function.
 LFT:385,386  Never gets here because of previous check in ea_get function.
 LFT:1031,1032 This block is not covered because sometimes compiler marks it as nonexecutable code.
