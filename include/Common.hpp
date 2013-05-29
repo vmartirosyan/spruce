@@ -152,7 +152,7 @@ struct FSimInfo
 		KedrIntegrator::ClearIndicator(_fsim_point);\
 		Logger::LogInfo(static_cast<string>("Fault simulation is disabled for module ") + FileSystem + "(" +\
 			_fsim_point + ", " + _fsim_expression + ")");\
-	}\
+	}\F
 }*/
 
 #define SetFaultCount() \
@@ -188,8 +188,6 @@ struct FSimInfo
 
 // Fail macro should behaive differently when the fault simulation is in progress.
 // In that case it is normal that target functions should fail.
-// On the other side it is really strange that a function can success even though
-// it cannot allocate memory or something like that
 #define Fail(cond, message)\
 {\
 	if ( obj->GetEffectiveChecks() & Stability )\
@@ -198,7 +196,17 @@ struct FSimInfo
 	if ( obj->GetEffectiveChecks() & Stability )\
 		DisableFaultSim();\
 	if ( res )\
-		{ Error(message, Fail) }\
+	{\
+		if ( KedrIntegrator::GetLastFaultMsg() != LastFaultMsgNone )\
+		{\
+			Logger::LogWarn("This error may be result of fault simulation. " + (string)message);\
+			Return(Success);\
+		}\
+		else\
+		{\
+			Error(message, Fail);\
+		}\
+	}\
 }\
 
 // The Check macro should be called when a real functional check is being done
@@ -211,7 +219,6 @@ struct FSimInfo
 			Error(message, Fail);\
 	}\
 }\
-	
 
 
 #define Skip(cond, message)\
