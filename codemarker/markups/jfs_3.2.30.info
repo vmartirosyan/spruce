@@ -859,7 +859,6 @@ end_of_record
 
 SF:fs/jfs/xattr.c
 FN:ea_put
-LFT:8,9 This block is not covered because the test development would take too long.
 LFT:47,51 This block is not covered because the test development would take too long.
 end_of_record
 
