@@ -199,8 +199,7 @@ struct FSimInfo
 	{\
 		if ( KedrIntegrator::GetLastFaultMsg() != LastFaultMsgNone )\
 		{\
-			Logger::LogWarn("This error may be result of fault simulation. " + (string)message);\
-			Return(Success);\
+			Error("This error may be a result of fault simulation.\n" + (string)message, Success);\
 		}\
 		else\
 		{\

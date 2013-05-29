@@ -30,6 +30,7 @@
 #include <UnixCommand.hpp>
 #include <sys/utsname.h>
 #include <algorithm>
+#include <map>
 
 const string LastFaultMsgNone = "none";
 
@@ -41,23 +42,13 @@ const string DebugFSPath = "/sys/kernel/debug";
 class KedrIntegrator
 {
 public:
-	KedrIntegrator():		
-		TargetModule(""),
-		MemLeakCheckEnabled(false),
-		FaultSimulationEnabled(false),
-		KEDRProfiles()	
-		//_IsRunning(false)
+	KedrIntegrator()
 	{
 		if ( KEDR_INSTALLED )
 			if ( !IsKEDRInstalled() )
 				throw (Exception("KEDR framework is not installed on the system."));
 	}
-	KedrIntegrator(string module):		
-		TargetModule(""),
-		MemLeakCheckEnabled(false),
-		FaultSimulationEnabled(false),
-		KEDRProfiles()
-		//_IsRunning(false)
+	KedrIntegrator(string module)
 	{
 		if ( KEDR_INSTALLED )
 			if ( !IsKEDRInstalled() )
@@ -70,7 +61,7 @@ public:
 			}
 		
 	}
-	bool SetTargetModule(string module)
+	static bool SetTargetModule(string module)
 	{
 		DoesModuleExist(module);
 		
@@ -81,18 +72,20 @@ public:
 		return true;
 	}
 	// Add KEDR configuration file to be processed while load KEDR.
-	void AddPayloads(const string& confFile)
+	static void AddPayloads(const string& confFile)
 	{
 		KEDRProfiles.push_back(confFile);
 	}
 	
-	void EnableMemLeakCheck()
+	static void EnableMemLeakCheck()
 	{
+		MemLeakCheckEnabled = true;
 		AddPayloads("leak_check.conf");
 	}
 	
 	void EnableFaultSimulation()
 	{
+		FaultSimulationEnabled = true;
 		AddPayloads("fsim.conf");
 	}
 	
@@ -169,7 +162,7 @@ public:
 			of.open((DebugFSPath + "/kedr_fault_simulation/points/" + point + "/expression").c_str());
 			of << expression;
 			of.close();
-			Logger::LogInfo("Expression " + expression + "is set.");
+			Logger::LogInfo("Expression `" + expression + "` is set.");
 			return true;
 		}
 		catch (...)
@@ -302,7 +295,7 @@ public:
 		of.close();
 	}
 	
-	bool LoadKEDR()
+	static bool LoadKEDR()
 	{
 		if ( !KEDR_INSTALLED )
 			return false;
@@ -345,7 +338,7 @@ public:
 		return true;
 	}
 	
-	bool UnloadKEDR()
+	static bool UnloadKEDR()
 	{
 		if ( !KEDR_INSTALLED )
 			return true;
@@ -373,7 +366,7 @@ public:
 		return true;
 	}
 	
-	bool IsRunning()
+	static bool IsRunning()
 	{
 		if ( !KEDR_INSTALLED )
 			return false;
@@ -394,7 +387,7 @@ public:
 		return false;
 	}
 	
-	bool UnloadModule(string module, string* output = NULL)
+	static bool UnloadModule(string module, string* output = NULL)
 	{
 		UnixCommand rmmod("rmmod");
 		vector<string> args;
@@ -420,18 +413,28 @@ public:
 	
 	static string GetLastFaultMsg()
 	{
+		// Check if the fault simulation is in progress.
+		if ( !FaultSimulationEnabled )
+			return LastFaultMsgNone;
+			
 		char buf[5000];
 		ifstream f((DebugFSPath + "/kedr_fault_simulation/last_fault").c_str(), ifstream::in);
 		f.read(buf, 5000);
+		f.close();
+
+		// Clear the last_fault file.
+		ofstream of((DebugFSPath + "/kedr_fault_simulation/last_fault").c_str(), ifstream::out);
+		of << LastFaultMsgNone;
+		of.close();
 		return (string)buf;
 	}
 	
 	
 protected:
-	string TargetModule;
-	bool MemLeakCheckEnabled;
-	bool FaultSimulationEnabled;
-	vector<string> KEDRProfiles;
+	static string TargetModule;
+	static bool MemLeakCheckEnabled;
+	static bool FaultSimulationEnabled;
+	static vector<string> KEDRProfiles;
 	//bool _IsRunning;
 	static bool MountDebugFS()
 	{
@@ -449,12 +452,12 @@ protected:
 			
 		return true;
 	}
-	bool IsKEDRInstalled()
+	static bool IsKEDRInstalled()
 	{
 		return (access(KEDR_PATH, F_OK) == 0);
 	}
 	
-	void DoesModuleExist(string module)
+	static void DoesModuleExist(string module)
 	{
 		struct utsname buf;
 		if (uname(&buf) == -1)
@@ -480,7 +483,7 @@ protected:
 		
 	}
 	
-	bool IsModuleLoaded(string module)
+	static bool IsModuleLoaded(string module)
 	{
 		ifstream modules("/proc/modules");
 		
@@ -500,7 +503,7 @@ protected:
 	}	
 	
 	// Loads the common, kmalloc and capable indicators into the kernel
-	void LoadIndicators()
+	static void LoadIndicators()
 	{
 		struct utsname buf;
 		if (uname(&buf) == -1)
@@ -526,7 +529,7 @@ protected:
 		
 	}
 	
-	void UnloadIndicators()
+	static void UnloadIndicators()
 	{
 		UnixCommand rmmod("rmmod");
 		vector<string> args;

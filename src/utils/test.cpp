@@ -213,10 +213,10 @@ Status TestSet::Run(Checks checks)
 			i->second.AddResult(Functional, res );
 			
 		// Get the last fault information
-		if ( i->second.GetEffectiveChecks() & Stability )
+		/*if ( i->second.GetEffectiveChecks() & Stability )
 		{
 			Logger::LogWarn("Last fault: " + KedrIntegrator::GetLastFaultMsg());
-		}
+		}*/
 		
 		if ( result < res.GetStatus() )
 			result = res.GetStatus();
@@ -275,7 +275,7 @@ Status TestSet::Run(Checks checks)
 					TestResult res = *static_cast<TestResult *>(i->second.Execute());
 					
 					// Get the last fault information
-					Logger::LogWarn("Last fault: " + KedrIntegrator::GetLastFaultMsg());
+					//Logger::LogWarn("Last fault: " + KedrIntegrator::GetLastFaultMsg());
 					
 					// Temporary solution. Increases the system stability.
 					PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true);
