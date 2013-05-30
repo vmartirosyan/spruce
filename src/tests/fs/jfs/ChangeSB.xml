@@ -208,7 +208,7 @@
 				ValueSet2[i] = 'a'; 
 			}		
 			const int ValueLen2 = 200;
-			Fail ( setxattr("test", AttrName2, ValueSet2, ValueLen2, XATTR_CREATE) == -1, "Cannot set xattr.");
+			setxattr("test", AttrName2, ValueSet2, ValueLen2, XATTR_CREATE);
 			unlink(FilePath);
 			
 			sync();
@@ -217,6 +217,7 @@
 			close(fd);
 		</Footer>
 	</Test>
+
 	<Test Name="diReadFail1">
 		<Description>Brings to failure in diReadFail function due to wrong inode number.</Description>
 		<Header>
@@ -437,7 +438,6 @@
 		<Description>Trying to create many directories</Description>
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
-		    char buf[10];
             string dirname = "some_directory";
             JFSCtl jfs;
             mkdir(dirname.c_str(), 0777);
@@ -476,7 +476,6 @@
 		<Description>Fail in diAllocAG.</Description>
 		<Code>
 			//Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
-		    char buf[10];
             string dirname = "some_directory";
             JFSCtl jfs;
             mkdir(dirname.c_str(), 0777);
@@ -508,7 +507,6 @@
 		<Description>Trying to create many directories</Description>
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
-		    char buf[10];
             string dirname = "some_directory";
             JFSCtl jfs;
             mkdir(dirname.c_str(), 0777);
@@ -545,7 +543,6 @@
 		<Description>Trying to create many directories</Description>
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
-		    char buf[10];
             string dirname = "some_directory";
             JFSCtl jfs;
             mkdir(dirname.c_str(), 0777);
@@ -2259,8 +2256,7 @@
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			
-		    const char * FilePath = "diFreeFail1_file";		    
+				    
 		    JFSCtl jfs;
 		    char buf[4];
 		    
