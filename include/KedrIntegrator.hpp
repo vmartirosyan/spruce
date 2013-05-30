@@ -411,6 +411,14 @@ public:
 		return true;
 	}
 	
+	static void ResetLastFaultMsg()
+	{
+		// Clear the last_fault file.
+		ofstream of((DebugFSPath + "/kedr_fault_simulation/last_fault").c_str(), ifstream::out);
+		of << LastFaultMsgNone;
+		of.close();
+	}
+	
 	static string GetLastFaultMsg()
 	{
 		// Check if the fault simulation is in progress.
@@ -421,11 +429,7 @@ public:
 		ifstream f((DebugFSPath + "/kedr_fault_simulation/last_fault").c_str(), ifstream::in);
 		f.read(buf, 5000);
 		f.close();
-
-		// Clear the last_fault file.
-		ofstream of((DebugFSPath + "/kedr_fault_simulation/last_fault").c_str(), ifstream::out);
-		of << LastFaultMsgNone;
-		of.close();
+		
 		return (string)buf;
 	}
 	

@@ -272,11 +272,13 @@ Status TestSet::Run(Checks checks)
 					
 					KedrIntegrator::SetExpression(j->first, sExpression.str() );
 					
+					KedrIntegrator::ResetLastFaultMsg();
+					
 					Logger::LogInfo("Executing test " + i->first + " in fault simulated environment.");
 					TestResult res = *static_cast<TestResult *>(i->second.Execute());
 					
 					// Get the last fault information
-					//Logger::LogWarn("Last fault: " + KedrIntegrator::GetLastFaultMsg());
+					Logger::LogWarn("Last fault: " + KedrIntegrator::GetLastFaultMsg());
 					
 					oopsStatus = i->second.OopsChecker(log); // log is an output parameter
 					
