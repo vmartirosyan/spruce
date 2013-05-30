@@ -741,7 +741,7 @@ end_of_record
 
 SF:fs/jfs/namei.c
 FN:jfs_nfs_get_inode
-LFT:12,13 This block is not covered because the test development would take too long.
+LFT:12,13 This is self checking/correcting just in case code.
 end_of_record
 
 SF:fs/jfs/namei.c
@@ -835,7 +835,7 @@ end_of_record
 
 SF:fs/jfs/super.c
 FN:jfs_quota_write
-LFT:25,25 This block is not covered because the test development would take too long.
+LFT:25,25 This block could be covered if we could change the pagesize, but it is impossible in Linux.
 LFT:44,45 This is self checking/correcting code. 
 LFT:48,48 This is self checking/correcting code. 
 end_of_record
