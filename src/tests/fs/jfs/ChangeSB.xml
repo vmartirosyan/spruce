@@ -29,6 +29,7 @@
 	<Requires>jfs_filsys.h</Requires>
 	<Requires>JFSCtl.hpp</Requires>
 	<Requires>sys/syscall.h</Requires>
+	<Requires>attr/xattr.h</Requires>	
 	<Test Name="JFS_DIR_INDEX" FaultSimulationReady="true">
 		<Description>Unset JFS_DIR_INDEX flag and read a directory.</Description>
 		<Code>
@@ -154,6 +155,60 @@
 			fsync(fd);
 			close(fd);
 			
+			unlink(FilePath);
+			
+			sync();
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
+	<Test Name="xattr">
+		<Description>Sets specific xattr flag.</Description>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			const char * FilePath = "test";
+			fd = open(FilePath, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+			
+			Unres(fd == -1, "Cannot create file.");
+			close(fd);
+			const char * AttrName1 = "user.XattrSetGetTest";
+			char * ValueSet1 = new char[20];
+			for(int i = 0;i < 20;++i)
+			{
+				ValueSet1[i] = 'a'; 
+			}		
+			const int ValueLen1 = 20;
+			
+			Fail ( setxattr("test", AttrName1, ValueSet1, ValueLen1, XATTR_CREATE) == -1, "Cannot set xattr.");
+			sync();
+			
+			JFSCtl jfs;
+			int inode_num = jfs.GetInodeNum(FilePath);
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dinode * inode = jfs.GetInode(DeviceName, inode_num);
+			Unres(inode == NULL, "Cannot get inode.");
+			
+			inode->di_ea.flag = DXD_FILE;
+			
+			Unres(jfs.SetInode(DeviceName, inode_num, inode) == false, "Cannot set inode.");
+			
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			sync();
+			const char * AttrName2 = "user.XattrSetGetTest";
+			char * ValueSet2 = new char[200];
+			for(int i = 0;i < 200;++i)
+			{
+				ValueSet2[i] = 'a'; 
+			}		
+			const int ValueLen2 = 200;
+			Fail ( setxattr("test", AttrName2, ValueSet2, ValueLen2, XATTR_CREATE) == -1, "Cannot set xattr.");
 			unlink(FilePath);
 			
 			sync();
