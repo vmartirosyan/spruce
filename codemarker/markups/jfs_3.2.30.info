@@ -292,7 +292,7 @@ end_of_record
 
 SF:fs/jfs/jfs_extent.c
 FN:extHint
-LFT:27,28 This block is not covered because the test implementataion would take too long.
+LFT:27,28 This block is supported only in OS/2 where block size can be different from 4096..
 end_of_record
 
 SF:fs/jfs/acl.c
