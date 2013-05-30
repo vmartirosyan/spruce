@@ -278,20 +278,30 @@ Status TestSet::Run(Checks checks)
 					// Get the last fault information
 					//Logger::LogWarn("Last fault: " + KedrIntegrator::GetLastFaultMsg());
 					
-					
-					
 					oopsStatus = i->second.OopsChecker(log); // log is an output parameter
 					
 					if(oopsStatus != Success)
 					{	
 						//so we have an emergency situation...
 						i->second.AddResult(Stability, ProcessResult(Fatal, "Status: " + StatusMessages[oopsStatus] + "Output: " + log));
-						break;
+						if(log.find(static_cast<string>("INFO:")) != std::string::npos)
+						{
+							Logger::LogWarn("OopsChecker has found non-fatal problem. Trying to continue execution. \n");
+						}
+						else
+						{
+							break;
+						}
+						
 					}
 					
 					i->second.AddResult(Stability, res );
 														
-					PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true);	
+					if(PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)  != PS_Success)
+					{
+						Logger::LogFatal("Could not restore partition. Terminating... \n");
+						return Fatal;
+					}	
 									
 					// Check if the partition has become read-only because of system failures.
 					// In case of fault simulation such a situation is quite common.
