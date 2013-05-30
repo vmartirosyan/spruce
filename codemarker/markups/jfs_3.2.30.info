@@ -715,7 +715,7 @@ end_of_record
 
 SF:fs/jfs/namei.c
 FN:free_ea_wmap
-LFT:6,7 This block is not covered because the test development would take too long.
+LFT:6,7 This lines can be called only when creating a symlink of a file with extended atributes with DXD_EXTEND flag fails during fault-simulation, but fault-simulation doesn't cause a system crash only for a dangling symlink.
 end_of_record
 
 SF:fs/jfs/namei.c
