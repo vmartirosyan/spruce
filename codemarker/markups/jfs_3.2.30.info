@@ -729,14 +729,14 @@ end_of_record
 SF:fs/jfs/namei.c
 FN:jfs_unlink
 LFT:38,38 This block is impossible to cover with fault simulation, as the retrun value in that case is -ENOMEM.But we need -EIO. The only way is to corrupt the inode to fail the DT_GETPAGE, but in that case error does not reach the desired case because of multiple previous checks.
-LFT:100,101 This block is not covered because the test development would take too long.
+LFT:100,101 These lines could be covered if we corrupt the inode (and in that case XT_GETPAGE would fail in xt_truncate_pmap), but in that case the failure comes up earlier in CommitZeroLink(as it also invoke the same xt_truncate_pmap function).
 LFT:119,119 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/namei.c
 FN:jfs_rename
 LFT:111,120 This block is dead as it can be executed only in case when there are hard links on directories. Linux does not allow it.
-LFT:245,246 This block is not covered because the test development would take too long.
+LFT:245,246 These lines could be covered if we corrupt the inode (and in that case XT_GETPAGE would fail in xt_truncate_pmap), but in that case the failure comes up earlier in CommitZeroLink(as it also invoke the same xt_truncate_pmap function).
 LFT:266,269 This block is not covered, even when we rename a directory for which cfalg set to COMMIT_Stale. but still no effect.
 end_of_record
 
