@@ -526,7 +526,7 @@ end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
 FN:txFreelock
-LFT:10,32 This block is not covered because the test development would take too long.
+LFT:10,32 This block is not covered because there is no way to control the time when the anonymous transactions are being committed.
 end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
@@ -537,13 +537,13 @@ end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
 FN:txQuiesce
-LFT:12,32 This block is not covered because the test development would take too long.
+LFT:12,32 This block is not covered because there is no way to control the time when the anonymous transactions are being committed.
 end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
 FN:jfs_sync
-LFT:12,56 This block is not covered because the test development would take too long.
-LFT:64,64 This block is not covered because the test development would take too long.
+LFT:12,56 The block can be covered if many concurrent threads have transaction locks and the system is low on them.
+LFT:64,64 The block is not covered because there is no way to syncronize the jfs_sync call and the current process freeze events.
 end_of_record
 
 #######################################################################
