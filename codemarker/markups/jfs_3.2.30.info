@@ -292,7 +292,7 @@ end_of_record
 
 SF:fs/jfs/jfs_extent.c
 FN:extHint
-LFT:27,28 This block is not covered because the test implementataion would take too long.
+LFT:27,28 This block is supported only in OS/2 where block size can be different from 4096..
 end_of_record
 
 SF:fs/jfs/acl.c
@@ -328,7 +328,7 @@ end_of_record
 SF:fs/jfs/jfs_dmap.c
 FN:dbExtendFS
 LFT:86,87 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
-LFT:115,124 This block is not covered because the test development would take too long.
+LFT:115,124 We need a partition of 2^45 bytes to cover this code, if we just change bmap on disk mount fails..
 LFT:237,237 This block is not covered because it is just a self check.
 LFT:251,251 This block is not covered because it is just a self check.
 LFT:254,259 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
@@ -348,8 +348,9 @@ LFT:403,423 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
-LFT:611,614 This block is not covered because the test development would take too long.
-LFT:648,653 This block is not covered because the test development would take too long.
+LFT:266,266 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
+LFT:611,614 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
+LFT:648,653 This block is not covered because "metapage" is initialised from "page" using type convertion.
 LFT:659,659 These lines cannot be covered from user space.
 LFT:695,696 These lines cannot be covered from user space.
 end_of_record
@@ -386,7 +387,7 @@ LFT:27,27 This block is not covered because these lines cannot be covered from u
 end_of_record
 
 SF:fs/jfs_metapage.c		
-FN:remove_metapage Function is inline and its call is usually integrated.	
+FN:remove_metapage Function is inline and its call is usually integrated.
 end_of_record
 
 SF:fs/jfs_metapage.c
@@ -716,7 +717,7 @@ end_of_record
 
 SF:fs/jfs/namei.c
 FN:free_ea_wmap
-LFT:6,7 This block is not covered because the test development would take too long.
+LFT:6,7 This lines can be called only when creating a symlink of a file with extended atributes with DXD_EXTEND flag fails during fault-simulation, but fault-simulation doesn't cause a system crash only for a dangling symlink.
 end_of_record
 
 SF:fs/jfs/namei.c
@@ -729,20 +730,20 @@ end_of_record
 SF:fs/jfs/namei.c
 FN:jfs_unlink
 LFT:38,38 This block is impossible to cover with fault simulation, as the retrun value in that case is -ENOMEM.But we need -EIO. The only way is to corrupt the inode to fail the DT_GETPAGE, but in that case error does not reach the desired case because of multiple previous checks.
-LFT:100,101 This block is not covered because the test development would take too long.
+LFT:100,101 These lines could be covered if we corrupt the inode (and in that case XT_GETPAGE would fail in xt_truncate_pmap), but in that case the failure comes up earlier in CommitZeroLink(as it also invoke the same xt_truncate_pmap function).
 LFT:119,119 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/namei.c
 FN:jfs_rename
 LFT:111,120 This block is dead as it can be executed only in case when there are hard links on directories. Linux does not allow it.
-LFT:245,246 This block is not covered because the test development would take too long.
+LFT:245,246 These lines could be covered if we corrupt the inode (and in that case XT_GETPAGE would fail in xt_truncate_pmap), but in that case the failure comes up earlier in CommitZeroLink(as it also invoke the same xt_truncate_pmap function).
 LFT:266,269 This block is not covered, even when we rename a directory for which cfalg set to COMMIT_Stale. but still no effect.
 end_of_record
 
 SF:fs/jfs/namei.c
 FN:jfs_nfs_get_inode
-LFT:12,13 This block is not covered because the test development would take too long.
+LFT:12,13 This is self checking/correcting just in case code.
 end_of_record
 
 SF:fs/jfs/namei.c
@@ -758,7 +759,7 @@ end_of_record
 
 SF:fs/jfs/jfs_xtree.c
 FN:xtInsert
-LFT:55,56 This block is not covered because the test development would take too long.
+LFT:55,56 This block could be covered if we run the jfs/JfsOverloadTests/dbAllovFail test, but it is marked as dangerous.
 LFT:82,84 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
 end_of_record
 
@@ -836,7 +837,7 @@ end_of_record
 
 SF:fs/jfs/super.c
 FN:jfs_quota_write
-LFT:25,25 This block is not covered because the test development would take too long.
+LFT:25,25 This block could be covered if we could change the pagesize, but it is impossible in Linux.
 LFT:44,45 This is self checking/correcting code. 
 LFT:48,48 This is self checking/correcting code. 
 end_of_record
@@ -848,7 +849,6 @@ end_of_record
 
 SF:fs/jfs/xattr.c
 FN:ea_get
-LFT:44,45 This block is not covered because the test development would take too long.
 LFT:112,114 This block could be covered if we corrupt the inode, but in that case the failure comes earlier invokation of ea_read(line 552 of xattr.c).
 LFT:132,137 This is self checking/correcting code. 
 end_of_record
