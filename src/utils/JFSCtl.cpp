@@ -356,7 +356,7 @@ struct dbmap_disk * JFSCtl::GetBmap(string DeviceName)
 	}
 	catch(Exception e)
 	{
-		Logger::LogError("JFSCtl::GetBmap: Cannot get iag . " + e.GetMessage());
+		Logger::LogError("JFSCtl::GetBmap: Cannot get bmap . " + e.GetMessage());
 		return NULL;
 	}
 }
@@ -385,7 +385,131 @@ bool JFSCtl::SetBmap(string DeviceName, dbmap_disk *bmapCP)
 	}
 	catch(Exception e)
 	{
-		Logger::LogError("JFSCtl::SetIAG: Cannot set iag. " + e.GetMessage());
+		Logger::LogError("JFSCtl::SetBmap: Cannot set bmap. " + e.GetMessage());
+		return false;
+	}
+}
+
+struct dmap * JFSCtl::GetFirstDmap(string DeviceName)
+{
+	try
+	{
+		
+		uint64_t BlockMap = LocateBlockMap(DeviceName);
+		if ( BlockMap == 0 )
+		{
+			throw Exception("Cannot get block allocation map." + string(strerror(errno)));
+		}
+		
+		File f(DeviceName, S_IRUSR, O_RDONLY);
+		int fd = f.GetFileDescriptor();
+		
+		if ( lseek64( fd, BlockMap + 4 * PSIZE, SEEK_SET ) == -1)
+		{
+			throw Exception("Cannot seek to dmap Address." + string(strerror(errno)));
+		}
+		struct dmap *dmap1 = new dmap;
+		if ( read ( fd, dmap1, sizeof(dmap) ) == -1)
+		{
+			throw Exception("Cannot read dmap from disk." + string(strerror(errno)));
+		}
+		
+		return dmap1;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::GetFirstDmap: Cannot get dmap . " + e.GetMessage());
+		return NULL;
+	}
+}
+
+bool JFSCtl::SetFirstDmap(string DeviceName, dmap *dmap1)
+{
+	try
+	{
+		uint64_t BlockMap = LocateBlockMap(DeviceName);
+		if ( BlockMap == 0 )
+		{
+			throw Exception("Cannot get block allocation map." + string(strerror(errno)));
+		}
+		File f(DeviceName, S_IRUSR, O_RDWR);
+		int fd = f.GetFileDescriptor();
+		
+		if ( lseek64( fd, BlockMap + 4 * PSIZE, SEEK_SET ) == -1)
+		{
+			throw Exception("Cannot seek to dmap Address." + string(strerror(errno)));
+		}
+		if ( write ( fd, dmap1, sizeof(dmap) ) == -1)
+		{
+			throw Exception("Cannot write dmap to disk." + string(strerror(errno)));
+		}
+		return true;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::SetFirstDmap: Cannot set dmap. " + e.GetMessage());
+		return false;
+	}
+}
+
+struct dmapctl * JFSCtl::GetDmapCtl(string DeviceName)
+{
+	try
+	{
+		
+		uint64_t BlockMap = LocateBlockMap(DeviceName);
+		if ( BlockMap == 0 )
+		{
+			throw Exception("Cannot get block allocation map." + string(strerror(errno)));
+		}
+		
+		File f(DeviceName, S_IRUSR, O_RDONLY);
+		int fd = f.GetFileDescriptor();
+		
+		if ( lseek64( fd, BlockMap + 3 * PSIZE, SEEK_SET ) == -1)
+		{
+			throw Exception("Cannot seek to dmapctl Address." + string(strerror(errno)));
+		}
+		struct dmapctl *dmc = new dmapctl;
+		if ( read ( fd, dmc, sizeof(dmapctl) ) == -1)
+		{
+			throw Exception("Cannot read dmapctl from disk." + string(strerror(errno)));
+		}
+		
+		return dmc;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::GetFirstDmap: Cannot get dmapctl . " + e.GetMessage());
+		return NULL;
+	}
+}
+
+bool JFSCtl::SetDmapCtl(string DeviceName, dmapctl *dmc)
+{
+	try
+	{
+		uint64_t BlockMap = LocateBlockMap(DeviceName);
+		if ( BlockMap == 0 )
+		{
+			throw Exception("Cannot get block allocation map." + string(strerror(errno)));
+		}
+		File f(DeviceName, S_IRUSR, O_RDWR);
+		int fd = f.GetFileDescriptor();
+		
+		if ( lseek64( fd, BlockMap + 3 * PSIZE, SEEK_SET ) == -1)
+		{
+			throw Exception("Cannot seek to dmapctl Address." + string(strerror(errno)));
+		}
+		if ( write ( fd, dmc, sizeof(dmapctl) ) == -1)
+		{
+			throw Exception("Cannot write dmapctl to disk." + string(strerror(errno)));
+		}
+		return true;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::SetFirstDmap: Cannot set dmapctl. " + e.GetMessage());
 		return false;
 	}
 }

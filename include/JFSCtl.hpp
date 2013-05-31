@@ -39,13 +39,10 @@ public:
 	JFSCtl();
 	void * ReadBlock(string DeviceName, uint64_t block_no);
 	bool WriteBlock(string DeviceName, void * buf, uint64_t block_no);
-	
 	struct dinode * GetInode(string DeviceName, string FilePath, bool ReloadFromDisk = false);
-	bool SetInode(string DeviceName, string FilePath, struct dinode * inode);
-	
+	bool SetInode(string DeviceName, string FilePath, struct dinode * inode);	
 	struct dinode * GetInode(string DeviceName, int InodeNum, bool ReloadFromDisk = false);
-	bool SetInode(string DeviceName, int InodeNum, struct dinode * inode);
-	
+	bool SetInode(string DeviceName, int InodeNum, struct dinode * inode);	
 	struct jfs_superblock * GetSuperBlock(string DeviceName, bool ReloadFromDisk = false);
 	bool SetSuperBlock(string DeviceName, struct jfs_superblock * SuperBlock);
 	int GetInodeNum(string FilePath);
@@ -57,6 +54,10 @@ public:
 	bool SetAggregateInode(string, dinode*, int);
 	bool SetBmap(string, dbmap_disk *);
 	struct dbmap_disk * GetBmap(string);
+	bool SetFirstDmap(string, dmap *);
+	struct dmap * GetFirstDmap(string);
+	bool SetDmapCtl(string, dmapctl *);
+	struct dmapctl * GetDmapCtl(string);
 private:
 	off64_t LocateInode(string, int);
 	off64_t LocateIAGCP(string);
