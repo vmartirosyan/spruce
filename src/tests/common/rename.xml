@@ -217,11 +217,11 @@
 -->
 	<Test Name="RenameNotEmpty">
 		<Description>Newpath is a nonempty directory.</Description>
-		<Dir count="1">
+		<Dir count="2">
 			<File count="1"/>
 		</Dir>		
 		<Code>
-			Fail(rename(DirPaths[0].c_str(), "RenameNotEmptyNew") != -1, "Function should fail, but it did not." );
+			Fail(rename(DirPaths[1].c_str(), DirPaths[0].c_str()) != -1, "Function should fail, but it did not." );
 	
 			Check((errno != ENOTEMPTY) && (errno != EEXIST), "Function should return EEXIST or ENOTEMPTY errors but it did not." );
 		
