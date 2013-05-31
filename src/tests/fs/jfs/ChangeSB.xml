@@ -751,38 +751,6 @@
 		</Footer>
 	</Test>
 	
-	<Test Name="dbExtendFS" FaultSimulationReady="true">
-		<Description>Modify bmap and resize</Description>
-		<Code>
-            JFSCtl jfs;
-			int res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
-			if( res!= PS_Success )
-			{
-				if( res == PS_Fatal )
-				{
-					Error("Device too small.");
-					Return(Unresolved);
-				}						
-				Error("Partition mount or umount failed");
-				Return(Unresolved);	
-			}
-			
-			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
-			
-			dbmap_disk * bmap = jfs.GetBmap(DeviceName);
-			
-			Unres(bmap == NULL, "Cannot get bmap.");
-			bmap->dn_mapsize = (__le64)17179869184;
-			Unres(jfs.SetBmap(DeviceName, bmap) == false, "Cannot set bmap.");
-		
-			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
-			
-			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			
-			Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");				
-            
-		</Code>
-	</Test>
 	
 	<Test Name="diFreeFail4" FaultSimulationReady="true">
 		<Description>Trying to bring to fail in diFree.</Description>
