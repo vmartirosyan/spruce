@@ -27,6 +27,8 @@
 #include <jfs_superblock.h>
 #include <jfs_filsys.h>
 #include <jfs_imap.h>
+#include <linux/types.h>
+#include <jfs_dmap.h>
 #include <map>
 #include <string>
 using namespace std;
@@ -47,16 +49,19 @@ public:
 	struct jfs_superblock * GetSuperBlock(string DeviceName, bool ReloadFromDisk = false);
 	bool SetSuperBlock(string DeviceName, struct jfs_superblock * SuperBlock);
 	int GetInodeNum(string FilePath);
-	struct dinomap * GetIAGCP(string, int);
-	bool SetIAGCP(string, int, dinomap*);
+	struct dinomap * GetIAGCP(string);
+	bool SetIAGCP(string, dinomap*);
 	struct iag * GetIAG(string, int);
 	bool SetIAG(string, int, iag*);
-	struct dinode * Get16thInode(string);
-	bool Set16thInode(string, dinode*);
+	struct dinode * GetAggregateInode(string , int);
+	bool SetAggregateInode(string, dinode*, int);
+	bool SetBmap(string, dbmap_disk *);
+	struct dbmap_disk * GetBmap(string);
 private:
 	off64_t LocateInode(string, int);
-	off64_t LocateIAGCP(string, int);
+	off64_t LocateIAGCP(string);
 	uint64_t LocateFSIAG(string, int);
+	uint64_t LocateBlockMap(string);
 	map<int, struct dinode *> _InodeCache;
 	struct jfs_superblock * _SuperBlock;
 };
