@@ -65,6 +65,8 @@ extern bool terminate_process;
 int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" />_<xsl:value-of select="@Name" />Func(Process const * param, vector&lt;string>)
 {
 	Test const * obj = dynamic_cast&lt;Test const*>(param);
+	// Use the obj to prevent unused variable warning
+	obj = obj;
 	string _DirPrefix("<xsl:value-of select="$TestSetName" />_<xsl:value-of select="@Name"/>_dir_");
 	string _FilePrefix("<xsl:value-of select="$TestSetName" />_<xsl:value-of select="@Name"/>_file_");
 
