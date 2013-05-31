@@ -272,8 +272,6 @@ Status TestSet::Run(Checks checks)
 					
 					KedrIntegrator::SetExpression(j->first, sExpression.str() );
 					
-					KedrIntegrator::ResetLastFaultMsg();
-					
 					Logger::LogInfo("Executing test " + i->first + " in fault simulated environment.");
 					TestResult res = *static_cast<TestResult *>(i->second.Execute());
 					
@@ -303,7 +301,9 @@ Status TestSet::Run(Checks checks)
 					{
 						Logger::LogFatal("Could not restore partition. Terminating... \n");
 						return Fatal;
-					}	
+					}
+					
+					KedrIntegrator::ResetLastFaultMsg();
 									
 					// Check if the partition has become read-only because of system failures.
 					// In case of fault simulation such a situation is quite common.
