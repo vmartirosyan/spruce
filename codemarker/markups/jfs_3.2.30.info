@@ -496,7 +496,7 @@ end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
 FN:txLinelock
-LFT:21,21 This block is not covered because the test development would take too long.
+LFT:21,21 The block can be covered if many concurrent threads try to lock the same directory at once, which cannot be controlled.
 end_of_record
 
 SF:fs/jfs/jfs_txnmgr.c
