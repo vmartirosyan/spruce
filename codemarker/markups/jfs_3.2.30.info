@@ -120,6 +120,7 @@ end_of_record
 
 SF:fs/jfs/jfs_dtree.c
 FN:dtSplitUp
+LFT:55,55 It is dead code, as this parameter has a previous check in caller function  
 LFT:92,135 This code works only when block size != 4096
 LFT:275,275 This code is supported only in OS/2
 LFT:261,264 Can be covered by test jfs/JfsOverloadTests/CiGetLeafPrefixKeyFSim which is marked as dangerous.
@@ -143,6 +144,7 @@ SF:fs/jfs/jfs_dtree.c
 FN:ciGetLeafPrefixKey﻿   
 LFT:25,25 This code is supported only in OS/2
 LFT:32,32 This code is supported only in OS/2
+LFT:52,52 This code is dead, as it is the case when l->namelen has to be == r->namelen, but because of the previous FOR loop, it is clear that we need to have two files with the same name. It is impossible. 
 end_of_record
 
 
