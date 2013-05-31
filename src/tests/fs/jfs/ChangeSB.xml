@@ -369,8 +369,6 @@
 			fd = open(FilePath, O_RDWR | O_LARGEFILE, S_IRUSR | S_IWUSR);
 			Unres(fd == -1, "Cannot open file.");
 			
-			char * buf = new char[5000];
-			
 			ftruncate(fd, 10);
 			
 			close(fd);
@@ -447,8 +445,8 @@
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
-			dinode * inode = jfs.Get16thInode(DeviceName);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
+			dinode * inode = jfs.GetAggregateInode(DeviceName, 16);
 			
 			Unres(imap == NULL, "Cannot get control page.");
 			Unres(inode == NULL, "Cannot get control page inode.");
@@ -458,8 +456,8 @@
 			
 			imap->in_freeiag = 0;
 			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
-			Unres(jfs.Set16thInode(DeviceName, inode) == false, "Cannot set control page inode.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set control page.");
+			Unres(jfs.SetAggregateInode(DeviceName, inode, 16) == false, "Cannot set control page inode.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -484,14 +482,14 @@
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			
 			Unres(imap == NULL, "Cannot get control page.");
 			
 			for ( int i = 0; i < 100; ++i )
 				imap->in_agctl[i].numfree = imap->in_agctl[i].numinos + 1;
 			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set control page.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -516,16 +514,16 @@
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
-			dinode * inode = jfs.Get16thInode(DeviceName);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
+			dinode * inode = jfs.GetAggregateInode(DeviceName, 16);
 			
 			Unres(imap == NULL, "Cannot get control page.");
 			Unres(inode == NULL, "Cannot get control page inode.");
 			inode->di_size = (imap->in_nextiag + 1)*PSIZE+PSIZE;
 			imap->in_freeiag = 0;
 			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
-			Unres(jfs.Set16thInode(DeviceName, inode) == false, "Cannot set control page inode.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set control page.");
+			Unres(jfs.SetAggregateInode(DeviceName, inode, 16) == false, "Cannot set control page inode.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -552,8 +550,8 @@
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
-			dinode * inode = jfs.Get16thInode(DeviceName);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
+			dinode * inode = jfs.GetAggregateInode(DeviceName, 16);
 			
 			Unres(imap == NULL, "Cannot get control page.");
 			Unres(inode == NULL, "Cannot get control page inode.");
@@ -561,8 +559,8 @@
 			inode->di_size = (int64_t)(imap->in_nextiag + 1)*PSIZE;
 			imap->in_freeiag = 0;
 			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
-			Unres(jfs.Set16thInode(DeviceName, inode) == false, "Cannot set control page inode.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set control page.");
+			Unres(jfs.SetAggregateInode(DeviceName, inode, 16) == false, "Cannot set control page inode.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -603,12 +601,12 @@
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			
 			Unres(imap == NULL, "Cannot get control page.");
 			imap->in_nextiag = 0;
 			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set control page.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -658,7 +656,7 @@
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			iag * iag = jfs.GetIAG(DeviceName, inode_num);
 			
 			Unres(imap == NULL, "Cannot get control page.");
@@ -669,7 +667,7 @@
 			
 			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
 			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set control page.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -719,7 +717,7 @@
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			iag * iag = jfs.GetIAG(DeviceName, inode_num);
 			
 			Unres(imap == NULL, "Cannot get control page.");
@@ -730,7 +728,7 @@
 			
 			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
 			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set control page.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -751,6 +749,39 @@
 		<Footer>
 			close(fd);
 		</Footer>
+	</Test>
+	
+	<Test Name="dbExtendFS" FaultSimulationReady="true">
+		<Description>Modify bmap and resize</Description>
+		<Code>
+            JFSCtl jfs;
+			int res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+			if( res!= PS_Success )
+			{
+				if( res == PS_Fatal )
+				{
+					Error("Device too small.");
+					Return(Unresolved);
+				}						
+				Error("Partition mount or umount failed");
+				Return(Unresolved);	
+			}
+			
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+			
+			dbmap_disk * bmap = jfs.GetBmap(DeviceName);
+			
+			Unres(bmap == NULL, "Cannot get bmap.");
+			bmap->dn_mapsize = (__le64)17179869184;
+			Unres(jfs.SetBmap(DeviceName, bmap) == false, "Cannot set bmap.");
+		
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+			Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");				
+            
+		</Code>
 	</Test>
 	
 	<Test Name="diFreeFail4" FaultSimulationReady="true">
@@ -780,7 +811,7 @@
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			iag * iag = jfs.GetIAG(DeviceName, inode_num);
 			
 			Unres(imap == NULL, "Cannot get control page.");
@@ -796,7 +827,7 @@
 			
 			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
 			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set control page.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -846,7 +877,7 @@
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			iag * iag = jfs.GetIAG(DeviceName, inode_num);
 			
 			Unres(imap == NULL, "Cannot get control page.");
@@ -863,7 +894,7 @@
 			
 			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
 			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set control page.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -912,7 +943,7 @@
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			iag * iag = jfs.GetIAG(DeviceName, inode_num);
 			
 			Unres(imap == NULL, "Cannot get control page.");
@@ -929,7 +960,7 @@
 			imap->in_agctl[agno].extfree = 10;
 			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
 			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set control page.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -978,7 +1009,7 @@
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			iag * iag = jfs.GetIAG(DeviceName, inode_num);
 			
 			Unres(imap == NULL, "Cannot get control page.");
@@ -994,7 +1025,7 @@
 			imap->in_agctl[agno].extfree = 10;
 			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
 			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set control page.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -1031,8 +1062,6 @@
 		    fd = open(FilePath, O_CREAT | O_RDWR, 0777);
 		    Unres(fd == -1, "Cannot create file.");
 		    
-		    char * buf = new char[1000*1000];
-		    
 		    Unres(write(fd, "asdf", 4) == -1, "Cannot write.");
 		    	
 			close(fd);
@@ -1043,7 +1072,7 @@
 			
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			iag * iag = jfs.GetIAG(DeviceName, inode_num);
 			
 			Unres(imap == NULL, "Cannot get control page.");
@@ -1054,7 +1083,7 @@
 			
 			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
 			
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set control page.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set control page.");
 			
 			mount(DeviceName, MountPoint, FileSystem, 0, 0); //Will fail
 			
@@ -1474,7 +1503,7 @@
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
 			iag * iag = jfs.GetIAG(DeviceName, inode_num);
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			Unres(iag == NULL, "Cannot get IAG.");
 			Unres(imap == NULL, "Cannot get IAG control page.");
 			
@@ -1484,7 +1513,7 @@
 			}
 		
 			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set IAG.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set IAG.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -1543,7 +1572,7 @@
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
 			iag * iag = jfs.GetIAG(DeviceName, inode_num);
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			Unres(iag == NULL, "Cannot get IAG.");
 			Unres(imap == NULL, "Cannot get IAG control page.");
 			iag->nfreeexts = 1;
@@ -1551,7 +1580,7 @@
 			
 		
 			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set IAG.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set IAG.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -1610,7 +1639,7 @@
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
 			iag * iag = jfs.GetIAG(DeviceName, inode_num);
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			Unres(iag == NULL, "Cannot get IAG.");
 			Unres(imap == NULL, "Cannot get IAG control page.");
 			iag->nfreeinos = 1;
@@ -1618,7 +1647,7 @@
 			
 		
 			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set IAG.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set IAG.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -1806,14 +1835,14 @@
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
 			iag * iag = jfs.GetIAG(DeviceName, inode_num);
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			
 			Unres(iag == NULL, "Cannot get IAG.");
 			iag->nfreeexts = EXTSPERIAG;
 			imap->in_agctl[1].extfree = 1;
 		
 			Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set IAG.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set IAG.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
 			
@@ -2148,7 +2177,7 @@
 			int inode_num = jfs.GetInodeNum(FilePath);
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinomap * imap = jfs.GetIAGCP(DeviceName, inode_num);
+			dinomap * imap = jfs.GetIAGCP(DeviceName);
 			iag * iagp = jfs.GetIAG(DeviceName, inode_num);
 			Unres(imap == NULL, "Cannot get IAG.");
 			Unres(iagp == NULL, "Cannot get IAG.");
@@ -2158,7 +2187,7 @@
 			{
 				PXDlength(&iagp->inoext[i], 1);
 			}
-			Unres(jfs.SetIAGCP(DeviceName, inode_num, imap) == false, "Cannot set IAG.");
+			Unres(jfs.SetIAGCP(DeviceName, imap) == false, "Cannot set IAG.");
 			Unres(jfs.SetIAG(DeviceName, inode_num, iagp) == false, "Cannot set IAG.");
 			
 			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");

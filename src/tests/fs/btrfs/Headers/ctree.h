@@ -1436,15 +1436,15 @@ struct btrfs_root {
          return 0;
  }
 
- BTRFS_SETGET_FUNCS(ref_root_v0, struct btrfs_extent_ref_v0, root, 64);
+ BTRFS_SETGET_FUNCS(ref_root_v0, struct btrfs_extent_ref_v0, root, 64)
  BTRFS_SETGET_FUNCS(ref_generation_v0, struct btrfs_extent_ref_v0,
-                    generation, 64);
- BTRFS_SETGET_FUNCS(ref_objectid_v0, struct btrfs_extent_ref_v0, objectid, 64);
- BTRFS_SETGET_FUNCS(ref_count_v0, struct btrfs_extent_ref_v0, count, 32);
+                    generation, 64)
+ BTRFS_SETGET_FUNCS(ref_objectid_v0, struct btrfs_extent_ref_v0, objectid, 64)
+ BTRFS_SETGET_FUNCS(ref_count_v0, struct btrfs_extent_ref_v0, count, 32)
 
  /* struct btrfs_node */
- BTRFS_SETGET_FUNCS(key_blockptr, struct btrfs_key_ptr, blockptr, 64);
- BTRFS_SETGET_FUNCS(key_generation, struct btrfs_key_ptr, generation, 64);
+ BTRFS_SETGET_FUNCS(key_blockptr, struct btrfs_key_ptr, blockptr, 64)
+ BTRFS_SETGET_FUNCS(key_generation, struct btrfs_key_ptr, generation, 64)
 
  static inline u64 btrfs_node_blockptr(struct extent_buffer *eb, int nr)
  {
