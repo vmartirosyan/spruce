@@ -328,7 +328,7 @@ end_of_record
 SF:fs/jfs/jfs_dmap.c
 FN:dbExtendFS
 LFT:86,87 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.
-LFT:115,124 This block is not covered because the test development would take too long.
+LFT:115,124 We need a partition of 2^45 bytes to cover this code, if we just change bmap on disk mount fails..
 LFT:237,237 This block is not covered because it is just a self check.
 LFT:251,251 This block is not covered because it is just a self check.
 LFT:254,259 Can be covered if stability-check is run in mount/RemounResize test but it causes system crash.

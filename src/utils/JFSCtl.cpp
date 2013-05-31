@@ -185,11 +185,11 @@ bool JFSCtl::SetInode(string DeviceName, int InodeNum, struct dinode * inode)
 	}
 }
 
-dinomap * JFSCtl::GetIAGCP(string DeviceName, int InodeNum)
+dinomap * JFSCtl::GetIAGCP(string DeviceName)
 {
 	try
 	{
-		off64_t IagCPAddr = LocateIAGCP(DeviceName, InodeNum);
+		off64_t IagCPAddr = LocateIAGCP(DeviceName);
 		if ( IagCPAddr == -1 )
 			throw Exception("Cannot locate iag control page on disk");
 			
@@ -217,12 +217,11 @@ dinomap * JFSCtl::GetIAGCP(string DeviceName, int InodeNum)
 	}
 }
 
-bool JFSCtl::SetIAGCP(string DeviceName, int InodeNum, dinomap *IAGCP)
+bool JFSCtl::SetIAGCP(string DeviceName, dinomap *IAGCP)
 {
 	try
 	{
-		off64_t IagCPAddr = LocateIAGCP(DeviceName, InodeNum);
-		if ( IagCPAddr == -1 )
+		off64_t IagCPAddr = LocateIAGCP(DeviceName);
 			throw Exception("Cannot locate iag control page on disk");
 			
 		File f(DeviceName, S_IRUSR, O_WRONLY);
@@ -329,49 +328,111 @@ bool JFSCtl::SetIAG(string DeviceName, int InodeNum, iag *IAG)
 	}
 }
 
-dinode * JFSCtl::Get16thInode(string DeviceName)
+struct dbmap_disk * JFSCtl::GetBmap(string DeviceName)
+{
+	try
+	{
+		
+		uint64_t BlockMap = LocateBlockMap(DeviceName);
+		if ( BlockMap == 0 )
+		{
+			throw Exception("Cannot get block allocation map." + string(strerror(errno)));
+		}
+		
+		File f(DeviceName, S_IRUSR, O_RDONLY);
+		int fd = f.GetFileDescriptor();
+		
+		if ( lseek64( fd, BlockMap, SEEK_SET ) == -1)
+		{
+			throw Exception("Cannot seek to block allocation map Address." + string(strerror(errno)));
+		}
+		struct dbmap_disk *bmapCP = new dbmap_disk;
+		if ( read ( fd, bmapCP, sizeof(dbmap_disk) ) == -1)
+		{
+			throw Exception("Cannot read bmap from disk." + string(strerror(errno)));
+		}
+		
+		return bmapCP;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::GetBmap: Cannot get iag . " + e.GetMessage());
+		return NULL;
+	}
+}
+
+bool JFSCtl::SetBmap(string DeviceName, dbmap_disk *bmapCP)
+{
+	try
+	{
+		uint64_t BlockMap = LocateBlockMap(DeviceName);
+		if ( BlockMap == 0 )
+		{
+			throw Exception("Cannot get block allocation map." + string(strerror(errno)));
+		}
+		File f(DeviceName, S_IRUSR, O_RDWR);
+		int fd = f.GetFileDescriptor();
+		
+		if ( lseek64( fd, BlockMap, SEEK_SET ) == -1)
+		{
+			throw Exception("Cannot seek to block allocation map Address." + string(strerror(errno)));
+		}
+		if ( write ( fd, bmapCP, sizeof(dbmap_disk) ) == -1)
+		{
+			throw Exception("Cannot write bmap to disk." + string(strerror(errno)));
+		}
+		return true;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::SetIAG: Cannot set iag. " + e.GetMessage());
+		return false;
+	}
+}
+
+dinode * JFSCtl::GetAggregateInode(string DeviceName, int n)
 {
 	try
 	{
 		File f(DeviceName, S_IRUSR, O_RDONLY);
 		int fd = f.GetFileDescriptor();
 			
-		struct dinode *_16_th_inode = new dinode;
-		if ( lseek64( fd, SUPER1_OFF + 2*PSIZE + sizeof(iag) + 16*sizeof(dinode), SEEK_SET ) == -1 )
-			throw Exception("JFSCtl::Get16thInode: Cannot seek to 16-th inode in aggregate IAG. " + (string)strerror(errno));
+		struct dinode *_n_th_inode = new dinode;
+		if ( lseek64( fd, SUPER1_OFF + 2*PSIZE + sizeof(iag) + n*sizeof(dinode), SEEK_SET ) == -1 )
+			throw Exception("JFSCtl::GetAggregateInode: Cannot seek to aggregate inode. " + (string)strerror(errno));
 			
-		if ( read ( fd, _16_th_inode, sizeof(dinode) ) != sizeof(dinode) )
-			throw Exception("JFSCtl::Get16thInode: Cannot read 16-th inode in aggregate IAG. " + (string)strerror(errno));
+		if ( read ( fd, _n_th_inode, sizeof(dinode) ) != sizeof(dinode) )
+			throw Exception("JFSCtl::GetAggregateInode: Cannot read aggregate inode. " + (string)strerror(errno));
 			
 		
-		return _16_th_inode;
+		return _n_th_inode;
 	}
 	catch(Exception e)
 	{
-		Logger::LogError("JFSCtl::Get16thInode: Cannot get 16th inode. " + e.GetMessage());
+		Logger::LogError("JFSCtl::GetAggregateInode: Cannot get aggregate inode. " + e.GetMessage());
 		return NULL;
 	}
 }
 
-bool JFSCtl::Set16thInode(string DeviceName, dinode *_16_th_inode)
+bool JFSCtl::SetAggregateInode(string DeviceName, dinode *_n_th_inode, int n)
 {
 	try
 	{
 		File f(DeviceName, S_IRUSR, O_RDWR);
 		int fd = f.GetFileDescriptor();
 			
-		if ( lseek64( fd, SUPER1_OFF + 2*PSIZE + sizeof(iag) + 16*sizeof(dinode), SEEK_SET ) == -1 )
-			throw Exception("JFSCtl::Set16thInode: Cannot seek to 16-th inode in aggregate IAG. " + (string)strerror(errno));
+		if ( lseek64( fd, SUPER1_OFF + 2*PSIZE + sizeof(iag) + n*sizeof(dinode), SEEK_SET ) == -1 )
+			throw Exception("JFSCtl::SetAggregateInode: Cannot seek to aggregate inode. " + (string)strerror(errno));
 			
-		if ( write ( fd, _16_th_inode, sizeof(dinode) ) != sizeof(dinode) )
-			throw Exception("JFSCtl::Set16thInode: Cannot write 16-th inode to aggregate IAG. " + (string)strerror(errno));
+		if ( write ( fd, _n_th_inode, sizeof(dinode) ) != sizeof(dinode) )
+			throw Exception("JFSCtl::SetAggregateInode: Cannot write to aggregate inode. " + (string)strerror(errno));
 			
 		
 		return true;
 	}
 	catch(Exception e)
 	{
-		Logger::LogError("JFSCtl::Set16thInode: Cannot set 16th inode." + e.GetMessage());
+		Logger::LogError("JFSCtl::SetAggregateInode: Cannot set aggregate inode." + e.GetMessage());
 		return false;
 	}
 }
@@ -452,8 +513,6 @@ off64_t JFSCtl::LocateInode(string DeviceName, int InodeNum)
 		}
 		
 		
-		File f(DeviceName, S_IRUSR, O_RDONLY);
-		int fd = f.GetFileDescriptor();
 		pxd_t ext_addr = FileSetIag->inoext[inode_ext_desc];
 		
 		off64_t addr = ext_addr.addr1;
@@ -470,7 +529,7 @@ off64_t JFSCtl::LocateInode(string DeviceName, int InodeNum)
 }
 
 
-off64_t JFSCtl::LocateIAGCP(string DeviceName, int InodeNum)
+off64_t JFSCtl::LocateIAGCP(string DeviceName)
 {
 	try
 	{	
@@ -498,14 +557,12 @@ uint64_t JFSCtl::LocateFSIAG(string DeviceName, int iag_key)
 	try
 	{
 		
-		struct dinode *_16_th_inode = Get16thInode(DeviceName);
+		struct dinode *_16_th_inode = GetAggregateInode(DeviceName, 16);
 		
 		if ( _16_th_inode == NULL )
 		{
 			throw Exception("Cannot get 16th inode." + string(strerror(errno)));
 		}
-		File f(DeviceName, S_IRUSR, O_RDONLY);
-		int fd = f.GetFileDescriptor();
 		
 		uint64_t FileSetIAGBlock = 0;
 		xad x[8];
@@ -523,6 +580,39 @@ uint64_t JFSCtl::LocateFSIAG(string DeviceName, int iag_key)
 	catch(Exception e)
 	{
 		Logger::LogError("JFSCtl::LocateFSIAG: Cannot locate Fileset IAG block. " + e.GetMessage());
+		return 0;
+	}
+}
+
+uint64_t JFSCtl::LocateBlockMap(string DeviceName)
+{
+	try
+	{
+		
+		struct dinode *_2_nd_inode = GetAggregateInode(DeviceName, 2);
+		
+		if ( _2_nd_inode == NULL )
+		{
+			throw Exception("Cannot get 2nd inode." + string(strerror(errno)));
+		}
+		
+		
+		uint64_t BlockMapBlock = 0;
+		xad x[8];
+		memcpy(x, _2_nd_inode->di_xtroot, 8*sizeof(xad));
+		
+		BlockMapBlock = x[XTENTRYSTART].addr1;
+		BlockMapBlock <<= 32;
+		BlockMapBlock += x[XTENTRYSTART].addr2;
+		if ( BlockMapBlock == 0 )
+		{
+			throw Exception("Cannot get block allocation map Address." + string(strerror(errno)));
+		}
+		return BlockMapBlock * PSIZE;
+	}
+	catch(Exception e)
+	{
+		Logger::LogError("JFSCtl::LocateBlockMap: Cannot locate block allocation map. " + e.GetMessage());
 		return 0;
 	}
 }
