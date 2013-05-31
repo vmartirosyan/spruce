@@ -222,6 +222,7 @@ bool JFSCtl::SetIAGCP(string DeviceName, dinomap *IAGCP)
 	try
 	{
 		off64_t IagCPAddr = LocateIAGCP(DeviceName);
+		if ( IagCPAddr == -1 )
 			throw Exception("Cannot locate iag control page on disk");
 			
 		File f(DeviceName, S_IRUSR, O_WRONLY);
