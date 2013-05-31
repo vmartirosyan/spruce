@@ -93,9 +93,14 @@ Status Test::OopsChecker(string& OutputLog)
 				break;
 			OutputLog.replace(pos, 1, " ");   
 		}
-		Logger::LogFatal("Oops checker: bug found." + OutputLog);
-		return Bug;
+		if(OutputLog.find(static_cast<string>("INFO:")) == std::string::npos) // So we have a fatal problem
+		{
+			Logger::LogFatal("Oops checker: bug found. \n" + OutputLog);
+			return Bug;	
+		}
+		Logger::LogWarn("OopsChecker: found non-fatal problem. Trying to continue execution. \n" + OutputLog);
 	}
+	
 	foundPos = mainMessage.find(oops);			
 	if( foundPos != string::npos )
 	{
@@ -115,9 +120,14 @@ Status Test::OopsChecker(string& OutputLog)
 				break;
 			OutputLog.replace(pos, 1, " ");  
 		}
-		Logger::LogFatal("Oops checker: oops found." + OutputLog);
-		return Oops;
+		if(OutputLog.find(static_cast<string>("INFO:")) == std::string::npos) // So we have a fatal problem
+		{
+			Logger::LogFatal("Oops checker: Oops found. \n" + OutputLog);
+			return Oops;	
+		}
+		Logger::LogWarn("OopsChecker: found non-fatal problem. Trying to continue execution. \n" + OutputLog);
 	}
+	
 	foundPos = mainMessage.find(panic);			
 	if( foundPos != string::npos )
 	{
@@ -137,8 +147,12 @@ Status Test::OopsChecker(string& OutputLog)
 				break;
 			OutputLog.replace(pos, 1, " ");  
 		}
-		Logger::LogFatal("Oops checker: Panic found." + OutputLog);
-		return Panic;
+		if(OutputLog.find(static_cast<string>("INFO:")) == std::string::npos) // So we have a fatal problem
+		{
+			Logger::LogFatal("Oops checker: Panic found. \n" + OutputLog);
+			return Panic;	
+		}
+		Logger::LogWarn("OopsChecker: found non-fatal problem. Trying to continue execution. \n" + OutputLog);
 	}
 	return Success;
 }
@@ -284,15 +298,7 @@ Status TestSet::Run(Checks checks)
 					{	
 						//so we have an emergency situation...
 						i->second.AddResult(Stability, ProcessResult(Fatal, "Status: " + StatusMessages[oopsStatus] + "Output: " + log));
-						if(log.find(static_cast<string>("INFO:")) != std::string::npos)
-						{
-							Logger::LogWarn("OopsChecker has found non-fatal problem. Trying to continue execution. \n");
-						}
-						else
-						{
-							break;
-						}
-						
+						return Fatal;
 					}
 					
 					i->second.AddResult(Stability, res );
