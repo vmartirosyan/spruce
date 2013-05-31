@@ -20,7 +20,7 @@
 //      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 //      MA 02110-1301, USA.
 
-//#include <KedrIntegrator.hpp>
+#include <KedrIntegrator.hpp>
 #include <Logger.hpp>
 #include <Process.hpp>
 #include <signal.h>
@@ -80,6 +80,12 @@ int Process::Level = 0;
 string Logger::_LogFile;
 LogLevel Logger::_LogLevel;
 bool Logger::_Initialized = false;
+
+string KedrIntegrator::TargetModule = "";
+bool KedrIntegrator::MemLeakCheckEnabled = false;
+bool KedrIntegrator::FaultSimulationEnabled = false;
+vector<string> KedrIntegrator::KEDRProfiles = vector<string>();
+
 
 
 bool ProcessAlarmed = false;

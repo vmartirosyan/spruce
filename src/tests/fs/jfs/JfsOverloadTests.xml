@@ -255,7 +255,7 @@
 		</Code>
 	</Test>	
 	
-	<Test Name="ManyBigWrittenFiles" FaultSimulationReady="true">
+	<Test Name="ManyBigWrittenFiles" FaultSimulationReady="true" Dangerous="true">
 		<Description>Trying to create big files, and write the data.</Description>
 		<File count = "500" />
 		<Code>

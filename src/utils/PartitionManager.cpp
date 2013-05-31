@@ -181,7 +181,7 @@ PartitionStatus PartitionManager::RestorePartition(string DeviceName, string Mou
 
 bool PartitionManager::ReleasePartition(string MountPoint, string* output)
 {
-	Logger::LogInfo((string)"Unmounting partition " + MountPoint);
+	//Logger::LogInfo((string)"Unmounting partition " + MountPoint);
 	if ( chdir("/") == -1)
 		return false;
 	

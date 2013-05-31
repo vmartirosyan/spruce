@@ -48,6 +48,7 @@ ProcessResult * Test::Execute(vector<string> args)
 
 Status Test::OopsChecker(string& OutputLog)	
 {
+	//Logger::LogDebug("OOPS CHECKER ACTIVATED...Wait for output. \n");
 	string mainMessage;
 	vector<string> args;
 	args.push_back("-c"); // Clear the ring
@@ -72,6 +73,7 @@ Status Test::OopsChecker(string& OutputLog)
 	const char amp = 38;   // 38 is the ASCII code of the operation 'ampersand'
 	size_t foundPos;
 	
+	//Logger::LogDebug(mainMessage);
 	foundPos = mainMessage.find(bug); // searching "bug" in the kernel output
 	if( foundPos != string::npos )
 	{
@@ -91,7 +93,7 @@ Status Test::OopsChecker(string& OutputLog)
 				break;
 			OutputLog.replace(pos, 1, " ");   
 		}
-		Logger::LogFatal("Oops checker: bug found.");
+		Logger::LogFatal("Oops checker: bug found." + OutputLog);
 		return Bug;
 	}
 	foundPos = mainMessage.find(oops);			
@@ -113,7 +115,7 @@ Status Test::OopsChecker(string& OutputLog)
 				break;
 			OutputLog.replace(pos, 1, " ");  
 		}
-		Logger::LogFatal("Oops checker: oops found.");
+		Logger::LogFatal("Oops checker: oops found." + OutputLog);
 		return Oops;
 	}
 	foundPos = mainMessage.find(panic);			
@@ -135,7 +137,7 @@ Status Test::OopsChecker(string& OutputLog)
 				break;
 			OutputLog.replace(pos, 1, " ");  
 		}
-		Logger::LogFatal("Oops checker: Panic found.");
+		Logger::LogFatal("Oops checker: Panic found." + OutputLog);
 		return Panic;
 	}
 	return Success;
@@ -213,10 +215,10 @@ Status TestSet::Run(Checks checks)
 			i->second.AddResult(Functional, res );
 			
 		// Get the last fault information
-		if ( i->second.GetEffectiveChecks() & Stability )
+		/*if ( i->second.GetEffectiveChecks() & Stability )
 		{
 			Logger::LogWarn("Last fault: " + KedrIntegrator::GetLastFaultMsg());
-		}
+		}*/
 		
 		if ( result < res.GetStatus() )
 			result = res.GetStatus();
@@ -227,7 +229,6 @@ Status TestSet::Run(Checks checks)
 		
 		if(oopsStatus != Success)
 		{	
-			Logger::LogError("BUG: " + log);
 			//so we have an emergency situation...
 			i->second.AddResult(Stability, ProcessResult(Fatal, "Status: " + StatusMessages[oopsStatus] + "Output: " + log));
 			break;
@@ -271,14 +272,13 @@ Status TestSet::Run(Checks checks)
 					
 					KedrIntegrator::SetExpression(j->first, sExpression.str() );
 					
+					KedrIntegrator::ResetLastFaultMsg();
+					
 					Logger::LogInfo("Executing test " + i->first + " in fault simulated environment.");
 					TestResult res = *static_cast<TestResult *>(i->second.Execute());
 					
 					// Get the last fault information
 					Logger::LogWarn("Last fault: " + KedrIntegrator::GetLastFaultMsg());
-					
-					// Temporary solution. Increases the system stability.
-					PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true);
 					
 					oopsStatus = i->second.OopsChecker(log); // log is an output parameter
 					
@@ -286,12 +286,25 @@ Status TestSet::Run(Checks checks)
 					{	
 						//so we have an emergency situation...
 						i->second.AddResult(Stability, ProcessResult(Fatal, "Status: " + StatusMessages[oopsStatus] + "Output: " + log));
-					}
-					else
-					{
-						i->second.AddResult(Stability, res );
+						if(log.find(static_cast<string>("INFO:")) != std::string::npos)
+						{
+							Logger::LogWarn("OopsChecker has found non-fatal problem. Trying to continue execution. \n");
+						}
+						else
+						{
+							break;
+						}
+						
 					}
 					
+					i->second.AddResult(Stability, res );
+														
+					if(PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)  != PS_Success)
+					{
+						Logger::LogFatal("Could not restore partition. Terminating... \n");
+						return Fatal;
+					}	
+									
 					// Check if the partition has become read-only because of system failures.
 					// In case of fault simulation such a situation is quite common.
 					/*if ( PartitionManager::IsOptionEnabled("ro") )
