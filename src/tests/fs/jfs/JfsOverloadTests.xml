@@ -385,6 +385,37 @@
 		</Code>
 	</Test>	
 	
+	<Test Name="CiGetLeafPrefixKeyNames">
+		<Description>Get fail in ciGetLeafPrefixKey function.</Description>
+		<Code>			
+		char path[50];
+		int ret_val;
+		int file_index;
+		
+		system(("rm -rf " + (string)MountPoint + "/*").c_str());
+		
+		for (file_index = 0; file_index < 94; ++file_index)//90-99
+		{
+			sprintf(path, "max_files_test%d", file_index);
+			ret_val = open(path, O_CREAT | O_RDONLY, 0777);
+			if ( ret_val == -1 )
+			{
+				unlink(path);
+				Unres(true, "Cannot create file: " + static_cast<string>(path));
+			}
+		}
+	
+		sprintf(path, "max_files_test");
+		ret_val = open(path, O_CREAT | O_RDONLY, 0777);
+		if ( ret_val == -1 )
+		{
+			unlink(path);
+			Unres(true, "Cannot create file: " + static_cast<string>(path));
+		}		
+	
+		</Code>
+	</Test>	
+	
 	<Test Name="xtSplitRootFail" Dangerous="true">
 		<Description>Get fail in xtSplitRoot function.</Description>
 		<File count = "1"/>
