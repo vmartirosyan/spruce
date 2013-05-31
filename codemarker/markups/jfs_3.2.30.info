@@ -847,6 +847,11 @@ LFT:26,33 This block is not covered because the test development would take too 
 end_of_record
 
 SF:fs/jfs/xattr.c
+FN:ea_write
+LFT:93,93 This could be covered if the call of the ea_write_inline failed in the same function, and if the ji->ea.flag will be set to DXD_INLINE. But when ea_write_inline fails, it never set the flag to DXD_INLINE.
+end_of_record
+
+SF:fs/jfs/xattr.c
 FN:ea_get
 LFT:112,114 This block could be covered if we corrupt the inode, but in that case the failure comes earlier invokation of ea_read(line 552 of xattr.c).
 LFT:132,137 This is self checking/correcting code. 
