@@ -346,6 +346,9 @@ int main(int argc, char ** argv)
 				+ "_log.xml";
 			
 			XMLGenerator::GenerateLog(LogFile , *i->second, FileSystem, PMCurrentOptionsStripped, str.str());
+			
+			if ( res >= Fatal )
+				break;
 		}
 
 	}
