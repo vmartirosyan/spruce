@@ -803,7 +803,7 @@ end_of_record
 
 SF:fs/jfs/jfs_xtree.c
 FN:xtTruncate_pmap
-LFT:29,29 This block is not covered because the test development would take too long.
+LFT:29,29 This block could be covered if we corrupt the inode, but in that case the -EIO error comes up earlier, and does not reach the desired function xtTruncate_pmap.
 LFT:34,37 This block would be covered if we cover the lines 82-84 in xtSearch. But it is marked as dead
 LFT:98,98 This line could be covered if we corrupt the inode, but in that case the failure comes upper in the same function. 
 end_of_record
