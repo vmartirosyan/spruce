@@ -51,7 +51,8 @@ FN:dbAllocAG
 LFT:12,15 If we change the bmap->dn_agl2size value dbAllocAG function isn't called because in dbAlloc there is a previous check of this value.
 LFT:45,48 If we change the bmap dbAllocCtl fails beacause of a previous check(not with ENOSPC).
 LFT:106,109 This block is not covered because it is just a self check.
-LFT:117,117 If we change the bmp->db_aglevel value to 2, the functions fails in a different place and we don't get to this line.
+LFT:117,117 If we change the bmp->db_aglevel value, the functions fails in a different place and we don't get to this line.
+LFT:119,119 If we change the bmp->db_aglevel value, the functions fails in a different place and we don't get to this line.
 LFT:145,149 This block is not covered because the test development would take too long.
 LFT:159,161 This block is not covered because the test development would take too long.
 end_of_record
