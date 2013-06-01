@@ -93,7 +93,15 @@ public:
 	
 	void AddResult(Checks c, ProcessResult t)
 	{
-		_results[c] = t;		
+		// If the result is already there, then append the output.
+		if ( _results.find(c) != _results.end() )
+		{
+			_results[c].ModOutput(t.GetOutput());
+			if ( t.GetStatus() > _results[c].GetStatus() )
+				_results[c].SetStatus(t.GetStatus());
+		}
+		else
+			_results[c] = t;
 	}
 	
 	void ClearResults()

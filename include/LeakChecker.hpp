@@ -198,11 +198,11 @@ protected:
 		if ( Output != "" )
 		{
 			// Read the path			
-			int StartPos = Output.find(" on ", 0);
+			size_t StartPos = Output.find(" on ", 0);
 			if ( StartPos == string::npos )
 				return false;
 			StartPos += 4;
-			int SpacePos = Output.find(' ', StartPos);
+			size_t SpacePos = Output.find(' ', StartPos);
 			if ( SpacePos == string::npos )
 				return false;
 						

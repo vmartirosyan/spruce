@@ -541,7 +541,7 @@ protected:
 		args.push_back("kedr_fsim_indicator_kmalloc");
 		args.push_back("kedr_fsim_indicator_capable");
 		
-		ProcessResult * res = 
+		//ProcessResult * res = 
 		rmmod.Execute(args);
 	}
 };
