@@ -790,7 +790,7 @@
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 
-		const char FilePath[] = "dbAllocAG1";
+			const char FilePath[] = "dbAllocAG1";
             JFSCtl jfs;
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
@@ -865,7 +865,36 @@
 			close(fd);
 		</Footer>
 	</Test>
-	
+
+	<Test Name="dbAllocDmapBU" FaultSimulationReady="true">
+		<Description>covers a line in dbAllocDmapBU()</Description>
+		<Code>
+            JFSCtl jfs;
+            int res;
+            res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+			if( res!= PS_Success )
+			{
+				if( res == PS_Fatal )
+				{
+					Error("Device too small.");
+					Return(Unresolved);
+				}						
+				Error("Partition mount or umount failed");
+				Return(Unresolved);	
+			}
+			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+
+			dmapctl * dmc = jfs.GetDmapCtl(DeviceName);
+			
+			Unres(dmc == NULL, "Cannot get dmapctl.");
+			dmc->leafidx = 100;
+			Unres(jfs.SetDmapCtl(DeviceName, dmc) == false, "Cannot set dmapctl.");
+			Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			sync();		
+			Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");	    
+		</Code>
+	</Test>
 	<Test Name="dbAllocCtlFail" FaultSimulationReady="true">
 		<Description>Fails dbAllocCtl()</Description>
 		<Header>
@@ -1227,7 +1256,6 @@
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 		    Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-		    char buf[10];
             string filename = "file";
             JFSCtl jfs;
             fd = creat(filename.c_str(), 0777);
