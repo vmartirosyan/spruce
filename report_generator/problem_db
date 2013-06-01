@@ -42,3 +42,36 @@ attribute resolution Filesystem problem
 
 end
 
+
+test ChangeSB diFreeFail6
+expected test_suite fs-spec
+expected fs jfs
+expected distro Debian
+expected distro_version 6.0.6
+
+attribute comment This test brings to failure on old kernels, especially on Debian 6. Not actual problem on new kernels.
+attribute resolution Filesystem problem
+
+end
+
+test ChangeSB diFreeFail7
+expected test_suite fs-spec
+expected fs jfs
+expected distro Debian
+expected distro_version 6.0.6
+
+attribute comment This test brings to failure on old kernels, especially on Debian 6. Not actual problem on new kernels.
+attribute resolution Filesystem problem
+
+end
+
+test ChangeSB diAllocBitFail
+expected test_suite fs-spec
+expected fs jfs
+expected distro Debian
+expected distro_version 6.0.6
+
+attribute comment This test brings to failure on old kernels, especially on Debian 6. Not actual problem on new kernels.
+attribute resolution Filesystem problem
+
+end
