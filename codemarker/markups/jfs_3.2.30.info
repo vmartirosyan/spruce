@@ -79,7 +79,7 @@ end_of_record
 
 SF:fs/jfs/jfs_dmap.c
 FN:dbAdjCtl
-LFT:19,22 This block is not covered because the test development would take too long.
+LFT:19,22 Can be covered by test jfs/ChangeSB/dbAllocDmapBU which is marked as dangerous.
 LFT:101,105 This block is not covered because it is just a self check.
 LFT:120,120 This block is not covered because it is just a self check.
 end_of_record
