@@ -866,7 +866,7 @@
 		</Footer>
 	</Test>
 
-	<Test Name="dbAllocDmapBU" FaultSimulationReady="true">
+	<Test Name="dbAllocDmapBU" Dangerous="true">
 		<Description>covers a line in dbAllocDmapBU()</Description>
 		<Code>
             JFSCtl jfs;
