@@ -23,7 +23,6 @@ FN:dbAllocBottomUp
 LFT:21,21 This block is not covered because the test development would take too long.
 LFT:28,29 Is covered by test jfs/mount/MultipleResizeFail which is marked as dangerous.
 LFT:40,42 Is covered by test jfs/mount/MultipleResizeFail which is marked as dangerous.
-LFT:98,98 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_dmap.c
