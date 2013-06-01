@@ -21,3 +21,6 @@ end_of_record
 #######################################################################
 #FREECODE:
 
+SF:fs/ext4/super.c
+FN:print_daily_error_info This function is called once a day if we have errors logged on the file system
+end_of_record
