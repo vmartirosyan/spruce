@@ -20,7 +20,7 @@ end_of_record
 
 SF:fs/jfs/jfs_dmap.c
 FN:dbAllocBottomUp
-LFT:21,21 This block is not covered because the test development would take too long.
+LFT:21,21 This code is dead code in Linux, because block size is always 4096. And nb value will always be 1(rem = 1 too as it's number of blocks per page) and we can't get twice into this loop.
 LFT:28,29 Is covered by test jfs/mount/MultipleResizeFail which is marked as dangerous.
 LFT:40,42 Is covered by test jfs/mount/MultipleResizeFail which is marked as dangerous.
 end_of_record
@@ -52,13 +52,13 @@ LFT:45,48 If we change the bmap dbAllocCtl fails beacause of a previous check(no
 LFT:106,109 This block is not covered because it is just a self check.
 LFT:117,117 If we change the bmp->db_aglevel value, the functions fails in a different place and we don't get to this line.
 LFT:119,119 If we change the bmp->db_aglevel value, the functions fails in a different place and we don't get to this line.
-LFT:145,149 This block is not covered because the test development would take too long.
-LFT:159,161 This block is not covered because the test development would take too long.
+LFT:145,149 This block can't be covered because dmapctl.stree needs to be changed, but that change brings to system crash.
+LFT:159,161 This block can't be covered because dmapctl.stree needs to be changed, but that change brings to system crash.
 end_of_record
 
 SF:fs/jfs/jfs_dmap.c
 FN:dbAllocAny
-LFT:18,20 This block is not covered because the test development would take too long.
+LFT:18,20 This block can't be covered because dmapctl.stree needs to be changed, but that change brings to system crash.
 end_of_record
 
 SF:fs/jfs/jfs_dmap.c
