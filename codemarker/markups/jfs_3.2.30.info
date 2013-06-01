@@ -143,7 +143,6 @@ SF:fs/jfs/jfs_dtree.c
 FN:ciGetLeafPrefixKey﻿   
 LFT:25,25 This code is supported only in OS/2
 LFT:32,32 This code is supported only in OS/2
-LFT:52,52 This code is dead, as it is the case when l->namelen has to be == r->namelen, but because of the previous FOR loop, it is clear that we need to have two files with the same name. It is impossible. 
 end_of_record
 
 
@@ -679,6 +678,7 @@ LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted direc
 LFT:3254,3260 This is self checking/correcting code.
 LFT:3150,3150 This is self checking/correcting code.
 LFT:3067,3070 This is impossible to cover, as when we corrupt the inodes next index, then the coverage doesn't gain the desired block. Function returns with the previous return statement on line 3063. 
+LFT:3819,3819 This code is dead, as it is the case when l->namelen has to be == r->namelen, but because of the previous FOR loop, it is clear that we need to have two files with the same name. It is impossible. 
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
