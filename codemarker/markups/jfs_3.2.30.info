@@ -73,6 +73,11 @@ LFT:23,33 Can be covered by test jfs/ChangeSB/dbAdjCtlFail which is marked as da
 end_of_record
 
 SF:fs/jfs/jfs_dmap.c
+FN:dbAllocDmapBU
+LFT:98,98 This block could be covered if we perform fault simulation on test jfs/ChangeSB/dbAllocDmapBU which is marked as dangeous.
+end_of_record
+
+SF:fs/jfs/jfs_dmap.c
 FN:dbAllocBits
 LFT:76,79 This block is not covered because it is just a self check.
 end_of_record
