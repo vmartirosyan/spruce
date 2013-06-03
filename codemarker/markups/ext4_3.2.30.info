@@ -5,7 +5,7 @@ DEADCODE:
 
 SF:fs/ext4/super.c
 FN:dquot_to_inode
-LFT:0,0 The function is inline.
+LFT:0,0 Function is inline and its call is usually integrated.
 end_of_record
 
 SF:fs/ext4/fsync.c
@@ -16,15 +16,39 @@ SF:fs/ext4/inode.c
 FN:ext4_block_truncate_page The function isn't called anywhere. Was still used in 3.1 version and is removed in 3.3.
 end_of_record
 
+SF:fs/ext4/indirect.c
+FN:ext4_blks_to_allocate
+LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
 #######################################################################
 #################Section for free code markup##########################
 #######################################################################
 #FREECODE:
 
 SF:fs/ext4/super.c
-FN:print_daily_error_info This function is called once a day if we have errors logged on the file system
+FN:print_daily_error_info This function is called once a day if we have errors logged on the file system.
 end_of_record
 
 SF:fs/ext4/ioctl.c
 LFT:359,376 Fitrim ioctl works only for solid-state drives.
 end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_error_inode This function can be covered if corrupt file.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_error_file This function can be covered if corrupt directory.
+end_of_record
+
+SF:fs/ext4/dir.c
+FN:__ext4_check_dir_entry
+LFT:25,38 This lines can be covered if corrupt file and corrupt directory.
+end_of_record
+
+SF:fs/ext4/indirect.c
+LFT:239,239 Function is inline and its call is usually integrated.
+LFT:704,706 Can be covered with "-t ext2" or "-t ext3" mkfs options enabled if there is too little free space left. 
+end_of_record
+
