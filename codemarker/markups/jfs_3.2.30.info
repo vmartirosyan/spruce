@@ -344,6 +344,7 @@ end_of_record
 
 SF:fs/jfs/jfs_metapage.c
 LFT:403,423 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
+LFT:478,478 Code is called only when the bio->bi_size iz zero and and bio_add_page does not fail. Such a situation cannot be controlled neither via fault simulation, nor via on-disk changes.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
