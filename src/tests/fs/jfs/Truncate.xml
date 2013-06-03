@@ -105,6 +105,39 @@
 			
 		</Code>
 	</Test>
+	<Test Name="xtTruncateUnlinked" FaultSimulationReady="true">
+		<Description>Covers JFS xtTruncate and related functions.</Description>
+		<Code>
+			system("rm -rf /tmp/spruce_test/*");
+			int count = 0;
+		
+			File f("test");
+			int fd = f.GetFileDescriptor();
+			
+			
+		
+			char buf[10000];
+			for (int i = 0 ; i < 80000; ++i)
+			{
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
+				
+				Unres (write(fd, buf, 100) == -1, "Cannot write.");
+			}
+		
+			fsync(fd);
+			
+			unlink("test");
+			
+			sync();
+			
+			int size = 256*10000;
+			
+			Unres(ftruncate(fd, 80000*10000) == -1, "Cannot truncate 1");
+			
+			Unres(ftruncate(fd, 1000) == -1, "Cannot truncate 2");
+			
+		</Code>
+	</Test>
 	<Test Name="TruncateFail" FaultSimulationReady="true">
 		<Description>jfs_truncate_nolock fail .</Description>
 		<Header>
