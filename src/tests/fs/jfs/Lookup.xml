@@ -31,6 +31,9 @@
 		<Description>Create files mount, unmount and try to open them.</Description>
 		<Dir count="1"/>
 		<File count="1"/>
+		<Header>
+			const char * NodeName = "new_node";
+		</Header>
 		<Code>
 			int NameLength =  PATH_MAX - strlen(MountPoint)-1;
 			char * OldFilePath = new char[NameLength];
@@ -39,8 +42,7 @@
 				OldFilePath[i] = 'a';
 			}
 			const char * NewFilePath = "new_file";
-			const char * NewFilePath2 = "new_file2";
-			const char * NodeName = "new_node";
+			const char * NewFilePath2 = "new_file2";		
 			struct stat st_buf;
 			unlink(NewFilePath);
 			unlink(NewFilePath2);
@@ -75,4 +77,7 @@
 			
 		</Code>
 	</Test>
+	<Footer>
+			unlink(NodeName);
+	</Footer>
 </TestSet>
