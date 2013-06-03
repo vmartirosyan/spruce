@@ -24,3 +24,7 @@ end_of_record
 SF:fs/ext4/super.c
 FN:print_daily_error_info This function is called once a day if we have errors logged on the file system
 end_of_record
+
+SF:fs/ext4/ioctl.c
+LFT:359,359 Fitrim ioctl works only for solid-state drives.
+end_of_record
