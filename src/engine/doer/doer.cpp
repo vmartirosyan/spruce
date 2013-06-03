@@ -320,6 +320,7 @@ int main(int argc, char ** argv)
 		time_t ItemStartTime = time(0);
 		
 		
+		Status res = Success;
 		
 		for ( map<string, TestPackage*>::iterator i = Tests.begin(); i != Tests.end(); ++i )
 		{
@@ -330,7 +331,7 @@ int main(int argc, char ** argv)
 			if ( SkipTestPath(Path) )
 				continue;
 
-			Status res = i->second->Run(PerformChecks);
+			res = i->second->Run(PerformChecks);
 			
 			size_t ItemDuration = time(0) - ItemStartTime;
 			stringstream str;
@@ -350,7 +351,8 @@ int main(int argc, char ** argv)
 			if ( res >= Fatal )
 				break;
 		}
-
+		if ( res >= Fatal )
+			break;
 	}
 	while ( PS != PS_Done );
 	
