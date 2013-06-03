@@ -81,13 +81,28 @@
             {
                 sprintf(buf, "%d",  j);
                 string dirname = buf;
-                mkdir(dirname.c_str(), 0777);
+                Unres(mkdir(dirname.c_str(), 0777) == -1, "Mkdir failed.");
             }
             for (int j = 50000; j < 50005; ++j)
             {
                 sprintf(buf, "%d",  j);
                 string dirname = buf;
                 Fail(mkdir(dirname.c_str(), 0777) == -1,"mkdir failed.");
+            }
+		</Code>
+	</Test>
+	<Test Name="DirectoriesInserted1" FaultSimulationReady="true">
+		<Description>Trying to create many directories</Description>
+		<Code>
+		    char buf[10];
+            string dirname = "some_directory";
+            
+            mkdir(dirname.c_str(), 0777);
+            chdir(dirname.c_str());
+            for (int j = 0; j < 100000; ++j)
+            {
+                sprintf(buf, "%d",  j);
+                Unres(mkdir(buf, 0777) == -1, "Mkdir failed.");
             }
 		</Code>
 	</Test>
