@@ -52,3 +52,11 @@ LFT:239,239 Function is inline and its call is usually integrated.
 LFT:704,706 Can be covered with "-t ext2" or "-t ext3" mkfs options enabled if there is too little free space left. 
 end_of_record
 
+SF:fs/ext4/mmp.c
+LFT:143,146 Can be covered with "-O mmp" mkfs options enabled and remounting partition read-only.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_journalled_write_end
+LFT:53,60 Can be covered if we chande inode->i_size on disk. 
+end_of_record
