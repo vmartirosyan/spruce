@@ -778,7 +778,6 @@ end_of_record
 SF:fs/jfs/jfs_xtree.c
 FN:xtSplitRoot
 LFT:33,34 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
-LFT:71,72 This block is not covered because the test development would take too long.
 end_of_record
 
 SF:fs/jfs/jfs_xtree.c
