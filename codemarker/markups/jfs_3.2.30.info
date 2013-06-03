@@ -350,9 +350,9 @@ end_of_record
 SF:fs/jfs/jfs_metapage.c
 LFT:266,266 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
 LFT:611,614 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
-LFT:648,653 This block is not covered because "metapage" is initialised from "page" using type convertion.
-LFT:659,659 These lines cannot be covered from user space.
-LFT:695,696 These lines cannot be covered from user space.
+LFT:648,653 This block is not covered because logical size of "metapage" is equal to page size.
+LFT:659,659 These lines cannot be covered because we can not control the work of threads, here we can not create situation of reading a discarded metapage.
+LFT:695,696 These lines cannot be covered as they get control only from lines 659-663, 648-653.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
@@ -363,7 +363,7 @@ end_of_record
 SF:fs/jfs/jfs_metapage.c
 FN:metapage_releasepage
 LFT:10,10 These lines are dead code, as "page_to_mp" fails if page is not private, and it is marked private in "insert_metapage" and stays private before call to "remove_metapage".
-LFT:21,21 These lines cannot be covered from user space.
+LFT:21,21 These lines cannot be covered because it depends on some race conditions with log syncs list.
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
@@ -397,6 +397,11 @@ end_of_record
 
 SF:fs/jfs_metapage.c		
 FN:page_to_mp Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/jfs_metapage.c
+FN:__invalidate_metapages
+LFT:26,26 These lines can not be covered as a page contains only one metapage on Linux.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
