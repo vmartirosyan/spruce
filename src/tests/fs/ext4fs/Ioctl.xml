@@ -372,7 +372,9 @@
                 <File count="1"/>
                 <Code>
                         struct fstrim_range arg;
-                        Fail ( ioctl(FDs[0], FITRIM, &arg) == -1 , "Error FITRIM.");
+                        Fail ( ioctl(FDs[0], FITRIM, &arg) == -1 && errno != ENOTSUP, "Error FITRIM.");
+                        if(errno == ENOTSUP)
+							Error("Fitrim not supported", Unsupported);
                 </Code>
         </Test>
         <Test Name="CompatIoctlTests" Shallow="true">
@@ -390,7 +392,7 @@
         <Description>Unsupported operation.</Description>
         <File count="1"/>
         <Code>
-            Fail(ioctl(FDs[0], -100, 0) != -1, "Function should fail but it did not.");
+            Check(ioctl(FDs[0], -100, 0) != -1, "Function should fail but it did not.");
             Check(errno != ENOTTY && errno != EINVAL, "Function should return 'ENOTTY' or 'EINVAL' error but it did not.");
         </Code>
     </Test>

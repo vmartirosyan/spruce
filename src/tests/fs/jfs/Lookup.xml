@@ -66,8 +66,6 @@
 				Error("Partition mount or umount failed");
 				Return(Unresolved);	
 			}
-			char buff[3];
-			int fd;
 			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
 			
 			open(NewFilePath,O_RDWR);
