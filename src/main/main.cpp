@@ -452,7 +452,9 @@ int main(int argc, char ** argv)
 			
 			ShowOutput = (result->GetStatus() == Success);
 			
-			if ( !OS_32_BITS && HAVE_MULTILIB )
+			int status = result->GetStatus();
+			
+			if ( !WIFSIGNALED(status) && (status < Fatal) && !OS_32_BITS && HAVE_MULTILIB )
 			{
 				UnixCommand * command = new UnixCommand(INSTALL_PREFIX"/bin/doer_32", ProcessNoCaptureOutput);
 				

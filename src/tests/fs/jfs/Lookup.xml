@@ -46,6 +46,7 @@
 			unlink(NewFilePath2);
 			Unres( symlink(OldFilePath, NewFilePath) == -1, "Cannot create link.");
 			Unres( symlink(FilePaths[0].c_str(), NewFilePath2) == -1, "Cannot create link.");
+			unlink(NodeName);
 			Unres ( mknod( NodeName, S_IFBLK | 0777, 0 ) == -1, "Mknod failed.");
 			close(FDs[0]);
 			close(DirDs[0]);
