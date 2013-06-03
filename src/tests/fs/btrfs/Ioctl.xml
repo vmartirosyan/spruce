@@ -481,13 +481,21 @@
 		</Code>
 	</Test-->
 
-	<Test Name="BTRFS_IOC_BALANCE" Shallow="true">
+	<Test Name="BTRFS_IOC_BALANCE_Fail" Shallow="true" Dangerous="true">
 		<Description>BTRFS_IOC_BALANCE.</Description>
 		<File count="1" />
 		<Code>
 			Fail( ioctl( FDs[0], BTRFS_IOC_BALANCE, NULL) == -1, "Cannot balance filesystem chunks");			
 		</Code>
 	</Test>
+	<Test Name="BTRFS_IOC_BALANCE" Shallow="true" >
+		<Description>BTRFS_IOC_BALANCE.</Description>
+		<File count="1" />
+		<Code>
+			Check( ioctl( FDs[0], BTRFS_IOC_BALANCE, NULL) == -1, "Cannot balance filesystem chunks");			
+		</Code>
+	</Test>
+
 
 	<Test Name="BTRFS_IOC_CLONE" Shallow="true">
 		<Description>BTRFS_IOC_CLONE.</Description>
