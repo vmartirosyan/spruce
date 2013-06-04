@@ -153,9 +153,9 @@ struct btrfs_balance_progress {
 	__u64 completed;
 };
 
-#define BTRFS_BALANCE_STATE_RUNNING	(1ULL << 0)
-#define BTRFS_BALANCE_STATE_PAUSE_REQ	(1ULL << 1)
-#define BTRFS_BALANCE_STATE_CANCEL_REQ	(1ULL << 2)
+#define BTRFS_BALANCE_STATE_RUNNING	(1UL << 0)
+#define BTRFS_BALANCE_STATE_PAUSE_REQ	(1UL << 1)
+#define BTRFS_BALANCE_STATE_CANCEL_REQ	(1UL << 2)
 
 struct btrfs_ioctl_balance_args {
 	__u64 flags;				/* in/out */

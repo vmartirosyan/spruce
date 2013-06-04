@@ -76,6 +76,14 @@ attribute resolution Filesystem problem
 
 end
 
+#test Unknown
+#expected test_suite fs-spec
+#expected fs jfs
+#version l kernel_version 3.6+
+#attribute comment There is a kmem_cache leak which brings to failure in kmem_cache_destroy on module_exit. As a result the module cannot be re-initializaed on sequential load.
+#attribute resolution Filesystem problem
+#end
+
 test fallocate FallocateNormalPunchHoleFail
 expected test_suite common
 expected fs xfs

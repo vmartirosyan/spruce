@@ -390,18 +390,13 @@ SF:fs/jfs_metapage.c
 FN:remove_metapage Function is inline and its call is usually integrated.
 end_of_record
 
-SF:fs/jfs_metapage.c
-FN:__invalidate_metapages
-LFT:26,26 These lines cannot be covered from user space.
-end_of_record
-
 SF:fs/jfs_metapage.c		
 FN:page_to_mp Function is inline and its call is usually integrated.
 end_of_record
 
 SF:fs/jfs_metapage.c
 FN:__invalidate_metapages
-LFT:26,26 These lines can not be covered as a page contains only one metapage on Linux.
+LFT:802,802 These lines can not be covered as a page contains only one metapage on Linux.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c

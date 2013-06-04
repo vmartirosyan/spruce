@@ -82,6 +82,7 @@ LogLevel Logger::_LogLevel;
 bool Logger::_Initialized = false;
 
 string KedrIntegrator::TargetModule = "";
+string KedrIntegrator::LastFaultTrace = "";
 bool KedrIntegrator::MemLeakCheckEnabled = false;
 bool KedrIntegrator::FaultSimulationEnabled = false;
 vector<string> KedrIntegrator::KEDRProfiles = vector<string>();

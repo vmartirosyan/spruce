@@ -58,6 +58,8 @@ public:
 		
 	}
 	
+	virtual ~ProcessResult() {}
+	
 	Status GetStatus() const
 	{
 		return _status;

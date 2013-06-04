@@ -170,6 +170,9 @@ PartitionStatus PartitionManager::RestorePartition(string DeviceName, string Mou
 		return PS_Fatal;
 	if( !ReleasePartition(MountPoint))
 		return PS_Skip;
+	
+	//system(("rmmod " + (string)FileSystem).c_str());
+		
 	if( RecreateFilesystem && !CreateFilesystem(FileSystem, DeviceName,resizeFlag, getenv("MkfsOpts")))
 		return PS_Fatal;
 	
@@ -572,7 +575,7 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 		stringstream str;
 		
 		str << "mkfs." << fs << " ";
-		for(int i = 0; i < args.size(); i++)
+		for(size_t i = 0; i < args.size(); i++)
 		{
 			str << args[i] << " ";
 		}
@@ -589,13 +592,13 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 		}		
 	}
 	else
-		for(int i = 0; i < mkfs_opts_s.size(); i++)
+		for(size_t i = 0; i < mkfs_opts_s.size(); i++)
 		{		
 			string Partition = partition;
 			args.clear();
 			vector<string> tmp = SplitString(mkfs_opts_s[i], ' ', vector<string>());
 			// Overwrite default block size, if it is specified in mkfs_opts, for ext4 and xfs fs
-			int blkSzInd = -1;
+			size_t blkSzInd = -1;
 			if (fs == "ext4" || fs == "xfs")
 			{
 				for ( blkSzInd = 0; blkSzInd < tmp.size(); ++blkSzInd )
@@ -620,7 +623,7 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 			}	
 			if(fs == "jfs")
 			{
-				for(int i = 0; i < tmp.size(); i++)
+				for(size_t i = 0; i < tmp.size(); i++)
 				{
 					if(tmp[i] == "-J" && tmp[i+1] == "journal_dev")
 					{
@@ -659,11 +662,11 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 			}
 			
 			if (fs == "ext4" || fs == "xfs")
-				for ( int i = 0; i < tmp.size() && i != blkSzInd && i != blkSzInd + 1 ; ++i )
+				for ( size_t i = 0; i < tmp.size() && i != blkSzInd && i != blkSzInd + 1 ; ++i )
 					args.push_back(tmp[i]);
 			else
 			{
-				for ( int i = 0; i < tmp.size(); ++i )
+				for ( size_t i = 0; i < tmp.size(); ++i )
 					args.push_back(tmp[i]);
 			}	
 			if(Partition != "")

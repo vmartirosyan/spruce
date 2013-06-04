@@ -234,8 +234,7 @@ isn't covered as mount options are parsed and checked in super.c-->
 			<Description>Try to resize without remount flag.</Description>              
 			<Code>
 					Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
-					int res;
-
+					
 					Check(mount( DeviceName, MountPoint, FileSystem, 0, "resize") != -1, "Mount didn't fail on readonly filesystem.");
 					
 			</Code>
@@ -250,8 +249,7 @@ isn't covered as mount options are parsed and checked in super.c-->
 		 <Test Name="RemountResizeRO" FaultSimulationReady="true">
                 <Description>Resize read-only filesystem.</Description>              
                 <Code>
-                        int res;
-						Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Mount failed.");
+                        Unres( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Mount failed.");
 
                         Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") != -1, "Mount didn't fail on readonly filesystem.");
                 </Code>
@@ -267,7 +265,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 		 <Test Name="RemountResizeWrong" FaultSimulationReady="true">
 				<Description>Resize error cases.</Description>
 				<Code>
-						int res;
 						uint64_t size = PartitionManager::GetDeviceSize(DeviceName)+100;
 						stringstream ss;
 						ss << size;
