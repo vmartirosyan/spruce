@@ -94,6 +94,7 @@
 	<Test Name="DirectoriesInserted1" FaultSimulationReady="true">
 		<Description>Trying to create many directories</Description>
 		<Code>
+			system(("rm -rf " + (string)MountPoint + "/*").c_str());
 		    char buf[10];
             string dirname = "some_directory";
             
