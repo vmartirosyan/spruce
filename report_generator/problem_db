@@ -75,3 +75,14 @@ attribute comment This test brings to failure on old kernels, especially on Debi
 attribute resolution Filesystem problem
 
 end
+
+test fallocate FallocateNormalPunchHole
+expected test_suite common
+expected fs xfs
+expected distro openSUSE
+expected distro_version 12.2
+
+attribute comment This test causes system crash.
+attribute resolution Filesystem problem
+
+end
