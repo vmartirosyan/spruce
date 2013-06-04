@@ -37,6 +37,7 @@ class JFSCtl
 {
 public:
 	JFSCtl();
+	JFSCtl(const JFSCtl&);
 	void * ReadBlock(string DeviceName, uint64_t block_no);
 	bool WriteBlock(string DeviceName, void * buf, uint64_t block_no);
 	struct dinode * GetInode(string DeviceName, string FilePath, bool ReloadFromDisk = false);
@@ -58,6 +59,7 @@ public:
 	struct dmap * GetFirstDmap(string);
 	bool SetDmapCtl(string, dmapctl *);
 	struct dmapctl * GetDmapCtl(string);
+	JFSCtl& operator=(const JFSCtl&);
 private:
 	off64_t LocateInode(string, int);
 	off64_t LocateIAGCP(string);

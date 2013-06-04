@@ -65,6 +65,8 @@ Status Test::OopsChecker(string& OutputLog)
 	mainMessage = result->GetOutput();
 	delete command;
 	
+	KedrIntegrator::ParseLastFaultTrace(mainMessage);
+	
 	//searching points
 	const string bug = "BUG";
 	const string oops = "Oops";
@@ -238,7 +240,7 @@ Status TestSet::Run(Checks checks)
 			result = res.GetStatus();
 		
 		// Perform oops checking and handle it
-		string log;
+		string log = "";
 		Status oopsStatus = i->second.OopsChecker(log); // log is an output parameter
 		
 		if(oopsStatus != Success)
@@ -246,6 +248,10 @@ Status TestSet::Run(Checks checks)
 			//so we have an emergency situation...
 			i->second.AddResult(Stability, ProcessResult(Fatal, "Status: " + StatusMessages[oopsStatus] + "Output: " + log));
 			break;
+		}
+		else if ( log != "" )
+		{
+			i->second.AddResult(Stability, ProcessResult(Success, log));
 		}
 		
 		// See if the stability check should be done
@@ -292,6 +298,7 @@ Status TestSet::Run(Checks checks)
 					// Get the last fault information
 					Logger::LogWarn("Last fault: " + KedrIntegrator::GetLastFaultMsg());
 					
+					log = "";
 					oopsStatus = i->second.OopsChecker(log); // log is an output parameter
 					
 					if(oopsStatus != Success)
@@ -300,14 +307,20 @@ Status TestSet::Run(Checks checks)
 						i->second.AddResult(Stability, ProcessResult(Fatal, "Status: " + StatusMessages[oopsStatus] + "Output: " + log));
 						return Fatal;
 					}
+					else if ( log != "" )
+					{
+						i->second.AddResult(Stability, ProcessResult(Success, log));
+					}
 					
 					i->second.AddResult(Stability, res );
+					i->second.AddResult(Stability, ProcessResult(Success, KedrIntegrator::GetLastFaultMsg()) );
 														
 					if(PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)  != PS_Success)
 					{
 						Logger::LogFatal("Could not restore partition. Terminating... \n");
 						return Fatal;
 					}
+					
 					
 					KedrIntegrator::ResetLastFaultMsg();
 									

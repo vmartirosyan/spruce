@@ -28,7 +28,7 @@
 #include <getopt.h>
 #include <endian.h>
 
-static __inline__ int xfsctl(const char *path, int fd, int cmd, void *p)
+static __inline__ int xfsctl(const char *, int fd, int cmd, void *p)
 {
 	return ioctl(fd, cmd, p);
 }

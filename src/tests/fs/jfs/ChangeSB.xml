@@ -87,7 +87,7 @@
 		<Description>Set jfs superblock state dirty and try to mount.</Description>
 		<Code>
 			jfs_superblock sb;
-			DIR *dir;
+
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
 			sb.s_state = FM_DIRTY;
@@ -102,7 +102,7 @@
 		<Description>Set wrong block size in jfs superblock and try to mount.</Description>
 		<Code>
 			jfs_superblock sb;
-			DIR *dir;
+
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
 			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
 			sb.s_bsize = 1000;
@@ -1515,8 +1515,6 @@
 			dinode * inode = jfs.GetInode(DeviceName, inode_num);
 			Unres(inode == NULL, "Cannot get inode.");
 			
-			dtroot_t * page = (dtroot_t*)&inode->di_dtroot;
-			
 			for ( int i = 0; i < 12; ++i )
 			{
 				dir_table_slot slot = ((dir_table_slot*)&inode->di_dirtable)[i];
@@ -1535,7 +1533,7 @@
 			
 			const int BUF_LEN = 100;
 			char buf[BUF_LEN];
-			struct linux_dirent *ent;
+			
 			int fd = open(".", O_DIRECTORY);
 			Unres(fd == -1, "Cannot open directory");
 			
@@ -1568,7 +1566,7 @@
 			// if the partition size is more than 2GB
 			Skip(size > (uint64_t)2*1024*1024*1024, "The partition is too big.");
 			
-			char buf[4];
+			char buf[10];
 			for(int i = 0; i < 3101; i++)
 			{
 				sprintf(buf, "%d",  i);
@@ -1626,10 +1624,6 @@
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
-			
-			// The test is targeted on small partitions. Don't run it
-			// if the partition size is more than 2GB
 			
 			char buf[4];
 			for(int i = 0; i < 28; i++)
@@ -1695,10 +1689,6 @@
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
-			
-			// The test is targeted on small partitions. Don't run it
-			// if the partition size is more than 2GB
 			
 			char buf[4];
 			for(int i = 0; i < 27; i++)
@@ -1762,10 +1752,6 @@
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
-			
-			// The test is targeted on small partitions. Don't run it
-			// if the partition size is more than 2GB
 			
 			char buf[4];
 			for(int i = 0; i < 28; i++)
@@ -1829,10 +1815,6 @@
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
-			
-			// The test is targeted on small partitions. Don't run it
-			// if the partition size is more than 2GB
 			
 			char buf[4];
 			for(int i = 0; i < 27; i++)
@@ -1894,10 +1876,6 @@
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
-			
-			// The test is targeted on small partitions. Don't run it
-			// if the partition size is more than 2GB
 			
 			char buf[4];
 			for(int i = 0; i < 27; i++)
@@ -1958,10 +1936,6 @@
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
-			
-			// The test is targeted on small partitions. Don't run it
-			// if the partition size is more than 2GB
 			
 			char buf[4];
 			for(int i = 0; i < 27; i++)
@@ -2031,7 +2005,7 @@
 			// if the partition size is more than 2GB
 			Skip(size > (uint64_t)2*1024*1024*1024, "The partition is too big.");
 			
-			char buf[4];
+			char buf[10];
 			for(int i = 0; i < 3101; i++)
 			{
 				sprintf(buf, "%d",  i);
@@ -2097,7 +2071,7 @@
 			// if the partition size is more than 2GB
 			Skip(size > (uint64_t)2*1024*1024*1024, "The partition is too big.");
 			
-			char buf[4];
+			char buf[10];
 			for(int i = 0; i < 3101; i++)
 			{
 				sprintf(buf, "%d",  i);
@@ -2157,10 +2131,8 @@
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
 			
-			
-			char buf[4];
+			char buf[10];
 			for(int i = 0; i < 3101; i++)
 			{
 				sprintf(buf, "%d",  i);
@@ -2313,7 +2285,7 @@
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
+			
 			const char * FilePath = "test";
 			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
 			

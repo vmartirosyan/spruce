@@ -33,6 +33,8 @@
 #include <map>
 
 const string LastFaultMsgNone = "none";
+const string LastFaultTraceStart = "[KEDR: Start last fault call trace]";
+const string LastFaultTraceEnd = "[KEDR: End last fault call trace]";
 
 using namespace std;
 
@@ -430,7 +432,36 @@ public:
 		f.read(buf, 5000);
 		f.close();
 		
-		return (string)buf;
+		string LastFaultFull = (string)buf + "\n" + LastFaultTrace;
+		
+		return LastFaultFull;
+	}
+	
+	// Try to get the call trace information from the kernel log.
+	// This information is not populated by default KEDR installation.
+	// Call to dump_stack() must be added in file 
+	// sources/templates/payload_fsim.c/block/block.tpl somewhere near call to kedr_fsim_fault_message().
+	
+	// This method better be called from OopsChecker for each peace of log being analyzed.
+	static string ParseLastFaultTrace(string log)
+	{
+		size_t start_pos, end_pos;
+		start_pos = log.find(LastFaultTraceStart);
+		if ( start_pos == string::npos )
+			return "";
+			
+		end_pos = log.find(LastFaultTraceEnd);
+		if ( end_pos == string::npos )
+			return "";
+			
+		LastFaultTrace = log.substr(start_pos + LastFaultTraceStart.length(), end_pos - start_pos - LastFaultTraceStart.length());
+			
+		return LastFaultTrace;
+	}
+	
+	static string GetLastFaultTrace()
+	{
+		return LastFaultTrace;
 	}
 	
 	
@@ -439,6 +470,7 @@ protected:
 	static bool MemLeakCheckEnabled;
 	static bool FaultSimulationEnabled;
 	static vector<string> KEDRProfiles;
+	static string LastFaultTrace;
 	//bool _IsRunning;
 	static bool MountDebugFS()
 	{

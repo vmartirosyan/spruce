@@ -39,7 +39,10 @@ public:
 		_name("Unknown"),
 		_description("None"),
 		_func(0),
-		_currentPoint("")
+		_supportedChecks(All),
+		_performChecks(Functional),
+		_currentPoint(""),
+		_results()
 		{
 		}
 	Test(string name, string desc, ProcessFunc func = NULL, Checks supportedChecks = All):
@@ -48,19 +51,21 @@ public:
 		_func(func),
 		_supportedChecks(supportedChecks),
 		_performChecks(Functional),
-		_currentPoint("")
+		_currentPoint(""),
+		_results()
 		{
 			 //cerr << "Constructing test: " << _name << endl;
 		}
 		
 	Test(const Test & t):
+		Process(),
 		_name(t._name),
 		_description(t._description),
 		_func(t._func),
 		_supportedChecks(t._supportedChecks),
 		_performChecks(Functional),
-		_results(t._results),
-		_currentPoint(t._currentPoint)
+		_currentPoint(t._currentPoint),
+		_results(t._results)
 		{}
 		
 	string GetName() const
@@ -154,6 +159,7 @@ class TestSet
 public:
 	TestSet(string name = "Undefined", Test tests[] = 0, int count = 0):
 		_name(name),
+		_tests(),
 		_StartUpFunc(0),
 		_CleanUpFunc(0)
 	{
@@ -210,11 +216,13 @@ class TestPackage
 {
 public:
 	TestPackage():
+		_name("Unnamed"),
 		_testsets()
 	{}
 	
 	TestPackage(string name, TestSet testsets[] = 0, int count = 0):
-		_name(name)
+		_name(name),
+		_testsets()
 	{
 		for ( int i = 0; i < count; ++i )
 			AddTestSet(testsets[i]);

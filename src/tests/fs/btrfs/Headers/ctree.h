@@ -614,13 +614,13 @@ typedef enum {
         BTRFS_COMPRESS_ZLIB  = 1,
         BTRFS_COMPRESS_LZO   = 2,
         BTRFS_COMPRESS_TYPES = 2,
-        BTRFS_COMPRESS_LAST  = 3,
+        BTRFS_COMPRESS_LAST  = 3
 } btrfs_compression_type;
 
 /* we don't understand any encryption methods right now */
 typedef enum {
         BTRFS_ENCRYPTION_NONE = 0,
-        BTRFS_ENCRYPTION_LAST = 1,
+        BTRFS_ENCRYPTION_LAST = 1
 } btrfs_encryption_type;
 
 struct btrfs_inode_item {
@@ -1514,7 +1514,7 @@ struct btrfs_root {
                  sizeof(struct btrfs_item) * nr;
  }
 
- static inline struct btrfs_item *btrfs_item_nr(struct extent_buffer *eb,
+ static inline struct btrfs_item *btrfs_item_nr(struct extent_buffer *,
                                                 int nr)
  {
          return (struct btrfs_item *)btrfs_item_nr_offset(nr);
@@ -1712,41 +1712,41 @@ struct btrfs_root {
          btrfs_set_header_flags(eb, flags);
  }
 
- static inline u8 *btrfs_header_fsid(struct extent_buffer *eb)
+ static inline u8 *btrfs_header_fsid(struct extent_buffer*)
  {
          unsigned long ptr = offsetof(struct btrfs_header, fsid);
          return (u8 *)ptr;
  }
 
- static inline u8 *btrfs_header_chunk_tree_uuid(struct extent_buffer *eb)
+ static inline u8 *btrfs_header_chunk_tree_uuid(struct extent_buffer)
  {
          unsigned long ptr = offsetof(struct btrfs_header, chunk_tree_uuid);
          return (u8 *)ptr;
  }
 
- static inline u8 *btrfs_super_fsid(struct extent_buffer *eb)
+ static inline u8 *btrfs_super_fsid(struct extent_buffer *)
  {
          unsigned long ptr = offsetof(struct btrfs_super_block, fsid);
          return (u8 *)ptr;
  }
 
- static inline u8 *btrfs_header_csum(struct extent_buffer *eb)
+ static inline u8 *btrfs_header_csum(struct extent_buffer *)
  {
          unsigned long ptr = offsetof(struct btrfs_header, csum);
          return (u8 *)ptr;
  }
 
- static inline struct btrfs_node *btrfs_buffer_node(struct extent_buffer *eb)
+ static inline struct btrfs_node *btrfs_buffer_node(struct extent_buffer *)
  {
          return NULL;
  }
 
- static inline struct btrfs_leaf *btrfs_buffer_leaf(struct extent_buffer *eb)
+ static inline struct btrfs_leaf *btrfs_buffer_leaf(struct extent_buffer *)
  {
          return NULL;
  }
 
- static inline struct btrfs_header *btrfs_buffer_header(struct extent_buffer *eb)
+ static inline struct btrfs_header *btrfs_buffer_header(struct extent_buffer *)
  {
          return NULL;
  }
@@ -1887,11 +1887,11 @@ struct btrfs_root {
  static inline int btrfs_super_csum_size(struct btrfs_super_block *s)
  {
          int t = btrfs_super_csum_type(s);
-         BUG_ON(t >= ARRAY_SIZE(btrfs_csum_sizes));
+         BUG_ON(t >= (int)ARRAY_SIZE(btrfs_csum_sizes));
          return btrfs_csum_sizes[t];
  }
 
- static inline unsigned long btrfs_leaf_data(struct extent_buffer *l)
+ static inline unsigned long btrfs_leaf_data(struct extent_buffer *)
  {
          return offsetof(struct btrfs_leaf, items);
  }

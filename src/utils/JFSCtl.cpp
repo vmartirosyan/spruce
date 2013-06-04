@@ -24,8 +24,25 @@
 #include <sys/stat.h>
 
 JFSCtl::JFSCtl():
+	_InodeCache(),
 	_SuperBlock(NULL)
 	{}
+	
+JFSCtl& JFSCtl::operator=(const JFSCtl& jfs)
+{
+	_SuperBlock = new struct jfs_superblock;
+	memcpy(_SuperBlock, jfs._SuperBlock, sizeof(struct jfs_superblock));
+	_InodeCache = jfs._InodeCache;
+	return *this;
+}
+
+JFSCtl::JFSCtl(const JFSCtl& jfs):
+	_InodeCache(jfs._InodeCache),
+	_SuperBlock(NULL)
+{
+	_SuperBlock = new struct jfs_superblock;
+	memcpy(_SuperBlock, jfs._SuperBlock, sizeof(struct jfs_superblock));
+}
 	
 bool JFSCtl::WriteBlock(string DeviceName, void * buf, uint64_t block_no)
 {
@@ -664,8 +681,7 @@ off64_t JFSCtl::LocateIAGCP(string DeviceName)
 		{
 			throw Exception("Cannot get FileSet IAG Address." + string(strerror(errno)));
 		}
-		File f(DeviceName, S_IRUSR, O_RDONLY);
-		int fd = f.GetFileDescriptor();
+		
 		uint64_t FileSetIAGCP = ( FileSetIAGBlock)* PSIZE; 
 
 		return FileSetIAGCP;

@@ -23,9 +23,9 @@
 			</tr>
 		<xsl:for-each select="//Package[@Name=$Package]//Test[Status=$Status]" >				
 			<tr>
-				<td width="15%"><xsl:value-of select="../../../@Name" /></td>
-				<td width="15%"><xsl:value-of select="../../@Name" /></td>
-				<td width="35%"><xsl:value-of select="../../Desc" /></td>
+				<td width="15%"><xsl:value-of select="../@Name" /></td>
+				<td width="15%"><xsl:value-of select="@Name" /></td>
+				<td width="35%"><xsl:value-of select="Desc" /></td>
 				<td width="35%"><xsl:value-of select="Output" /></td>
 			</tr>
 		</xsl:for-each>
@@ -107,7 +107,7 @@
 				<xsl:attribute name="class">Fatal</xsl:attribute>
 			</xsl:if>
 			<xsl:choose>
-				<xsl:when test="$TestsNotPassed != 0">
+				<xsl:when test="$TestsNotPassed != 0 or count(//Package[@Name=$Package]/TestSet[@Name=$TestSet]/Test[Output!=''])">
 					<a href="#" style="text-decoration:none">
 						<xsl:attribute name="onclick">ShowHideTest(this, '<xsl:value-of select="$Package" />_<xsl:value-of select="$TestSet" />')</xsl:attribute> +</a>
 				</xsl:when>
@@ -140,7 +140,7 @@
 				<th width="35%">Output</th>
 			</tr>
 				<xsl:for-each select="//Package[@Name=$Package]/TestSet[@Name=$TestSet]/Test">
-					<xsl:if test="Status!='Success' and Status!='Shallow'">
+					<xsl:if test="Status!='Success' and Status!='Shallow' or Output!=''">
 						<tr>
 							<xsl:attribute name="class"><xsl:value-of select="Status" /></xsl:attribute>
 							<td width="15%"><xsl:value-of select="../@Name" /></td>
