@@ -21,6 +21,11 @@ FN:ext4_blks_to_allocate
 LFT:0,0 Function is inline and its call is usually integrated.
 end_of_record
 
+SF:fs/ext4/mballoc.h
+LFT:216,216 Function is inline and its call is usually integrated.
+LFT:219,219 This line is covered, but gcov don't show it.
+end_of_record
+
 #######################################################################
 #################Section for free code markup##########################
 #######################################################################
@@ -60,3 +65,5 @@ SF:fs/ext4/inode.c
 FN:ext4_journalled_write_end
 LFT:53,60 Can be covered if we chande inode->i_size on disk. 
 end_of_record
+
+
