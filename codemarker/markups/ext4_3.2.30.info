@@ -26,7 +26,22 @@ LFT:216,216 Function is inline and its call is usually integrated.
 LFT:219,219 This line is covered, but gcov don't show it.
 end_of_record
 
-#######################################################################
+SF:fs/ext4/mballoc.c
+FN:mb_free_blocks_double
+LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:mb_mark_used_double
+LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:mb_cmp_bitmaps
+LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+################################################ext4#####################
 #################Section for free code markup##########################
 #######################################################################
 #FREECODE:
