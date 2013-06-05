@@ -787,10 +787,10 @@ end_of_record
 
 SF:fs/jfs/jfs_xtree.c
 FN:xtTruncate
-LFT:297,297 This block is not covered because the test development would take too long.
+LFT:297,297 The block could be covered by a lot of concurrent threads performing transaction locks at once.
 LFT:323,323 This line could be covered if we corrupt the inode, but in that case the failure comes up earlier. 
-LFT:391,391 This block is not covered because the test development would take too long.
-LFT:455,455 This block is not covered because the test development would take too long.
+LFT:391,391 The block could be covered by a lot of concurrent threads performing transaction locks at once.
+LFT:455,455 The block could be covered by a lot of concurrent threads performing transaction locks at once.
 end_of_record
 
 SF:fs/jfs/jfs_xtree.c
