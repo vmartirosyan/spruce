@@ -33,5 +33,25 @@
 
 		</Code>
 	</Test>
-	
+	<Test Name="SymlinkIoctl" FaultSimulationReady="true">
+		<Description>Create a symlink of a file and calls ioctl command on it.</Description>
+		<File count="1"/>
+		<Header>
+			int fd = -1;
+		</Header>
+		<Code>
+			const char * NewFilePath = "new_file";
+			const char * NewFilePath1 = "new_file1";
+			unlink(NewFilePath);
+			unlink(NewFilePath1);
+			
+			Check( symlink(FilePaths[0].c_str(), NewFilePath) == -1, "Cannot create link.");
+			Check( symlink(NewFilePath, NewFilePath1) == -1, "Cannot create link.");
+			
+                
+		</Code>
+		<Footer>
+			close(fd);
+		</Footer>
+	</Test>
 </TestSet>
