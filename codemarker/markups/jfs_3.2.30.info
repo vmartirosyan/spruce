@@ -403,8 +403,8 @@ end_of_record
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogInit
 LFT:79,79 Code is covered by test jfs/MountWithOptions/lmLogInitFail3 which is marked as dangerous.
-LFT:111,111 This block is not covered because the test implementataion would take too long.
-LFT:169,171 These lines cannot be covered from user space.
+LFT:111,111 This block is not covered because we can't control the amount of written data in pages.
+LFT:169,171 These lines could be covered if there wouldn't be system crash due to submit_bio payload.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
@@ -414,13 +414,13 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogShutdown
-LFT:56,56 These lines cannot be covered from user space.
+LFT:56,56 These lines cannot be because lbmRead function always returns 0 and lbmIOWait function would fail if fault simulation in submit_bio would not bring to system crash.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lbmIODone
-LFT:17,17 These lines cannot be covered from user space.
-LFT:19,19 These lines cannot be covered from user space.
+LFT:17,17 Can be covered if fault simulation in submit_bio would not bring to system crash.
+LFT:19,19 Can be covered if fault simulation in submit_bio would not bring to system crash.
 end_of_record
 
 
@@ -611,7 +611,7 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:jfsIOWait
-LFT:15,16 These lines cannot be covered from user space.
+LFT:15,16 These lines cannot be covered because we can not control the work of concurrent threads/processes.
 end_of_record
 
 SF:fs/jfs/xattr.c
@@ -633,11 +633,6 @@ LFT:60,60 These lines could be covered if there wouldn't be system crash due to 
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
-FN:lmLogInit
-LFT:169,171 These lines could be covered if there wouldn't be system crash due to submit_bio payload.
-end_of_record
-
-SF:fs/jfs/jfs_logmgr.c
 FN:lmWriteRecord
 LFT:56,56 These lines cannot be covered from user space.
 end_of_record
@@ -649,8 +644,8 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogSync
-LFT:64,64 This block is not covered because the test implementataion would take too long.
-LFT:84,85 This block is not covered because the test implementataion would take too long.
+LFT:64,64 This block is not covered because we can not control the amount of written data in log.
+LFT:84,85 This block is not covered because we can not control the amount of written data in log.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
