@@ -1,0 +1,106 @@
+#######################################################################
+#################Section for DEAD code ONLY############################
+#######################################################################
+DEADCODE:
+
+SF:fs/ext4/super.c
+FN:dquot_to_inode
+LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/fsync.c
+FN:dump_completed_IO The function is called from ext4_flush_completed_IO+8 which is marked as non-executable.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_block_truncate_page The function isn't called anywhere. Was still used in 3.1 version and is removed in 3.3.
+end_of_record
+
+SF:fs/ext4/indirect.c
+FN:ext4_blks_to_allocate
+LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/mballoc.h
+LFT:216,216 Function is inline and its call is usually integrated.
+LFT:219,219 This line is covered, but gcov don't show it.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+LFT:509,521 Function is inline and its call is usually integrated.
+LFT:688,688 Function is inline and its call is usually integrated.
+LFT:699,699 This line is covered, gcov bug
+LFT:702,702 This line is covered, gcov bug
+LFT:1028,1028 Function is inline and its call is usually integrated.
+LFT:1038,1038 This line is covered, gcov bug
+LFT:4429,4429 Function is inline and its call is usually integrated.
+LFT:4436,4436 This line is covered, gcov bug
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_trim_fs Fitrim ioctl works only for solid-state drives.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_trim_all_free Fitrim ioctl works only for solid-state drives.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_trim_extent Fitrim ioctl works only for solid-state drives.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_scan_aligned This function works only for raid5 storages.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_regular_allocator
+LFT:99,99 This code works only for raid5 storages
+end_of_record
+
+################################################ext4#####################
+#################Section for free code markup##########################
+#######################################################################
+#FREECODE:
+
+SF:fs/ext4/super.c
+FN:print_daily_error_info This function is called once a day if we have errors logged on the file system.
+end_of_record
+
+SF:fs/ext4/ioctl.c
+LFT:359,376 Fitrim ioctl works only for solid-state drives.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_error_inode This function can be covered if corrupt file.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_error_file This function can be covered if corrupt directory.
+end_of_record
+
+SF:fs/ext4/dir.c
+FN:__ext4_check_dir_entry
+LFT:25,38 This lines can be covered if corrupt file and corrupt directory.
+end_of_record
+
+SF:fs/ext4/indirect.c
+LFT:239,239 Function is inline and its call is usually integrated.
+LFT:704,706 Can be covered with "-t ext2" or "-t ext3" mkfs options enabled if there is too little free space left. 
+end_of_record
+
+SF:fs/ext4/mmp.c
+LFT:143,146 Can be covered with "-O mmp" mkfs options enabled and remounting partition read-only.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_journalled_write_end
+LFT:53,60 Can be covered if we chande inode->i_size on disk. 
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_good_group
+LFT:48,48 This is self checking/correcting code.
+end_of_record
+
+

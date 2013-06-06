@@ -1,0 +1,39 @@
+#!/bin/sh
+
+journals_dir="@CMAKE_CURRENT_BINARY_DIR@/log"
+report_dir="@CMAKE_CURRENT_BINARY_DIR@/report"
+
+# Clean journals directory before Spruce executing.
+# That is, after error Spruce itself, journals directory will be empty
+# (or invalid), and that fact will be discovered at report generation stage.
+rm -rf $journals_dir
+
+# Tell Spruce to use additional KEDR payload for simulate leaks.
+KEDR_ADDITIONAL_PAYLOADS=@CMAKE_CURRENT_BINARY_DIR@/simulate_frees.conf @spruce_executable@ -c test.conf
+
+# Check that all test journals are correct
+if ! @report_generator@ --journals-dir ${journals_dir} ${report_dir}; then
+	printf "Cannot generate report for test journals.\n"
+	exit 1
+fi
+
+
+# Check that each test journal contains test about leak check,
+# and that test is failed or unresolved.
+journals=`find ${journals_dir} -name "*_log.xml"`
+for journal in $journals; do
+	if ! grep "<Item Name=\"Possible leaks, Unallocated frees\"" $journal > /dev/null; then
+		printf "No leak check test is found in journal $journal.\n"
+		exit 1
+	fi
+	
+	if ! sed -n -f "@CMAKE_CURRENT_SOURCE_DIR@/failed_leak_tests" $journal; then
+		printf "Leak check status parsing failed. Test deficiency.\n"
+		exit 2
+	fi
+	
+	if test ! -s failed_or_unresolved; then
+		printf "Leak check test in journal $journal does not failed or unresolved.\n"
+		exit 1
+	fi
+done

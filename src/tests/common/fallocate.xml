@@ -1,0 +1,94 @@
+<!--    fallocate.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="fallocate">
+	<Requires>fcntl.h</Requires>
+	<Requires>linux/falloc.h</Requires>
+	<Test Name="FallocateNormalAlloc" FaultSimulationReady="true">
+		<Description>fallocate() allocates and initializes to zero the disk space within the range specified by offset and len.</Description>
+		<File count="1"/>
+		<Code>
+			const int NewSize = 10;
+		
+			Fail( fallocate( FDs[0], 0, 0, NewSize ) == -1, "Cannot allocate space in file." );
+			
+			struct stat st;
+			
+			Unres( fstat(FDs[0], &st) == -1, "Cannot stat file." );
+			
+			Check ( st.st_size < NewSize, "File size is less than offset+len.");
+		</Code>
+	</Test>
+	<Test Name="FallocateNormalPunchHoleFail" FaultSimulationReady="true" Dangerous="true">
+		<Requires KernelVersion="2.6.38" />
+		<Description>Specifying  the  FALLOC_FL_PUNCH_HOLE flag in mode deallocates space (i.e., creates a hole) in the byte range starting at offset and continuing for len bytes</Description>
+		<File count="1"/>
+		<Code>
+			const string buf = "1234";
+			Unres( write(FDs[0], buf.c_str(), buf.size()) == -1, "Cannot write to file." );
+			
+			Fail( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 1, 1 ) == -1, "Cannot punch hole in the file." );
+			
+			struct stat st;
+			
+			Unres( fstat(FDs[0], &st) == -1, "Cannot stat file." );
+			
+			Check ( st.st_size != (int)buf.size(), "File size is changed.");
+		</Code>
+	</Test>
+	<Test Name="FallocateNormalPunchHole" FaultSimulationReady="true">
+		<Requires KernelVersion="2.6.38" />
+		<Description>Specifying  the  FALLOC_FL_PUNCH_HOLE flag in mode deallocates space (i.e., creates a hole) in the byte range starting at offset and continuing for len bytes</Description>
+		<File count="1"/>
+		<Code>
+			const string buf = "1234";
+			Unres( write(FDs[0], buf.c_str(), buf.size()) == -1, "Cannot write to file." );
+			
+			Check( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 1, 1 ) == -1, "Cannot punch hole in the file." );
+			
+			struct stat st;
+			
+			Unres( fstat(FDs[0], &st) == -1, "Cannot stat file." );
+			
+			Check ( st.st_size != (int)buf.size(), "File size is changed.");
+		</Code>
+	</Test>
+	<Test Name="FallocateNormalAllocAndWritre" FaultSimulationReady="true">
+		<Description>fallocate() allocates the disk space and writes\reads data</Description>
+		<File count="1"/>
+		<Code>
+			const int NewSize = 32*1024; //32KiB
+			char buf[NewSize];
+			
+			Fail( fallocate( FDs[0], 0, 0, NewSize ) == -1, "Cannot allocate space in file." );
+	
+			memset(buf, 'e', NewSize);
+			Unres(write(FDs[0], buf, NewSize) == -1, "Cannot write to file.");
+			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
+			memset(buf, 0, NewSize);
+			Unres(read(FDs[0], buf, NewSize) == -1, "Cannot read from file");	
+			
+			Check ( buf[NewSize / 2] != 'e', "File content error.");	
+		</Code>
+	</Test>
+</TestSet>

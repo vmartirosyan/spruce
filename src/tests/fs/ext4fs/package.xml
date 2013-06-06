@@ -1,0 +1,9 @@
+<TestPackage Name="ext4" FS="ext4">
+	<TestSet Name="Ioctl" />
+	<TestSet Name="mount" />
+	<TestSet Name="Ext4OverloadTests" />
+	<TestSet Name="ReadWrite" />
+	<TestSet Name="truncate" />
+	<TestSet Name="ShowAndStoreFunctions" />
+	<TestSet Name="Symlink" />
+</TestPackage>

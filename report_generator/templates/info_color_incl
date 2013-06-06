@@ -1,0 +1,7 @@
+<TMPL_UNLESS significance_info> color: rgb(0, 0, 128);</TMPL_UNLESS>
+background-color: <TMPL_IF significance_info>rgb(230, 230, 230)
+        </TMPL_IF><TMPL_IF significance_neutral>rgb(230, 230, 230)
+        </TMPL_IF><TMPL_IF significance_success>rgb(64, 255, 64)
+        </TMPL_IF><TMPL_IF significance_warning>rgb(255, 255, 64)
+        </TMPL_IF><TMPL_IF significance_failed>rgb(255, 96, 96)
+        </TMPL_IF>
