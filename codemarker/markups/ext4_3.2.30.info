@@ -27,18 +27,35 @@ LFT:219,219 This line is covered, but gcov don't show it.
 end_of_record
 
 SF:fs/ext4/mballoc.c
-FN:mb_free_blocks_double
-LFT:0,0 Function is inline and its call is usually integrated.
+LFT:509,521 Function is inline and its call is usually integrated.
+LFT:688,688 Function is inline and its call is usually integrated.
+LFT:699,699 This line is covered, gcov bug
+LFT:702,702 This line is covered, gcov bug
+LFT:1028,1028 Function is inline and its call is usually integrated.
+LFT:1038,1038 This line is covered, gcov bug
+LFT:4429,4429 Function is inline and its call is usually integrated.
+LFT:4436,4436 This line is covered, gcov bug
 end_of_record
 
 SF:fs/ext4/mballoc.c
-FN:mb_mark_used_double
-LFT:0,0 Function is inline and its call is usually integrated.
+FN:ext4_trim_fs Fitrim ioctl works only for solid-state drives.
 end_of_record
 
 SF:fs/ext4/mballoc.c
-FN:mb_cmp_bitmaps
-LFT:0,0 Function is inline and its call is usually integrated.
+FN:ext4_trim_all_free Fitrim ioctl works only for solid-state drives.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_trim_extent Fitrim ioctl works only for solid-state drives.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_scan_aligned This function works only for raid5 storages.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_regular_allocator
+LFT:99,99 This code works only for raid5 storages
 end_of_record
 
 ################################################ext4#####################
@@ -79,6 +96,11 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_journalled_write_end
 LFT:53,60 Can be covered if we chande inode->i_size on disk. 
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_good_group
+LFT:48,48 This is self checking/correcting code.
 end_of_record
 
 
