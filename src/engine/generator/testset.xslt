@@ -257,7 +257,7 @@ Footer:
 </xsl:for-each>
 
 <xsl:if test="/TestSet/StartUp!=''">
-Status <xsl:value-of select="$TestSetName" />StartUp()
+Status <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" />StartUp()
 {
 	bool _InFooter = true;
 	Status _TestStatus = Success;
@@ -269,7 +269,7 @@ Footer:
 </xsl:if>
 
 <xsl:if test="/TestSet/CleanUp!=''">
-void <xsl:value-of select="$TestSetName" />CleanUp()
+void <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" />CleanUp()
 {
 	bool _InFooter = true;
 	Status _TestStatus = Success;
@@ -308,11 +308,11 @@ TestSet Init_<xsl:value-of select="$PackageName" />_<xsl:value-of select="/TestS
 	</xsl:for-each>
 	
 	<xsl:if test="/TestSet/StartUp!=''">
-		<xsl:value-of select="$TestSetName" />Tests.SetStartUpFunc(<xsl:value-of select="$TestSetName" />StartUp);
+		<xsl:value-of select="$TestSetName" />Tests.SetStartUpFunc(<xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" />StartUp);
 	</xsl:if>
 	
 	<xsl:if test="/TestSet/CleanUp!=''">
-		<xsl:value-of select="$TestSetName" />Tests.SetCleanUpFunc(<xsl:value-of select="$TestSetName" />CleanUp);
+		<xsl:value-of select="$TestSetName" />Tests.SetCleanUpFunc(<xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" />CleanUp);
 	</xsl:if>
 	
 	return <xsl:value-of select="$TestSetName" />Tests;
