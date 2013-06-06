@@ -63,5 +63,54 @@
 				}
 		</Footer>
      </Test>
-     
+	 <Test Name="ErrPanicOption" FaultSimulationReady="true">
+		<Description>Mount with errors=panic option</Description>
+		<Code>
+			mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=panic");
+			umount(DeviceName);
+		</Code>
+		<Footer>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+			{
+				Error("Mount failed!");
+				Return(Fatal);
+			}
+		</Footer>
+	</Test>
+	 <Test Name="ErrAbortOption" FaultSimulationReady="true">
+		<Description>Mount with errors=panic option</Description>
+		<Code>
+			mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, "abort");
+			umount(DeviceName);
+		</Code>
+		<Footer>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+			{
+				Error("Mount failed!");
+				Return(Fatal);
+			}
+		</Footer>
+	</Test>
+	<Test Name="JournalUpdateRemount" FaultSimulationReady="true">
+		<Description>JournalUpdate with Remount.</Description>              
+		<Code>
+				//works only without remount flag.
+				Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT,"journal=update") == 0, "Mount should fail, but it did not"); 						
+		</Code>
+     </Test>
+     <Test Name="JournalDevRemount" FaultSimulationReady="true">
+		<Description>JournalDevRemount  with Remount.</Description>              
+		<Code>
+				//works only without remount flag.
+				Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT,"journal_dev=0") == 0, "Mount should fail, but it did not"); 						
+		</Code>
+     </Test>
+     <Test Name="DataOrderedRemount" FaultSimulationReady="true">
+		<Description>DataOrderedRemount with Remount.</Description>              
+		<Code>
+				//works only without remount flag.
+				Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT,"data=ordered") == -1, "Mount failed."); 						
+		</Code>
+     </Test>
+     		
 </TestSet>
