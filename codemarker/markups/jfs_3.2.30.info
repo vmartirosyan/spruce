@@ -725,7 +725,7 @@ SF:fs/jfs/namei.c
 FN:jfs_unlink
 LFT:38,38 This block is impossible to cover with fault simulation, as the retrun value in that case is -ENOMEM.But we need -EIO. The only way is to corrupt the inode to fail the DT_GETPAGE, but in that case error does not reach the desired case because of multiple previous checks.
 LFT:100,101 These lines could be covered if we corrupt the inode (and in that case XT_GETPAGE would fail in xt_truncate_pmap), but in that case the failure comes up earlier in CommitZeroLink(as it also invoke the same xt_truncate_pmap function).
-LFT:119,119 This block is not covered because the test development would take too long.
+LFT:119,119 Could be covered if we corrupt the inode but in that case error comes earlier, and the coverage doesn't gain the desired line.
 end_of_record
 
 SF:fs/jfs/namei.c
