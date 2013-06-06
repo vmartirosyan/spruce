@@ -102,6 +102,21 @@
 			Fail( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot disable quotas V0." );
 			
 		</Code>
+	
+	</Test>
+	<Test Name="QuotactlNoQuota" FaultSimulationReady="true">
+		<Description>Turn on and off quotas for a file system when noquota is enabled..</Description>		
+		<Code>
+			string QuotaFile = "";
+			int cmd_on, cmd_off;
+			
+			Unres ( Prepare(QuotaFile, cmd_on, cmd_off) == false, "");
+			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );
+			int res = mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT,"noquota");
+			Unres( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot disable quotas V0." );
+			Check(res == 0, "Mount should fail, but it did not."); 	
+			
+		</Code>
 	</Test>
 	<Test Name="QuotactlGetSetQuota" FaultSimulationReady="true">
 		<Description>Set and get quota information for user or group id.</Description>		
