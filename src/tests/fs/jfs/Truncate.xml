@@ -171,6 +171,7 @@
 		<Footer>
 			unlink(FilePath);
 			close(fd);
+			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 		</Footer>
 	</Test>
 </TestSet>
