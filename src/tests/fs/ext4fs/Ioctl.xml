@@ -39,6 +39,17 @@
                         Check ( get_flags != set_flags, "Set and Get flags mismatch");
                 </Code>
         </Test>
+		 <Test Name="SetAllFlags" FaultSimulationReady="true">              
+                <Description>Try to set and get some flag values.</Description>
+                <Dir count="1"/>
+                <Code>
+                  
+                        int set_flags = EXT4_EXTENTS_FL | EXT4_IMMUTABLE_FL | EXT4_SECRM_FL | EXT4_SYNC_FL | EXT4_APPEND_FL | EXT4_NOATIME_FL | EXT4_DIRSYNC_FL;                     
+                        Fail ( ioctl(DirDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
+                
+                       
+                </Code>
+        </Test>
         <Test Name="ClearExtentsFlags">
                 <Description>Try to clear the Extentes flag which is not allowed to be cleared.</Description>
                 <File count="1"/>
