@@ -836,7 +836,7 @@ end_of_record
 
 SF:fs/jfs/xattr.c
 FN:ea_write_inline
-LFT:26,33 This block is not covered because the test development would take too long.
+LFT:26,33 This is a dead code, as ealist cannot be NULL, because of a previous checks, and size is always equal to sizeof (struct jfs_ea_list).
 end_of_record
 
 SF:fs/jfs/xattr.c
@@ -852,7 +852,7 @@ end_of_record
 
 SF:fs/jfs/xattr.c
 FN:ea_release
-LFT:9,10 This block is not covered because the test development would take too long.
+LFT:9,10 This block could be activated from the line 576, which is marked as dead.
 end_of_record
 
 SF:fs/jfs/xattr.c
