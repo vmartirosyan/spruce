@@ -1,0 +1,67 @@
+<!--    mount.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Karen Tsirunyan <ktsirunyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="mount">	
+	<StartUp>
+		Skip ( !PartitionManager::NoOptionsEnabled()
+				&amp;&amp; !PartitionManager::IsOptionEnabled("-j", true),
+			"These tests should run only when no options are provided." );
+	</StartUp>
+	<Test Name="WrongResize" FaultSimulationReady="true">
+		<Description>Resize without MS_REMOUNT.</Description>              
+		<Code>
+				int res;
+				Unres ( chdir("/") == -1, "Cannot change directory." );
+				Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+				
+				//resize works only with remount flag.
+				Check( mount( DeviceName, MountPoint, FileSystem, 0,"resize") == 0, "Mount should fail, but it did not."); 					
+		</Code>
+		<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+				{
+					Error("Partition restore failed!");
+					Return(Fatal);
+				}
+		</Footer>
+     </Test>
+	 <Test Name="mountVFSV1" FaultSimulationReady="true">
+		<Description>mount with jqfmt=vfsv1.</Description>              
+		<Code>
+				int res;
+				Unres ( chdir("/") == -1, "Cannot change directory." );
+				Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+				
+				//resize works only with remount flag.
+				Check( mount( DeviceName, MountPoint, FileSystem, 0,"usrjquota=aquota.user,jqfmt=vfsv1") == -1, "Mount failed."); 					
+		</Code>
+		<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+				{
+					Error("Partition restore failed!");
+					Return(Fatal);
+				}
+		</Footer>
+     </Test>
+     
+</TestSet>
