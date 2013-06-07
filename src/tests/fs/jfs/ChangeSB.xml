@@ -1369,7 +1369,7 @@
 	
 		</Code>
 	</Test>
-	<Test Name="CorruptSecondarySB">
+	<Test Name="CorruptSecondarySB" Dangerous="true">
 		<Description>Corrupt secondary SB</Description>
 		<Code>
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
