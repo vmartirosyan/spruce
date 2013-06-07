@@ -16,6 +16,10 @@ SF:fs/ext4/inode.c
 FN:ext4_block_truncate_page The function isn't called anywhere. Was still used in 3.1 version and is removed in 3.3.
 end_of_record
 
+SF:fs/ext4/inode.c
+FN:ext4_block_zero_page_range Called only from ext4_block_truncate_page.
+end_of_record
+
 SF:fs/ext4/indirect.c
 FN:ext4_blks_to_allocate
 LFT:0,0 Function is inline and its call is usually integrated.
