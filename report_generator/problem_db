@@ -120,3 +120,45 @@ attribute comment This test causes system crash.
 attribute resolution Filesystem problem
 
 end
+
+
+test ChangeSB CorruptSecondarySB
+expected test_suite fs-spec
+expected fs jfs
+expected distro openSUSE
+expected distro_version 12.2
+
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
+
+attribute comment This test causes module inconsistancy. Objects remain on cache and jfs module can't be reinitialized.
+attribute resolution Filesystem problem
+
+end
+
+test mount NoIntegrityOption
+expected test_suite fs-spec
+expected fs jfs
+expected distro openSUSE
+expected distro_version 12.2
+
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
+
+attribute comment This test causes module inconsistancy. Objects remain on cache and jfs module can't be reinitialized.
+attribute resolution Filesystem problem
+
+end
+test mount MountfailWithNls
+expected test_suite fs-spec
+expected fs jfs
+expected distro openSUSE
+expected distro_version 12.2
+
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
+
+attribute comment This test causes module inconsistancy. Objects remain on cache and jfs module can't be reinitialized.
+attribute resolution Filesystem problem
+
+end

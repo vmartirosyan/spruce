@@ -301,7 +301,7 @@ isn't covered as mount options are parsed and checked in super.c-->
 			</Code>
 		</Test>
 		
-		<Test Name="NoIntegrityOption" FaultSimulationReady="true">
+		<Test Name="NoIntegrityOption" FaultSimulationReady="true" Dangerous="true">
 			<Description>Mount with no integrity option</Description>
 			<Code>				
 				Unres(PartitionManager:: ReleasePartition(MountPoint) == false, "Failed to release partition");
@@ -579,7 +579,7 @@ isn't covered as mount options are parsed and checked in super.c-->
 				}
 			</Footer>
         </Test>
-        <Test Name="MountfailWithNls" FaultSimulationReady="true">
+        <Test Name="MountfailWithNls" FaultSimulationReady="true" Dangerous="true">
 		<Description>Trying to mount the device with iocahrset and perform fault simulation.</Description>
 		<Code>
 			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
