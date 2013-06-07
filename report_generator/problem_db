@@ -49,6 +49,9 @@ expected fs jfs
 expected distro Debian
 expected distro_version 6.0.6
 
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
+
 attribute comment This test brings to failure on old kernels, especially on Debian 6. Not actual problem on new kernels.
 attribute resolution Filesystem problem
 
@@ -60,6 +63,9 @@ expected fs jfs
 expected distro Debian
 expected distro_version 6.0.6
 
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
+
 attribute comment This test brings to failure on old kernels, especially on Debian 6. Not actual problem on new kernels.
 attribute resolution Filesystem problem
 
@@ -70,6 +76,9 @@ expected test_suite fs-spec
 expected fs jfs
 expected distro Debian
 expected distro_version 6.0.6
+
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
 
 attribute comment This test brings to failure on old kernels, especially on Debian 6. Not actual problem on new kernels.
 attribute resolution Filesystem problem
@@ -90,6 +99,9 @@ expected fs xfs
 expected distro openSUSE
 expected distro_version 12.2
 
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
+
 attribute comment This test causes system crash.
 attribute resolution Filesystem problem
 
@@ -100,6 +112,9 @@ expected test_suite common
 expected fs xfs
 expected distro openSUSE
 expected distro_version 12.2
+
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
 
 attribute comment This test causes system crash.
 attribute resolution Filesystem problem

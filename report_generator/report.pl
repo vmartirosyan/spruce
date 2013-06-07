@@ -1527,25 +1527,10 @@ sub spruce_parse_log_file($$)
                 next;
             }
             
-            my $results_elem = xml_get_first_child($test_elem, "Results");
-            unless($results_elem)
-            {
-                &$spruce_report_parse_error("XML element \"Results\" is missed in \"Test\" element ${test_name}.${test_point}.");
-                next;
-            }
-
-            # Use result only from first 'check'.
-            my $check_elem = xml_get_first_child($results_elem, "Check");
-            unless($check_elem)
-            {
-                &$spruce_report_parse_error("XML element \"Check\" is missed in \"Results\" element of test ${test_name}.${test_point}.");
-                next;
-            }
-            
-            my $status_elem = xml_get_first_child($check_elem, "Status");
+            my $status_elem = xml_get_first_child($test_elem, "Status");
             unless($status_elem)
             {
-                &$spruce_report_parse_error("XML element \"Status\" is missed in \"Check\" element of test ${test_name}.${test_point}.");
+                &$spruce_report_parse_error("XML element \"Status\" is missed in \"Test\" element of test ${test_name}.${test_point}.");
                 return;
             }
 
@@ -1561,10 +1546,10 @@ sub spruce_parse_log_file($$)
                 ? $spruce_status_severity_map{$status}
                 : $status;
 
-            my $output_elem = xml_get_first_child($check_elem, "Output");
+            my $output_elem = xml_get_first_child($test_elem, "Output");
             unless($output_elem)
             {
-                &$spruce_report_parse_error("XML element \"Output\" is missed in \"Check\" element of test ${test_name}.${test_point}.");
+                &$spruce_report_parse_error("XML element \"Output\" is missed in \"Test\" element of test ${test_name}.${test_point}.");
                 return;
             }
 
