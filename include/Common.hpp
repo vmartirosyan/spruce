@@ -125,35 +125,15 @@ struct FSimInfo
 // In fact setting `pid` to -1 means stop any kedr activity on the point
 #define EnableFaultSim()\
 {\
-	KedrIntegrator::SetPid(obj->GetCurrentPoint());\
+	if ( obj->GetEffectiveChecks() & Stability )\
+		KedrIntegrator::SetPid(obj->GetCurrentPoint());\
 }\
 
 #define DisableFaultSim()\
 {\
-	KedrIntegrator::ClearPid(obj->GetCurrentPoint());\
+	if ( obj->GetEffectiveChecks() & Stability )\
+		KedrIntegrator::ClearPid(obj->GetCurrentPoint());\
 }\
-
- /*\
-{\
-	errno = 0;/\
-	KedrIntegrator::ResetTimes( _fsim_point );\
-	if (_fsim_enabled)\
-	{\
-		KedrIntegrator::SetIndicator(_fsim_point, "common", _fsim_expression);\
-		Logger::LogInfo(static_cast<string>("Fault simulation is enabled for module ") + FileSystem + "(" +\
-			_fsim_point + ", " + _fsim_expression + ")");\
-	}\
-}*/
-	
-/*#define DisableFaultSim() \
-{\
-	if (_fsim_enabled)\
-	{\
-		KedrIntegrator::ClearIndicator(_fsim_point);\
-		Logger::LogInfo(static_cast<string>("Fault simulation is disabled for module ") + FileSystem + "(" +\
-			_fsim_point + ", " + _fsim_expression + ")");\
-	}\F
-}*/
 
 #define SetFaultCount() \
 	_fault_count = KedrIntegrator::GetTimes( _fsim_point); 
@@ -186,15 +166,13 @@ struct FSimInfo
 // The Fail macro should be called any time the target function is to be invoked.
 // The macro invokates the target function and makes all the necessary checks.
 
-// Fail macro should behaive differently when the fault simulation is in progress.
+// Fail macro should behave differently when the fault simulation is in progress.
 // In that case it is normal that target functions should fail.
 #define Fail(cond, message)\
 {\
-	if ( obj->GetEffectiveChecks() & Stability )\
-		EnableFaultSim();\
+	EnableFaultSim();\
 	bool res = (cond);\
-	if ( obj->GetEffectiveChecks() & Stability )\
-		DisableFaultSim();\
+	DisableFaultSim();\
 	if ( res )\
 	{\
 		if ( KedrIntegrator::GetLastFaultMsg() != LastFaultMsgNone )\
