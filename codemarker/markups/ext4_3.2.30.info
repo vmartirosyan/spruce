@@ -71,6 +71,10 @@ SF:fs/ext4/super.c
 FN:print_daily_error_info This function is called once a day if we have errors logged on the file system.
 end_of_record
 
+SF:fs/ext4/xattr_security.c
+FN:ext4_initxattrs  Can be covered if SELinux package is installed.
+end_of_record
+
 SF:fs/ext4/ioctl.c
 LFT:359,376 Fitrim ioctl works only for solid-state drives.
 end_of_record
