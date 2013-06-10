@@ -28,7 +28,7 @@ end_of_record
 
 SF:fs/ext4/mballoc.h
 LFT:216,216 Function is inline and its call is usually integrated.
-LFT:219,219 This line is covered, but gcov don't show it.
+LFT:219,219 This line is covered, but gcov doesn't show it.
 end_of_record
 
 SF:fs/ext4/mballoc.c
@@ -61,6 +61,39 @@ end_of_record
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_regular_allocator
 LFT:99,99 This code works only for raid5 storages
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:ext4_set_de_type
+LFT:0,0 This function is inline and its call is usually integrated.
+LFT:5,5 This function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:dx_root_limit
+LFT:0,0 This function is inline and its call is usually integrated.
+LFT:4,4 This function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:dx_node_limit
+LFT:0,0 This function is inline and its call is usually integrated.
+LFT:3,3 This function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/namei.c
+LFT:187,187 This function is inline and its call is usually integrated.
+LFT:189,189 This line is covered, but gcov doesn't show it. lcov bug
+LFT:198,200 This line is covered, but gcov doesn't show it. lcov bug
+LFT:208,210 This line is covered, but gcov doesn't show it. lcov bug
+LFT:1714,1714 This function is inline and its call is usually integrated.
+LFT:1718,1718 This function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/super.c
+LFT:426,431 These lines are covered, but gcov doesn't show it. lcov bug
+LFT:758,761 The call of this function is coming from function which call is marked as non-executable, but it is called. lcov bug
+LFT:763,773 The call of this function is marked as non-executable, but it is called. lcov bug
 end_of_record
 
 ################################################ext4#####################
