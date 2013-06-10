@@ -42,23 +42,26 @@
 		 <Test Name="SetAllFlags" FaultSimulationReady="true">              
                 <Description>Try to set and get some flag values.</Description>
                 <Dir count="1"/>
-                <Code>
-                  
+                <Code>                
                         int set_flags = EXT4_EXTENTS_FL | EXT4_IMMUTABLE_FL | EXT4_SECRM_FL | EXT4_SYNC_FL | EXT4_APPEND_FL | EXT4_NOATIME_FL | EXT4_DIRSYNC_FL;                     
                         Fail ( ioctl(DirDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
-                
-                       
+                     
                 </Code>
         </Test>
         <Test Name="SetJournalDataFlag" FaultSimulationReady="true">              
                 <Description>Try to set EXT4_JOURNAL_DATA_FL flag.</Description>
                 <Dir count="1"/>
-                <Code>
-                  
+                <Code>                 
                         int set_flags = EXT4_EXTENTS_FL | EXT4_JOURNAL_DATA_FL;                     
-                        Fail ( ioctl(DirDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
-                
-                       
+                        Fail ( ioctl(DirDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");                    
+                </Code>
+        </Test>
+         <Test Name="SetEOFBLOCKSFlag" FaultSimulationReady="true">              
+                <Description>Try to set EXT2_EOFBLOCKS_FL flag.</Description>
+                <Dir count="1"/>
+                <Code>                 
+                       int set_flags = EXT4_EXTENTS_FL | 0x00400000; //EXT4_EOFBLOCKS_FLL                     
+                       ioctl(DirDs[0], EXT4_IOC_SETFLAGS, &set_flags); //ext4 doesn't support this flag                    
                 </Code>
         </Test>
         <Test Name="ClearExtentsFlags">
