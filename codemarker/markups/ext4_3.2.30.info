@@ -17,7 +17,8 @@ FN:ext4_block_truncate_page The function isn't called anywhere. Was still used i
 end_of_record
 
 SF:fs/ext4/inode.c
-FN:ext4_block_zero_page_range Called only from ext4_block_truncate_page.
+FN:ext4_block_zero_page_range 
+LFT:0,90 Called only from ext4_block_truncate_page.
 end_of_record
 
 SF:fs/ext4/indirect.c
