@@ -311,6 +311,163 @@
 						}
                 </Footer>
         </Test>
+        
+          <Test Name="GroupAdd1" FaultSimulationReady="true" Shallow="true">
+                <Description>Group add.</Description>
+                 <Header>            
+                      	Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
+
+                </Header>
+                <Code>
+                        int res;
+                        ext4_super_block sb;
+                        Unres ( chdir("/") == -1, "Cannot change directory." );
+                        res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+                        if( res!= PS_Success )
+                        {
+                                if( res == PS_Fatal )
+                                {
+                                        Error("Device too small.");
+                                        Return(Unresolved);
+                                }                                               
+                                Error("Partition mount or umount failed");
+                                Return(Unresolved);     
+                        }                       
+                        Unres( !PartitionManager::GetSuperBlock(&sb, sizeof(sb)), "Cannot read superblock" );
+                        int BlockSize = (1 << (sb.s_log_block_size+10));
+                        Unres(!BlockSize, "Block size is zero");
+                        Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+                        File file("GroupAddfile1");
+                        
+                        
+                        // NEED TO CONSIDER ALSO THE s_blocks_count_hi, in case of BIG file systems.
+                        
+                        int blockCount = ((sb.s_blocks_count_lo /  sb.s_blocks_per_group) + 1) * sb.s_blocks_per_group;
+                        Unres(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_EXTEND, &blockCount) == -1, "Cannot extend file system.");
+                        
+                        
+                
+                        // the modulo of devision of s_blocks_count on s_blocks_per_group may be not be an integer, so we are rounding it to up. 
+                        blockCount = sb.s_blocks_count_lo - sb.s_first_data_block + sb.s_blocks_per_group - 1;
+                        
+                  #ifndef COMPAT
+                        ext4_new_group_input input;
+                        
+                  #else
+                        compat_ext4_new_group_input input;
+                        
+                  #endif
+                  
+					// we are covering error handling cases, so we don't wrap iostl-s in Fail macros.
+						memset(&input, 0, sizeof(input));
+						ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
+					    input.group = blockCount / sb.s_blocks_per_group ;
+                        ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
+                        input.reserved_blocks = blockCount + 1;
+                        ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);                   
+                        
+                        memset(&input, 0, sizeof(input));   
+                        input.group = blockCount / sb.s_blocks_per_group ;                     
+                        input.blocks_count = 32768;
+                        ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
+                        input.block_bitmap = blockCount + 1;
+                        ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
+                        input.inode_bitmap = blockCount + 2;
+						ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
+                        input.inode_table = blockCount + 3;
+						ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
+                       
+                </Code>
+                <Footer>
+						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+						{
+								Error("Restoring Partition failed!");
+								Return(Fatal);
+						}
+                </Footer>
+        </Test>
+     
+		<Test Name="GroupAdd2" FaultSimulationReady="true" Shallow="true">
+			<Description>Group add.</Description>
+			 <Header>            
+					Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
+
+			</Header>
+			<Code>
+					int res;
+					ext4_super_block sb;
+					Unres ( chdir("/") == -1, "Cannot change directory." );
+					res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+					if( res!= PS_Success )
+					{
+							if( res == PS_Fatal )
+							{
+									Error("Device too small.");
+									Return(Unresolved);
+							}                                               
+							Error("Partition mount or umount failed");
+							Return(Unresolved);     
+					}                       
+					Unres( !PartitionManager::GetSuperBlock(&sb, sizeof(sb)), "Cannot read superblock" );
+					int BlockSize = (1 << (sb.s_log_block_size+10));
+					Unres(!BlockSize, "Block size is zero");
+					Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+					File file("GroupAddfile1");
+					
+					
+					// NEED TO CONSIDER ALSO THE s_blocks_count_hi, in case of BIG file systems.
+					
+					int blockCount = ((sb.s_blocks_count_lo /  sb.s_blocks_per_group) + 1) * sb.s_blocks_per_group;
+					Unres(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_EXTEND, &blockCount) == -1, "Cannot extend file system.");
+					
+					
+			
+					// the modulo of devision of s_blocks_count on s_blocks_per_group may be not be an integer, so we are rounding it to up. 
+					blockCount = sb.s_blocks_count_lo - sb.s_first_data_block + sb.s_blocks_per_group - 1;
+					
+			  #ifndef COMPAT
+					ext4_new_group_input input;
+					
+			  #else
+					compat_ext4_new_group_input input;
+					
+			  #endif
+			  
+				// we are covering error handling cases, so we don't wrap iostl-s in Fail macros.
+					
+					memset(&input, 0, sizeof(input));
+					input.group = blockCount / sb.s_blocks_per_group ;
+					input.blocks_count = 32768;
+					input.block_bitmap = blockCount + 2;
+					input.inode_bitmap = blockCount + 2;
+					input.inode_table = blockCount + 3;
+					ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
+					
+					memset(&input, 0, sizeof(input));
+					input.group = blockCount / sb.s_blocks_per_group ;
+					input.blocks_count = 32768;
+					input.block_bitmap = blockCount + 10;
+					input.inode_bitmap = blockCount + 20;
+					input.inode_table = blockCount + 3;
+					ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
+				
+					memset(&input, 0, sizeof(input));
+					input.group = blockCount / sb.s_blocks_per_group ;
+					input.blocks_count = 32768;
+					input.block_bitmap = blockCount + 1;
+					input.inode_bitmap = blockCount + 20;
+					input.inode_table = blockCount + 3;
+					ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
+				   
+			</Code>
+			<Footer>
+					if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+					{
+							Error("Restoring Partition failed!");
+							Return(Fatal);
+					}
+			</Footer>
+	</Test>
 
         <Test Name="Migrate" FaultSimulationReady="true" Shallow="true">
                 <Description>Migrate an Ext3 partition to Ext4</Description>

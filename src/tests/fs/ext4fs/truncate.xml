@@ -36,4 +36,109 @@
 			Fail ( truncate(FilePaths[0].c_str(), 1) != 0, "truncate failed");
 		</Code>
 	</Test>
+		<Test Name="xtTruncate" FaultSimulationReady="true">
+		<Description>Covers JFS xtTruncate and related functions.</Description>
+		<Code>
+			system("rm -rf /tmp/spruce_test/*");
+			int count = 0;
+		
+			File f("test");
+			int fd = f.GetFileDescriptor();
+		
+			char buf[10000];
+			for (int i = 0 ; i < 80000; ++i)
+			{
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
+				
+				Unres (write(fd, buf, 100) == -1, "Cannot write.");
+			}
+		
+			fsync(fd);
+			
+			int size = 256*10000;
+	
+			while ( size )
+			{
+				Unres(ftruncate(fd, size) == -1, "Cannot trunacte.");
+				size -= 1000;
+			}
+	again:			
+			for (int i = 0 ; i < 256; ++i)
+			{
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
+				
+				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
+			}
+		
+			fsync(fd);
+			
+			size = 256*10000;
+	
+			while ( size )
+			{
+				Unres(ftruncate(fd, size) == -1, "Cannot trunacte.");
+				size /= 2;
+			}
+			
+			for (int i = 0; i < 256; ++i)
+			{
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
+				
+				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
+			}
+		
+			fsync(fd);
+			
+			Unres(ftruncate(fd, 100) == -1, "Cannot trunacte.");
+			
+			for (int i = 0; i < 256; ++i)
+			{
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
+				
+				Unres (write(fd, buf, 5000) == -1, "Cannot write.");
+			}
+		
+			fsync(fd);
+			
+			if ( count == 0)
+			{
+			
+				Unres(system("touch test1") != 0, "Cannot create file test1.");
+				
+				Unres(rename("test1", "test") == -1, "Cannot rename file.");
+				
+				count++;
+				goto again;
+			}
+			
+		</Code>
+	</Test>
+	<Test Name="xtTruncateUnlinked" FaultSimulationReady="true">
+		<Description>Covers JFS xtTruncate and related functions.</Description>
+		<Code>
+			system("rm -rf /tmp/spruce_test/*");
+			
+			File f("test");
+			int fd = f.GetFileDescriptor();
+			
+			char buf[10000];
+			for (int i = 0 ; i < 80000; ++i)
+			{
+				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
+				
+				Unres (write(fd, buf, 100) == -1, "Cannot write.");
+			}
+		
+			fsync(fd);
+			
+			unlink("test");
+			
+			sync();
+			
+			Unres(ftruncate(fd, 80000*10000) == -1, "Cannot truncate 1");
+			
+			Unres(ftruncate(fd, 1000) == -1, "Cannot truncate 2");
+			
+		</Code>
+	</Test>
 </TestSet>
