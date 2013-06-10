@@ -39,23 +39,6 @@
 			Check ( st.st_size < NewSize, "File size is less than offset+len.");
 		</Code>
 	</Test>
-	<Test Name="FallocateNormalPunchHoleFail" FaultSimulationReady="true" Dangerous="true">
-		<Requires KernelVersion="2.6.38" />
-		<Description>Specifying  the  FALLOC_FL_PUNCH_HOLE flag in mode deallocates space (i.e., creates a hole) in the byte range starting at offset and continuing for len bytes</Description>
-		<File count="1"/>
-		<Code>
-			const string buf = "1234";
-			Unres( write(FDs[0], buf.c_str(), buf.size()) == -1, "Cannot write to file." );
-			
-			Fail( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 1, 1 ) == -1, "Cannot punch hole in the file." );
-			
-			struct stat st;
-			
-			Unres( fstat(FDs[0], &st) == -1, "Cannot stat file." );
-			
-			Check ( st.st_size != (int)buf.size(), "File size is changed.");
-		</Code>
-	</Test>
 	<Test Name="FallocateNormalPunchHole" FaultSimulationReady="true">
 		<Requires KernelVersion="2.6.38" />
 		<Description>Specifying  the  FALLOC_FL_PUNCH_HOLE flag in mode deallocates space (i.e., creates a hole) in the byte range starting at offset and continuing for len bytes</Description>
@@ -64,7 +47,7 @@
 			const string buf = "1234";
 			Unres( write(FDs[0], buf.c_str(), buf.size()) == -1, "Cannot write to file." );
 			
-			Check( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 1, 1 ) == -1, "Cannot punch hole in the file." );
+			Fail( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 1, 1 ) == -1, "Cannot punch hole in the file." );
 			
 			struct stat st;
 			
