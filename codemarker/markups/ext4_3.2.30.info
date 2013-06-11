@@ -42,6 +42,10 @@ LFT:4429,4429 Function is inline and its call is usually integrated.
 LFT:4436,4436 This line is covered, gcov bug
 end_of_record
 
+SF:fs/ext4/move_extent.c
+LFT:88,88 This line is covered, gcov bug
+end_of_record
+
 SF:fs/ext4/mballoc.c
 FN:ext4_trim_fs Fitrim ioctl works only for solid-state drives.
 end_of_record
