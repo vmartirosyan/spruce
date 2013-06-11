@@ -22,6 +22,11 @@
 -->
 
 <TestSet Name="truncate">	
+	<StartUp>
+		Skip ( !PartitionManager::NoOptionsEnabled()
+				&amp;&amp; !PartitionManager::IsOptionEnabled("-j", true),
+			"These tests should run only when no options are provided." );
+	</StartUp>
 	<Test Name="TruncateNormalIncreaseALot" FaultSimulationReady="true">
 		<Description>Truncate a file to a great size and then back to initial.</Description>
 		<File count="1"/>
@@ -110,34 +115,6 @@
 				count++;
 				goto again;
 			}
-			
-		</Code>
-	</Test>
-	<Test Name="xtTruncateUnlinked" FaultSimulationReady="true">
-		<Description>Covers JFS xtTruncate and related functions.</Description>
-		<Code>
-			system("rm -rf /tmp/spruce_test/*");
-			
-			File f("test");
-			int fd = f.GetFileDescriptor();
-			
-			char buf[10000];
-			for (int i = 0 ; i < 80000; ++i)
-			{
-				Unres( lseek64(fd, 10000, SEEK_CUR) == -1, "Cannot seek.");
-				
-				Unres (write(fd, buf, 100) == -1, "Cannot write.");
-			}
-		
-			fsync(fd);
-			
-			unlink("test");
-			
-			sync();
-			
-			Unres(ftruncate(fd, 80000*10000) == -1, "Cannot truncate 1");
-			
-			Unres(ftruncate(fd, 1000) == -1, "Cannot truncate 2");
 			
 		</Code>
 	</Test>
