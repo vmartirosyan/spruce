@@ -94,7 +94,6 @@
 			struct fiemap arg;
 			memset(&arg, 0, sizeof(arg));
 			arg.fm_length = 1;
-			
 			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
 			{
 				if ( errno == ENOTTY || errno == EINVAL )
@@ -105,7 +104,29 @@
 				{
 					Check(1, "FIEMAP operation failed.");
 				}
-			}			
+			}				
+		</Code>
+	</Test>
+		<Test Name="IoctlFIEMAPBigData" FaultSimulationReady="true" Shallow="true">
+		<Description>Ioctl FIEMAP.</Description>
+		<File count="1" flags="O_CREAT | O_RDWR | O_LARGEFILE"/>
+		<Code>
+			
+			struct fiemap arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.fm_length = 1;
+			Unres ( fallocate(FDs[0], 0, 0, 320000*4096), "Cannot allocate space for file.");
+			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Unsupp("FIEMAP is not supported.");
+				}
+				else
+				{
+					Check(1, "FIEMAP operation failed.");
+				}
+			}				
 		</Code>
 	</Test>
 	<Test Name="IoctlFIEMAPWithXattrFlag" FaultSimulationReady="true" Shallow="true">
