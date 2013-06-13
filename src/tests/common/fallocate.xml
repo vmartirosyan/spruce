@@ -39,7 +39,7 @@
 			Check ( st.st_size < NewSize, "File size is less than offset+len.");
 		</Code>
 	</Test>
-	<Test Name="FallocateKeepSize" FaultSimulationReady="true">
+	<Test Name="FallocateNormalKeepSize" FaultSimulationReady="true">
 		<Description>fallocate() allocates and initializes to zero the disk space within the range specified by offset and len.</Description>
 		<File count="1"/>
 		<Code>
@@ -63,7 +63,7 @@
 			const string buf = "1234";
 			Unres( write(FDs[0], buf.c_str(), buf.size()) == -1, "Cannot write to file." );
 			
-			Fail( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 1, 1 ) == -1, "Cannot punch hole in the file." );
+			Fail( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 1, 100000 ) == -1, "Cannot punch hole in the file." );
 			
 			struct stat st;
 			
