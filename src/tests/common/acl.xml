@@ -24,27 +24,6 @@
 <TestSet Name="acl">	
 <Requires>sys/acl.h</Requires>
 	<Requires>attr/xattr.h</Requires>	
-
-	<Test Name="ACLInitFree" FaultSimulationReady="true">
-		<Description>Initialize and release ACL memory storage.</Description>		
-		<Header>
-			acl_t acl;
-			acl_t aclCopy;
-		</Header>
-		<Code>
-			Fail ( (acl = acl_init(1)) == NULL, "Cannot initialize ACL working storage." );
-			
-			Fail ( ( aclCopy = acl_dup(acl)) == NULL, "Cannot duplicate the ACL." );
-			
-			Fail( acl_free(acl) == -1, "Cannot release memory." );
-		</Code>
-		<Footer>
-			acl_free(aclCopy);
-		</Footer>
-		
-	</Test>
-	
-	
 	<Test Name="GetSetACLByFD" FaultSimulationReady="true">
 		<Description>Gets or sets file's ACL by file discriptor.</Description>		
 		<Dir count="1" />
@@ -160,15 +139,13 @@
 			acl_free(acl);
 		</Code>		
 	</Test>
-<Test Name="ACLGetSetFail" FaultSimulationReady="true" Dangerous="true">
+	<Test Name="ACLGetSetFail" FaultSimulationReady="true" Dangerous="true">
 		<Description>Intialize an ACL and validate it .</Description>		
 		
 		<Dir count ="1" />
 		<Code>
 			acl_t acl = acl_init(4);
 			acl_entry_t entry = NULL;
-			int entryId;
-			int res;
 			acl_tag_t tagType[] = {ACL_USER,ACL_USER_OBJ,ACL_GROUP_OBJ,ACL_OTHER,0};
 			acl_permset_t perms = NULL;
 			struct passwd * nobody = getpwnam("nobody");
@@ -219,7 +196,7 @@
 			acl_free(acl);
 		</Code>		
 	</Test>
-		<Test Name="ACLGetNotCached" FaultSimulationReady="true">
+	<Test Name="ACLGetNotCached" FaultSimulationReady="true">
 		<Description>Intialize an ACL, set and mount-umount to get not cached acl.</Description>		
 		<File count="1" />
 		<Code>
@@ -265,62 +242,14 @@
 			acl_free(acl);
 		</Code>		
 	</Test>
-	<Test Name="ACLTextForms" FaultSimulationReady="true">
-		<Description>Get an ACL from text and then get text back from that ACL.</Description>		
-		<File count="1" />
-		<Header>
-			char *aclText;
-			ssize_t *lenp = NULL;
-			acl_t acl;
-		</Header>
-		<Code>
-			Fail( ( acl = acl_from_text("user::rw-") ) == NULL, "Cannot get ACL from text." );
-			
-			Fail( ( aclText = acl_to_text(acl,lenp) ) == NULL, "Cannot get text from ACL." );
-			
-			Check( strcmp(aclText, "user::rw-\n") != 0, "Wrong text from ACL.");
-		</Code>
-		<Footer>
-			acl_free(acl);
-			delete lenp;
-		</Footer>
-	</Test>
-
-	<Test Name="ACLCopy" FaultSimulationReady="true">
-		<Description> Obtain ACL size and copy ACL into a buffer.</Description>
-		<File count="1" />
-		<Header>
-			acl_t acl;
-			acl = acl_init(1);
-			char * buff = NULL;
-		</Header>
-		<Code>
-			
-			Unres( acl == NULL, "Cannot initialize ACL working storage." );
-			
-			ssize_t aclSize;
-			
-			Unres( ( aclSize = acl_size(acl) ) == -1, "Cannot obtain ACL size." );
-			
-			buff = new char[aclSize];
-			
-			Fail( acl_copy_ext(buff,acl,aclSize) == -1, "Cannot copy ACL to buffer." );
-		</Code>
-		<Footer>
-			acl_free(acl);
-			delete buff;
-		</Footer>
-	</Test>
 	<Test Name="AccessErrAccess">
 		<Description>Set and get default acl to a file not to a directory.</Description>
 		<File count="1" />
 		<Code>
 			acl_t acl;
-			acl_t aclCopy;
 			Unres( (acl = acl_init(1)) == NULL, "Cannot initialize acl.");
 			ErrorTest(acl_set_file(FilePaths[0].c_str(),ACL_TYPE_DEFAULT,acl), -1, EACCES );
 			ErrorTest(acl_get_file(FilePaths[0].c_str(),ACL_TYPE_DEFAULT), NULL, EACCES );
-
 		</Code>
 	</Test>
 </TestSet>
