@@ -87,17 +87,40 @@ end_of_record
 
 SF:fs/ext4/namei.c
 LFT:187,187 This function is inline and its call is usually integrated.
-LFT:189,189 This line is covered, but gcov doesn't show it. lcov bug
-LFT:198,200 This line is covered, but gcov doesn't show it. lcov bug
-LFT:208,210 This line is covered, but gcov doesn't show it. lcov bug
+LFT:189,189 This line is covered, but gcov doesn't show it. gcov bug
+LFT:198,200 This line is covered, but gcov doesn't show it. gcov bug
+LFT:208,210 This line is covered, but gcov doesn't show it. gcov bug
 LFT:1714,1714 This function is inline and its call is usually integrated.
 LFT:1718,1718 This function is inline and its call is usually integrated.
 end_of_record
 
 SF:fs/ext4/super.c
-LFT:426,431 These lines are covered, but gcov doesn't show it. lcov bug
-LFT:758,761 The call of this function is coming from function which call is marked as non-executable, but it is called. lcov bug
-LFT:763,773 The call of this function is marked as non-executable, but it is called. lcov bug
+LFT:426,431 These lines are covered, but gcov doesn't show it. gcov bug
+LFT:758,761 The call of this function is coming from function which call is marked as non-executable, but it is called. gcov bug
+LFT:763,773 The call of this function is marked as non-executable, but it is called. gcov bug
+end_of_record
+
+
+This function is inline and its call is usually integrated.
+This line is covered, but gcov doesn't show it. gcov bug
+
+SF:fs/ext4/extents.c
+LFT:166,166 This function is inline and its call is usually integrated.
+LFT:175,175 This line is covered, but gcov doesn't show it. gcov bug
+LFT:178,178 This function is inline and its call is usually integrated.
+LFT:188,188 This line is covered, but gcov doesn't show it. gcov bug
+LFT:191,191 This function is inline and its call is usually integrated.
+LFT:201,201 This line is covered, but gcov doesn't show it. gcov bug
+LFT:204,204 This function is inline and its call is usually integrated.
+LFT:215,215 This line is covered, but gcov doesn't show it. gcov bug
+LFT:218,218 This function is inline and its call is usually integrated.
+LFT:229,229 This line is covered, but gcov doesn't show it. gcov bug
+LFT:299,299 This function is inline and its call is usually integrated.
+LFT:309,309 This function is inline and its call is usually integrated.
+LFT:502,502 This function is inline and its call is usually integrated.
+LFT:554,554 This line is covered, but gcov doesn't show it. gcov bug
+LFT:562,562 This function is inline and its call is usually integrated.
+LFT:573,573 This line is covered, but gcov doesn't show it. gcov bug
 end_of_record
 
 ################################################ext4#####################
