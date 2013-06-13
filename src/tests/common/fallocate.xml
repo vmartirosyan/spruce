@@ -39,6 +39,22 @@
 			Check ( st.st_size < NewSize, "File size is less than offset+len.");
 		</Code>
 	</Test>
+	<Test Name="FallocateKeepSize" FaultSimulationReady="true">
+		<Description>fallocate() allocates and initializes to zero the disk space within the range specified by offset and len.</Description>
+		<File count="1"/>
+		<Code>
+			struct stat st;
+			
+			Unres( fstat(FDs[0], &st) == -1, "Cannot stat file (before fallocate)." );
+			int OldSize = st.st_size;
+		
+			Fail( fallocate( FDs[0], FALLOC_FL_KEEP_SIZE, 0, 1024 ) == -1, "Cannot allocate space in file." );
+			
+			Unres( fstat(FDs[0], &st) == -1, "Cannot stat file." );
+			
+			Check ( st.st_size != OldSize, "File size is less than offset+len.");
+		</Code>
+	</Test>
 	<Test Name="FallocateNormalPunchHole" FaultSimulationReady="true">
 		<Requires KernelVersion="2.6.38" />
 		<Description>Specifying  the  FALLOC_FL_PUNCH_HOLE flag in mode deallocates space (i.e., creates a hole) in the byte range starting at offset and continuing for len bytes</Description>
