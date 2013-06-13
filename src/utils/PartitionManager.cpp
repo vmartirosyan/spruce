@@ -139,6 +139,7 @@ PartitionStatus PartitionManager::PreparePartition()
 	}
 	
 	Logger::LogInfo("Preparing partition: " + GetCurrentOptions(false));
+	setenv("MkfsOpts", _CurrentOptions.MkfsOptions.c_str(), 1);
 	if ( !CreateFilesystem(_FileSystem, _DeviceName, false, _CurrentOptions.MkfsOptions) )
 	{		
 		AdvanceOptionsIndex();	
@@ -692,8 +693,7 @@ bool PartitionManager::CreateFilesystem(string fs, string partition, bool resize
 				return false;
 			}		
 		}
-
-	setenv("MkfsOpts", mkfs_opts.c_str(), 1);
+	
 	Logger::LogInfo("Mkfs complete.");
 	delete mkfs;
 	return true;

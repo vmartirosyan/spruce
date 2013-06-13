@@ -112,4 +112,33 @@
 				Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT,"data=ordered") == -1, "Mount failed."); 						
 		</Code>
      </Test>
+      <Test Name="MountWithExternalLog" FaultSimulationReady="true">
+		<Description>Create ext4 fs with external log.</Description>              
+		<Code>
+				vector<string> args;
+				dev_t devt0 = makedev(1,0);
+                Unres(chdir("/") == -1, "Failed to change directory");
+                Unres(!PartitionManager::ReleasePartition(MountPoint), "Failed to release partition");
+              
+                string Device = string("/dev/ram0");
+                string ExtJournalName = string("journal_dev");
+                Unres(unlink("/dev/ram0") == -1 && errno != ENOENT, "unlink failed");			
+                Unres(mknod(Device.c_str(), S_IFBLK, devt0) == -1 && errno != EEXIST, "mknod failed");
+               	UnixCommand *mkfs = new UnixCommand("mkfs.ext4");	
+				args.push_back("-O");
+				args.push_back(ExtJournalName);
+				args.push_back(Device);		
+				ProcessResult *res = mkfs->Execute(args);
+				Check((res == NULL || res->GetStatus() != Success), "Cannot execute 'mkfs' command\n" + res->GetOutput() );
+				delete mkfs;
+				Unres(!PartitionManager::CreateFilesystem(FileSystem, DeviceName, false, string("-J device=") + Device), "Failed to create filesystem")
+                Unres( mount(DeviceName, MountPoint, FileSystem, 0, "") == -1, "Failed to mount");
+				
+            </Code>
+            <Footer>
+				Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );
+			
+            </Footer>			
+		
+     </Test>
 </TestSet>
