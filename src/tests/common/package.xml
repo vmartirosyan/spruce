@@ -61,7 +61,7 @@
 	<TestSet Name="readdir"/>
 	<TestSet Name="readv_writev"/>
 	<TestSet Name="rename"/>
-	<TestSet Name="select"/>
+	<!--TestSet Name="select"/-->
 	<TestSet Name="splice"/>
 	<TestSet Name="stat"/>
 	<TestSet Name="statfs"/>
