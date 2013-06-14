@@ -218,5 +218,18 @@
 			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
 		</Footer>	
 	</Test>
-	
+	<Test Name="OrphanCleanup" FaultSimulationReady="true">
+		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Code>
+			ext4_super_block sb;
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			sb.s_last_orphan = 4;
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
+			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", MS_RDONLY),"mount failed.");
+		 </Code>
+		<Footer>
+			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
+		</Footer>	
+	</Test>
 </TestSet>
