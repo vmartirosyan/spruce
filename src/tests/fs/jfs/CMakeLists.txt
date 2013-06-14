@@ -1,3 +1,3 @@
+check_include ("uuid/uuid.h" HAVE_UUID_H "header file")
+
 add_test_package(jfs)
-   
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}")

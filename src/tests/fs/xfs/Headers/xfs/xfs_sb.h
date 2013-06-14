@@ -18,8 +18,8 @@
 #ifndef __XFS_SB_H__
 #define	__XFS_SB_H__
 
-#include <linux.h>
-#include <xfs_types.h>
+#include <xfs/platform_defs.h>
+#include <xfs/xfs_types.h>
 /*
  * Super block
  * Fits into a sector-sized buffer at address 0 of each allocation group.

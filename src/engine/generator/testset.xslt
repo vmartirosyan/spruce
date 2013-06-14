@@ -271,11 +271,7 @@ Footer:
 <xsl:if test="/TestSet/CleanUp!=''">
 void <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" />CleanUp()
 {
-	bool _InFooter = true;
-	Status _TestStatus = Success;
 	<xsl:value-of select="/TestSet/CleanUp" />
-Footer:
-	return;
 }
 </xsl:if>
 

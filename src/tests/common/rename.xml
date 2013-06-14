@@ -223,8 +223,9 @@
 		<Code>
 			int res = rename(DirPaths[1].c_str(), DirPaths[0].c_str());
 	
-			Check((res != -1) || (errno != ENOTEMPTY) && (errno != EEXIST), "Function should return EEXIST or ENOTEMPTY errors but it did not." );
-		
+			Check(res != -1, "Function should return error it did not." );
+
+			Check((errno != ENOTEMPTY) && (errno != EEXIST), "Function should return EEXIST or ENOTEMPTY errors but it did not." );
 		</Code>
 	</Test>
 	<Test Name="RenameXDev">

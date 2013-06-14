@@ -46,7 +46,7 @@
 #include <ext4.hpp>
 #include <jfs_superblock.h>
 #include <ctree.h>
-#include <xfs_sb.h>
+#include <xfs/xfs_sb.h>
 
 using namespace std;
 
