@@ -1,0 +1,147 @@
+<!--    MountWithOptions.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//      	Vahram Martirosyan <vmartirosyan@gmail.com>
+//
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="MountWithOptions">
+	<Requires>sys/mount.h</Requires>
+	<Requires>JFSCtl.hpp</Requires>
+	<Requires>jfs_logmgr.h</Requires>
+	<Requires>sstream</Requires>
+	<Test Name="MountExternalLogs">
+		<Description>Mount the device with external log enabled.</Description>              
+		<Code>
+			Skip ( !PartitionManager::IsOptionEnabled("-j", true), "The test runs only when external log option  is enabled." );
+			
+			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
+			
+			Fail( mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed.");
+		</Code>
+		<Footer>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+			{
+				Error("Mount failed!");
+				Return(Fatal);
+			}
+		</Footer>
+	</Test>
+	<Test Name="lmLogInitFail1">
+		<Description>Fail lmLogInit because of wrong magic number.</Description>              
+		<Code>
+			Skip ( !PartitionManager::IsOptionEnabled("-j", true), "The test runs only when external log option  is enabled." );
+			
+			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
+			
+			JFSCtl jfs;
+			
+			logsuper * sb;
+			
+			Unres( (sb = (logsuper*)jfs.ReadBlock("/dev/ram0", LOGSUPER_B)) == NULL, "Cannot read log superblock." );
+			
+			__le32 old_magic = sb->magic;
+			sb->magic = 1;
+			
+			Unres( jfs.WriteBlock("/dev/ram0", sb, LOGSUPER_B) == false, "Cannot write log superblock." );
+			
+			Check( mount( DeviceName, MountPoint, FileSystem, 0, 0) == 0, "Mount should fail.");
+			
+			// Restore the log device :)
+			sb->magic = old_magic;
+			
+			Unres( jfs.WriteBlock("/dev/ram0", sb, LOGSUPER_B) == false, "Cannot write log superblock." );
+		</Code>
+		<Footer>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+			{
+				Error("Mount failed!");
+				Return(Fatal);
+			}
+		</Footer>
+	</Test>
+	<Test Name="lmLogInitFail2">
+		<Description>Fail lmLogInit because of bad state.</Description>              
+		<Code>
+			Skip ( !PartitionManager::IsOptionEnabled("-j", true), "The test runs only when external log option  is enabled." );
+			
+			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
+			
+			JFSCtl jfs;
+			
+			logsuper * sb;
+			
+			Unres( (sb = (logsuper*)jfs.ReadBlock("/dev/ram0", LOGSUPER_B)) == NULL, "Cannot read log superblock." );
+			
+			__le32 old_state = sb->state;
+			sb->state = LOGREDONE + 1;
+			
+			Unres( jfs.WriteBlock("/dev/ram0", sb, LOGSUPER_B) == false, "Cannot write log superblock." );
+			
+			Check( mount( DeviceName, MountPoint, FileSystem, 0, 0) == 0, "Mount should fail.");
+			
+			// Restore the log device :)
+			sb->state = old_state;
+			
+			Unres( jfs.WriteBlock("/dev/ram0", sb, LOGSUPER_B) == false, "Cannot write log superblock." );
+		</Code>
+		<Footer>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+			{
+				Error("Mount failed!");
+				Return(Fatal);
+			}
+		</Footer>
+	</Test>
+	<Test Name="lmLogInitFail3" Dangerous="true">
+		<Description>Fail lmLogInit because of wrong UUID.</Description>              
+		<Code>
+			Skip ( !PartitionManager::IsOptionEnabled("-j", true), "The test runs only when external log option  is enabled." );
+			
+			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
+			
+			JFSCtl jfs;
+			
+			logsuper * sb;
+			
+			Unres( (sb = (logsuper*)jfs.ReadBlock("/dev/ram0", LOGSUPER_B)) == NULL, "Cannot read log superblock." );
+			
+			char old_uuid[16];
+			memcpy(old_uuid, sb->uuid, 16);
+			
+			memcpy(sb->uuid, "abracadabra12345", 16);
+			
+			Unres( jfs.WriteBlock("/dev/ram0", sb, LOGSUPER_B) == false, "Cannot write log superblock." );
+			
+			Check( mount( DeviceName, MountPoint, FileSystem, 0, 0) == 0, "Mount should fail.");
+			
+			// Restore the log device :)
+			memcpy(sb->uuid, old_uuid, 16);
+			
+			Unres( jfs.WriteBlock("/dev/ram0", sb, LOGSUPER_B) == false, "Cannot write log superblock." );
+		</Code>
+		<Footer>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+			{
+				Error("Mount failed!");
+				Return(Fatal);
+			}
+		</Footer>
+	</Test>
+</TestSet>

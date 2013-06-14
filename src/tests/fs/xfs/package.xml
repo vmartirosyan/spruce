@@ -1,0 +1,4 @@
+<TestPackage Name="xfs" FS="xfs">
+	<TestSet Name="Ioctl" />
+	<TestSet Name="quotactl" />
+</TestPackage>

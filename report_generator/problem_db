@@ -1,0 +1,135 @@
+test read_write ReadWriteDirect
+expected test_suite common
+expected fs btrfs
+version l kernel_version 2.6.35
+
+expected severity Failed
+
+matched test_messages Error: Invalid argument
+
+attribute comment Btrfs doesn't support read() with O_DIRECT flag before kenel 2.6.35
+attribute resolution Filesystem problem
+
+end
+
+test read_write ReadWriteDirect
+expected test_suite common
+expected fs ext4
+expected mount_opts data=journal
+version l kernel_version 3.2.30
+
+expected severity Unresolved
+
+matched test_messages Error: Bad file descriptor
+
+attribute comment Ext4 doesn't support direct IO with journaling before kernel 3.2.30.
+attribute resolution Filesystem problem
+
+end
+
+test open OpenDirect
+expected test_suite common
+expected fs ext4
+expected mount_opts data=journal
+version l kernel_version 3.2.30
+
+expected severity Failed
+
+matched test_messages Error: Invalid argument
+
+attribute comment Ext4 doesn't support direct IO with journaling before kernel 3.2.30.
+attribute resolution Filesystem problem
+
+end
+
+
+test ChangeSB diFreeFail6
+expected test_suite fs-spec
+expected fs jfs
+expected distro Debian
+expected distro_version 6.0.6
+
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
+
+attribute comment This test brings to failure on old kernels, especially on Debian 6. Not actual problem on new kernels.
+attribute resolution Filesystem problem
+
+end
+
+test ChangeSB diFreeFail7
+expected test_suite fs-spec
+expected fs jfs
+expected distro Debian
+expected distro_version 6.0.6
+
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
+
+attribute comment This test brings to failure on old kernels, especially on Debian 6. Not actual problem on new kernels.
+attribute resolution Filesystem problem
+
+end
+
+test ChangeSB diAllocBitFail
+expected test_suite fs-spec
+expected fs jfs
+expected distro Debian
+expected distro_version 6.0.6
+
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
+
+attribute comment This test brings to failure on old kernels, especially on Debian 6. Not actual problem on new kernels.
+attribute resolution Filesystem problem
+
+end
+
+#test Unknown
+#expected test_suite fs-spec
+#expected fs jfs
+#version l kernel_version 3.6+
+#attribute comment There is a kmem_cache leak which brings to failure in kmem_cache_destroy on module_exit. As a result the module cannot be re-initializaed on sequential load.
+#attribute resolution Filesystem problem
+#end
+
+test ChangeSB CorruptSecondarySB
+expected test_suite fs-spec
+expected fs jfs
+expected distro openSUSE
+expected distro_version 12.2
+
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
+
+attribute comment This test causes module inconsistancy. Objects remain on cache and jfs module can't be reinitialized.
+attribute resolution Filesystem problem
+
+end
+
+test mount NoIntegrityOption
+expected test_suite fs-spec
+expected fs jfs
+expected distro openSUSE
+expected distro_version 12.2
+
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
+
+attribute comment This test causes module inconsistancy. Objects remain on cache and jfs module can't be reinitialized.
+attribute resolution Filesystem problem
+
+end
+test mount MountfailWithNls
+expected test_suite fs-spec
+expected fs jfs
+expected distro openSUSE
+expected distro_version 12.2
+
+# Currently cannot be matched because Spruce cannot process this test behaviour
+expected severity Crash
+
+attribute comment This test causes module inconsistancy. Objects remain on cache and jfs module can't be reinitialized.
+attribute resolution Filesystem problem
+
+end

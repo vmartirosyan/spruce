@@ -1,0 +1,235 @@
+<!--    mount.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Karen Tsirunyan <ktsirunyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="mount">	
+	<StartUp>
+		Skip ( !PartitionManager::NoOptionsEnabled(),
+			"These tests should run only when no options are provided." );
+	</StartUp>
+	<Test Name="WrongResize" FaultSimulationReady="true">
+		<Description>Resize without MS_REMOUNT.</Description>              
+		<Code>
+				Unres ( chdir("/") == -1, "Cannot change directory." );
+				Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+				
+				//resize works only with remount flag.
+				Check( mount( DeviceName, MountPoint, FileSystem, 0,"resize") == 0, "Mount should fail, but it did not."); 					
+		</Code>
+		<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+				{
+					Error("Partition restore failed!");
+					Return(Fatal);
+				}
+		</Footer>
+     </Test>
+	 <Test Name="mountVFSV1" FaultSimulationReady="true">
+		<Description>mount with jqfmt=vfsv1.</Description>              
+		<Code>
+				Unres ( chdir("/") == -1, "Cannot change directory." );
+				Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+				
+				//resize works only with remount flag.
+				Check( mount( DeviceName, MountPoint, FileSystem, 0,"usrjquota=aquota.user,jqfmt=vfsv1") == -1, "Mount failed."); 					
+		</Code>
+		<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+				{
+					Error("Partition restore failed!");
+					Return(Fatal);
+				}
+		</Footer>
+     </Test>
+	 <Test Name="ErrPanicOption" FaultSimulationReady="true">
+		<Description>Mount with errors=panic option</Description>
+		<Code>
+			mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=panic");
+			umount(DeviceName);
+		</Code>
+		<Footer>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+			{
+				Error("Mount failed!");
+				Return(Fatal);
+			}
+		</Footer>
+	</Test>
+	 <Test Name="ErrAbortOption" FaultSimulationReady="true">
+		<Description>Mount with errors=panic option</Description>
+		<Code>
+			mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, "abort");
+			umount(DeviceName);
+		</Code>
+		<Footer>
+			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+			{
+				Error("Mount failed!");
+				Return(Fatal);
+			}
+		</Footer>
+	</Test>
+	<Test Name="JournalUpdateRemount" FaultSimulationReady="true">
+		<Description>JournalUpdate with Remount.</Description>              
+		<Code>
+				//works only without remount flag.
+				Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT,"journal=update") == 0, "Mount should fail, but it did not"); 						
+		</Code>
+     </Test>
+     <Test Name="JournalDevRemount" FaultSimulationReady="true">
+		<Description>JournalDevRemount  with Remount.</Description>              
+		<Code>
+				//works only without remount flag.
+				Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT,"journal_dev=0") == 0, "Mount should fail, but it did not"); 						
+		</Code>
+     </Test>
+     <Test Name="DataOrderedRemount" FaultSimulationReady="true">
+		<Description>DataOrderedRemount with Remount.</Description>              
+		<Code>
+				//works only without remount flag.
+				Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT,"data=ordered") == -1, "Mount failed."); 						
+		</Code>
+     </Test>
+     <Test Name="DataWritebackRemount" FaultSimulationReady="true">
+		<Description>DataOrderedRemount with Remount.</Description>              
+		<Code>
+				//works only without remount flag.
+				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT,"data=writeback");//will fail! 						
+		</Code>
+     </Test>
+     <Test Name="MountWithExternalLog" FaultSimulationReady="true">
+		<Description>Create ext4 fs with external log.</Description>              
+		<Code>
+				vector<string> args;
+				dev_t devt0 = makedev(1,0);
+                Unres(chdir("/") == -1, "Failed to change directory");
+                Unres(!PartitionManager::ReleasePartition(MountPoint), "Failed to release partition");
+              
+                string Device = string("/dev/ram0");
+                string ExtJournalName = string("journal_dev");
+                Unres(unlink("/dev/ram0") == -1 && errno != ENOENT, "unlink failed");			
+                Unres(mknod(Device.c_str(), S_IFBLK, devt0) == -1 && errno != EEXIST, "mknod failed");
+               	UnixCommand *mkfs = new UnixCommand("mkfs.ext4");	
+				args.push_back("-O");
+				args.push_back(ExtJournalName);
+				args.push_back(Device);		
+				ProcessResult *res = mkfs->Execute(args);
+				Check((res == NULL || res->GetStatus() != Success), "Cannot execute 'mkfs' command\n" + res->GetOutput() );
+				delete mkfs;
+				Unres(!PartitionManager::CreateFilesystem(FileSystem, DeviceName, false, string("-J device=") + Device), "Failed to create filesystem");
+                Unres( mount(DeviceName, MountPoint, FileSystem, 0, "") == -1, "Failed to mount");
+				
+            </Code>
+            <Footer>
+				Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );
+			
+            </Footer>			
+		
+     </Test>
+      <Test Name="MountWithExternalLogFail" FaultSimulationReady="true">
+		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Code>
+				vector<string> args;
+				dev_t devt0 = makedev(1,0);
+                Unres(chdir("/") == -1, "Failed to change directory");
+                Unres(!PartitionManager::ReleasePartition(MountPoint), "Failed to release partition");
+              
+                string Device = string("/dev/ram0");
+                string ExtJournalName = string("journal_dev");
+                Unres(unlink("/dev/ram0") == -1 && errno != ENOENT, "unlink failed");			
+                Unres(mknod(Device.c_str(), S_IFBLK, devt0) == -1 && errno != EEXIST, "mknod failed");
+               	UnixCommand *mkfs = new UnixCommand("mkfs.ext4");	
+				args.push_back("-O");
+				args.push_back(ExtJournalName);
+				args.push_back(Device);		
+				ProcessResult *res = mkfs->Execute(args);
+				Check((res == NULL || res->GetStatus() != Success), "Cannot execute 'mkfs' command\n" + res->GetOutput() );
+				delete mkfs;
+				Unres(!PartitionManager::CreateFilesystem(FileSystem, DeviceName, false, string("-J device=") + Device), "Failed to create filesystem");
+				Unres(!PartitionManager::CreateFilesystem(FileSystem, DeviceName, false, string("-J device=") + Device), "Failed to create filesystem");
+                mount(DeviceName, MountPoint, FileSystem, 0, "");//will fail!
+				
+            </Code>
+            <Footer>
+				Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );
+			
+            </Footer>			
+	</Test>
+     <Test Name="MountFail" FaultSimulationReady="true">
+		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Code>
+			ext4_super_block sb;
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			sb.s_journal_inum = -1;
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
+			PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "");
+		 </Code>
+		<Footer>
+			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
+		</Footer>	
+	</Test>
+	<Test Name="Ext4_setup_super1" FaultSimulationReady="true">
+		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Code>
+			ext4_super_block sb;
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			sb.s_max_mnt_count = 1;
+			sb.s_mnt_count = 1;
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
+			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, ""),"mount failed.");
+		 </Code>
+		<Footer>
+			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
+		</Footer>	
+	</Test>
+	<Test Name="Ext4_setup_super2" FaultSimulationReady="true">
+		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Code>
+			ext4_super_block sb;
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			sb.s_checkinterval = 1;
+			sb.s_lastcheck = 0;
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
+			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, ""),"mount failed.");
+		 </Code>
+		<Footer>
+			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
+		</Footer>	
+	</Test>
+	<Test Name="OrphanCleanup" FaultSimulationReady="true">
+		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Code>
+			ext4_super_block sb;
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			sb.s_last_orphan = 4;
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
+			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", MS_RDONLY),"mount failed.");
+		 </Code>
+		<Footer>
+			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
+		</Footer>	
+	</Test>
+</TestSet>
