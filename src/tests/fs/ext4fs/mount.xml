@@ -49,7 +49,6 @@
 				Unres ( chdir("/") == -1, "Cannot change directory." );
 				Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
 				
-				//resize works only with remount flag.
 				Check( mount( DeviceName, MountPoint, FileSystem, 0,"usrjquota=aquota.user,jqfmt=vfsv1") == -1, "Mount failed."); 					
 		</Code>
 		<Footer>
