@@ -23,8 +23,7 @@
 
 <TestSet Name="mount">	
 	<StartUp>
-		Skip ( !PartitionManager::NoOptionsEnabled()
-				&amp;&amp; !PartitionManager::IsOptionEnabled("-j", true),
+		Skip ( !PartitionManager::NoOptionsEnabled(),
 			"These tests should run only when no options are provided." );
 	</StartUp>
 	<Test Name="WrongResize" FaultSimulationReady="true">
@@ -110,6 +109,13 @@
 				Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT,"data=ordered") == -1, "Mount failed."); 						
 		</Code>
      </Test>
+     <Test Name="DataWritebackRemount" FaultSimulationReady="true">
+		<Description>DataOrderedRemount with Remount.</Description>              
+		<Code>
+				//works only without remount flag.
+				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT,"data=writeback");//will fail! 						
+		</Code>
+     </Test>
      <Test Name="MountWithExternalLog" FaultSimulationReady="true">
 		<Description>Create ext4 fs with external log.</Description>              
 		<Code>
@@ -182,4 +188,35 @@
 			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
 		</Footer>	
 	</Test>
+	<Test Name="Ext4_setup_super1" FaultSimulationReady="true">
+		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Code>
+			ext4_super_block sb;
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			sb.s_max_mnt_count = 1;
+			sb.s_mnt_count = 1;
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
+			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, ""),"mount failed.");
+		 </Code>
+		<Footer>
+			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
+		</Footer>	
+	</Test>
+	<Test Name="Ext4_setup_super2" FaultSimulationReady="true">
+		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Code>
+			ext4_super_block sb;
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
+			Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
+			sb.s_checkinterval = 1;
+			sb.s_lastcheck = 0;
+			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
+			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, ""),"mount failed.");
+		 </Code>
+		<Footer>
+			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
+		</Footer>	
+	</Test>
+	
 </TestSet>
