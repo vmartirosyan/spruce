@@ -33,7 +33,7 @@
 #ifndef __XFS_H__
 #define __XFS_H__
 
-#include <platform_defs.h>
-#include <xfs_fs.h>
+#include <xfs/platform_defs.h>
+#include <xfs/xfs_fs.h>
 
 #endif	/* __XFS_H__ */
