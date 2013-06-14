@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
+project (Spruce)
+
 INCLUDE (CheckIncludeFiles)
 INCLUDE (CheckTypeSize)
+
 include_directories("${CMAKE_SOURCE_DIR}/src/tests/fs/ext4fs/Headers")
 include_directories("${CMAKE_SOURCE_DIR}/src/tests/fs/jfs/Headers")
 include_directories("${CMAKE_SOURCE_DIR}/src/tests/fs/xfs/Headers")
 include_directories("${CMAKE_SOURCE_DIR}/src/tests/fs/btrfs/Headers")
-project (Spruce)
+
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -61,8 +64,7 @@ check_include ("sys/types.h;attr/xattr.h" HAVE_XATTR_H "header file")
 
 check_include ("sys/acl.h" HAVE_ACL_H "header file")
 
-
-SET( CMAKE_REQUIRED_DEFINITIONS "-D _GNU_SOURCE")
+SET(CMAKE_REQUIRED_DEFINITIONS "-D _GNU_SOURCE")
 SET(CMAKE_EXTRA_INCLUDE_FILES "fcntl.h")
 CHECK_TYPE_SIZE("struct file_handle" STRUCT_FILE_HANDLE)
 if (NOT HAVE_STRUCT_FILE_HANDLE)

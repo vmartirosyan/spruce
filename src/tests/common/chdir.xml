@@ -31,7 +31,6 @@
 			char * cwd;
 			long size;
 			int  ret_chdir;
-			ret_chdir;
 			Fail( (ret_chdir = chdir(DirPaths[0].c_str()) ) != 0, "chdir does not change the working directory." );
 				
 			cwd = NULL;

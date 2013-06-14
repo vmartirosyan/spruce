@@ -276,7 +276,7 @@
 			off64_t offset = 0;
 		
 			void * addr;
-			if( ( addr = mmap64(0, length, prot, flags, FDs[0], offset) ) == MAP_FAILED, "System call mmap failed");
+			Fail( ( addr = mmap64(0, length, prot, flags, FDs[0], offset) ) == MAP_FAILED, "System call mmap failed");
 			
 			Check(strncmp(buff.c_str(), static_cast<char *>(addr), buff.size()), "System call mmap failed: mapped content differs from file content");
 		
