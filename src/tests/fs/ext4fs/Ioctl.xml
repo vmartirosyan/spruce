@@ -42,7 +42,8 @@
 		 <Test Name="SetAllFlags" FaultSimulationReady="true">              
                 <Description>Try to set and get some flag values.</Description>
                 <Dir count="1"/>
-                <Code>                
+                <Code>   
+						Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");		          
                         int set_flags = EXT4_EXTENTS_FL | EXT4_IMMUTABLE_FL | EXT4_SECRM_FL | EXT4_SYNC_FL | EXT4_APPEND_FL | EXT4_NOATIME_FL | EXT4_DIRSYNC_FL;                     
                         Fail ( ioctl(DirDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
                      
@@ -51,7 +52,8 @@
         <Test Name="SetJournalDataFlag" FaultSimulationReady="true">              
                 <Description>Try to set EXT4_JOURNAL_DATA_FL flag.</Description>
                 <Dir count="1"/>
-                <Code>                 
+                <Code>  
+						Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");		
                         int set_flags = EXT4_EXTENTS_FL | EXT4_JOURNAL_DATA_FL;                     
                         Fail ( ioctl(DirDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");                    
                 </Code>
@@ -505,6 +507,63 @@
                 <Footer>
                         if (_file != -1)
                                 close(_file);
+                        if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success )
+                        {
+                                Error("Restore failed!");
+                                _exit(Fatal);
+                        }
+                </Footer>
+        </Test>
+        <Test Name="MigrateFile" FaultSimulationReady="true" Shallow="true">
+                <Description>Migrate a large Ext3 file to Ext4</Description>
+                <Header>
+						int fd = -1;
+						char FilePath[] = "Migrate_file";			
+                        // Temporary solution. Should be removed as soon as the logic of test execution is changed.             
+                      	Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );                          
+                        #ifdef	COMPAT
+						Unsupp("Not supported in COMPAT mode.");
+						#endif	                               
+                </Header>
+                <Code>
+						char *WriteBuf = new char[64000*4096];  
+						Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!"); 
+                        UnixCommand mkfs("mkfs.ext3");
+                        vector<string> args;
+                        args.push_back(DeviceName);
+                        ProcessResult * res;
+                        res = mkfs.Execute(args);
+                        Unres ( res == NULL || res->GetStatus() != Success, "Cannot create ext3 filesystem on device " + (string)DeviceName);
+                        Unres ( mount( DeviceName, MountPoint, "ext3", 0, 0) == -1, "Cannot mount ext3 FS " + (string)DeviceName + " to " + (string)MountPoint);
+                         Unres ( chdir(MountPoint) != 0,"Cannot change current dir to " );
+						
+						fd = open(FilePath,O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);	
+						Unres(fd == -1, "Cannot create file.") ;
+						Unres(write(fd, WriteBuf,64000*4096) == -1, "Cannot write.");			
+						close(fd);
+						Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!"); 
+                        UnixCommand tunefs("tune2fs");
+                        args.erase(args.begin(),args.end());
+                        args.push_back("-O");
+                        args.push_back("extents");
+                        args.push_back(DeviceName);
+                        
+                        res = tunefs.Execute(args);
+                        Unres ( res == NULL || res->GetStatus() != Success, "Cannot tune ext3 filesystem on device " + (string)DeviceName);
+                        
+                        delete res;
+                        Unres ( mount( DeviceName, MountPoint, "ext4", 0, 0) == -1, "Cannot mount ext3 FS " + (string)DeviceName + " to " + (string)MountPoint);
+                         
+                        Unres ( chdir(MountPoint) != 0,"Cannot change current dir to " );
+						
+                        Unres( (fd = open(FilePath, O_RDONLY)) == -1, "Cannot open file");
+                        
+                        Fail ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
+                        
+                </Code>
+                <Footer>       
+						unlink(FilePath);
+                        close(fd);
                         if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success )
                         {
                                 Error("Restore failed!");
