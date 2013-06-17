@@ -24,7 +24,7 @@
 <TestSet Name="truncate">	
 	<StartUp>
 		Skip ( !PartitionManager::NoOptionsEnabled()
-				&amp;&amp; !PartitionManager::IsOptionEnabled("-j", true),
+				&amp;&amp; !PartitionManager::IsOptionEnabled("-t ext2", true),
 			"These tests should run only when no options are provided." );
 	</StartUp>
 	<Test Name="TruncateNormalIncreaseALot" FaultSimulationReady="true">
