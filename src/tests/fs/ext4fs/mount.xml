@@ -259,7 +259,7 @@
 			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
 		</Footer>	
 	</Test>
-	<Test Name="OrphanCleanup" FaultSimulationReady="true">
+	<Test Name="OrphanCleanup1" FaultSimulationReady="true">
 		<Description>Corrupt superblock so that mount fails.</Description>              
 		<Code>
 			ext4_super_block sb;
@@ -268,6 +268,30 @@
 			sb.s_last_orphan = 4;
 			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
 			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", MS_RDONLY), "Mount failed.");
+		 </Code>
+		<Footer>
+			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
+		</Footer>	
+	</Test>
+	<Test Name="OrphanCleanup2" FaultSimulationReady="true">
+		<Description>Corrupt superblock so that mount fails.</Description>
+		<Header>
+			int fd = -1;
+		</Header>              
+		<Code>
+			struct stat st;
+			ext4_super_block sb;
+			char FilePath[] = "Orphan_inode_file";
+			fd = open(FilePath,O_CREAT,0777);
+			Unres( fd == -1, "Cannot create file.");			
+			Unres ( stat(FilePath, &st) == -1, "Failed to stat file." );
+			int inode_num = st.st_ino;
+			close(fd);			
+			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount." )
+			Unres( !PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock." );
+			sb.s_last_orphan = inode_num;
+			Unres( !PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock." );
+			Unres( !PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", MS_RDONLY), "Mount failed." );
 		 </Code>
 		<Footer>
 			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
