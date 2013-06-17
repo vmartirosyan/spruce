@@ -500,6 +500,25 @@
                         Unres ( chdir(MountPoint) != 0,"Cannot change current dir to " );
 
                         Unres( (_file = open(MountPoint, O_DIRECTORY | O_RDONLY)) == -1, "Cannot open dir");
+						const int FILES_NUM = 1024*2;
+                        int fds[FILES_NUM];
+                        string filePaths[FILES_NUM];
+                        
+                        for(int i = 0; i < FILES_NUM; i++)
+                        {
+                            stringstream sstr;
+                            sstr << i;
+                            filePaths[i] = MountPoint + string("/ext4_migrate_file") + sstr.str();
+                        }
+                         
+                        for (int i = 0; i < FILES_NUM; i++)
+                        {
+                            Unres( (fds[i]= open(filePaths[i].c_str(), O_CREAT | O_LARGEFILE | O_RDWR, S_IRWXU)) == -1, "failed to open/create file");
+                            Unres(write(fds[i], "a", 1024*1024) == -1, "Failed to write to file");
+                            close(fds[i]);
+                        }
+                        
+                        cerr << "device size " << PartitionManager:: GetDeviceSize(DeviceName) << endl;
                         
                         Fail ( ioctl(_file, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
                         
