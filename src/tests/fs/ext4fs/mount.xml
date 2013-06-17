@@ -230,7 +230,7 @@
 		</Footer>	
 	</Test>
 	<Test Name="Ext4_setup_super1" FaultSimulationReady="true">
-		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Description>Change some superblock values and mount.</Description>              
 		<Code>
 			ext4_super_block sb;
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
@@ -245,7 +245,7 @@
 		</Footer>	
 	</Test>
 	<Test Name="Ext4_setup_super2" FaultSimulationReady="true">
-		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Description>Change some superblock values and mount.</Description>              
 		<Code>
 			ext4_super_block sb;
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
@@ -260,7 +260,7 @@
 		</Footer>	
 	</Test>
 	<Test Name="OrphanCleanup1" FaultSimulationReady="true">
-		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Description>Mark orphan inode in superblock and mount.</Description>              
 		<Code>
 			ext4_super_block sb;
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
@@ -274,7 +274,7 @@
 		</Footer>	
 	</Test>
 	<Test Name="OrphanCleanup2" FaultSimulationReady="true">
-		<Description>Corrupt superblock so that mount fails.</Description>
+		<Description>Creates a file and mark it its inode orphan in superblock.</Description>
 		<Header>
 			int fd = -1;
 		</Header>              
@@ -298,7 +298,7 @@
 		</Footer>	
 	</Test>
 	<Test Name="DefaultOptions1" FaultSimulationReady="true">
-		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Description>Set some default options.</Description>              
 		<Code>
 			ext4_super_block sb;
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
@@ -312,7 +312,7 @@
 		</Footer>	
 	</Test>
 	<Test Name="DefaultOptions2" FaultSimulationReady="true">
-		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Description>Set some default options.</Description>              
 		<Code>
 			ext4_super_block sb;
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
@@ -326,7 +326,7 @@
 		</Footer>	
 	</Test>
 	<Test Name="DefaultOptions3" FaultSimulationReady="true">
-		<Description>Corrupt superblock so that mount fails.</Description>              
+		<Description>Set some default options.</Description>              
 		<Code>
 			ext4_super_block sb;
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
