@@ -478,8 +478,7 @@
                         Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
                                     
                 </Header>
-                <Code>
-                                 
+                <Code>                                 
                         UnixCommand mkfs("mkfs.ext3");
                         vector<string> args;
                         args.push_back(DeviceName);
@@ -498,10 +497,35 @@
                         
                         delete res;
                         Unres ( mount( DeviceName, MountPoint, "ext4", 0, 0) == -1, "Cannot mount ext3 FS " + (string)DeviceName + " to " + (string)MountPoint);
+                        
                         Unres ( chdir(MountPoint) != 0,"Cannot change current dir to " );
 
                         Unres( (_file = open(MountPoint, O_DIRECTORY | O_RDONLY)) == -1, "Cannot open dir");
-                        
+						
+						//Files
+						// 1024*100 files with 1 byte written occupy <= 2GB
+						int filesNum = 0;
+						if (PartitionManager:: GetDeviceSize(DeviceName) >= 2147483648)
+						{
+							filesNum = 102400;
+                        }
+						const int FILES_NUM = filesNum;
+						int fds[FILES_NUM];
+						string filePaths[FILES_NUM];
+						
+						for(int i = 0; i < FILES_NUM; i++)
+						{
+							stringstream sstr;
+							sstr << i;
+							filePaths[i] = MountPoint + string("/ext4_migrate_file") + sstr.str();
+						}
+						 
+						for (int i = 0; i < FILES_NUM; i++)
+						{
+							Unres( (fds[i] = open(filePaths[i].c_str(), O_CREAT | O_LARGEFILE | O_RDWR, S_IRWXU)) == -1, "failed to open/create file");
+							Unres(write(fds[i], "a", 1) == -1, "Failed to write to file");
+							close(fds[i]);
+						}                       
                         Fail ( ioctl(_file, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
                         
                 </Code>
