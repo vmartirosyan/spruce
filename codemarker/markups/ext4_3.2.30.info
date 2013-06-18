@@ -105,10 +105,6 @@ LFT:758,761 The call of this function is coming from function which call is mark
 LFT:763,773 The call of this function is marked as non-executable, but it is called. gcov bug
 end_of_record
 
-
-This function is inline and its call is usually integrated.
-This line is covered, but gcov doesn't show it. gcov bug
-
 SF:fs/ext4/extents.c
 LFT:166,166 This function is inline and its call is usually integrated.
 LFT:175,175 This line is covered, but gcov doesn't show it. gcov bug
@@ -126,6 +122,17 @@ LFT:502,502 This function is inline and its call is usually integrated.
 LFT:554,554 This line is covered, but gcov doesn't show it. gcov bug
 LFT:562,562 This function is inline and its call is usually integrated.
 LFT:573,573 This line is covered, but gcov doesn't show it. gcov bug
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_inode_double_lock
+LFT:136,136 This block cannot be covered because of the above check. function mext_inode_double_lock always returns 0.
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_check_null_inode
+LFT:6,9 This is dead code, the NULL value of inodes are checked previously before call.
+LFT:11,14 This is dead code, the NULL value of inodes are checked previously before call.
 end_of_record
 
 ################################################ext4#####################
