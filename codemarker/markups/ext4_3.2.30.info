@@ -36,6 +36,11 @@ FN:ext4_inode_blocks
 LFT:0,0 This line is covered, but gcov doesn't show it.
 end_of_record
 
+SF:fs/ext4/inode.c
+FN:ext4_expand_extra_isize
+LFT:0,0 This line is covered, but gcov doesn't show it.
+end_of_record
+
 SF:fs/ext4/mballoc.c
 LFT:509,521 Function is inline and its call is usually integrated.
 LFT:688,688 Function is inline and its call is usually integrated.
