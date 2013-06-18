@@ -39,6 +39,7 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_expand_extra_isize
 LFT:0,0 This line is covered, but gcov doesn't show it.
+LFT:13,13 This line is covered, but gcov doesn't show it.
 end_of_record
 
 SF:fs/ext4/mballoc.c
