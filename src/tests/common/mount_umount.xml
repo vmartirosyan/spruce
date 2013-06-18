@@ -35,7 +35,7 @@
 	<Test Name="MountGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device to another partition</Description>
 		<Code>
-			if ( FileSystem != FSNames[JFS] )
+			if ( FileSystem == FSNames[JFS] )
 			{
 				Fail (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");
 			}
@@ -68,7 +68,7 @@
 			
 			Unres( chdir("/") == -1, "Cannot change directory to root." );
 			
-			if ( FileSystem != FSNames[JFS] )
+			if ( FileSystem == FSNames[JFS] )
 			{
 				Fail ( umount( MountPoint) == -1, "Unmount failed");
 			}
@@ -83,7 +83,7 @@
 		<Code>
 			Unres (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed.");
 			
-			if ( FileSystem != FSNames[JFS] )
+			if ( FileSystem == FSNames[JFS] )
 			{
 				Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
 			}
@@ -98,7 +98,7 @@
 		<Code>
 			Unres (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed.");
 			
-			if ( FileSystem != FSNames[JFS] )
+			if ( FileSystem == FSNames[JFS] )
 			{
 				Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
 			}

@@ -63,7 +63,7 @@
 			Unres(fd == -1, "Cannot open directory");
 			
 			int ret = 0;
-			Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");
+			Check((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");
 			cerr<<"Readdir : bytes read: " << ret << endl;
 			
 			for ( int pos = 0; pos < ret; )
@@ -73,7 +73,7 @@
 				pos += ent->d_reclen;
 			}
 			
-			Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");			
+			Check((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");			
 			cerr<<"Readdir : bytes read: " << ret << endl;
 			
 			for ( int pos = 0; pos < ret; )
@@ -89,7 +89,7 @@
 			}
 			
 			sync();
-			Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");			
+			Check((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");			
 			cerr<<"Readdir : bytes read: " << ret << endl;
 			
 			for ( int pos = 0; pos < ret; )
@@ -139,7 +139,7 @@
 			Unres(fd == -1, "Cannot open directory");
 			
 			int ret = 0;
-			Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");
+			Check((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");
 			cerr<<"Readdir : bytes read: " << ret << endl;
 			
 			for ( int pos = 0; pos < ret; )
@@ -149,7 +149,7 @@
 				pos += ent->d_reclen;
 			}
 			
-			Fail((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");			
+			Check((ret = syscall(__NR_getdents, fd, buf, BUF_LEN)) == -1, "Readdir error.");			
 			cerr<<"Readdir : bytes read: " << ret << endl;
 			
 			for ( int pos = 0; pos < ret; )
