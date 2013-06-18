@@ -68,7 +68,7 @@
                         me.len = 5000;
                         me.moved_len = 0;                   
                         
-                        Fail ( ioctl(FDs[1], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
+                        Check ( ioctl(FDs[1], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
                 </Code>
         </Test>
 </TestSet>

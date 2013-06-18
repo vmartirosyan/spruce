@@ -31,9 +31,9 @@
 			Unres (write (FDs[0], buf, strlen(buf)) == -1, "Cannot write to file.");
 			
 			// The Fail macro cannot be used here...
-			EnableFaultSim();
+			//EnableFaultSim();
 			sync ();
-			DisableFaultSim();
+			//DisableFaultSim();
 						
 		</Code>
 	</Test>	
