@@ -35,7 +35,14 @@
 	<Test Name="MountGeneral" FaultSimulationReady="true">
 		<Description>Trying to mount the device to another partition</Description>
 		<Code>
-			Fail (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");			
+			if ( FileSystem != FSNames[JFS] )
+			{
+				Fail (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");
+			}
+			else
+			{
+				Check (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");
+			}
 		</Code>
 	</Test>
 	<Test Name="UmountGeneral" FaultSimulationReady="true">
@@ -61,7 +68,14 @@
 			
 			Unres( chdir("/") == -1, "Cannot change directory to root." );
 			
-			Fail ( umount( MountPoint) == -1, "Unmount failed");			
+			if ( FileSystem != FSNames[JFS] )
+			{
+				Fail ( umount( MountPoint) == -1, "Unmount failed");
+			}
+			else
+			{
+				Check ( umount( MountPoint) == -1, "Unmount failed");
+			}
 		</Code>
 	</Test>
 	<Test Name="RemountGeneral" FaultSimulationReady="true">
@@ -69,7 +83,14 @@
 		<Code>
 			Unres (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed.");
 			
-			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
+			if ( FileSystem != FSNames[JFS] )
+			{
+				Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
+			}
+			else
+			{
+				Check ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
+			}
 		</Code>		
 	</Test>
 	<Test Name="RemountReadOnly" FaultSimulationReady="true">
@@ -77,7 +98,15 @@
 		<Code>
 			Unres (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed.");
 			
-			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
+			if ( FileSystem != FSNames[JFS] )
+			{
+				Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
+			}
+			else
+			{
+				Check ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
+			}
+			
 		</Code>		
 	</Test>
 	<Test Name="NoATimeGeneral" FaultSimulationReady="true">
