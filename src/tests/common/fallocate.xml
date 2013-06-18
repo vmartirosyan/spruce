@@ -81,8 +81,8 @@
 			const string buf = "1234";
 			Unres( write(FDs[0], buf.c_str(), buf.size()) == -1, "Cannot write to file." );
 			
-			Fail( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 1, 100000 ) == -1, "Cannot punch hole in the file." );
-
+			//Fail( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 1, 100000 ) == -1, "Cannot punch hole in the file." );
+			Check( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 1, 100000 ) == -1, "Cannot punch hole in the file." );
 			struct stat st;
 			
 			Unres( fstat(FDs[0], &st) == -1, "Cannot stat file." );
@@ -98,8 +98,8 @@
 			const string buf = "1234";
 			Unres( write(FDs[0], buf.c_str(), buf.size()) == -1, "Cannot write to file." );
 			
-			Fail( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0, 1 ) == -1, "Cannot punch hole in the file." );
-
+			//Fail( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0, 1 ) == -1, "Cannot punch hole in the file." );
+			Check( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0, 1 ) == -1, "Cannot punch hole in the file." );
 			struct stat st;
 			
 			Unres( fstat(FDs[0], &st) == -1, "Cannot stat file." );
