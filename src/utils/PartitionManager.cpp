@@ -139,6 +139,19 @@ PartitionStatus PartitionManager::PreparePartition()
 	}
 	
 	Logger::LogInfo("Preparing partition: " + GetCurrentOptions(false));
+	if ( _CurrentOptions.MountData[_CurrentOptions.MountData.length() - 1] == ',' )
+		_CurrentOptions.MountData.erase(_CurrentOptions.MountData.begin() + _CurrentOptions.MountData.length() - 1);
+	
+	const int size = 10;
+	char buf[size];
+	if ( snprintf(buf, size, "%lu", _CurrentOptions.MountFlags) >= size )
+	{
+		Logger::LogError("Cannot get Flags value.");
+		return PS_Skip;
+	}
+	
+	setenv("MountFlags", buf, 1);
+	setenv("MountData", _CurrentOptions.MountData.c_str(), 1);
 	setenv("MkfsOpts", _CurrentOptions.MkfsOptions.c_str(), 1);
 	if ( !CreateFilesystem(_FileSystem, _DeviceName, false, _CurrentOptions.MkfsOptions) )
 	{		
@@ -276,9 +289,6 @@ bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSyst
 		Logger::LogError("Cannot mount device.");		
 		return false;
 	}
-	
-	setenv("MountFlags", buf, 1);
-	setenv("MountData", Options.c_str(), 1);
 	
 	Logger::LogInfo( "Device " + DeviceName + " was mounted on folder " 
 			+ MountPoint + "(opts=" + Options + ") ");
