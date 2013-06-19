@@ -71,5 +71,59 @@
                         Check ( ioctl(FDs[1], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
                 </Code>
         </Test>
+        
+        
+        <Test Name="MoveExtent4" FaultSimulationReady="true" Shallow="true">
+                <Description>Move big extent.</Description>
+                <File count="2"/>
+                <Code>                       
+                        char *buf = new char[1024*1024];
+						memcpy(buf, "asdfg", 5);
+							
+						for (int i = 0 ; i < 60000; ++i)
+						{
+							Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+							Unres(write(FDs[0], buf, 1) == -1, "Write failed.");
+							Unres(lseek64(FDs[1], 10000, SEEK_CUR) == -1, "Lseek failed.");
+							Unres(write(FDs[1], buf, 1) == -1, "Write failed.");
+													
+						}
+						sync();
+						
+						Unres(lseek64(FDs[0], 5000, SEEK_SET) == -1, "Lseek failed.");
+						
+						for (int i = 0; i < 5000; ++i)
+						{
+							Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed");
+							Unres(write(FDs[0], buf, 1) == -1, "Write failed");
+							Unres(lseek64(FDs[1], 10000, SEEK_CUR) == -1, "Lseek failed");
+							Unres(write(FDs[1], buf, 1) == -1, "Write failed");
+						}		
+						sync();
+						
+						Unres(lseek64(FDs[0], 0, SEEK_SET) == -1, "Lseek failed.");
+						for (int i = 0; i < 1000; ++i)
+						{
+							Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed");
+							Unres(write(FDs[0], buf, 1) == -1, "Write failed");
+							Unres(lseek64(FDs[1], 10000, SEEK_CUR) == -1, "Lseek failed");
+							Unres(write(FDs[1], buf, 1) == -1, "Write failed");
+						}		
+						sync();
+									
+						delete buf;
+                        
+                        
+                        struct move_extent me;                       
+                        memset(&me, 0, sizeof(me));
+                        me.donor_fd = FDs[0];
+                        me.orig_start = 5000;
+                        me.donor_start = 5000;
+                        me.len = 5000;
+                        me.moved_len = 0;                   
+                        
+                        Check ( ioctl(FDs[1], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
+                </Code>
+        </Test>
 </TestSet>
 
