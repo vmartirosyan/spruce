@@ -54,11 +54,25 @@
 			char* ReadBuf = new char[2*BlockSize];
 			char * ReadStart = reinterpret_cast<char*>(((reinterpret_cast<long>(ReadBuf) / BlockSize) + 1) * BlockSize);
 			
-			Fail ( write(FDs[0], WriteStart, 2*BlockSize) == -1, "Cannot write to file.");
+			if ( FileSystem == FSNames[JFS] )
+			{
+				Fail ( write(FDs[0], WriteStart, 2*BlockSize) == -1, "Cannot write to file.");
+			}
+			else
+			{
+				Check ( write(FDs[0], WriteStart, 2*BlockSize) == -1, "Cannot write to file.");
+			}
 			
 			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
 			
-			Fail ( read(FDs[0], ReadStart, BlockSize) == -1, "Cannot read from file.");
+			if ( FileSystem == FSNames[JFS] )
+			{
+				Fail ( read(FDs[0], ReadStart, BlockSize) == -1, "Cannot read from file.");
+			}
+			else
+			{
+				Check ( read(FDs[0], ReadStart, BlockSize) == -1, "Cannot read from file.");
+			}
 			
 			Check ( ReadStart[0] != WriteStart[0], "Different values were written and read.");
 		</Code>
