@@ -114,8 +114,10 @@
 			Unres( quotactl(cmd_on, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot enable quotas V0." );
 			int res = mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT,"noquota");
 			Unres( quotactl(cmd_off, DeviceName, QFMT_VFS_V0, static_cast<caddr_t>(const_cast<char*>(QuotaFile.c_str()))) == -1, "Cannot disable quotas V0." );
-			Check(res == 0, "Mount should fail, but it did not."); 	
-			
+			if ( FileSystem == FSNames[EXT4] )
+			{
+				Check(res == 0, "Mount should fail, but it did not."); 	
+			}
 		</Code>
 	</Test>
 	<Test Name="QuotactlGetSetQuota" FaultSimulationReady="true">

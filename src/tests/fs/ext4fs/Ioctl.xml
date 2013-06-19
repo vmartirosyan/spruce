@@ -170,7 +170,7 @@
                         
                         ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_EXTEND, 0);//covering code
                         int NewPartitionSizeInBlocks = PartitionManager::GetDeviceSize(DeviceName)/BlockSize - 50000;
-                        Fail(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1,
+                        Check(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1,
 							"Error during online resize. ");
                 </Code>
                 <Footer>
@@ -292,7 +292,7 @@
                         input.inode_bitmap = blockCount + 2;
                         input.inode_table = blockCount + 3;
                         
-                        Fail(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input) == -1, "Error adding Group");
+                        Check(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input) == -1, "Error adding Group");
                         
                 </Code>
                 <Footer>
