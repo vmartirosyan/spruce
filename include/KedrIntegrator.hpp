@@ -432,7 +432,9 @@ public:
 		f.read(buf, 5000);
 		f.close();
 		
-		string LastFaultFull = (string)buf + "\n" + LastFaultTrace;
+		string LastFaultFull = (string)buf;
+		if ( LastFaultTrace != "" )
+			LastFaultFull = LastFaultFull + "\n" + LastFaultTrace;
 		
 		return LastFaultFull;
 	}
