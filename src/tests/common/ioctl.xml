@@ -138,7 +138,7 @@
 		<Description>Ioctl FIEMAP.</Description>
 		<File count="1" flags="O_CREAT | O_RDWR | O_LARGEFILE"/>
 		<Code>
-			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
+			//uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
 			
 			struct fiemap arg;
 			memset(&arg, 0, sizeof(arg));
@@ -161,7 +161,7 @@
 		<Description>Ioctl FIEMAP.</Description>
 		<File count="1" flags="O_CREAT | O_RDWR | O_LARGEFILE"/>
 		<Code>
-			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
+			//uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
 			
 			struct fiemap arg;
 			memset(&arg, 0, sizeof(arg));

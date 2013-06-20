@@ -30,7 +30,6 @@
 			int ret_chown;
 			struct stat mode;
 			struct passwd *nobody;
-			int ret ;
 			uid_t user_uid;
 			gid_t user_gid;
 			
