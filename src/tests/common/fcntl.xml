@@ -600,11 +600,6 @@
 			}			
 		</Code>
 	</Test>	
-	<FaultSimulation>
-		<Simulate point="kmalloc" />
-		<Simulate point="copy_to_user"/>
-		<!-- ... -->
-	</FaultSimulation>
 </TestSet>
 
 

@@ -31,13 +31,13 @@
 			struct stat mode;
 			mode_t open_mode = S_IRUSR;
 			
-			Fail( ( ret_chmod = chmod(FilePaths[0].c_str(), open_mode)) == -1, "Chmod  failed: Aborting test.");
+			Fail( ( ret_chmod = chmod(FilePaths[0].c_str(), open_mode)) == -1, "Chmod  failed.");
 			
 			int ret = fstat(FDs[0], &mode);
 			
-			Unres( ret == -1, "stat failed: Aborting test.");
+			Unres( ret == -1, "stat failed.");
 			
-			Check((mode.st_mode & 4095) !=  open_mode,  "Chmod failed.");
+			Check((mode.st_mode & 4095) !=  open_mode,  "Chmod hasn't set access mode.");
 		</Code>	
 	</Test>
 	<Test Name="ChmodIsNotDirectory">
