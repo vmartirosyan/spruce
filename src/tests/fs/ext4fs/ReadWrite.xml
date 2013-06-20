@@ -23,6 +23,7 @@
 
 <TestSet Name="ReadWrite">	
 	<Requires>sys/timerfd.h</Requires>
+	<Requires>sys/mman.h</Requires>
 	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
 		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
@@ -36,15 +37,36 @@
 			char* ReadBuf = new char[2*BlockSize];
 			char * ReadStart = reinterpret_cast<char*>(((reinterpret_cast<long>(ReadBuf) / BlockSize) + 1) * BlockSize);
 			
-			Fail ( write(FDs[0], WriteStart, 2*BlockSize) == -1, "Cannot write to file.");
+			Check ( write(FDs[0], WriteStart, 2*BlockSize) == -1, "Cannot write to file.");
 			
 			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
-			Fail ( write(FDs[0], WriteStart, 2*BlockSize) == -1, "Cannot write to file.");
+			Check ( write(FDs[0], WriteStart, 2*BlockSize) == -1, "Cannot write to file.");
 			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");		
 			Fail ( read(FDs[0], ReadStart, BlockSize) == -1, "Cannot read from file.");
 			
 			Check ( ReadStart[0] != WriteStart[0], "Different values were written and read.");
 		</Code>
 	</Test>
+	<Test Name="write" FaultSimulationReady="true">
+		<Description>Covers JFS xtTruncate and related functions.</Description>
+		<Code>
+			system("rm -rf /tmp/spruce_test/*");
+			int count = 0;
+			char FilePath[] = "write_file"; 
+			int fd = open(FilePath,O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);	
+			size_t length = 100000;
+			int prot = PROT_WRITE;
+			int flags = MAP_SHARED;
+			off_t offset = 0;
+			
+			void * addr;
+		
+			Unres( ( addr = mmap(0, length, prot, flags, fd, offset)) == MAP_FAILED, "System call mmap failed");
+			char buf[100000];		
+			Unres (write(fd, buf, 100000) == -1, "Cannot write.");
 
+			fsync(fd);
+			close(fd);
+		</Code>
+	</Test>
 </TestSet>
