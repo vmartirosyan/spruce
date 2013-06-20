@@ -27,6 +27,22 @@ attribute resolution Filesystem problem
 
 end
 
+test ReadWrite ReadWriteDirect
+expected test_suite ext4
+expected fs ext4
+expected mount_opts data=journal
+version l kernel_version 3.2.30
+
+expected severity Unresolved
+
+matched test_messages Exception was thrown: Cannot create file ReadWrite_ReadWriteDirect_file_ReadWriteDirect_0. Error : Invalid argument
+
+attribute comment Ext4 doesn't support direct IO with journaling before kernel 3.2.30.
+attribute resolution Filesystem problem
+
+end
+
+
 test open OpenDirect
 expected test_suite common
 expected fs ext4
