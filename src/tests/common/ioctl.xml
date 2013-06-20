@@ -134,6 +134,53 @@
 			}				
 		</Code>
 	</Test>
+	<Test Name="IoctlFIEMAPBeforeExtent" FaultSimulationReady="true" Shallow="true">
+		<Description>Ioctl FIEMAP.</Description>
+		<File count="1" flags="O_CREAT | O_RDWR | O_LARGEFILE"/>
+		<Code>
+			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
+			
+			struct fiemap arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.fm_length = 1;
+			Unres ( fallocate(FDs[0], 0, 32000, 32000), "Cannot allocate space for file.");
+			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Unsupp("FIEMAP is not supported.");
+				}
+				else
+				{
+					Check(1, "FIEMAP operation failed.");
+				}
+			}			
+		</Code>
+	</Test>
+	<Test Name="IoctlFIEMAPAfterExtent" FaultSimulationReady="true" Shallow="true">
+		<Description>Ioctl FIEMAP.</Description>
+		<File count="1" flags="O_CREAT | O_RDWR | O_LARGEFILE"/>
+		<Code>
+			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
+			
+			struct fiemap arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.fm_length = 1;
+			arg.fm_start = 134217728;//128MB
+			Unres ( fallocate(FDs[0], 0, 0, 134217728), "Cannot allocate space for file.");
+			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Unsupp("FIEMAP is not supported.");
+				}
+				else
+				{
+					Check(1, "FIEMAP operation failed.");
+				}
+			}			
+		</Code>
+	</Test>
 	<Test Name="IoctlFIEMAPWithXattrFlag" FaultSimulationReady="true" Shallow="true">
 		<Description>Ioctl FIEMAP test with FIEMAP_FLAG_XATTR flag set.</Description>
 		<File count="1"/>
