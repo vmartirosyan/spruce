@@ -47,26 +47,4 @@
 			Check ( ReadStart[0] != WriteStart[0], "Different values were written and read.");
 		</Code>
 	</Test>
-	<Test Name="write" FaultSimulationReady="true">
-		<Description>Covers JFS xtTruncate and related functions.</Description>
-		<Code>
-			system("rm -rf /tmp/spruce_test/*");
-			int count = 0;
-			char FilePath[] = "write_file"; 
-			int fd = open(FilePath,O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);	
-			size_t length = 100000;
-			int prot = PROT_WRITE;
-			int flags = MAP_SHARED;
-			off_t offset = 0;
-			
-			void * addr;
-		
-			Unres( ( addr = mmap(0, length, prot, flags, fd, offset)) == MAP_FAILED, "System call mmap failed");
-			char buf[100000];		
-			Unres (write(fd, buf, 100000) == -1, "Cannot write.");
-
-			fsync(fd);
-			close(fd);
-		</Code>
-	</Test>
 </TestSet>
