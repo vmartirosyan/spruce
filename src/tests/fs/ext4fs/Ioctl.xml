@@ -551,7 +551,7 @@
 						#endif	                               
                 </Header>
                 <Code>
-						char *WriteBuf = new char[64000*4096];  
+						char *WriteBuf = new char[64000*4096];
 						Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!"); 
                         UnixCommand mkfs("mkfs.ext3");
                         vector<string> args;
@@ -563,9 +563,23 @@
                          Unres ( chdir(MountPoint) != 0,"Cannot change current dir to " );
 						
 						fd = open(FilePath,O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);	
-						Unres(fd == -1, "Cannot create file.") ;
-						Unres(write(fd, WriteBuf,64000*4096) == -1, "Cannot write.");			
+						Unres(fd == -1, "Cannot create file.");
+						
+						// Check if it is possible to create file > 4GB; 
+						// 4819255296 = 4*1024*1024*1024 + 2*64000*4096 bytes ~ 4596 MB
+						if(PartitionManager:: GetDeviceSize(DeviceName) >= 4819255296 )
+						{
+							char* WriteBuf_ = new char[1024*1024*1024]; // 1GB
+							
+							for(int i = 0; i < 4; i++)
+								Unres(write(fd, WriteBuf_,1024*1024*1024) == -1, "Cannot write 1GB.");
+							
+							delete WriteBuf_;
+						}
+						Unres(write(fd, WriteBuf,64000*4096) == -1, "Cannot write.");
+								
 						close(fd);
+						
 						Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!"); 
                         UnixCommand tunefs("tune2fs");
                         args.erase(args.begin(),args.end());
@@ -581,7 +595,7 @@
                          
                         Unres ( chdir(MountPoint) != 0,"Cannot change current dir to " );
 						
-                        Unres( (fd = open(FilePath, O_RDONLY)) == -1, "Cannot open file");
+                        Unres( (fd = open(FilePath, O_LARGEFILE, O_RDONLY)) == -1, "Cannot open file");
                         
                         Fail ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
                         
