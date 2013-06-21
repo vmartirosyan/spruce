@@ -597,7 +597,7 @@
 						
                         Unres( (fd = open(FilePath, O_LARGEFILE, O_RDONLY)) == -1, "Cannot open file");
                         
-                        Fail ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
+                        Check ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
                         
                 </Code>
                 <Footer>       
