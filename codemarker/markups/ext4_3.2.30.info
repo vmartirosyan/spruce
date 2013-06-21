@@ -219,6 +219,11 @@ LFT:6,9 This is dead code, the NULL value of inodes are checked previously befor
 LFT:11,14 This is dead code, the NULL value of inodes are checked previously before call.
 end_of_record
 
+SF:fs/ext4/move_extent.c
+FN:mext_inode_double_lock
+LFT:11,12 This block can't be covered, because it is previously checked before.  
+end_of_record
+
 SF:fs/ext4/indirect.c
 LFT:205,205 Function is inline and its call is usually integrated.
 LFT:239,239 Function is inline and its call is usually integrated.
@@ -268,5 +273,4 @@ SF:fs/ext4/mballoc.c
 FN:ext4_mb_good_group
 LFT:48,48 This is self checking/correcting code.
 end_of_record
-
 
