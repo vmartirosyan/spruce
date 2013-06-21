@@ -187,6 +187,25 @@ SF:fs/ext4/super.c
 LFT:426,431 These lines are covered, but gcov doesn't show it. gcov bug
 LFT:758,761 The call of this function is coming from function which call is marked as non-executable, but it is called. gcov bug
 LFT:763,773 The call of this function is marked as non-executable, but it is called. gcov bug
+LFT:3231,3232 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3251,3252 These lines could be covered if we perform a fault simulation on mount tests (with previously added sb_min_blocksize payload to kedr), but it will finally lead to system crash, as there is BUG_ON.
+LFT:3260,3261 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3267,3268 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3344,3346 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3430,3432 These lines could be covered if we perform a fault simulation on mount tests (with previously added sb_set_blocksize payload to kedr), but it will finally lead to system crash, as there is BUG_ON.
+LFT:3440,3442 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3447,3449 These is dead code. There can't be a magic mimatch.
+LFT:3583,3588 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3656,3657 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3661,3664 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3689,3690 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3840,3843 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3846,3847 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3851,3853 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3857,3857 This line could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3886,3888 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3894,3896 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
+LFT:3938,3957 These lines could be covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON.
 end_of_record
 
 SF:fs/ext4/extents.c
