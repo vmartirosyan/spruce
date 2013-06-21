@@ -12,6 +12,46 @@ SF:fs/ext4/fsync.c
 FN:dump_completed_IO The function is called from ext4_flush_completed_IO+8 which is marked as non-executable.
 end_of_record
 
+SF:fs/ext4/ext4.h
+FN:ext4_set_io_unwritten_flag
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:7,7 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_rec_len_from_disk
+LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_blocks_count_set
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:5,5 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_free_blocks_count_set
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:5,5 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_r_blocks_count_set
+LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_isize
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:4,4 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_isize_set
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:5,5 Function is inline and its call is usually integrated.
+end_of_record
+
 SF:fs/ext4/ext4_extents.h
 FN:ext4_ext_mark_uninitialized
 LFT:0,0 Function is inline and its call is usually integrated.
