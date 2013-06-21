@@ -62,13 +62,13 @@
                         
                         struct move_extent me;                       
                         memset(&me, 0, sizeof(me));
-                        me.donor_fd = FDs[0];
+                        me.donor_fd = FDs[1];
                         me.orig_start = 5000;
                         me.donor_start = 5000;
                         me.len = 5000;
                         me.moved_len = 0;                   
                         
-                        Check ( ioctl(FDs[1], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
+                        Check ( ioctl(FDs[0], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
                 </Code>
         </Test>
         
