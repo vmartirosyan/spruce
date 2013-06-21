@@ -242,6 +242,64 @@
 			acl_free(acl);
 		</Code>		
 	</Test>
+	<Test Name="ACLSetShort" FaultSimulationReady="true">
+		<Description>Intialize a short ACL.</Description>		
+		<Dir count="1" />
+		<Code>
+			acl_t acl = acl_init(4);
+			acl_entry_t entry = NULL;
+			int res;
+			acl_tag_t tagType[] = {ACL_USER_OBJ,ACL_GROUP_OBJ,ACL_OTHER,0};
+			acl_permset_t perms = NULL;
+			Unres(acl == NULL, "Cannot initialize ACL working storage.");
+			for(int i = 0; i < 3; i++)
+			{
+				Unres( acl_create_entry(&acl, &entry) == -1, "Cannot create ACL entry." );
+				Fail( acl_get_permset(entry, &perms) == -1, "Cannot get permition set" ); 
+				Fail( acl_clear_perms(perms) == -1, "Cannot clear permition set" ); 
+				Fail( acl_add_perm(perms, ACL_READ) == -1, "Cannot add permitions to a permision set" ); 
+				Fail( acl_set_permset(entry, perms) == -1, "Cannot set permition set to an entry" ); 
+				Fail( acl_set_tag_type(entry, tagType[i]) == -1, "Cannot set tag type to an entry" ); 		
+			}
+			Fail(acl_set_file(DirPaths[0].c_str(),ACL_TYPE_DEFAULT,acl) == -1,"Cannot set file access ACL" );
+			close(DirDs[0]);
+			Unres ( chdir("/") == -1, "Cannot change directory." );
+			res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem);
+			if( res!= PS_Success )
+			{
+				Unres( res == PS_Fatal, "Device too small." );						
+				Unres( 1, "Partition mount or umount failed." );
+			}
+		
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			
+			string FilePath = DirPaths[0] + "/some_file";
+			
+			int fd;
+			Fail( (fd = creat(FilePath.c_str(), 0777)) == -1, "Cannot create file.");
+			Unres ( fchmod(fd, 0666) == -1, "Cannot chmod file");
+			close(fd);
+			unlink(FilePath.c_str());
+			Fail ( ( acl = acl_get_file(DirPaths[0].c_str(),ACL_TYPE_DEFAULT) ) == NULL, "Cannot get file's access ACL." );
+			acl_free(acl);
+		</Code>		
+	</Test>
+	<Test Name="ACLSetWrongTag" FaultSimulationReady="true">
+		<Description>Intialize an ACL, set and mount-umount to get not cached acl.</Description>		
+		<File count="1" />
+		<Code>
+			acl_t acl = acl_init(4);
+			acl_entry_t entry = NULL;
+			int res;
+			acl_permset_t perms = NULL;
+			Unres(acl == NULL, "Cannot initialize ACL working storage.");
+			Unres( acl_create_entry(&acl, &entry) == -1, "Cannot create ACL entry." );
+			Unres( acl_get_permset(entry, &perms) == -1, "Cannot get permition set" ); 
+			Unres( acl_set_permset(entry, perms) == -1, "Cannot set permition set to an entry" ); 
+			acl_set_file(FilePaths[0].c_str(),ACL_TYPE_ACCESS,acl);	
+			acl_free(acl);
+		</Code>		
+	</Test>
 	<Test Name="AccessErrAccess">
 		<Description>Set and get default acl to a file not to a directory.</Description>
 		<File count="1" />
