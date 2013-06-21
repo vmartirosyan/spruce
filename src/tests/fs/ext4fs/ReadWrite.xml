@@ -42,7 +42,7 @@
 			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");
 			Check ( write(FDs[0], WriteStart, 2*BlockSize) == -1, "Cannot write to file.");
 			Unres(lseek(FDs[0], SEEK_SET, 0) == -1, "Cannot seek to the beginning of file.");		
-			Fail ( read(FDs[0], ReadStart, BlockSize) == -1, "Cannot read from file.");
+			Check ( read(FDs[0], ReadStart, BlockSize) == -1, "Cannot read from file.");
 			
 			Check ( ReadStart[0] != WriteStart[0], "Different values were written and read.");
 		</Code>
