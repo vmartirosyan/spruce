@@ -77,6 +77,8 @@
 		<Description>Mount with errors=panic option</Description>
 		<Code>
 			mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, "abort");
+			//this is just for coverage.
+			mkdir("some_dir", 0777);
 			umount(DeviceName);
 		</Code>
 		<Footer>

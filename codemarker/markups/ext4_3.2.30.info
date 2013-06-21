@@ -8,6 +8,21 @@ FN:dquot_to_inode
 LFT:0,0 Function is inline and its call is usually integrated.
 end_of_record
 
+SF:fs/ext4/super.c
+FN:ext4_kvmalloc
+LFT:6,6 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON. 
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_kvzalloc
+LFT:6,6 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON. 
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_kvfree
+LFT:3,3 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON. 
+end_of_record
+
 SF:fs/ext4/fsync.c
 FN:dump_completed_IO The function is called from ext4_flush_completed_IO+8 which is marked as non-executable.
 end_of_record
