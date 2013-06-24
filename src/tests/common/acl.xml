@@ -139,7 +139,8 @@
 			acl_free(acl);
 		</Code>		
 	</Test>
-	<Test Name="ACLGetSetFail" FaultSimulationReady="true" Dangerous="true">
+	<Test Name="ACLGetSetFail" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="jfs"/>
 		<Description>Intialize an ACL and validate it .</Description>		
 		
 		<Dir count ="1" />

@@ -109,7 +109,8 @@
 			}
 		</Footer>
 	</Test>
-	<Test Name="lmLogInitFail3" Dangerous="true">
+	<Test Name="lmLogInitFail3">
+		<Dangerous/>
 		<Description>Fail lmLogInit because of wrong UUID.</Description>              
 		<Code>
 			Skip ( !PartitionManager::IsOptionEnabled("-j", true), "The test runs only when external log option  is enabled." );

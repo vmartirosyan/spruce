@@ -109,7 +109,8 @@ isn't covered as mount options are parsed and checked in super.c-->
 						}
 				</Footer>
         </Test>
-         <Test Name="RemountResizeFail" FaultSimulationReady="true" Dangerous="true">
+         <Test Name="RemountResizeFail" FaultSimulationReady="true">
+	    <Dangerous/>
                 <Description>Resize.</Description>              
                 <Code>
 					int res;
@@ -183,7 +184,8 @@ isn't covered as mount options are parsed and checked in super.c-->
 				}
 			</Footer>
 		</Test>
-		<Test Name="MultipleResizeFail" FaultSimulationReady="true" Dangerous="true">
+		<Test Name="MultipleResizeFail" FaultSimulationReady="true">
+		    <Dangerous/>
 			<Description>Multiple resize.</Description>
 			<Code>
 				Unres ( chdir("/") == -1, "Cannot change directory." );
@@ -301,7 +303,8 @@ isn't covered as mount options are parsed and checked in super.c-->
 			</Code>
 		</Test>
 		
-		<Test Name="NoIntegrityOption" FaultSimulationReady="true" Dangerous="true">
+		<Test Name="NoIntegrityOption" FaultSimulationReady="true">
+		    <Dangerous/>
 			<Description>Mount with no integrity option</Description>
 			<Code>				
 				Unres(PartitionManager:: ReleasePartition(MountPoint) == false, "Failed to release partition");
@@ -430,7 +433,8 @@ isn't covered as mount options are parsed and checked in super.c-->
 
         <!--This test causes fatal error, because of BUG-->
         <!--Test covers code in jfs/jfs_logmgr.c file-->
-        <Test Name="MultiplePartitionsSingleLog" Dangerous="true">
+        <Test Name="MultiplePartitionsSingleLog">
+	    <Dangerous/>
             <Description>Create multiple jfs partiotions with single log</Description>
             <Code>
                 Unres(chdir("/") == -1, "Failed to change directory");
@@ -564,7 +568,8 @@ isn't covered as mount options are parsed and checked in super.c-->
 			</Footer>
 		</Test>
 		
-		<Test Name="RemountRW" FaultSimulationReady="true" Dangerous="true">
+		<Test Name="RemountRW" FaultSimulationReady="true">
+		    <Dangerous/>
             <Description>Resize read-only filesystem.</Description>              
             <Code>
 				Unres( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Mount failed.");
@@ -579,7 +584,8 @@ isn't covered as mount options are parsed and checked in super.c-->
 				}
 			</Footer>
         </Test>
-        <Test Name="MountfailWithNls" FaultSimulationReady="true" Dangerous="true">
+        <Test Name="MountfailWithNls" FaultSimulationReady="true">
+	    <Dangerous/>
 		<Description>Trying to mount the device with iocahrset and perform fault simulation.</Description>
 		<Code>
 			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );

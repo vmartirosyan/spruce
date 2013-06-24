@@ -76,8 +76,6 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
 	_TestStatus = Shallow;
 	</xsl:if>
 	bool _InFooter = false;	
-	if ( _InFooter == true )
-		_InFooter = false;
 		
 <!-- Check if all the requirements are satisfied -->
 	<xsl:if test="Requires">
@@ -107,7 +105,21 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
 		Unsupp("Read-only file system.");
 	</xsl:if>
 		
-	
+	<!-- Simulate 'Dangerous' behaviour -->
+	<xsl:if test="Dangerous">if((obj->GetSupportedChecks() &amp; Dangerous) &amp;&amp; !(obj->GetEffectiveChecks() &amp; Dangerous))
+	{
+	<xsl:for-each select="Dangerous">
+		<xsl:choose>
+		<xsl:when test="@check and @fs">    Skip(!strcmp(FileSystem, "<xsl:value-of select="@fs"></xsl:value-of>") &amp;&amp; (<xsl:call-template name="is-check"><xsl:with-param name="text" select="@check"/></xsl:call-template>),
+			"Test is skipped as dangerous for given filesystem and given check. For execute it add 'dangerous' to 'checks' parameter.");</xsl:when>
+		<xsl:when test="@check">    Skip(<xsl:call-template name="is-check"><xsl:with-param name="text" select="@check"/></xsl:call-template>,
+			"Test is skipped as dangerous for given check. For execute it add 'dangerous' to 'checks' parameter.");</xsl:when>
+		<xsl:when test="@fs">    Skip(!strcmp(FileSystem, "<xsl:value-of select="@fs"></xsl:value-of>"), "Test is skipped as dangerous for given filesystem. For execute it add 'dangerous' to 'checks' parameter.");</xsl:when>
+		<xsl:otherwise>    Skip(1, "Test is skipped as dangerous. For execute it add 'dangerous' to 'checks' parameter.");</xsl:otherwise>
+		</xsl:choose>
+	</xsl:for-each>
+	}
+	</xsl:if>
 	try
 	{
 		string DirPrefix = _DirPrefix;
@@ -290,7 +302,8 @@ TestSet Init_<xsl:value-of select="$PackageName" />_<xsl:value-of select="/TestS
 		check = check &amp; ~Functional;
 	</xsl:if>
 	
-	<xsl:if test="@Dangerous='true'">
+	<!-- If test is dangerous in some sence, need to set corresponded flag. Otherwise GetEffectiveChecks() won't include this flag. -->
+	<xsl:if test="Dangerous">
 		check = check | Dangerous;
 	</xsl:if>
 	
@@ -341,6 +354,26 @@ TestSet Init_<xsl:value-of select="$PackageName" />_<xsl:value-of select="/TestS
     <xsl:otherwise>
       <xsl:value-of select="$text"/>
     </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!--
+	Check, whether test is currently executed for given check.
+	
+	NOTE: For execution with Fault Simulation enabled we distinguish cases
+	when collect information for future simulations and when fault are
+	really simulated. Only second case match 'stability' check.
+	
+	Note also, that test is not run in stability mode if it is not run in basic mode(func).
+-->
+<xsl:template name="is-check">
+  <xsl:param name="text"/>
+  <xsl:choose>
+    <xsl:when test="$text='stability'">obj->GetEffectiveChecks() == Stability</xsl:when>
+    <xsl:when test="$text='func'">obj->GetEffectiveChecks() &amp; Functional</xsl:when>
+    <xsl:when test="$text='mem-leak'">obj->GetEffectiveChecks() &amp; MemoryLeak</xsl:when>
+    <!-- 'dangerous' is not really a check, it is a flag affected on set of tests. -->
+    <xsl:message terminate="on">Incorrect value of check verified: <xsl:value-of select="$text"/></xsl:message>
   </xsl:choose>
 </xsl:template>
 

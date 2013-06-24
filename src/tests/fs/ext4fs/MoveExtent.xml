@@ -56,6 +56,7 @@
         
 
         <Test Name="MoveExtent3" FaultSimulationReady="true" Shallow="true">
+        <Dangerous check="stability"/>
                 <Description>Move extent new.</Description>
                 <File count="2"/>
                 <Code>                       
@@ -72,7 +73,7 @@
                         me.len = 5000;
                         me.moved_len = 0;                   
                         
-                        Check ( ioctl(FDs[0], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
+                        Fail ( ioctl(FDs[0], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
                 </Code>
         </Test>
         

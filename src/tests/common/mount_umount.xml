@@ -46,6 +46,9 @@
 		</Code>
 	</Test>
 	<Test Name="UmountGeneral" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="ext4"/>
+		<Dangerous check="stability" fs="btrfs"/>
+		<Dangerous check="stability" fs="xfs"/>
 		<Description>Trying to unmount the partition.</Description>				
 		<Code>
 			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,
@@ -68,45 +71,28 @@
 			
 			Unres( chdir("/") == -1, "Cannot change directory to root." );
 			
-			if ( FileSystem == FSNames[JFS] )
-			{
-				Fail ( umount( MountPoint) == -1, "Unmount failed");
-			}
-			else
-			{
-				Check ( umount( MountPoint) == -1, "Unmount failed");
-			}
+			Fail ( umount( MountPoint) == -1, "Unmount failed");
 		</Code>
 	</Test>
 	<Test Name="RemountGeneral" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="ext4"/>
+		<Dangerous check="stability" fs="btrfs"/>
+		<Dangerous check="stability" fs="xfs"/>
 		<Description>Trying to remount the device to the same partition(with MS_REMOUNT flag activated)</Description>
 		<Code>
 			Unres (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed.");
 			
-			if ( FileSystem == FSNames[JFS] )
-			{
-				Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
-			}
-			else
-			{
-				Check ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
-			}
+			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
 		</Code>		
 	</Test>
 	<Test Name="RemountReadOnly" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="ext4"/>
+		<Dangerous check="stability" fs="btrfs"/>
+		<Dangerous check="stability" fs="xfs"/>
 		<Description>Trying to remount the device to the same partition as readonly.</Description>
 		<Code>
 			Unres (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed.");
-			
-			if ( FileSystem == FSNames[JFS] )
-			{
-				Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
-			}
-			else
-			{
-				Check ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
-			}
-			
+			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
 		</Code>		
 	</Test>
 	<Test Name="NoATimeGeneral" FaultSimulationReady="true">

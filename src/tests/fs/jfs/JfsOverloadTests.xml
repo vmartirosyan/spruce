@@ -127,6 +127,7 @@
 		</Code>
 	</Test>			
 	<Test Name="DirectoriesInserted">
+		<Dangerous check="stability"/>
 		<Description>Trying to create many directories</Description>
 		<Code>
 		    char buf[10];
@@ -140,22 +141,7 @@
                 string dirname = buf;
                 mkdir(dirname.c_str(), 0777);
             }
-		</Code>
-	</Test>
-	<Test Name="DirectoriesInsertedFail" Dangerous="true">
-		<Description>Trying to create many directories with failure.</Description>
-		<Code>
-		    char buf[10];
-            string dirname = "some_directory";
-            
-            mkdir(dirname.c_str(), 0777);
-            chdir(dirname.c_str());
-            for (int j = 0; j < 50000; ++j)
-            {
-                sprintf(buf, "%d",  j);
-                string dirname = buf;
-                mkdir(dirname.c_str(), 0777);
-            }
+
             for (int j = 50000; j < 50005; ++j)
             {
                 sprintf(buf, "%d",  j);
@@ -164,7 +150,6 @@
             }
 		</Code>
 	</Test>
-	
 	<Test Name="RenameToBigFile" FaultSimulationReady="true">
 		<Description>Trying to create many directories</Description>
 		<Code>
@@ -247,7 +232,8 @@
 		</Code>
 	</Test>	
 	
-	<Test Name="ManyBigWrittenFiles" FaultSimulationReady="true" Dangerous="true">
+	<Test Name="ManyBigWrittenFiles" FaultSimulationReady="true">
+		<Dangerous/>
 		<Description>Trying to create big files, and write the data.</Description>
 		<File count = "500" />
 		<Code>
@@ -343,7 +329,8 @@
 				
 		</Code>
 	</Test>
-	<Test Name="CiGetLeafPrefixKeyFSim" Dangerous="true">
+	<Test Name="CiGetLeafPrefixKeyFSim">
+		<Dangerous/>
 		<Description>Get fail in ciGetLeafPrefixKey function.</Description>
 		<Code>			
 		char path[50];
@@ -408,7 +395,8 @@
 		</Code>
 	</Test>	
 	
-	<Test Name="xtSplitRootFail" Dangerous="true">
+	<Test Name="xtSplitRootFail">
+		<Dangerous check="stability"/>
 		<Description>Get fail in xtSplitRoot function.</Description>
 		<File count = "1"/>
 		<Code>
@@ -452,7 +440,8 @@
 			sync();
 		</Code>
 	</Test>	
-	<Test Name="dbAllocFail" Dangerous="true">
+	<Test Name="dbAllocFail">
+		<Dangerous/>
 		<Description>Trying to simulate fail in dbAlloc().</Description>
 		<Code>
 			system(("rm -rf " + (string)MountPoint + "/*").c_str());
@@ -474,7 +463,8 @@
 		</Code>
 	</Test>
 	
-	<Test Name="dbAllocFail13" Dangerous="true">
+	<Test Name="dbAllocFail13">
+		<Dangerous/>
 		<Description>Trying to simulate fail in dbAlloc().</Description>
 		<Code>
 			system("rm -rf *");
@@ -492,7 +482,8 @@
 		</Code>
 	</Test>
 	
-	<Test Name="dtSplitPageFail" Dangerous="true">
+	<Test Name="dtSplitPageFail">
+		<Dangerous/>
 		<Description>Trying to simulate fail in dtSplitPageFail().</Description>
 		<Code>
 			system("rm -rf *");
@@ -554,7 +545,8 @@
 		</Code>
 	</Test>
 	
-	<Test Name="dtDeleteUpFail2" Dangerous="true">
+	<Test Name="dtDeleteUpFail2">
+		<Dangerous/>
 		<Description>Trying to simulate fail in dtDeleteUpFail().</Description>
 		<Code>
 			system("rm -rf *");
