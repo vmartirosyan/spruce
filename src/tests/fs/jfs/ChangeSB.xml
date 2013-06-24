@@ -343,7 +343,8 @@
 			close(fd);
 		</Footer>
 	</Test>
-	<Test Name="xtTruncateFail" Dangerous="true">
+	<Test Name="xtTruncateFail">
+	    <Dangerous/>
 		<Description>Brings to failure in xtTruncate function due to stack overflow.</Description>
 		<Header>
 			int fd = -1;
@@ -866,7 +867,8 @@
 		</Footer>
 	</Test>
 
-	<Test Name="dbAllocDmapBU" Dangerous="true">
+	<Test Name="dbAllocDmapBU">
+	    <Dangerous/>
 		<Description>covers a line in dbAllocDmapBU()</Description>
 		<Code>
             JFSCtl jfs;
@@ -1369,7 +1371,8 @@
 	
 		</Code>
 	</Test>
-	<Test Name="CorruptSecondarySB" Dangerous="true">
+	<Test Name="CorruptSecondarySB">
+	    <Dangerous/>
 		<Description>Corrupt secondary SB</Description>
 		<Code>
 			Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.")
@@ -1927,7 +1930,8 @@
 			}
 		</Footer>
 	</Test>
-	<Test Name="diNewExt3" Dangerous="true">
+	<Test Name="diNewExt3">
+	    <Dangerous/>
 		<Description>Makes diNewExt function fail.</Description>
 		<Header>
 			int fd = -1;
@@ -2401,7 +2405,8 @@
 			}
 		</Footer>
 	</Test>
-	<Test Name="dbAdjCtlFail" Dangerous="true">
+	<Test Name="dbAdjCtlFail">
+	    <Dangerous/>
 		<Description>Trying to bring to fail in diFree.</Description>
 		<Header>
 			int fd = -1;

@@ -206,13 +206,13 @@ Status TestSet::Run(Checks checks)
 		i->second.SetChecks(checks);
 		
 		// Skip the dangerous tests if it is not clearly mentioned in the configuration file
-		if ( ( ( i->second.GetSupportedChecks() & Dangerous ) != None) && 
+		/*if ( ( ( i->second.GetSupportedChecks() & Dangerous ) != None) && 
 			 ( ( i->second.GetEffectiveChecks() & Dangerous ) == None))
 		{
 			Logger::LogInfo("Test " + i->first + " is dangerous. Skipping.");
 			i++;
 			continue;
-		}
+		}*/
 		
 		if ( i->second.GetEffectiveChecks() == None )
 		{
@@ -258,8 +258,9 @@ Status TestSet::Run(Checks checks)
 		
 		if ( i->second.GetEffectiveChecks() & Stability )
 		{
-			i->second.SetChecks(Stability);
-			// At this point it known that EnableFaultSim and DisbleFaultSim have been executed
+			// Save 'Dangerous' flag for stability tests also.
+			i->second.SetChecks(Stability | (checks & Dangerous));
+			// At this point it is known that EnableFaultSim and DisbleFaultSim have been executed
 			// Thus the indicators are set, the `times` values are still there.
 			map<string, unsigned int> PointTimes = KedrIntegrator::GetPointTimesMap();
 			

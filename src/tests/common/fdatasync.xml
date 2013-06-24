@@ -24,6 +24,7 @@
 
 <TestSet Name="fdatasync">
 	<Test Name="FdatasyncNormal" FaultSimulationReady="true">
+	<Dangerous check="stability" fs="ext4"/>
 		<Description>Synchronize a file's in-core state with storage device.</Description>
 		<File count="1" />
 		<Code>
@@ -34,7 +35,7 @@
 			
 			Unres( stat (FilePaths[0].c_str(), &stat_buf_old) == -1, "Cannot get file stat before data sync.");
 			
-			Check ( fdatasync (FDs[0]) != 0, "fdatasync failed.");
+			Fail ( fdatasync (FDs[0]) != 0, "fdatasync failed.");
 			
 			Unres( stat (FilePaths[0].c_str(), &stat_buf_new) == -1, "stat failed.");
 			

@@ -24,22 +24,24 @@
 
 <TestSet Name="fsync">
 	<Test Name="FsyncNormal" FaultSimulationReady="true" Shallow="true">
+		<Dangerous check="stability" fs="xfs"/>
+		<Dangerous check="stability" fs="ext4"/>
 		<Description>Synchronize a file's in-core state with storage device.</Description>
 		<File count="1" />
 		<Code>
 			const char * buf = "abcdefg";
 			Unres (write (FDs[0], buf, strlen(buf)) == -1, "Cannot write to file.");
 				
-			//Fail(fsync (FDs[0]) == -1, "fsync failed.");
-			Check(fsync (FDs[0]) == -1, "fsync failed.");
+			Fail(fsync (FDs[0]) == -1, "fsync failed.");
 		</Code>
 	</Test>
 	<Test Name="FsyncDir" FaultSimulationReady="true" Shallow="true">
+		<Dangerous check="stability" fs="xfs"/>
+		<Dangerous check="stability" fs="ext4"/>
 		<Description>Synchronize a directory's in-core state with storage device.</Description>
 		<Dir count="1" />
 		<Code>
-			//Fail(fsync (DirDs[0]) == -1, "fsync failed.");
-			Check(fsync (DirDs[0]) == -1, "fsync failed.");
+			Fail(fsync (DirDs[0]) == -1, "fsync failed.");
 		</Code>
 	</Test>
 	<Test Name="FsyncErrBadFD">

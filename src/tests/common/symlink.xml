@@ -59,12 +59,6 @@
 			ENameTooLongTest(symlink("/", path), -1);
 		</Code>
 	</Test>
-	<Test Name="SymlinkNewPathAlreadyExist">
-		<Description>Newpath already exists.</Description>
-		<Code>
-			ErrorTest(symlink("/", "/"), -1, EEXIST);
-		</Code>
-	</Test>
 	<Test Name="SymlinkIsNotDirectory">
 		<Description>A component used as a directory in oldpath or newpath is not, in fact, a directory.</Description>
 		<File count="1"/>
