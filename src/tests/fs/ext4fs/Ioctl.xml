@@ -50,12 +50,6 @@
                      
                 </Code>
         </Test>
-        <Test Name="IoctlEINVAL">
-			<Description>File descriptor is not associated with a character special device.</Description>
-			<Code>
-				ErrorTest(ioctl(12, EXT4_IOC_SETFLAGS, EXT4_EXTENTS_FL), -1, EINVAL);
-			</Code>
-	</Test>
         <Test Name="SetJournalDataFlag" FaultSimulationReady="true">              
                 <Description>Try to set EXT4_JOURNAL_DATA_FL flag.</Description>
                 <Dir count="1"/>
