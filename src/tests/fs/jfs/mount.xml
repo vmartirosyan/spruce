@@ -335,13 +335,13 @@ isn't covered as mount options are parsed and checked in super.c-->
 					catch (...)
 					{
 					}
-					
+					bool NeedsRemount = false;
 			</Header>
             <Code>
                 Unres(chdir("/") == -1, "Failed to change directory");
                
                 Unres(umount(MountPoint) == -1, "Failed to release partition");
-
+				NeedsRemount = true;
                 system("rmmod jfs.ko");
                
                 string Device0 = string("/dev/ram0");
@@ -383,7 +383,7 @@ isn't covered as mount options are parsed and checked in super.c-->
             <Footer>
                 if(!PartitionManager::IsOptionEnabled("-j", true))
 				{
-					if(mount(DeviceName, MountPoint, FileSystem, 0, "") == -1)
+					if(NeedsRemount && mount(DeviceName, MountPoint, FileSystem, 0, "") == -1)
 					{
 						Error("Failed to restore partition");
 						Return(Fatal);
@@ -406,12 +406,13 @@ isn't covered as mount options are parsed and checked in super.c-->
 					catch (...)
 					{
 					}
+					bool NeedsRemount = false;
 			</Header>
             <Code>
                 Unres(chdir("/") == -1, "Failed to change directory");
 				system("lsof | grep spruce");
                 Unres(!PartitionManager:: ReleasePartition(MountPoint), "Failed to release partition");
-
+				NeedsRemount = true;
                 system("rmmod jfs.ko");
                
                 string Device0 = string("/dev/ram0");
@@ -441,7 +442,7 @@ isn't covered as mount options are parsed and checked in super.c-->
             <Footer>
                 if(!PartitionManager::IsOptionEnabled("-j", true))
 				{
-					if(mount(DeviceName, MountPoint, FileSystem, 0, "") == -1)
+					if(NeedsRemount && mount(DeviceName, MountPoint, FileSystem, 0, "") == -1)
 					{
 						Error("Failed to restore partition");
 						Return(Fatal);
@@ -455,6 +456,9 @@ isn't covered as mount options are parsed and checked in super.c-->
         <Test Name="MultiplePartitionsSingleLog">
 	    <Dangerous/>
             <Description>Create multiple jfs partiotions with single log</Description>
+            <Header>
+				bool NeedsRemount = false;
+            </Header>
             <Code>
 				try
 				{
@@ -467,6 +471,7 @@ isn't covered as mount options are parsed and checked in super.c-->
                 Unres(chdir("/") == -1, "Failed to change directory");
                
                 Unres(umount(MountPoint) == -1, "Failed to release partition");
+                NeedsRemount = true;
                 
                 system("rmmod jfs.ko");
                
@@ -503,7 +508,7 @@ isn't covered as mount options are parsed and checked in super.c-->
                
             </Code>
             <Footer>
-                if(mount(DeviceName, MountPoint, FileSystem, 0, "") == -1)
+                if(NeedsRemount && mount(DeviceName, MountPoint, FileSystem, 0, "") == -1)
                 {
                     Error("Failed to restore partition");
                     Return(Fatal);
