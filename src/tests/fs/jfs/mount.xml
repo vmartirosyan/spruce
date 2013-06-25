@@ -323,9 +323,19 @@ isn't covered as mount options are parsed and checked in super.c-->
 		</Test>		
         <Test Name="MultipleExternalLogs">
             <Description>Create multiple jfs partiotions with external log</Description>
-               <Header>
+            <Header>
 					Skip(PartitionManager::IsOptionEnabled("-j", true), 
-				"These tests should run only when no options are provided.");
+						"These tests should run only when no options are provided.");
+						
+					try
+					{
+						KedrIntegrator::DoesModuleExist("brd");
+						Unsupp("To run this test rebuild the kernel with CONFIG_BLK_DEV_RAM:=y configuration option.");
+					}
+					catch (...)
+					{
+					}
+					
 			</Header>
             <Code>
                 Unres(chdir("/") == -1, "Failed to change directory");
@@ -386,7 +396,16 @@ isn't covered as mount options are parsed and checked in super.c-->
             <Description>Create and mount jfs partiotions with external log</Description>
                <Header>
 					Skip(!PartitionManager::NoOptionsEnabled(), 
-				"These tests should run only when no options are provided.");
+						"These tests should run only when no options are provided.");
+				
+					try
+					{
+						KedrIntegrator::DoesModuleExist("brd");
+						Unsupp("To run this test rebuild the kernel with CONFIG_BLK_DEV_RAM:=y configuration option.");
+					}
+					catch (...)
+					{
+					}
 			</Header>
             <Code>
                 Unres(chdir("/") == -1, "Failed to change directory");
@@ -437,6 +456,14 @@ isn't covered as mount options are parsed and checked in super.c-->
 	    <Dangerous/>
             <Description>Create multiple jfs partiotions with single log</Description>
             <Code>
+				try
+				{
+					KedrIntegrator::DoesModuleExist("brd");
+					Unsupp("To run this test rebuild the kernel with CONFIG_BLK_DEV_RAM:=y configuration option.");
+				}
+				catch (...)
+				{
+				}
                 Unres(chdir("/") == -1, "Failed to change directory");
                
                 Unres(umount(MountPoint) == -1, "Failed to release partition");
