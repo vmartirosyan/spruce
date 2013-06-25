@@ -466,6 +466,46 @@ public:
 		return LastFaultTrace;
 	}
 	
+	static bool HasLastFault()
+	{
+		// Check if the fault simulation is in progress.
+		if ( !FaultSimulationEnabled )
+			return false;
+			
+		char buf[5000];
+		ifstream f((DebugFSPath + "/kedr_fault_simulation/last_fault").c_str(), ifstream::in);
+		f.read(buf, 5000);
+		f.close();
+		
+		return (LastFaultMsgNone == buf);
+	}
+	
+	static void DoesModuleExist(string module)
+	{
+		struct utsname buf;
+		if (uname(&buf) == -1)
+			throw (Exception("Cannot get kernel version. " + static_cast<string>(strerror(errno))));
+			
+		string ModulesDir = "/lib/modules/" + static_cast<string>(buf.release) + "/kernel";
+		UnixCommand find("find");
+		vector<string> args;
+		args.push_back(ModulesDir);
+		args.push_back("-name");
+		args.push_back(module + ".ko*");
+		
+		ProcessResult * res = find.Execute(args);
+		
+		if ( res == NULL )
+			throw(Exception("Error executing find."));
+		
+		string str = res->GetOutput();
+		// Trim
+		str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+		if (str == "")
+			throw(Exception("Cannot find module " + module + "."));
+		
+	}
+	
 	
 protected:
 	static string TargetModule;
@@ -495,31 +535,7 @@ protected:
 		return (access(KEDR_PATH, F_OK) == 0);
 	}
 	
-	static void DoesModuleExist(string module)
-	{
-		struct utsname buf;
-		if (uname(&buf) == -1)
-			throw (Exception("Cannot get kernel version. " + static_cast<string>(strerror(errno))));
-			
-		string ModulesDir = "/lib/modules/" + static_cast<string>(buf.release) + "/kernel";
-		UnixCommand find("find");
-		vector<string> args;
-		args.push_back(ModulesDir);
-		args.push_back("-name");
-		args.push_back(module + ".ko*");
-		
-		ProcessResult * res = find.Execute(args);
-		
-		if ( res == NULL )
-			throw(Exception("Error executing find."));
-		
-		string str = res->GetOutput();
-		// Trim
-		str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
-		if (str == "")
-			throw(Exception("Cannot find module " + module + "."));
-		
-	}
+	
 	
 	static bool IsModuleLoaded(string module)
 	{

@@ -175,7 +175,7 @@ struct FSimInfo
 	DisableFaultSim();\
 	if ( res )\
 	{\
-		if ( KedrIntegrator::GetLastFaultMsg() != LastFaultMsgNone )\
+		if ( KedrIntegrator::HasLastFault() )\
 		{\
 			Error("This error may be a result of fault simulation.\n" + (string)message, Success);\
 		}\
