@@ -356,10 +356,23 @@
 			
 			delete res;
 			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0),"Mount failed.");
-			Unres( mkdir("test_dir",0777) == -1, "Failed to create a directory.");
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			DIR * dir;			
+			Unres(mkdir("test_dir", 0777) == -1, "Failed to create directory.");
+			dir = opendir("test_dir");
+			Unres(dir == 0, "Can not open directory");
 			
+			while(true)
+			{
+				errno = 0;
+				if( readdir(dir) == 0)
+					break;
+			}
+			closedir(dir);
 		 </Code>
 		<Footer>
+			unlink("test_dir/a");
+			unlink("test_dir/b");
 			rmdir("test_dir");
 			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
 		</Footer>	
@@ -379,8 +392,19 @@
 			
 			delete res;
 			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0),"Mount failed.");
-			Unres( mkdir("test_dir",0777) == -1, "Failed to create a directory.");
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			DIR * dir;			
+			Unres(mkdir("test_dir", 0777) == -1, "Failed to create directory.");
+			dir = opendir("test_dir");
+			Unres(dir == 0, "Can not open directory");
 			
+			while(true)
+			{
+				errno = 0;
+				if( readdir(dir) == 0)
+					break;
+			}
+			closedir(dir);
 		 </Code>
 		<Footer>
 			rmdir("test_dir");
@@ -396,8 +420,22 @@
 			sb.s_def_hash_version = DX_HASH_HALF_MD4_UNSIGNED;
 			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
 			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0),"Mount failed.");
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			DIR * dir;			
+			Unres(mkdir("test_dir", 0777) == -1, "Failed to create directory.");
+			dir = opendir("test_dir");
+			Unres(dir == 0, "Can not open directory");
+			
+			while(true)
+			{
+				errno = 0;
+				if( readdir(dir) == 0)
+					break;
+			}
+			closedir(dir);
 		 </Code>
 		<Footer>
+			rmdir("test_dir");
 			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
 		</Footer>	
 	</Test>
@@ -410,8 +448,22 @@
 			sb.s_def_hash_version = DX_HASH_LEGACY_UNSIGNED;
 			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
 			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0),"Mount failed.");
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			DIR * dir;			
+			Unres(mkdir("test_dir", 0777) == -1, "Failed to create directory.");
+			dir = opendir("test_dir");
+			Unres(dir == 0, "Can not open directory");
+			
+			while(true)
+			{
+				errno = 0;
+				if( readdir(dir) == 0)
+					break;
+			}
+			closedir(dir);
 		 </Code>
 		<Footer>
+			rmdir("test_dir");
 			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
 		</Footer>	
 	</Test>
@@ -424,8 +476,22 @@
 			sb.s_def_hash_version = DX_HASH_TEA_UNSIGNED;
 			Unres(!PartitionManager::SetSuperBlock(&sb,sizeof(sb)),"Cannot write superblock.");
 			Unres(!PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0),"Mount failed.");
+			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
+			DIR * dir;			
+			Unres(mkdir("test_dir", 0777) == -1, "Failed to create directory.");
+			dir = opendir("test_dir");
+			Unres(dir == 0, "Can not open directory");
+			
+			while(true)
+			{
+				errno = 0;
+				if( readdir(dir) == 0)
+					break;
+			}
+			closedir(dir);
 		 </Code>
 		<Footer>
+			rmdir("test_dir");
 			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,"Mount failed" );	
 		</Footer>	
 	</Test>
