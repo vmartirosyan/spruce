@@ -73,7 +73,7 @@ LFT:0,0 Function is inline and its call is usually integrated.
 LFT:5,5 Function is inline and its call is usually integrated.
 end_of_record
 
-SF:fs/ext4/ext4_extents.h
+SF:fs/ext4/ext4_extents.hextend_credit_for_blkdel
 FN:ext4_ext_get_actual_len
 LFT:0,0 Function is inline and its call is usually integrated.
 end_of_record
@@ -88,6 +88,11 @@ SF:fs/ext4/ext4_extents.h
 FN:ext4_idx_pblock
 LFT:0,0 Function is inline and its call is usually integrated.
 LFT:6,6 This line is covered, gcov bug.
+end_of_record
+
+SF:fs/ext4/ext4_extents.h
+FN:ext_block_hdr
+LFT:0,3 These lines are covered from "ext4_ext_split" function in extent.c file, gcov bug.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -154,6 +159,11 @@ end_of_record
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_regular_allocator
 LFT:99,99 This code works only for raid5 storages
+end_of_record
+
+SF:fs/ext4/migrate.c
+FN:extend_credit_for_blkdel
+LFT:17,17 This line is covered, but gcov doesn't show it, gcov bug.
 end_of_record
 
 SF:fs/ext4/namei.c
@@ -281,6 +291,17 @@ end_of_record
 
 SF:fs/ext4/mmp.c
 LFT:143,146 Can be covered with "-O mmp" mkfs options enabled and remounting partition read-only.
+end_of_record
+
+SF:fs/ext4/mmp.c
+FN:ext4_multi_mount_protect
+LFT:38,38 This line is covered (see line 292), gcov bug.
+LFT:43,43 This line is covered (see line 292), gcov bug.
+LFT:47,47 This line is covered (see line 292), gcov bug.
+LFT:51,51 This line is covered (see line 292), gcov bug.
+LFT:56,57 This line is covered (see line 292), gcov bug.
+LFT:59,60 This line is covered (see line 292), gcov bug.
+
 end_of_record
 
 SF:fs/ext4/inode.c
