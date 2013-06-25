@@ -477,7 +477,7 @@ public:
 		f.read(buf, 5000);
 		f.close();
 		
-		return (LastFaultMsgNone == buf);
+		return (((string)buf).find(LastFaultMsgNone) == string::npos);
 	}
 	
 	static void DoesModuleExist(string module)

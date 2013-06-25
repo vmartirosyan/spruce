@@ -43,21 +43,26 @@
 	</Test>
 	<Test Name="MkdirRmdirNormal2" FaultSimulationReady="true">
 		<Description>Create and remove a directory.</Description>
+		<Header>
+			const char * path = "MkdirRmdirNormal2_dir";
+		</Header>
 		<Code>
 			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
-			const char * path = "MkdirRmdirNormal2_dir";
-			rmdir(path); //Just in case
-			Check ( mkdir(path, 0777) == -1, "Failed to create directory");
+			
+			Unres ( mkdir(path, 0777) == -1, "Failed to create directory");
 			
 			struct stat st;
-			Check ( stat(path, &st) != 0 && errno == ENOENT, "The directory was not created.");
+			Unres ( (stat(path, &st) != 0) && (errno == ENOENT), "The directory was not created.");
 			
-			Check ( ! S_ISDIR(st.st_mode), "mkdir has created not a directory.");
+			Unres ( ! S_ISDIR(st.st_mode), "mkdir has created not a directory.");
 			
 			Fail ( rmdir(path) != 0, "Cannot remove directory.");
 			
-			Check ( stat(path, &st) == 0 || errno != ENOENT, "The directory should be deleted but it is not.");
+			Check ( (stat(path, &st) == 0) || (errno != ENOENT), "The directory should be deleted but it is not.");
 		</Code>
+		<Footer>
+			rmdir(path);
+		</Footer>
 	</Test>
 	<!-- mkdir error cases -->
 	<Test Name="MkdirNameTooLong">
