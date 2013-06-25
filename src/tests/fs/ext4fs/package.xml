@@ -1,4 +1,5 @@
 <TestPackage Name="ext4" FS="ext4">
+	<TestSet Name="Acl" />
 	<TestSet Name="Ioctl" />
 	<TestSet Name="mount" />
 	<TestSet Name="Ext4OverloadTests" />
