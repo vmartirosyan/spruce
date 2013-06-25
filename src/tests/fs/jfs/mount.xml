@@ -324,6 +324,7 @@ isn't covered as mount options are parsed and checked in super.c-->
         <Test Name="MultipleExternalLogs">
             <Description>Create multiple jfs partiotions with external log</Description>
             <Header>
+					bool NeedsRemount = false;
 					Skip(PartitionManager::IsOptionEnabled("-j", true), 
 						"These tests should run only when no options are provided.");
 						
@@ -335,7 +336,6 @@ isn't covered as mount options are parsed and checked in super.c-->
 					catch (...)
 					{
 					}
-					bool NeedsRemount = false;
 			</Header>
             <Code>
                 Unres(chdir("/") == -1, "Failed to change directory");
@@ -395,6 +395,7 @@ isn't covered as mount options are parsed and checked in super.c-->
         <Test Name="SingleExternalLog">
             <Description>Create and mount jfs partiotions with external log</Description>
                <Header>
+					bool NeedsRemount = false;
 					Skip(!PartitionManager::NoOptionsEnabled(), 
 						"These tests should run only when no options are provided.");
 				
@@ -406,7 +407,7 @@ isn't covered as mount options are parsed and checked in super.c-->
 					catch (...)
 					{
 					}
-					bool NeedsRemount = false;
+					
 			</Header>
             <Code>
                 Unres(chdir("/") == -1, "Failed to change directory");
