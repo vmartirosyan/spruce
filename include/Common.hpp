@@ -172,12 +172,15 @@ struct FSimInfo
 {\
 	EnableFaultSim();\
 	bool res = (cond);\
+	int local_errno = errno;\
 	DisableFaultSim();\
 	if ( res )\
 	{\
-		if ( KedrIntegrator::HasLastFault() )\
+		bool HasLastFault = KedrIntegrator::HasLastFault();\
+		errno = local_errno;\
+		if (HasLastFault)\
 		{\
-			Error("This error may be a result of fault simulation.\n" + (string)message, Success);\
+			Error("This error may be a result of fault simulation.\n" + (string)message + "\n" + strerror(errno), Success);\
 		}\
 		else\
 		{\
