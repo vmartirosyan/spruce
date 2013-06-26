@@ -12,4 +12,5 @@
 	<TestSet Name="Link" />
 	<TestSet Name="Init_Exit" />
 	<TestSet Name="MountWithOptions" />
+	<TestSet Name="statfs" />
 </TestPackage>

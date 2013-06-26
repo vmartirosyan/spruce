@@ -250,7 +250,6 @@
 		<Code>
 			acl_t acl = acl_init(4);
 			acl_entry_t entry = NULL;
-			int res;
 			acl_permset_t perms = NULL;
 			Unres(acl == NULL, "Cannot initialize ACL working storage.");
 			Unres( acl_create_entry(&acl, &entry) == -1, "Cannot create ACL entry." );
