@@ -25,20 +25,10 @@
 	<Requires>sys/vfs.h</Requires>
 	<Test Name="StatfsNormal" FaultSimulationReady="true">
 		<Description>Get file system statistics.</Description>
-		<File count="1"/>
 		<Code>	
-			Unres ( !strcmp(MountPoint, "") || !strcmp(FileSystem, "") , "Either MountPoint or FileSystem variables are not defined");
-			
-			if ( FileSystemTypesMap[FileSystem] == -1 )
-			{
-				Error("statfs is not supported by " + static_cast<string>(FileSystem), Unsupported);
-			}
-			
 			struct statfs buf;
 			
 			Fail ( statfs(MountPoint, &buf) != 0, "statfs failed.");
-			
-			Check ( buf.f_type != FileSystemTypesMap[FileSystem], "statfs returned wrong FS type.");
 		</Code>
 	</Test>
 	<Test Name="StatfsNoAccess">
@@ -48,7 +38,7 @@
 		</Dir>
 		<Code>
 			struct statfs st;
-			Unres( chmod(DirPaths[0].c_str(), 0000)==-1, "Cannot change directory permissions." );
+			Unres( chmod(DirPaths[0].c_str(), 0000) == -1, "Cannot change directory permissions." );
 			
 			ENoAccessTest( statfs( DirFilePaths[0].c_str(), &st ), -1 );
 		</Code>

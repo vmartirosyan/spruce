@@ -46,11 +46,6 @@ TestPackage Initjfs();
 TestPackage Initxfs();
 TestPackage Initbtrfs();
 
-
-map<string, int> FileSystemTypesMap;
-
-
-
 map<string, TestPackage*> InitPackages(string fs, vector<string> AllowedPackages)
 {
 	static bool Initialized = false;
@@ -211,11 +206,6 @@ int main(int argc, char ** argv)
 		return -EFAULT;
 	}
 		
-	FileSystemTypesMap["ext4"] = 0xEF53; //EXT4_SUPER_MAGIC;
-	FileSystemTypesMap["btrfs"] = -1; // does not support?
-	FileSystemTypesMap["xfs"] = 0x58465342; //XFS_SUPER_MAGIC;
-	FileSystemTypesMap["jfs"] = 0x3153464a; //JFS_SUPER_MAGIC
-	
 	map<string, TestPackage*> Tests = InitPackages(FileSystem, Packages);
 	
 	//cerr << "Package count: " << Tests.size() << endl;

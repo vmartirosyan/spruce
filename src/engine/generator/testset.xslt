@@ -51,9 +51,6 @@ extern char * DeviceName;
 extern char * MountPoint;
 extern char * FileSystem;
 
-extern map&lt;string, int> FileSystemTypesMap;
-
-
 extern bool terminate_process;
 
 	<xsl:variable name="TestSetName" select="@Name" />
@@ -100,11 +97,6 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
 	
 	<xsl:value-of select="Header" />
 	
-	<xsl:if test="@FaultSimulationReady='true'">
-	if ( PartitionManager::IsOptionEnabled("ro") )
-		Unsupp("Read-only file system.");
-	</xsl:if>
-		
 	<!-- Simulate 'Dangerous' behaviour -->
 	<xsl:if test="Dangerous">if((obj->GetSupportedChecks() &amp; Dangerous) &amp;&amp; !(obj->GetEffectiveChecks() &amp; Dangerous))
 	{

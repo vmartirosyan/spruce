@@ -1,9 +1,9 @@
-<!--    fstatfs.xml
+<!--    statfs.xml
 //      
-//      Copyright (C) 2011, Institute for System Programming
+//      Copyright (C) 2013, Institute for System Programming
 //                          of the Russian Academy of Sciences (ISPRAS)
 //      Author:
-//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//			Andrey Tsyvarev <tsyvarev@ispras.ru>
 //      
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -21,17 +21,21 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="fstatfs">
+<TestSet Name="statfs">	
 	<Requires>sys/vfs.h</Requires>
-	<Test Name="FstatfsNormal" FaultSimulationReady="true">
-		<Description>Get file system statistics.</Description>
-		<File count="1"/>
-		<Code>
+	<Test Name="CheckInfo">
+		<Description>Check information returned by statfs.</Description>
+		<Code>	
 			struct statfs buf;
 			
-			Fail ( fstatfs(FDs[0], &buf) != 0, "fstatfs failed.");
+			Unres ( statfs(MountPoint, &buf) != 0, "statfs failed.");
+			
+			int ExpectedMagic = 0x58465342;// XFS_SUPER_MAGIC
+
+			if( buf.f_type != ExpectedMagic)
+				printf("Magic for xfs superblock is 0x%x but statfs() returns 0x%x.\n",
+					ExpectedMagic, (int)buf.f_type);
+			Check ( buf.f_type != ExpectedMagic, "statfs returned wrong FS type.");
 		</Code>
 	</Test>
 </TestSet>
-
-

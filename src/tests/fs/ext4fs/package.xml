@@ -10,4 +10,5 @@
 	<TestSet Name="ShowAndStoreFunctions" />
 	<TestSet Name="Symlink" />
 	<TestSet Name="MoveExtent" />
+	<TestSet Name="statfs" />
 </TestPackage>
