@@ -63,6 +63,31 @@
 		     Check((ret != -1) || (errno != ENOTSUP), "Function Should return not supported for bigalloc, but it did not.");
         </Code>
 	</Test>
+	<Test Name="bigAllocWrite" FaultSimulationReady="true">
+		<Description>Trying to split the parent page.</Description>
+		<File count = "1"/>
+		<Code>
+	
+			char *buf = new char[1024*1024];
+			memcpy(buf, "asdfg", 5);
+				
+			for (int i = 0 ; i < 10; ++i)
+			{	
+				for (int i = 0 ; i < 1000; ++i)
+				{
+					Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+					Unres(write(FDs[0], buf, 5) == -1, "Write failed.");
+			
+				}
+				sync();
+				Unres(lseek64(FDs[0], 1000, SEEK_SET) == -1, "Lseek failed.");
+				sync();
+			}
+			
+						
+			delete buf;
+		</Code>
+	</Test>			
 	<CleanUp>
 			if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
 			{
