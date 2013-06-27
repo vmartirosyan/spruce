@@ -3,6 +3,11 @@
 #######################################################################
 DEADCODE:
 
+SF:fs/ext4/acl.c
+FN:ext4_set_acl
+LFT:30,30 Never gets here because of a previous check.
+end_of_record
+
 SF:fs/ext4/super.c
 FN:dquot_to_inode
 LFT:0,2 Function is inline and its call is usually integrated.
@@ -334,6 +339,44 @@ end_of_record
 #################Section for free code markup##########################
 #######################################################################
 #FREECODE:
+
+SF:fs/ext4/acl.c
+FN:ext4_acl_from_disk
+LFT:58,58 This is just a self-checking code. 
+end_of_record
+
+SF:fs/ext4/acl.c
+FN:ext4_acl_to_disk
+LFT:38,38 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/acl.c
+FN:ext4_get_acl
+LFT:22,22 This is just a self-checking code.
+LFT:36,36 Covered if posix_acl_alloc is failed in ext4_acl_from_disk function(called by ACLGetNotCached test).
+end_of_record
+
+SF:fs/ext4/acl.c
+FN:ext4_set_acl
+LFT:39,39 Covered if kmalloc is failed in ext4_acl_to_disk function(called by ACLGetSet test).
+end_of_record
+
+
+SF:fs/ext4/file.c
+FN:ext4_unaligned_aio 
+LFT:0,0 Called from file.c+119.
+end_of_record
+
+SF:fs/ext4/file.c
+LFT:60,62 Called from file.c+133.
+LFT:119,119 Needs async direct write.
+LFT:127,133 Covered if file.c+119 is covered.
+end_of_record
+
+SF:fs/ext4/fsync.c
+FN:ext4_sync_parent
+LFT:9,38 Can be covered by getting inode from disk changing its state and callinf fsync() on it.
+end_of_record
 
 SF:fs/ext4/super.c
 FN:print_daily_error_info This function is called once a day if we have errors logged on the file system.
