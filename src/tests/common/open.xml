@@ -43,6 +43,9 @@
 		<Code>
 			if ( PartitionManager::IsOptionEnabled("ro") )
 				Unsupp("Read-only file system.");
+			if ( PartitionManager::IsOptionEnabled("data=journal") )
+				Unsupp("OpenDirect with  mount option  data=journal is not supported.");
+				
 			const char * filename = "openDirect.txt";
 			
 			int ret_val;
