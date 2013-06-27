@@ -44,6 +44,7 @@
 		</Footer>
      </Test>
 	 <Test Name="mountVFSV1" FaultSimulationReady="true">
+		<Requires KernelVersion="2.6.33"/>
 		<Description>mount with jqfmt=vfsv1.</Description>              
 		<Code>
 				Unres ( chdir("/") == -1, "Cannot change directory." );
