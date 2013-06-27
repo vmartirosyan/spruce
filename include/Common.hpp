@@ -146,6 +146,8 @@ struct FSimInfo
 		Logger::LogError(msg);\
 	else \
 		Logger::LogWarn(msg);\
+	if ( (local_errno == EROFS) && ((status == Fail) || (status == Unresolved)))\
+		Return(Unsupported);\
 	if ( ((local_errno == ENOTSUP) || (local_errno == ENOTTY)) && (status != -1)) Return(Unsupported);\
 	if ( (status != -1) && (status != Unsupported) ) Return(status);\
 	if ( status == Unsupported ) Return(Unsupported);\
