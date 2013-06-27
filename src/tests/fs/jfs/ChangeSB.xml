@@ -24,6 +24,7 @@
 	<StartUp>
 		Skip(!PartitionManager::NoOptionsEnabled(),
 		 "These tests should run only when no options are provided.");
+		Skip(LINUX_VERSION_CODE &lt; (2 * 65536), "This testset is not supported on kernels which versions are less than 3.0");
 	</StartUp>
 	<Requires>dirent.h</Requires>
 	<Requires>jfs_filsys.h</Requires>
