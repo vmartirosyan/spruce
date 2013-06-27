@@ -289,6 +289,16 @@ FN:mext_inode_double_lock
 LFT:11,12 This block can't be covered, because it is previously checked before.  
 end_of_record
 
+SF:fs/ext4/move_extent.c
+FN:get_ext_path
+LFT:10,10 This is self checking/correcting code.
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_next_extent
+LFT:59,59 This line is covered, but gcov doesn't show it. gcov bug
+end_of_record
+
 SF:fs/ext4/indirect.c
 LFT:205,205 Function is inline and its call is usually integrated.
 LFT:239,239 Function is inline and its call is usually integrated.
@@ -363,7 +373,7 @@ LFT:3559,3562 This line can be covered if we corrupt the superblock. Also need t
 LFT:3570,3573 This line can be covered if we corrupt the superblock. Also need to be mounted with bigalloc mount option.	
 LFT:3597,3600 This line can be covered if we corrupt the superblock.	
 LFT:3636,3637 This line can be covered if we corrupt the superblock.	
-LFT:3649,3652 This line can be covered if we corrupt the superblock.
+LFT:3649,3652 This line can be covered if we corrupt the superblock.	
 LFT:3867,3868 This line can be covered if we corrupt the superblock.	
 LFT:3871,3872 This line can be covered if we corrupt the superblock.	
 LFT:3878,3880 This line can be covered if we corrupt the superblock.	
@@ -413,3 +423,23 @@ SF:fs/ext4/inode.c
 FN:ext4_journalled_write_end
 LFT:53,60 Can be covered if we change inode->i_size on disk. 
 end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_insert_across_blocks
+LFT:25,27 This code can be covered if start extent and end extent in original file are different. 
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_leaf_block
+LFT:59,65 This code can be covered if we call this function with new extent wich is bigger than original.
+end_of_record
+
+SF:fs/ext4/move_extent.c
+LFT:1252,1264 This code can be covered if we try to move extent, but the hole exists between extents or the tail of original file.
+LFT:1267,1267 This code can be covered if we try to move extent, but the hole exists at the beginning of original file.
+LFT:1275,1276 This code can be covered if we try to move extent, but we have no blocks within the specified range.
+LFT:1359,1364 This is self checking/correcting code.
+end_of_record
+
+
+
