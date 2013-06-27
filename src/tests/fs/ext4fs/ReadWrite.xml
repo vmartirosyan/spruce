@@ -25,8 +25,8 @@
 	<Requires>sys/timerfd.h</Requires>
 	<Requires>sys/mman.h</Requires>
 	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
-		<Dangerous check="stability" fs="ext4"/>
-		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
+		<Dangerous check="stability"/>
+		<Description>Rewrite after seek to the beginning in the O_DIRECT mode</Description>
 		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
 		<Code>
 			const int BlockSize = 512;
