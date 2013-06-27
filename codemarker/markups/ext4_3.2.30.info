@@ -363,8 +363,7 @@ end_of_record
 
 
 SF:fs/ext4/file.c
-FN:ext4_unaligned_aio 
-LFT:0,0 Called from file.c+119.
+FN:ext4_unaligned_aio Called from file.c+119.
 end_of_record
 
 SF:fs/ext4/file.c
@@ -376,6 +375,26 @@ end_of_record
 SF:fs/ext4/fsync.c
 FN:ext4_sync_parent
 LFT:9,38 Can be covered by getting inode from disk changing its state and callinf fsync() on it.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_truncate_restart_trans Can be covered if journal fails to extend during decreasing truncate(maybe can be achieved in case of a external journal on a small device).
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_writeback_write_end Is supposed to be called during large write with "data=writeback" option, but somehow write_end_fn(callback for data=journaled) is called even with "data=writeback" mount option. Needs further research.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:__ext4_journalled_writepage Can probably be covered when writing mmaped page with "data=journal" mount option.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:bput_one Called from __ext4_journalled_writepage+38
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:bget_one Called from __ext4_journalled_writepage+13
 end_of_record
 
 SF:fs/ext4/super.c
