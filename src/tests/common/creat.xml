@@ -26,7 +26,8 @@
 	<Test Name="CreatNormal" FaultSimulationReady="true">
 		<Description>Open and possibly create a file or device.</Description>			
 		<Code>
-			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
 			const char * filename = "creatNormal.txt";
 			
 			int ret_val;	

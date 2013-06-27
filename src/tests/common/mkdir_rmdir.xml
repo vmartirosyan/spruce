@@ -26,7 +26,8 @@
 	<Test Name="MkdirRmdirNormal" FaultSimulationReady="true">
 		<Description>Create and remove a directory.</Description>
 		<Code>
-			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
 			const char * path = "MkdirRmdirNormal_dir";
 			rmdir(path); //Just in case
 			Fail ( mkdir(path, 0777) == -1, "Failed to create directory");
@@ -47,7 +48,8 @@
 			const char * path = "MkdirRmdirNormal2_dir";
 		</Header>
 		<Code>
-			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
 			
 			Unres ( mkdir(path, 0777) == -1, "Failed to create directory");
 			

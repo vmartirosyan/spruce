@@ -26,7 +26,8 @@
 	<Test Name="MknodNormal1" FaultSimulationReady="true">
 		<Description>The system call mknod() creates a file system node (file, device special file or named pipe) named pathname, with attributes specified by mode and dev.</Description>
 		<Code>
-			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
 			struct stat st_buf;
 			const char *node_name = "nodename";
 			
@@ -46,7 +47,8 @@
 		<Code>
 			Unres ( getuid() != 0, "This test should be executed by root.");
 			
-			Unres(PartitionManager::IsOptionEnabled("ro"), "Read-only file system");
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
 			
 			struct test_cases
 			{
