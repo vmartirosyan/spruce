@@ -66,6 +66,10 @@ class LFT_ST
 	string desc;
 	CODE_TYPE type;
 	
+	LFT_ST() : st(0), end(0), desc(""), type(FREE_CODE)
+	{
+	}
+	
 	string getMarker()
 	{
 		if(type == FREE_CODE)
@@ -82,6 +86,10 @@ class Function
 	string FNDESC;// Function description
 	vector<LFT_ST> LFT;
 	CODE_TYPE type;
+	
+	Function() : SF(""), FN(""), FNDESC(""), LFT(), type(FREE_CODE)
+	{
+	}
 
 	string getMarker()
 	{
