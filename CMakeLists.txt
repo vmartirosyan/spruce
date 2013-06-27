@@ -56,6 +56,22 @@ set(FIFO_PATH "/tmp/spruce_fifo" CACHE PATH "<Description is required>")
 # Check if KEDR framework is there
 check_executable("kedr" KEDR_PATH)
 
+# We need additional KEDR payloads. For build them we need
+# corresponded KEDR infrustructure. So, we need KEDR install path.
+if(NOT KEDR_INSTALL_PREFIX)
+    # Assume KEDR_PATH is ${KEDR_INSTALL_PREFIX}/bin/kedr.
+    # So, deduce install prefix from path to KEDR executable.
+    string(REGEX REPLACE "/bin/kedr$" "" KEDR_INSTALL_ROOT ${KEDR_PATH})
+    if("${KEDR_INSTALL_ROOT}" STREQUAL "${KEDR_PATH}")
+	    message("Cannot deduce KEDR install prefix from path to KEDR executable (${KEDR_PATH}).")
+	    message(FATAL_ERROR "Plesase, KEDR_INSTALL_PREFIX to KEDR install prefix.")
+    endif("${KEDR_INSTALL_ROOT}" STREQUAL "${KEDR_PATH}")
+    
+    set(KEDR_INSTALL_PREFIX ${KEDR_INSTALL_ROOT} CACHE PATH "KEDR installation prefix")
+    message("Use '${KEDR_INSTALL_PREFIX}' as KEDR_INSTALL_PREFIX.")
+endif(NOT KEDR_INSTALL_PREFIX)
+
+
 # Check if quotacheck is there
 check_executable("quotacheck" QUOTACHECK_PATH)
 
@@ -86,6 +102,11 @@ SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY
  CACHE PATH
  "Directory for all Binaries"
  )
+
+# KEDR configuration file which lists our fault simulation payloads.
+set (FAULT_SIMULATION_CUSTOM_PAYLOADS_FILE "fault_sim_custom.conf")
+set (FAULT_SIMULATION_CUSTOM_PAYLOADS_DIR "${CMAKE_INSTALL_PREFIX}/etc/spruce")
+set (FAULT_SIMULATION_CUSTOM_PAYLOADS "${FAULT_SIMULATION_CUSTOM_PAYLOADS_DIR}/${FAULT_SIMULATION_CUSTOM_PAYLOADS_FILE}")
  
 execute_process(COMMAND mkdir ${CMAKE_BINARY_DIR}/include/ -p )
 execute_process(COMMAND bash -c "hg heads | grep changeset | tr -d '\n'"

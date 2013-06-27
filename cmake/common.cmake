@@ -59,23 +59,6 @@ macro (spruce_enable_testing)
 			message(FATAL_ERROR """${TEST_DEVICE}"" is not point to block device.")
 		endif(NOT TEST_DEVICE_IS_BLOCK STREQUAL "0")
 
-		# For test how Spruce works with leaks, we need to simulate that
-		# leaks in the driver. For that purpose, we use additional
-		# KEDR LeakCheck payload. For build this payload we need
-		# corresponded KEDR infrustructure. So, we need KEDR install path.
-		if(NOT KEDR_INSTALL_PREFIX)
-			# Assume KEDR_PATH is ${KEDR_INSTALL_PREFIX}/bin/kedr.
-			# So, deduce install prefix from path to KEDR executable.
-			string(REGEX REPLACE "/bin/kedr$" "" KEDR_INSTALL_PREFIX ${KEDR_PATH})
-			if("${KEDR_INSTALL_PREFIX}" STREQUAL "${KEDR_PATH}")
-				message("Cannot deduce KEDR install prefix from path to KEDR executable (${KEDR_PATH}).")
-				message(FATAL_ERROR "Plesase, KEDR_INSTALL_PREFIX to KEDR install prefix.")
-			endif("${KEDR_INSTALL_PREFIX}" STREQUAL "${KEDR_PATH}")
-			#TODO: Check KEDR_INSTALL_PREFIX path.
-			
-			message("Use '${KEDR_INSTALL_PREFIX}' as KEDR_INSTALL_PREFIX.")
-		endif(NOT KEDR_INSTALL_PREFIX)
-		
 		enable_testing ()
 		add_custom_target (check 
 			COMMAND ${CMAKE_CTEST_COMMAND} -E "crash"

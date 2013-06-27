@@ -89,6 +89,7 @@ public:
 	{
 		FaultSimulationEnabled = true;
 		AddPayloads("fsim.conf");
+		AddPayloads(FAULT_SIMULATION_CUSTOM_PAYLOADS);
 	}
 	
 	static void SetAllIndicators(string indicator = "common")

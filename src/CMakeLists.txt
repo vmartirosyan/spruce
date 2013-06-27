@@ -11,3 +11,4 @@ add_subdirectory (main)
 add_subdirectory (tests)
 add_subdirectory (engine/doer)
 
+add_subdirectory(kedr_payloads)
