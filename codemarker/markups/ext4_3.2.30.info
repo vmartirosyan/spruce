@@ -503,5 +503,9 @@ LFT:1275,1276 This code can be covered if we try to move extent, but we have no 
 LFT:1359,1364 This is self checking/correcting code.
 end_of_record
 
+SF:fs/ext4/mmp.c
+FN:kmmpd
+LFT:44,46 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload")
+end_of_record
 
 
