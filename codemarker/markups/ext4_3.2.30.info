@@ -29,6 +29,30 @@ LFT:11,14 This block can't be covered. We have no tool for failing functions fro
 LFT:33,34 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
 end_of_record
 
+SF:fs/ext4/super.c
+FN:ext4_get_journal
+LFT:18,21 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
+LFT:27,29 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
+LFT:34,36 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_load_journal
+LFT:29,36 This block could be covered if change the superblock.
+LFT:61,63 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
+LFT:82,84 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_acquire_dquot
+LFT:29,29 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_write_info
+LFT:8,8 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
+end_of_record
+
 SF:fs/ext4/fsync.c
 FN:dump_completed_IO The function is called from ext4_flush_completed_IO+8 which is marked as non-executable.
 end_of_record
@@ -203,25 +227,29 @@ SF:fs/ext4/super.c
 LFT:426,431 These lines are covered, but gcov doesn't show it. gcov bug
 LFT:758,761 The call of this function is coming from function which call is marked as non-executable, but it is called. gcov bug
 LFT:763,773 The call of this function is marked as non-executable, but it is called. gcov bug
-LFT:3231,3232 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
+LFT:2932,2936 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3231,3232 These lines could be covered if we perform a fault simulation on mount tests, but it leads to  unrecoverable crash.
 LFT:3251,3252 These lines could be covered if we perform a fault simulation on mount tests (with previously added sb_min_blocksize payload to kedr), but it will finally lead to unrecoverable crash.
-LFT:3260,3261 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
-LFT:3267,3268 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
-LFT:3344,3346 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
+LFT:3260,3261 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3267,3268 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3344,3346 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
 LFT:3430,3432 These lines could be covered if we perform a fault simulation on mount tests (with previously added sb_set_blocksize payload to kedr), but it will finally lead to unrecoverable crash.
-LFT:3440,3442 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
+LFT:3440,3442 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
 LFT:3447,3449 These is dead code. There can't be a magic mimatch.
-LFT:3583,3588 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
-LFT:3656,3657 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
-LFT:3661,3664 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
-LFT:3689,3690 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
-LFT:3840,3843 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
-LFT:3846,3847 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
-LFT:3851,3853 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
-LFT:3857,3857 This line could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
-LFT:3886,3888 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
-LFT:3894,3896 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
-LFT:3938,3957 These lines could be covered if we perform a fault simulation on mount tests, but it leads to to unrecoverable crash.
+LFT:3583,3588 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3656,3657 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3661,3664 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3689,3690 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3840,3843 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3846,3847 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3851,3853 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3857,3857 This line could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3886,3888 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3894,3896 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3938,3957 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:4119,4120 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
+LFT:4756,4756 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
+LFT:4789,4790 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
 end_of_record
 
 SF:fs/ext4/extents.c
@@ -302,12 +330,34 @@ FN:ext4_error_inode This function can be covered if corrupt file.
 end_of_record
 
 SF:fs/ext4/super.c
+LFT:3422,3424 These lines could be covered if we use mkfs option which indicates blocksize and give an unsupported value.
+LFT:3528,3531 Probably could be covered with bigalloc mount option and with corrupted superblock.
+LFT:3538,3541 Probably could be covered with bigalloc mount option and with corrupted superblock.
+LFT:3545,3549 This code could be covered when mounted with bigalloc option, and the sperblock is corrupted.
+LFT:3553,3556 This is self/correcting code. Possibly could be covered with bigalloc mount option, corrupting the superblock..
+LFT:3559,3562 This line can be covered if we corrupt the superblock. Also need to be mounted with bigalloc mount option.	
+LFT:3570,3573 This line can be covered if we corrupt the superblock. Also need to be mounted with bigalloc mount option.	
+LFT:3597,3600 This line can be covered if we corrupt the superblock.	
+LFT:3636,3637 This line can be covered if we corrupt the superblock.	
+LFT:3649,3652 This line can be covered if we corrupt the superblock.	
+LFT:3867,3868 This line can be covered if we corrupt the superblock.	
+LFT:3871,3872 This line can be covered if we corrupt the superblock.	
+LFT:3878,3880 This line can be covered if we corrupt the superblock.	
+LFT:3968,3968 This line can be covered if we corrupt the superblock.
+LFT:4082,4084 these lines can be covered with usage of mkfs options like this -b 2048: or -b 1024 -g 8192:
+LFT:4091,4093 Probably these lines can be covered if we perform a fault simulation on this function with __bread payload.
+LFT:4107,4109 These lines can be covered if we corrupt the superblock.
 LFT:5098,5098 This line can be covered if we add new payload (kobject_init_and_add) to kedr and perform a fault simulation on ext4 Init/Exit functions.
 LFT:5169,5182 These lines can be covered if we perform a fault simulation on ext4 Init/Exit functions.
 end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_error_file This function can be covered if corrupt directory.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_clear_journal_err
+LFT:20,29 Probably could be covered if we mount a filesystem whose journal has recorded an error from a previous lifetime.
 end_of_record
 
 SF:fs/ext4/super.c
