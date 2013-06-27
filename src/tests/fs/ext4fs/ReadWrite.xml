@@ -24,8 +24,7 @@
 <TestSet Name="ReadWrite">	
 	<Requires>sys/timerfd.h</Requires>
 	<Requires>sys/mman.h</Requires>
-	<!-- Same test exists in common testpackage. Crashes on ext4 in that test are masked by 'Dangerous' tag.-->
-	<!--Test Name="ReadWriteDirect" FaultSimulationReady="true">
+	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
 		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
 		<Code>
@@ -47,5 +46,5 @@
 			
 			Check ( ReadStart[0] != WriteStart[0], "Different values were written and read.");
 		</Code>
-	</Test-->
+	</Test>
 </TestSet>
