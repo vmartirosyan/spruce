@@ -1,0 +1,5 @@
+Check, that test, corresponded to LeakChecker, has 'Success' status
+in case of no leaks.
+
+It is assumed that 'open.OpenNormal' test in 'syscall' module doesn't
+reveal leaks in btrfs driver.

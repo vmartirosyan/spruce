@@ -1,0 +1,4 @@
+Tests for OopsChecker.
+
+Currently, all these tests are 'crash', so should be executed manually
+with system restart after execution.
