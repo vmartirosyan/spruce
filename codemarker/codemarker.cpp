@@ -186,10 +186,10 @@ int main (int argc, char* argv[])
 		{		
 			string sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so);	
 			
-			Function fn;
-			fn.SF = sub;
-			fn.type = mode;
-			fn.FN = "";
+			Function * fn = new Function();
+			fn->SF = sub;
+			fn->type = mode;
+			fn->FN = "";
 
 			while(!db.eof())
 			{
@@ -197,18 +197,22 @@ int main (int argc, char* argv[])
 				memset(match_arr, 0, sizeof(match_arr));
 				// FN:
 				if(regexec(&cregx_fn, info_buf, nmatch, match_arr, 0) == 0)
-				{
+				{				
 					string sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so);	
-					fn.FN = sub;	
+					fn->FN = sub;	
+					
+					for(unsigned int i = 0; i < fns.size(); ++i)
+						if( (fns[i].SF == fn->SF) && (fns[i].FN == fn->FN))
+							fn = &fns[i];
 
 					if(match_arr[2].rm_so != -1) // description
 					{
 						sub = ((string)info_buf).substr(match_arr[2].rm_so + 1, match_arr[2].rm_eo - match_arr[2].rm_so);	
-						fn.FNDESC = sub;
+						fn->FNDESC = sub;
 					}
 					else
 					{
-						fn.FNDESC = ""; 
+						fn->FNDESC = ""; 
 					}
 					continue;
 				}
@@ -231,20 +235,20 @@ int main (int argc, char* argv[])
 					sub = ((string)info_buf).substr(match_arr[2].rm_so, match_arr[2].rm_eo - match_arr[2].rm_so);
 					convert.clear();
 					convert << sub;
-					convert>>lft.end;
+					convert >> lft.end;
 					
 					if(match_arr[3].rm_so != -1) 
 					{
 						lft.desc = ((string)info_buf).substr(match_arr[3].rm_so + 1, match_arr[3].rm_eo - match_arr[3].rm_so);
 					}
 					lft.type = mode;
-					fn.LFT.push_back(lft);
+					fn->LFT.push_back(lft);
 					continue;
 				}
 				// end_of_record
 				if(regexec(&cregx_eor, info_buf, nmatch, match_arr, 0) == 0)
 				{
-					fns.push_back(fn);
+					fns.push_back(*fn);
 					fin++;
 					break;
 				}
@@ -327,6 +331,7 @@ int main (int argc, char* argv[])
 					bool line_added = false;
 					
 					for(unsigned int i = 0; i < fns.size(); ++i)
+					{
 						if(fns[i].FN == sub) // Function found
 						{
 							
@@ -366,7 +371,7 @@ int main (int argc, char* argv[])
 									sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so);	
 									std::stringstream convert;
 									convert << sub;
-									convert>>fnst;	
+									convert >> fnst;	
 									
 									// Hack for *.isra functions (bug of gcov)
 									if(lft.st == fnst)
@@ -406,6 +411,7 @@ int main (int argc, char* argv[])
 								cout<<"LFT. St: "<<aviableLft[i].st<<" End: "<<aviableLft[i].end<<" Desc: "<<aviableLft[i].desc<<endl;
 							#endif
 						}
+					}
 					if(!line_added)
 						fout<<info_buf<<endl;
 					continue;
@@ -495,7 +501,7 @@ int main (int argc, char* argv[])
 					string sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so); // get coverage count	
 					std::stringstream convert;
 					convert << sub;
-					convert>>line;
+					convert >> line;
 					
 					bool line_added = false;
 					
