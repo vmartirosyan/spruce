@@ -227,6 +227,8 @@ SF:fs/ext4/super.c
 LFT:426,431 These lines are covered, but gcov doesn't show it. gcov bug
 LFT:758,761 The call of this function is coming from function which call is marked as non-executable, but it is called. gcov bug
 LFT:763,773 The call of this function is marked as non-executable, but it is called. gcov bug
+LFT:776,779 This is called only from dump_orphan_list function which is marked as dead.
+LFT:781,795 This code can't be covered changing the superblock, as in that case we'll have error on mounting partition, but the function is called when unmounting partition.
 LFT:2932,2936 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
 LFT:3231,3232 These lines could be covered if we perform a fault simulation on mount tests, but it leads to  unrecoverable crash.
 LFT:3251,3252 These lines could be covered if we perform a fault simulation on mount tests (with previously added sb_min_blocksize payload to kedr), but it will finally lead to unrecoverable crash.
@@ -314,6 +316,10 @@ FN:ext4_mb_good_group
 LFT:48,48 This is self checking/correcting code.
 end_of_record
 
+SF:fs/ext4/super.c
+FN:ext4_decode_error This function can't be covered as we have no tool for failing functions from JBD/JBD2, even with KEDR. In this case we need to have jbd2_journal error occured.
+end_of_record
+
 ################################################ext4#####################
 #################Section for free code markup##########################
 #######################################################################
@@ -329,6 +335,22 @@ end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_error_inode This function can be covered if corrupt file.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:__ext4_error This function can be covered if we corrupt the inode.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_handle_error This function can be covered if we corrupt the inode.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:__ext4_grp_locked_error This function can be covered if we corrupt the bitmap.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:__ext4_std_error This function can be covered if we corrupt the inode.
 end_of_record
 
 SF:fs/ext4/super.c
