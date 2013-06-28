@@ -27,6 +27,10 @@
 	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
 		<Dangerous check="stability"/>
 		<Description>Rewrite after seek to the beginning in the O_DIRECT mode</Description>
+		<Footer>
+			if ( PartitionManager::IsOptionEnabled("data=journal") )
+				Unsupp("OpenDirect with  mount option  data=journal is not supported.");
+		</Footer>
 		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
 		<Code>
 			const int BlockSize = 512;

@@ -44,11 +44,12 @@
 	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
 		<Dangerous check="stability" fs="ext4"/>
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
-		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
-		<Code>
+		<Footer>
 			if ( PartitionManager::IsOptionEnabled("data=journal") )
 				Unsupp("OpenDirect with  mount option  data=journal is not supported.");
-				
+		</Footer>
+		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
+		<Code>				
 			const int BlockSize = 512;
 			char* WriteBuf = new char[3*BlockSize];
 			// Align to block size
