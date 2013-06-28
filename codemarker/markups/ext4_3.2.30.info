@@ -339,13 +339,9 @@ FN:ext4_set_acl
 LFT:39,39 Covered if kmalloc is failed in ext4_acl_to_disk function(called by ACLGetSet test).
 end_of_record
 
-
-SF:fs/ext4/file.c
-FN:ext4_unaligned_aio Called from file.c+119.
-end_of_record
-
 SF:fs/ext4/file.c
 LFT:60,62 Called from file.c+133.
+LFT:75,90 Called from file.c+133.
 LFT:119,119 Needs async direct write.
 LFT:127,133 Covered if file.c+119 is covered.
 end_of_record
