@@ -1,0 +1,12 @@
+[group]
+	# Name and return type of the target function
+	function.name = fiemap_check_flags
+	returnType = int
+
+	# Names and types of the arguments of the target function
+	arg.type = struct fiemap_extent_info *
+	arg.name = fieinfo
+
+	arg.type = u32
+	arg.name = fs_flags
+#######################################################################
