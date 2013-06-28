@@ -519,4 +519,7 @@ FN:kmmpd
 LFT:44,46 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload")
 end_of_record
 
-
+SF:fs/ext4/mmp.c
+FN:kmmpd
+LFT:85,99 These lines could not be covered as they depend on race conditions.
+end_of_record
