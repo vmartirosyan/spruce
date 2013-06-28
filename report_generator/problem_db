@@ -149,3 +149,64 @@ attribute comment This test causes module inconsistancy. Objects remain on cache
 attribute resolution Filesystem problem
 
 end
+
+
+test MoveExtent MoveExtent1
+expected test_suite fs-spec_32
+expected fs ext4
+expected distro CentOS
+expected distro_version 6.4
+
+expected severity Failed
+
+matched test_messages Error: Invalid argument
+
+attribute comment CentOS does not support MOVE_EXTENT operation in compat mode.
+attribute resolution Distribution problem
+
+end
+
+test MoveExtent MoveExtent2
+expected test_suite fs-spec_32
+expected fs ext4
+expected distro CentOS
+expected distro_version 6.4
+
+expected severity Failed
+
+matched test_messages Error: Invalid argument
+
+attribute comment CentOS does not support MOVE_EXTENT operation in compat mode.
+attribute resolution Distribution problem
+
+end
+
+test MoveExtent MoveExtent3
+expected test_suite fs-spec_32
+expected fs ext4
+expected distro CentOS
+expected distro_version 6.4
+
+expected severity Failed
+
+matched test_messages Error: Invalid argument
+
+attribute comment CentOS does not support MOVE_EXTENT operation in compat mode.
+attribute resolution Distribution problem
+
+end
+
+test MoveExtent MoveExtent4
+expected test_suite fs-spec_32
+expected fs ext4
+expected distro CentOS
+expected distro_version 6.4
+
+expected severity Failed
+
+matched test_messages Error: Invalid argument
+
+attribute comment CentOS does not support MOVE_EXTENT operation in compat mode.
+attribute resolution Distribution problem
+
+end
