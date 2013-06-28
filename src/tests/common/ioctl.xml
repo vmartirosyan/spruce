@@ -114,8 +114,8 @@
 			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
 			
 			// The test is targeted on small partitions. Don't run it
-			// if the partition size is more than 2GB
-			Skip(size < (uint64_t)2*1024*1024*1024, "The partition is too small.");
+			// if the partition size is more than 3GB
+			Skip(size < (uint64_t)3*1024*1024*1024, "The partition is too small.");
 			
 			struct fiemap arg;
 			memset(&arg, 0, sizeof(arg));
