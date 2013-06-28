@@ -111,6 +111,23 @@
 			Check ( st.st_size != (int)buf.size(), "File size is changed.");
 		</Code>
 	</Test>
+	<Test Name="FallocateNormalPunchHole4" FaultSimulationReady="true">
+		<Requires KernelVersion="2.6.38" />
+		<Description>Specifying  the  FALLOC_FL_PUNCH_HOLE flag in mode deallocates space (i.e., creates a hole) in the byte range starting at offset and continuing for len bytes</Description>
+		<File count="1"/>
+		<Code>
+			const int len = 5*4096;
+			char buf[len];
+
+			Unres( write(FDs[0], buf, len) == -1, "Cannot write to file." );
+
+			Unres( lseek(FDs[0], 4096, SEEK_CUR) == -1, "Cannot seek." );
+
+			Unres( write(FDs[0], buf, len) == -1, "Cannot write to file." );
+
+			Check( fallocate( FDs[0], FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 4095, 2*4096 ) == -1, "Cannot punch hole in the file." );
+		</Code>
+	</Test>
 	<Test Name="FallocateNormalAllocAndWritre" FaultSimulationReady="true">
 		<Description>fallocate() allocates the disk space and writes\reads data</Description>
 		<File count="1"/>

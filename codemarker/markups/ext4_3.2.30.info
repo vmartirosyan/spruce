@@ -302,6 +302,17 @@ SF:fs/ext4/super.c
 FN:ext4_decode_error This function can't be covered as we have no tool for failing functions from JBD/JBD2, even with KEDR. In this case we need to have jbd2_journal error occured.
 end_of_record
 
+SF:fs/ext4/block_validity.c
+FN:can_merge
+LFT:0,0 This line is not covered because the function is inline and it's call is usualy integrated.
+LFT:5,5 This line is not covered because the function is inline and it's call is usualy integrated.
+end_of_record
+
+SF:fs/ext4/ext4_jbd2.h
+FN:ext4_journal_start
+LFT:0,0 This line is not covered because the function is inline and it's call is usualy integrated.
+end_of_record
+
 ################################################ext4#####################
 #################Section for free code markup##########################
 #######################################################################
