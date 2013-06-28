@@ -156,7 +156,8 @@ FN:JFS_SBI Function is inline and its call is usually integrated.
 end_of_record
 
 SF:fs/jfs/jfs_incore.h
-FN:isReadOnly Function is inline and its call is usually integrated.
+#LFT:0,0 Function is inline and its call is usually integrated.
+LFT:222,222 This line is covered, gcov bug.
 end_of_record
 
 SF:fs/jfs/inode.c
@@ -175,7 +176,8 @@ LFT:5,11 The code is executed when when inode is marked as dirty on read-only pa
 end_of_record
 
 SF:fs/jfs_metapage.h
-FN:_metapage_homeok Function is inline and its call is usually integrated.
+LFT:129,129 Function is inline and its call is usually integrated.
+LFT:133,133 Function is inline and its call is usually integrated.
 end_of_record
 
 SF:fs/jfs/jfs_imap.c
@@ -343,6 +345,7 @@ LFT:9,9 The line is covered by test jfs/Ioctl/UnfreezeFail which is marked as da
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
+LFT:179,179 This line is covered, but gcov doesn't show it, gcov bug.
 LFT:403,423 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
 LFT:478,478 Code is called only when the bio->bi_size iz zero and and bio_add_page does not fail. Such a situation cannot be controlled neither via fault simulation, nor via on-disk changes.
 end_of_record
@@ -557,12 +560,14 @@ end_of_record
 
 SF:fs/jfs/jfs_dtree.c
 FN:dtReadFirst
-LFT:39,43 These lines could be covered if we corrupt the corresponding inode, but in that case error comes up earlier in the code.
+LFT:40,43 These lines could be covered if we corrupt the corresponding inode, but in that case error comes up earlier in the code.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
 FN:add_missing_indices 
-LFT:0,51 Called from jfs_readdir+302.
+LFT:19,20 These lines could be covered if we corrupt the corresponding inode, but in that case error comes up earlier in the code.  
+LFT:28,28 The function is called when bad index is detected, but it is not certain, when we would have a bad index. So we cannot identify the very time when to make the flag of the file BT_ROOT.
+LFT:39,39 See the 903 line for more details.
 end_of_record
 
 SF:fs/jfs/jfs_dtree.c
@@ -627,7 +632,7 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmGroupCommit
-LFT:8,12 There is no sure that these lines will be covered, as we can't control the situation then two commit operations of the same block will take place consequentially.
+LFT:9,9 There is no sure that these lines will be covered, as we can't control the situation then two commit operations of the same block will take place consequentially.
 LFT:44,44 These lines could be covered if there wouldn't be system crash due to submit_bio payload.
 LFT:60,60 These lines could be covered if there wouldn't be system crash due to submit_bio payload.
 end_of_record
@@ -657,6 +662,7 @@ LFT:2395,2395 See the 903 line for more details.
 LFT:2406,2407 See the 903 line for more details.
 LFT:2778,2778 See the 903 line for more details.
 LFT:2807,2807 See the 903 line for more details.
+LFT:3234,3234 This line is covered, but gcov does not show. As we can see all the possible branches of this if statement are covered.
 LFT:3926,3926 See the 903 line for more details.
 LFT:4302,4303 See the 903 line for more details.
 LFT:4273,4273 See the 903 line for more details.
@@ -749,7 +755,7 @@ end_of_record
 SF:fs/jfs/jfs_xtree.c
 FN:xtInsert
 LFT:55,56 This block could be covered if we run the jfs/JfsOverloadTests/dbAllovFail test, but it is marked as dangerous.
-LFT:82,84 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
+LFT:83,84 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
 end_of_record
 
 SF:fs/jfs/jfs_xtree.c
