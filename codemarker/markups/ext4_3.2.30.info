@@ -15,47 +15,17 @@ end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_kvmalloc
-LFT:6,6 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON. 
+LFT:6,6 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to unrecoverable errors. 
 end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_kvzalloc
-LFT:6,6 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON. 
+LFT:6,6 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to unrecoverable errors.
 end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_kvfree
-LFT:3,3 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to system crash, as there is BUG_ON. 
-end_of_record
-
-SF:fs/ext4/super.c
-FN:ext4_quota_write
-LFT:11,14 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
-LFT:33,34 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
-end_of_record
-
-SF:fs/ext4/super.c
-FN:ext4_get_journal
-LFT:18,21 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
-LFT:27,29 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
-LFT:34,36 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
-end_of_record
-
-SF:fs/ext4/super.c
-FN:ext4_load_journal
-LFT:29,36 This block could be covered if change the superblock.
-LFT:61,63 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
-LFT:82,84 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
-end_of_record
-
-SF:fs/ext4/super.c
-FN:ext4_acquire_dquot
-LFT:29,29 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
-end_of_record
-
-SF:fs/ext4/super.c
-FN:ext4_write_info
-LFT:8,8 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
+LFT:3,3 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to unrecoverable errors.
 end_of_record
 
 SF:fs/ext4/fsync.c
@@ -254,9 +224,6 @@ LFT:3857,3857 This line could be covered if we perform a fault simulation on mou
 LFT:3886,3888 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
 LFT:3894,3896 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
 LFT:3938,3957 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
-LFT:4119,4120 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
-LFT:4756,4756 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
-LFT:4789,4790 This block can't be covered. We have no tool for failing functions from JBD/JBD2, even with KEDR.
 end_of_record
 
 SF:fs/ext4/extents.c
@@ -406,7 +373,7 @@ FN:ext4_initxattrs  Can be covered if SELinux package is installed.
 end_of_record
 
 SF:fs/ext4/super.c
-FN:ext4_error_inode This function can be covered if corrupt file.
+FN:ext4_error_inode This function can be covered if corrupt the inode.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -426,6 +393,35 @@ FN:__ext4_std_error This function can be covered if we corrupt the inode.
 end_of_record
 
 SF:fs/ext4/super.c
+FN:ext4_quota_write
+
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_get_journal
+LFT:18,21 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:27,29 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:34,36 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_load_journal
+LFT:29,36 This block could be covered if change the superblock.
+LFT:61,63 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:82,84 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_acquire_dquot
+LFT:29,29 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_write_info
+LFT:8,8 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/super.c
 LFT:3422,3424 These lines could be covered if we use mkfs option which indicates blocksize and give an unsupported value.
 LFT:3528,3531 Probably could be covered with bigalloc mount option and with corrupted superblock.
 LFT:3538,3541 Probably could be covered with bigalloc mount option and with corrupted superblock.
@@ -440,6 +436,9 @@ LFT:3867,3868 This line can be covered if we corrupt the superblock.
 LFT:3871,3872 This line can be covered if we corrupt the superblock.	
 LFT:3878,3880 This line can be covered if we corrupt the superblock.	
 LFT:3968,3968 This line can be covered if we corrupt the superblock.
+LFT:4119,4120 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:4756,4756 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:4789,4790 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:4082,4084 these lines can be covered with usage of mkfs options like this -b 2048: or -b 1024 -g 8192:
 LFT:4091,4093 Probably these lines can be covered if we perform a fault simulation on this function with __bread payload.
 LFT:4107,4109 These lines can be covered if we corrupt the superblock.
@@ -448,7 +447,7 @@ LFT:5169,5182 These lines can be covered if we perform a fault simulation on ext
 end_of_record
 
 SF:fs/ext4/super.c
-FN:ext4_error_file This function can be covered if corrupt directory.
+FN:ext4_error_file This function can be covered if we have a corrupted file.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -463,7 +462,9 @@ end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_quota_write
+LFT:11,14 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:21,24 This lines can be covered if we corrupt/change the superblock.
+LFT:33,34 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:48,50 This lines can be covered if we corrupt the inode.
 end_of_record
 
