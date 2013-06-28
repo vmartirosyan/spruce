@@ -30,11 +30,11 @@
 			
 			Unres ( statfs(MountPoint, &buf) != 0, "statfs failed.");
 			
-			int ExpectedMagic = 0xef53;// EXT4_SUPER_MAGIC
+			long ExpectedMagic = 0xef53;// EXT4_SUPER_MAGIC
 
 			if( buf.f_type != ExpectedMagic)
-				printf("Magic for ext4 superblock is 0x%x but statfs() returns 0x%x.\n",
-					ExpectedMagic, (int)buf.f_type);
+				printf("Magic for ext4 superblock is 0x%lx but statfs() returns 0x%lx.\n",
+					ExpectedMagic, (long)buf.f_type);
 			Check ( buf.f_type != ExpectedMagic, "statfs returned wrong FS type.");
 		</Code>
 	</Test>
