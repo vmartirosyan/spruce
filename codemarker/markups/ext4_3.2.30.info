@@ -282,17 +282,16 @@ LFT:359,376 Fitrim ioctl works only for solid-state drives.
 end_of_record
 
 SF:fs/ext4/mmp.c
-FN:ext4_multi_mount_protect
-LFT:38,38 This line is covered (see line 292), gcov bug.
-LFT:43,43 This line is covered (see line 292), gcov bug.
-LFT:47,47 This line is covered (see line 292), gcov bug.
-LFT:51,51 This line is covered (see line 292), gcov bug.
-LFT:56,57 This line is covered (see line 292), gcov bug.
-LFT:59,60 This line is covered (see line 292), gcov bug.
-LFT:53,54 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
-LFT:81,82 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
-LFT:97,98 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
-LFT:110,104 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
+LFT:267,267 This line is covered (see line 292), gcov bug.
+LFT:272,272 This line is covered (see line 292), gcov bug.
+LFT:276,276 This line is covered (see line 292), gcov bug.
+LFT:280,280 This line is covered (see line 292), gcov bug.
+LFT:285,286 This line is covered (see line 292), gcov bug.
+LFT:288,289 This line is covered (see line 292), gcov bug.
+LFT:282,283 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
+LFT:310,311 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
+LFT:326,327 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
+LFT:339,343 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
 end_of_record
 
 SF:fs/ext4/mballoc.c
@@ -508,7 +507,7 @@ end_of_record
 
 SF:fs/ext4/migrate.c
 FN:ext4_ext_swap_inode_data
-LFT:30.32 This code is not covered because we don't control the block allocation flow. 
+LFT:30,32 This code is not covered because we don't control the block allocation flow. 
 end_of_record
 
 SF:fs/ext4/move_extent.c
@@ -529,15 +528,17 @@ LFT:1359,1364 This is self checking/correcting code.
 end_of_record
 
 SF:fs/ext4/mmp.c
-FN:kmmpd
-LFT:44,46 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload")
+LFT:129,131 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload")
 end_of_record
 
 SF:fs/ext4/mmp.c
-FN:kmmpd
-LFT:85,99 These lines could not be covered as they depend on race conditions.
+LFT:161,184 These lines could not be covered as they depend on race conditions.
 end_of_record
 
 SF:fs/ext4/mmp.c
 FN:dump_mmp_msg This would be covered if either the device was active on another node (that is it's seq number changed) or the filesystem was multiply mounted. 
+end_of_record
+
+SF:fs/ext4/mmp.c
+LFT:243,244 These lines will be covered if there will be a bad mmp block in superblock.
 end_of_record
