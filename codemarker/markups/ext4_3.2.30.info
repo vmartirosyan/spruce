@@ -456,7 +456,13 @@ LFT:8,8 This block can be covered if we write a KEDR payloads for jbd/jbd2 funct
 end_of_record
 
 SF:fs/ext4/super.c
-LFT:2029,2031 These lines can be covered if we corrupt/change the superblock.
+FN:ext4_orphan_cleanup
+LFT:45,47 This block can be covered if we corrupt the superblock.
+LFT:74,79 This block can be covered if we corrupt the inode.
+end_of_record
+
+SF:fs/ext4/super.c
+LFT:2029,2031 These lines probably can be covered if we corrupt/change the superblock.
 LFT:3422,3424 These lines could be covered if we use mkfs option which indicates blocksize and give an unsupported value.
 LFT:3528,3531 Probably could be covered with bigalloc mount option and with corrupted superblock.
 LFT:3538,3541 Probably could be covered with bigalloc mount option and with corrupted superblock.
