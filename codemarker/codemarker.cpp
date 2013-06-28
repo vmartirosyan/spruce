@@ -49,7 +49,7 @@ regex_t cregx_lft;
 regex_t cregx_dead;
 regex_t cregx_free;
 
-//COmpiled regex for Info file 
+//Compiled regex for Info file 
 regex_t ciregex_fn;
 regex_t ciregex_fnda;
 regex_t ciregex_da;
@@ -65,8 +65,9 @@ class LFT_ST
 	unsigned int end;
 	string desc;
 	CODE_TYPE type;
+	bool markup_is_wrong;
 	
-	LFT_ST() : st(0), end(0), desc(""), type(FREE_CODE)
+	LFT_ST() : st(0), end(0), desc(""), type(FREE_CODE), markup_is_wrong(false)
 	{
 	}
 	
@@ -506,22 +507,37 @@ int main (int argc, char* argv[])
 				if(regexec(&ciregex_da, info_buf, nmatch, match_arr, 0) == 0)
 				{						
 					unsigned int line;
-					string sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so); // get coverage count	
+					string sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so); // get code line
 					std::stringstream convert;
 					convert << sub;
 					convert >> line;
 					
+					int cov;
+					sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so); 
+					std::stringstream convert_cov;
+					convert_cov << ((string)info_buf).substr(match_arr[2].rm_so, match_arr[2].rm_eo - match_arr[2].rm_so); // get coverage count	
+					convert_cov >> cov;
+					
 					bool line_added = false;
 					
+				
 					for(unsigned int i = 0; i < aviableLft.size(); ++i) 
 					{
 						if((aviableLft[i].st <= line) && (line <= aviableLft[i].end))
 						{
+							// This line is in marked range
+							if(cov > 0) // If this line is covered
+								aviableLft[i].markup_is_wrong = true;
+							
+							if(aviableLft[i].markup_is_wrong == true)
+								break;
+							
 							#ifdef DEBUG
 							//cout<<(string)"DA:" + sub + (string)"," + aviableLft[i].getMarker();
 							#endif
 							fout<<(string)"DA:" + sub + (string)"," + aviableLft[i].getMarker();
-							if((lastLFTIndex != i) && (aviableLft[i].desc != ""))
+							
+							if((lastLFTIndex != i) && (aviableLft[i].desc != "")) // Adding description to markup
 							{
 								#ifdef DEBUG
 								//cout<<(string)" " + aviableLft[i].desc<<endl;
@@ -539,7 +555,7 @@ int main (int argc, char* argv[])
 							line_added = true; 	
 							break;				
 						}						
-					}								
+					}				
 					
 					if(!line_added)
 						fout<<info_buf<<endl;
