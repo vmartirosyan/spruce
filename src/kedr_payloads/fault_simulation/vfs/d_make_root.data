@@ -1,0 +1,9 @@
+[group]
+	# Name and return type of the target function
+	function.name = d_make_root
+	returnType = struct dentry *
+
+	# Names and types of the arguments of the target function
+	arg.type = struct inode * 
+	arg.name = root_inode
+#######################################################################

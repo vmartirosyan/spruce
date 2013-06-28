@@ -1,0 +1,15 @@
+[group]
+	# Name and return type of the target function
+	function.name = d_path
+	returnType = char *
+
+	# Names and types of the arguments of the target function
+	arg.type = const struct path *
+	arg.name = path
+
+	arg.type = char *
+	arg.name = buf
+
+	arg.type = int
+	arg.name = buflen
+#######################################################################
