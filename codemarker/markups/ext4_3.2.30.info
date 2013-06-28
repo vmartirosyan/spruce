@@ -372,6 +372,23 @@ SF:fs/ext4/inode.c
 FN:bget_one Called from __ext4_journalled_writepage+13
 end_of_record
 
+SF:fs/ext4/inode.c
+FN:mpage_da_map_and_submit
+LFT:73,89 Can probably be covered by running stability check in common/fallocate/FallocateNormalPunchHole1 test which is marked as dangerous.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_block_invalidatepages Called from mpage_da_map_and_submit+86
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_print_free_blocks Called from mpage_da_map_and_submit+83
+end_of_record
+
+SF:fs/ext4/ioctl.c
+LFT:103,103 This is just a self-checking code.
+end_of_record
+
 SF:fs/ext4/super.c
 FN:print_daily_error_info This function is called once a day if we have errors logged on the file system.
 end_of_record
