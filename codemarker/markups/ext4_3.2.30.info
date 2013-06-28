@@ -289,6 +289,8 @@ LFT:47,47 This line is covered (see line 292), gcov bug.
 LFT:51,51 This line is covered (see line 292), gcov bug.
 LFT:56,57 This line is covered (see line 292), gcov bug.
 LFT:59,60 This line is covered (see line 292), gcov bug.
+LFT:53,54 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
+LFT:81,82 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
 LFT:97,98 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
 LFT:110,104 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
 end_of_record
@@ -504,6 +506,11 @@ FN:ext4_journalled_write_end
 LFT:53,60 Can be covered if we change inode->i_size on disk. 
 end_of_record
 
+SF:fs/ext4/migrate.c
+FN:ext4_ext_swap_inode_data
+LFT:30.32 This code is not covered because we don't control the block allocation flow. 
+end_of_record
+
 SF:fs/ext4/move_extent.c
 FN:mext_insert_across_blocks
 LFT:25,27 This code can be covered if start extent and end extent in original file are different. 
@@ -529,4 +536,8 @@ end_of_record
 SF:fs/ext4/mmp.c
 FN:kmmpd
 LFT:85,99 These lines could not be covered as they depend on race conditions.
+end_of_record
+
+SF:fs/ext4/mmp.c
+FN:dump_mmp_msg This would be covered if either the device was active on another node (that is it's seq number changed) or the filesystem was multiply mounted. 
 end_of_record
