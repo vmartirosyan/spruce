@@ -1,0 +1,15 @@
+[group]
+	# Name and return type of the target function
+	function.name = __bread
+	returnType = struct buffer_head *
+
+	# Names and types of the arguments of the target function
+	arg.type = struct block_device *
+	arg.name = bdev
+
+	arg.type = sector_t
+	arg.name = block
+
+	arg.type = unsigned
+	arg.name = size
+#######################################################################

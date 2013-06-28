@@ -1,0 +1,79 @@
+<TestSet Name="posix_fadvise">
+	<Requires>fcntl.h</Requires>
+	<Requires>unistd.h</Requires>
+	<Test Name="Posix_fadviseNormal" FaultSimulationReady="true">
+		<File count="1"/>
+		<Code>
+			int errNum = 0;
+			
+			Fail((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_NORMAL)) != 0, 
+				"posix_fadvise with POSIX_FADV_NORMAL advise failed.");
+				
+			Fail((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_SEQUENTIAL)) != 0,
+				"posix_fadvise with POSIX_FADV_SEQUENTIAL advise failed.");
+			
+			Fail((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_RANDOM)) != 0,
+				"posix_fadvise with POSIX_FADV_RANDOM advise failed.");
+			
+			Fail((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_NOREUSE)) != 0,
+				"posix_fadvise with POSIX_FADV_NOREUSE advise failed.");
+			
+			Fail((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_WILLNEED)) != 0, 
+				"posix_fadvise with POSIX_FADV_WILLNEED advise failed.");
+			
+			Fail((errNum = posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_DONTNEED)) != 0,
+				"posix_fadvise with POSIX_FADV_DONTNEED advise failed.");
+		</Code>
+	</Test>
+	<Test Name="Posix_fadviseErrBadFPOSIX_FADV_NORMAL">		
+		<Code>
+			Fail(posix_fadvise(-1, 0, getpagesize(), POSIX_FADV_NORMAL) != EBADF, 
+				"Function should return 'Bad File descriptor' error code, but it did not.");
+		</Code>
+	</Test>
+	<Test Name="Posix_fadviseErrBadFPOSIX_FADV_SEQUENTIAL">		
+		<Code>
+			Fail(posix_fadvise(-1, 0, getpagesize(), POSIX_FADV_SEQUENTIAL) != EBADF, 
+				"Function should return 'Bad File descriptor' error code, but it did not.");
+		</Code>
+	</Test>
+	<Test Name="Posix_fadviseErrBadFPOSIX_FADV_RANDOM">		
+		<Code>
+			Fail(posix_fadvise(-1, 0, getpagesize(), POSIX_FADV_RANDOM) != EBADF, 
+				"Function should return 'Bad File descriptor' error code, but it did not.");			
+		</Code>
+	</Test>
+	<Test Name="Posix_fadviseErrBadFPOSIX_FADV_NOREUSE">		
+		<Code>
+			Fail(posix_fadvise(-1, 0, getpagesize(), POSIX_FADV_NOREUSE) != EBADF, 
+				"Function should return 'Bad File descriptor' error code, but it did not.");
+		</Code>
+	</Test>
+	<Test Name="Posix_fadviseErrBadFPOSIX_FADV_WILLNEED">		
+		<Code>
+			Fail(posix_fadvise(-1, 0, getpagesize(), POSIX_FADV_WILLNEED) != EBADF, 
+				"Function should return 'Bad File descriptor' error code, but it did not.");
+		</Code>
+	</Test>
+	<Test Name="Posix_fadviseErrBadFPOSIX_FADV_DONTNEED">		
+		<Code>
+			Fail(posix_fadvise(-1, 0, getpagesize(), POSIX_FADV_DONTNEED) != EBADF, 
+				"Function should return 'Bad File descriptor' error code, but it did not.");
+		</Code>
+	</Test>
+			
+	<Test Name="Posix_fadviseErrInval">
+		<File count="1"/>
+		<Code>
+			int fds[2];
+			Unres(pipe(fds) != 0, "pipe failed.");
+			int errNum;
+			Fail( (errNum = posix_fadvise(fds[0], 0, getpagesize(), POSIX_FADV_NORMAL)) == 0
+				|| (errNum != EINVAL && errNum != ESPIPE),
+				"EINVAL error expected: fd is a pipe refers to a pipe");
+			
+			Fail(posix_fadvise(FDs[0], 0, getpagesize(), -1) != EINVAL,
+				"EINVAL error expected: advise is not a valid value");
+		</Code>
+	</Test>
+</TestSet>

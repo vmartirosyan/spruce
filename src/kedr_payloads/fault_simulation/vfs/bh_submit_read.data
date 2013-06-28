@@ -1,0 +1,9 @@
+[group]
+	# Name and return type of the target function
+	function.name = bh_submit_read
+	returnType = int
+
+	# Names and types of the arguments of the target function
+	arg.type = struct buffer_head *
+	arg.name = bh
+#######################################################################

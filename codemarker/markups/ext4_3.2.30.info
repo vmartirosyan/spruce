@@ -1,0 +1,561 @@
+#######################################################################
+#################Section for DEAD code ONLY############################
+#######################################################################
+DEADCODE:
+
+SF:fs/ext4/acl.c
+FN:ext4_set_acl
+LFT:30,30 Never gets here because of a previous check.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:dquot_to_inode
+LFT:0,2 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_kvmalloc
+LFT:6,6 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to unrecoverable errors. 
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_kvzalloc
+LFT:6,6 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to unrecoverable errors.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_kvfree
+LFT:3,3 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to unrecoverable errors.
+end_of_record
+
+SF:fs/ext4/fsync.c
+FN:dump_completed_IO The function is called from ext4_flush_completed_IO+8 which is marked as non-executable.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_set_io_unwritten_flag
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:7,7 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_rec_len_from_disk
+LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_blocks_count_set
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:5,5 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_free_blocks_count_set
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:5,5 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_r_blocks_count_set
+LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_isize
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:4,4 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_isize_set
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:5,5 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4_extents.h
+FN:ext4_ext_mark_uninitialized
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:5,5 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4_extents.hextend_credit_for_blkdel
+FN:ext4_ext_get_actual_len
+LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4_extents.h
+FN:ext4_ext_pblock
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:6,6 This line is covered, gcov bug.
+end_of_record
+
+SF:fs/ext4/ext4_extents.h
+FN:ext4_idx_pblock
+LFT:0,0 Function is inline and its call is usually integrated.
+LFT:6,6 This line is covered, gcov bug.
+end_of_record
+
+SF:fs/ext4/ext4_extents.h
+FN:ext_block_hdr
+LFT:0,3 These lines are covered from "ext4_ext_split" function in extent.c file, gcov bug.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_block_truncate_page The function isn't called anywhere. Was still used in 3.1 version and is removed in 3.3.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_block_zero_page_range 
+LFT:0,90 Called only from ext4_block_truncate_page.
+end_of_record
+
+SF:fs/ext4/indirect.c
+FN:ext4_blks_to_allocate
+LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/mballoc.h
+LFT:216,216 Function is inline and its call is usually integrated.
+LFT:219,219 This line is covered, but gcov doesn't show it.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_inode_blocks
+LFT:0,0 This function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_expand_extra_isize
+LFT:0,0 This function is inline and its call is usually integrated.
+LFT:13,13 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+LFT:509,521 Function is inline and its call is usually integrated.
+LFT:688,688 Function is inline and its call is usually integrated.
+LFT:699,699 This line is covered, gcov bug
+LFT:702,702 This line is covered, gcov bug
+LFT:1028,1028 Function is inline and its call is usually integrated.
+LFT:1038,1038 This line is covered, gcov bug
+LFT:4429,4429 Function is inline and its call is usually integrated.
+LFT:4436,4436 This line is covered, gcov buge
+end_of_record
+
+SF:fs/ext4/move_extent.c
+LFT:88,88 This line is covered, gcov bug
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_trim_fs Fitrim ioctl works only for solid-state drives.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_trim_all_free Fitrim ioctl works only for solid-state drives.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_trim_extent Fitrim ioctl works only for solid-state drives.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_scan_aligned This function works only for raid5 storages.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_regular_allocator
+LFT:99,99 This code works only for raid5 storages
+end_of_record
+
+SF:fs/ext4/migrate.c
+FN:extend_credit_for_blkdel
+LFT:17,17 This line is covered, but gcov doesn't show it, gcov bug.
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:ext4_set_de_type
+LFT:0,0 This function is inline and its call is usually integrated.
+LFT:5,5 This function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:dx_root_limit
+LFT:0,0 This function is inline and its call is usually integrated.
+LFT:4,4 This function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:dx_node_limit
+LFT:0,0 This function is inline and its call is usually integrated.
+LFT:3,3 This function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/namei.c
+LFT:187,187 This function is inline and its call is usually integrated.
+LFT:189,189 This line is covered, but gcov doesn't show it. gcov bug
+LFT:198,200 This line is covered, but gcov doesn't show it. gcov bug
+LFT:208,210 This line is covered, but gcov doesn't show it. gcov bug
+LFT:1714,1714 This function is inline and its call is usually integrated.
+LFT:1718,1718 This function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/super.c
+LFT:426,431 These lines are covered, but gcov doesn't show it. gcov bug
+LFT:758,761 The call of this function is coming from function which call is marked as non-executable, but it is called. gcov bug
+LFT:763,773 The call of this function is marked as non-executable, but it is called. gcov bug
+LFT:776,779 This is called only from dump_orphan_list function which is marked as dead.
+LFT:781,795 This code can't be covered changing the superblock, as in that case we'll have error on mounting partition, but the function is called when unmounting partition.
+LFT:2932,2936 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3231,3232 These lines could be covered if we perform a fault simulation on mount tests, but it leads to  unrecoverable crash.
+LFT:3251,3252 These lines could be covered if we perform a fault simulation on mount tests (with previously added sb_min_blocksize payload to kedr), but it will finally lead to unrecoverable crash.
+LFT:3260,3261 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3267,3268 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3344,3346 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3430,3432 These lines could be covered if we perform a fault simulation on mount tests (with previously added sb_set_blocksize payload to kedr), but it will finally lead to unrecoverable crash.
+LFT:3440,3442 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3447,3449 These is dead code. There can't be a magic mimatch.
+LFT:3583,3588 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3656,3657 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3661,3664 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3689,3690 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3840,3843 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3846,3847 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3851,3853 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3857,3857 This line could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3886,3888 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3894,3896 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+LFT:3938,3957 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
+end_of_record
+
+SF:fs/ext4/extents.c
+LFT:166,166 This function is inline and its call is usually integrated.
+LFT:175,175 This line is covered, but gcov doesn't show it. gcov bug
+LFT:178,178 This function is inline and its call is usually integrated.
+LFT:188,188 This line is covered, but gcov doesn't show it. gcov bug
+LFT:191,191 This function is inline and its call is usually integrated.
+LFT:201,201 This line is covered, but gcov doesn't show it. gcov bug
+LFT:204,204 This function is inline and its call is usually integrated.
+LFT:215,215 This line is covered, but gcov doesn't show it. gcov bug
+LFT:218,218 This function is inline and its call is usually integrated.
+LFT:229,229 This line is covered, but gcov doesn't show it. gcov bug
+LFT:299,299 This function is inline and its call is usually integrated.
+LFT:309,309 This function is inline and its call is usually integrated.
+LFT:502,502 This function is inline and its call is usually integrated.
+LFT:554,554 This line is covered, but gcov doesn't show it. gcov bug
+LFT:562,562 This function is inline and its call is usually integrated.
+LFT:573,573 This line is covered, but gcov doesn't show it. gcov bug
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_inode_double_lock
+LFT:136,136 This block cannot be covered because of the above check. function mext_inode_double_lock always returns 0.
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_check_null_inode
+LFT:6,9 This is dead code, the NULL value of inodes are checked previously before call.
+LFT:11,14 This is dead code, the NULL value of inodes are checked previously before call.
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_inode_double_lock
+LFT:11,12 This block can't be covered, because it is previously checked before.  
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:get_ext_path
+LFT:10,10 This is self checking/correcting code.
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_next_extent
+LFT:59,59 This line is covered, but gcov doesn't show it. gcov bug
+end_of_record
+
+SF:fs/ext4/indirect.c
+LFT:205,205 Function is inline and its call is usually integrated.
+LFT:239,239 Function is inline and its call is usually integrated.
+LFT:250,250 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/ext4/ioctl.c
+LFT:359,376 Fitrim ioctl works only for solid-state drives.
+end_of_record
+
+SF:fs/ext4/mmp.c
+LFT:267,267 This line is covered (see line 292), gcov bug.
+LFT:272,272 This line is covered (see line 292), gcov bug.
+LFT:276,276 This line is covered (see line 292), gcov bug.
+LFT:280,280 This line is covered (see line 292), gcov bug.
+LFT:285,286 This line is covered (see line 292), gcov bug.
+LFT:288,289 This line is covered (see line 292), gcov bug.
+LFT:282,283 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
+LFT:310,311 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
+LFT:326,327 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
+LFT:339,343 These lines could be covered if we perform a fault simulation on mount tests, but it will finally lead to system crash, as there is BUG_ON.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_good_group
+LFT:48,48 This is self checking/correcting code.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_decode_error This function can't be covered as we have no tool for failing functions from JBD/JBD2, even with KEDR. In this case we need to have jbd2_journal error occured.
+end_of_record
+
+SF:fs/ext4/block_validity.c
+FN:can_merge
+LFT:0,0 This line is not covered because the function is inline and it's call is usualy integrated.
+LFT:5,5 This line is not covered because the function is inline and it's call is usualy integrated.
+end_of_record
+
+SF:fs/ext4/ext4_jbd2.h
+FN:ext4_journal_start
+LFT:0,0 This line is not covered because the function is inline and it's call is usualy integrated.
+end_of_record
+
+################################################ext4#####################
+#################Section for free code markup##########################
+#######################################################################
+#FREECODE:
+
+SF:fs/ext4/acl.c
+FN:ext4_acl_from_disk
+LFT:58,58 This is just a self-checking code. 
+end_of_record
+
+SF:fs/ext4/acl.c
+FN:ext4_acl_to_disk
+LFT:38,38 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/acl.c
+FN:ext4_get_acl
+LFT:22,22 This is just a self-checking code.
+LFT:36,36 Covered if posix_acl_alloc is failed in ext4_acl_from_disk function(called by ACLGetNotCached test).
+end_of_record
+
+SF:fs/ext4/acl.c
+FN:ext4_set_acl
+LFT:39,39 Covered if kmalloc is failed in ext4_acl_to_disk function(called by ACLGetSet test).
+end_of_record
+
+SF:fs/ext4/file.c
+LFT:60,62 Called from file.c+133.
+LFT:75,90 Called from file.c+133.
+LFT:119,119 Needs async direct write.
+LFT:127,133 Covered if file.c+119 is covered.
+end_of_record
+
+SF:fs/ext4/fsync.c
+FN:ext4_sync_parent
+LFT:9,38 Can be covered by getting inode from disk changing its state and callinf fsync() on it.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_truncate_restart_trans Can be covered if journal fails to extend during decreasing truncate(maybe can be achieved in case of a external journal on a small device).
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_writeback_write_end Is supposed to be called during large write with "data=writeback" option, but somehow write_end_fn(callback for data=journaled) is called even with "data=writeback" mount option. Needs further research.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:__ext4_journalled_writepage Can probably be covered when writing mmaped page with "data=journal" mount option.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:bput_one Called from __ext4_journalled_writepage+38
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:bget_one Called from __ext4_journalled_writepage+13
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:mpage_da_map_and_submit
+LFT:73,89 Can probably be covered by running stability check in common/fallocate/FallocateNormalPunchHole1 test which is marked as dangerous.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_block_invalidatepages Called from mpage_da_map_and_submit+86
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_print_free_blocks Called from mpage_da_map_and_submit+83
+end_of_record
+
+SF:fs/ext4/ioctl.c
+LFT:103,103 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:print_daily_error_info This function is called once a day if we have errors logged on the file system.
+end_of_record
+
+SF:fs/ext4/xattr_security.c
+FN:ext4_initxattrs  Can be covered if SELinux package is installed.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_journal_abort_handle Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_error_inode This function can be covered if corrupt the inode.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:__ext4_error This function can be covered if we corrupt the inode.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_handle_error This function can be covered if we corrupt the inode.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:__ext4_abort
+LFT:22,22 Could be covered using errors=panic mount option in an abort case.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:__ext4_grp_locked_error This function can be covered if we corrupt the bitmap.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:__ext4_std_error This function can be covered if we corrupt the inode.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_setup_super
+LFT:21,23 This block could be covered if we perform mount multiple times until we reach the maximum mount count.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_get_journal
+LFT:18,21 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:27,29 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:34,36 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_load_journal
+LFT:29,36 This block could be covered if change the superblock.
+LFT:61,63 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:82,84 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_acquire_dquot
+LFT:29,29 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_write_info
+LFT:8,8 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/super.c
+LFT:2029,2031 These lines can be covered if we corrupt/change the superblock.
+LFT:3422,3424 These lines could be covered if we use mkfs option which indicates blocksize and give an unsupported value.
+LFT:3528,3531 Probably could be covered with bigalloc mount option and with corrupted superblock.
+LFT:3538,3541 Probably could be covered with bigalloc mount option and with corrupted superblock.
+LFT:3545,3549 This code could be covered when mounted with bigalloc option, and the sperblock is corrupted.
+LFT:3553,3556 This is self/correcting code. Possibly could be covered with bigalloc mount option, corrupting the superblock..
+LFT:3559,3562 This line can be covered if we corrupt the superblock. Also need to be mounted with bigalloc mount option.	
+LFT:3570,3573 This line can be covered if we corrupt the superblock. Also need to be mounted with bigalloc mount option.	
+LFT:3597,3600 This line can be covered if we corrupt the superblock.	
+LFT:3636,3637 This line can be covered if we corrupt the superblock.	
+LFT:3649,3652 This line can be covered if we corrupt the superblock.	
+LFT:3867,3868 This line can be covered if we corrupt the superblock.	
+LFT:3871,3872 This line can be covered if we corrupt the superblock.	
+LFT:3878,3880 This line can be covered if we corrupt the superblock.	
+LFT:3968,3968 This line can be covered if we corrupt the superblock.
+LFT:4119,4120 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:4756,4756 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:4789,4790 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:4082,4084 these lines can be covered with usage of mkfs options like this -b 2048: or -b 1024 -g 8192:
+LFT:4091,4093 Probably these lines can be covered if we perform a fault simulation on this function with __bread payload.
+LFT:4107,4109 These lines can be covered if we corrupt the superblock.
+LFT:5098,5098 This line can be covered if we add new payload (kobject_init_and_add) to kedr and perform a fault simulation on ext4 Init/Exit functions.
+LFT:5169,5182 These lines can be covered if we perform a fault simulation on ext4 Init/Exit functions.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_error_file This function can be covered if we have a corrupted file.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_clear_journal_err
+LFT:20,29 Probably could be covered if we mount a filesystem whose journal has recorded an error from a previous lifetime.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_quota_on
+LFT:30,33 This block can be probably covered combining two mount options (data=journal and quota).
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_quota_write
+LFT:11,14 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:21,24 This lines can be covered if we corrupt/change the superblock.
+LFT:33,34 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:48,50 This lines can be covered if we corrupt the inode.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_quota_read
+LFT:15,15 his line can be covered if we corrupt the inode.
+end_of_record
+
+SF:fs/ext4/dir.c
+FN:__ext4_check_dir_entry
+LFT:25,38 This lines can be covered if corrupt file and corrupt directory.
+end_of_record
+
+SF:fs/ext4/mmp.c
+LFT:143,146 Can be covered with "-O mmp" mkfs options enabled and remounting partition read-only.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_journalled_write_end
+LFT:53,60 Can be covered if we change inode->i_size on disk. 
+end_of_record
+
+SF:fs/ext4/migrate.c
+FN:ext4_ext_swap_inode_data
+LFT:30,32 This code is not covered because we don't control the block allocation flow. 
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_insert_across_blocks
+LFT:25,27 This code can be covered if start extent and end extent in original file are different. 
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_leaf_block
+LFT:59,65 This code can be covered if we call this function with new extent wich is bigger than original.
+end_of_record
+
+SF:fs/ext4/move_extent.c
+LFT:1252,1264 This code can be covered if we try to move extent, but the hole exists between extents or the tail of original file.
+LFT:1267,1267 This code can be covered if we try to move extent, but the hole exists at the beginning of original file.
+LFT:1275,1276 This code can be covered if we try to move extent, but we have no blocks within the specified range.
+LFT:1359,1364 This is self checking/correcting code.
+end_of_record
+
+SF:fs/ext4/mmp.c
+LFT:129,131 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload")
+end_of_record
+
+SF:fs/ext4/mmp.c
+LFT:161,184 These lines could not be covered as they depend on race conditions.
+end_of_record
+
+SF:fs/ext4/mmp.c
+FN:dump_mmp_msg This would be covered if either the device was active on another node (that is it's seq number changed) or the filesystem was multiply mounted. 
+end_of_record
+
+SF:fs/ext4/mmp.c
+LFT:243,244 These lines will be covered if there will be a bad mmp block in superblock.
+end_of_record

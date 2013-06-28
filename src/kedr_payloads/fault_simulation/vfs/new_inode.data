@@ -1,0 +1,9 @@
+[group]
+	# Name and return type of the target function
+	function.name = new_inode
+	returnType = struct inode *
+
+	# Names and types of the arguments of the target function
+	arg.type = struct super_block *
+	arg.name = sb
+#######################################################################

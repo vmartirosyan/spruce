@@ -1,0 +1,36 @@
+<!--    Symlink.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Nellie Danielyan <Nellie.92.d@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="Symlink">	
+	<Test Name="SymlinkLongName" FaultSimulationReady="true" Shallow="true">
+		<Description>Create a symlink with a long path.</Description>
+		<Code>
+			mkdir("a",0777);
+			const char * NewFilePath = "new_file_symlink_1234567890";
+			unlink(NewFilePath);
+			
+			Fail(symlink("a", NewFilePath) == -1,"Cannot create symlink.");
+
+		</Code>
+	</Test>
+</TestSet>

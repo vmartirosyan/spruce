@@ -1,0 +1,21 @@
+[group]
+	# Name and return type of the target function
+	function.name = kthread_create_on_node
+	returnType = struct task_struct *
+
+	# Names and types of the arguments of the target function
+	arg.type = threadfn_t
+	arg.name = threadfn
+	
+	arg.type = void*
+	arg.name = data
+	
+	arg.type = int
+	arg.name = node
+	
+	arg.type = const char*
+	arg.name = namefmt
+	
+	#arg.type = ...
+	#arg.name = 
+#######################################################################
