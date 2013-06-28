@@ -1,0 +1,280 @@
+<!--    ioctl.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Suren Grigoryan <suren.grigoryan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="ioctl">	
+	<Requires>linux/fs.h</Requires>
+	<Requires>linux/fiemap.h</Requires>
+	<Requires>sys/ioctl.h</Requires>			
+	<Test Name="IoctlGetSetVersion" FaultSimulationReady="true">
+		<Description>Set and get version.</Description>
+		<File count="1"/>
+		<Code>
+			int old_version = 0;
+			if ( ioctl(FDs[0], FS_IOC_GETVERSION, &old_version ) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Unsupp("Get/set verion is not supported.");
+				}
+				else
+				{
+					Unres(1, "Error backing up old values.");
+				}
+			}		
+			int set_version = 15; 
+			int get_version = 0;			
+			
+			if ( ioctl(FDs[0], FS_IOC_SETVERSION, &set_version ) == -1)
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Unsupp("Set verion is not supported.");
+				}
+				else
+				{
+					Check(1, "Error setting version.");
+				}
+			}
+			
+			Fail (ioctl(FDs[0], FS_IOC_GETVERSION, &get_version) == -1, "Error getting newly set version.");
+			
+			Unres (ioctl(FDs[0], FS_IOC_SETVERSION, &old_version) == -1, "Error restoring old values.");
+									
+			Check (get_version != set_version, "Set and got versions do not match");
+		</Code>
+	</Test>
+<Test Name="IoctlFITRIM" FaultSimulationReady="true" Shallow="true">
+		<Requires Defined="FITRIM" />
+		<Description>Ioctl FITRIM.</Description>
+		<File count="1"/>
+		<Code>
+			struct fstrim_range arg;
+			arg.start = 0;
+			arg.len = 10;
+			
+			if ( ioctl(FDs[0], FITRIM, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Unsupp("FITRIM is not supported.");
+				}
+				else
+				{
+					Check(1, "FITRIM operation failed.");
+				}
+			}			
+		</Code>		
+	</Test>
+	<Test Name="IoctlFIEMAP" FaultSimulationReady="true" Shallow="true">
+		<Description>Ioctl FIEMAP.</Description>
+		<File count="1"/>
+		<Code>
+			
+			struct fiemap arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.fm_length = 1;
+			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Unsupp("FIEMAP is not supported.");
+				}
+				else
+				{
+					Check(1, "FIEMAP operation failed.");
+				}
+			}				
+		</Code>
+	</Test>
+		<Test Name="IoctlFIEMAPBigData" FaultSimulationReady="true" Shallow="true">
+		<Description>Ioctl FIEMAP.</Description>
+		<File count="1" flags="O_CREAT | O_RDWR | O_LARGEFILE"/>
+		<Code>
+			uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
+			
+			// The test is targeted on small partitions. Don't run it
+			// if the partition size is more than 2GB
+			Skip(size < (uint64_t)2*1024*1024*1024, "The partition is too small.");
+			
+			struct fiemap arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.fm_length = 1;
+			Unres ( fallocate(FDs[0], 0, 0, 320000*4096), "Cannot allocate space for file.");
+			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Unsupp("FIEMAP is not supported.");
+				}
+				else
+				{
+					Check(1, "FIEMAP operation failed.");
+				}
+			}				
+		</Code>
+	</Test>
+	<Test Name="IoctlFIEMAPBeforeExtent" FaultSimulationReady="true" Shallow="true">
+		<Description>Ioctl FIEMAP.</Description>
+		<File count="1" flags="O_CREAT | O_RDWR | O_LARGEFILE"/>
+		<Code>
+			//uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
+			
+			struct fiemap arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.fm_length = 1;
+			Unres ( fallocate(FDs[0], 0, 32000, 32000), "Cannot allocate space for file.");
+			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Unsupp("FIEMAP is not supported.");
+				}
+				else
+				{
+					Check(1, "FIEMAP operation failed.");
+				}
+			}			
+		</Code>
+	</Test>
+	<Test Name="IoctlFIEMAPAfterExtent" FaultSimulationReady="true" Shallow="true">
+		<Description>Ioctl FIEMAP.</Description>
+		<File count="1" flags="O_CREAT | O_RDWR | O_LARGEFILE"/>
+		<Code>
+			//uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
+			
+			struct fiemap arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.fm_length = 1;
+			arg.fm_start = 134217728;//128MB
+			Unres ( fallocate(FDs[0], 0, 0, 134217728), "Cannot allocate space for file.");
+			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Unsupp("FIEMAP is not supported.");
+				}
+				else
+				{
+					Check(1, "FIEMAP operation failed.");
+				}
+			}			
+		</Code>
+	</Test>
+	<Test Name="IoctlFIEMAPWithXattrFlag" FaultSimulationReady="true" Shallow="true">
+		<Description>Ioctl FIEMAP test with FIEMAP_FLAG_XATTR flag set.</Description>
+		<File count="1"/>
+		<Code>
+			if(PartitionManager::IsOptionEnabled("-t ext2", true) || PartitionManager::IsOptionEnabled("-t ext3", true))
+			{
+				Unsupp("FIEMAP_FLAG_XATTR flag is not supported on ext2 and ext3 file systems");
+			}
+			
+			Skip(!strcmp(FileSystem, "btrfs"), "Test is not implemented.");
+			
+			struct fiemap arg;
+			memset(&arg, 0, sizeof(arg));
+			arg.fm_length = 1;
+			arg.fm_flags = FIEMAP_FLAG_XATTR;
+			
+			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Unsupp("FIEMAP is not supported.");
+				}
+				else
+				{
+					Check(1, "FIEMAP operation with FIEMAP_FLAG_XATTR flag failed.");
+				}
+			}			
+		</Code>
+	</Test>
+	<Test Name="IoctlFIBMAP" FaultSimulationReady="true" Shallow="true">
+		<Description>Ioctl FIBMAP.</Description>
+		<File count="1"/>
+		<Code>
+			if ( ! strcmp(FileSystem, "btrfs") )
+				Unsupp("FIBMAP not supported in btrfs.");
+			int Block = 1;
+			
+			Fail( ioctl(FDs[0], FIBMAP, &Block) == -1, "FIBMAP operation failed." );
+		</Code>
+	</Test>
+	
+	<Test Name="IoctlFIFREEZE" FaultSimulationReady="true">
+		<Description>Ioctl FIFREEZE and FITHAW.</Description>
+		<File count="1"/>
+		<Code>
+			Skip(PartitionManager::IsOptionEnabled("nointegrity"), 
+				"The test cannot be executed. There is a BUG in JFS system.");
+			
+			if ( ioctl(FDs[0], FIFREEZE, 0) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL )
+				{
+					Unsupp("FIFREEZE is not supported.");
+				}
+				else
+				{
+					Check(1, "FIFREEZE operation failed.");
+				}
+			}
+			if ( ioctl(FDs[0], FITHAW, 0) == -1 )
+			{
+				if ( errno == ENOTTY || errno == EINVAL)
+				{
+					Unsupp("FITHAW is not supported.");
+				}
+				else
+				{
+					Check(1, "FITHAW operation failed.");
+				}
+			}
+			// Check if the FS is unfreezed.
+			int fd = open("IoctlFIFREEZE_file2", O_CREAT);
+			Check(fd == -1, "Cannot create file after unfreeze.");
+			close(fd);
+		</Code>
+	</Test>
+	<Test Name="IoctlBadFile">
+		<Description>Not a valid descriptor.</Description>
+		<Code>
+			ErrorTest(ioctl(-1, 0, NULL), -1, EBADF);
+		</Code>
+	</Test>
+	<!-- There is no operation supported by all the filesystems to be able to check the EFAULT case -->
+	<!--Test Name="IoctlFault">
+		<Description>argp references an inaccessible memory area.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(ioctl(FDs[0], FS_IOC_GETVERSION, -1), -1, EFAULT);
+		</Code>
+	</Test-->
+	<Test Name="IoctlNoTTY">
+		<Description>File descriptor is not associated with a character special device.</Description>
+		<Code>
+			ErrorTest(ioctl(0, FS_IOC_GETVERSION, NULL), -1, EINVAL);
+		</Code>
+	</Test>
+</TestSet>
