@@ -823,7 +823,7 @@
                         Unres(write(fd, WriteBuf,4096) == -1, "Cannot write.");        
                         const char * AttrName = "user.XattrSetGetTest";
                         const char * ValueSet = new char[75];        
-                        const int ValueLen = strlen(ValueSet);
+                        const int ValueLen = 75;
                         if ( removexattr(FilePath, AttrName) == -1 && errno != ENOATTR )
                         {
                             if ( errno == ENOTSUP )
