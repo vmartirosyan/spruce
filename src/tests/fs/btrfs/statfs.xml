@@ -30,7 +30,7 @@
 			
 			Unres ( statfs(MountPoint, &buf) != 0, "statfs failed.");
 			
-			int ExpectedMagic = 0x9123683e;// BTRFS_SUPER_MAGIC
+			__SWORD_TYPE ExpectedMagic = 0x9123683e;// BTRFS_SUPER_MAGIC
 
 			if( buf.f_type != ExpectedMagic)
 				printf("Magic for btrfs superblock is 0x%x but statfs() returns 0x%x.\n",
