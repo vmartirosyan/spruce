@@ -565,6 +565,34 @@ LFT:1275,1276 This code can be covered if we try to move extent, but we have no 
 LFT:1359,1364 This is self checking/correcting code.
 end_of_record
 
+SF:fs/ext4/ext4_jbd2.c
+FN:__ext4_journal_get_write_access
+LFT:8,8 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/ext4_jbd2.c
+FN:__ext4_forget
+LFT:33,33 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+LFT:46,46 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/ext4_jbd2.c
+FN:__ext4_journal_get_create_access
+LFT:8,8 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/ext4_jbd2.c
+FN:__ext4_handle_dirty_metadata
+LFT:10,11 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+LFT:19,29 Pobably could be covered if we change the corresponding inode.
+end_of_record
+
+SF:fs/ext4/ext4_jbd2.c
+FN:__ext4_handle_dirty_super
+LFT:9,9 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+LFT:12,12 This line is covered, but marked as not covered. This is GCOV bug.
+end_of_record
+
 SF:fs/ext4/mmp.c
 LFT:129,131 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload")
 end_of_record
