@@ -498,6 +498,12 @@ FN:ext4_quota_read
 LFT:15,15 his line can be covered if we corrupt the inode.
 end_of_record
 
+SF:fs/ext4/xattr.c
+LFT:167,167 This line is covered but is not marked as covered. It is gcov bug.
+LFT:171,171 Function is inline and its call is usually integrated.
+LFT:178,178 Function is inline and its call is usually integrated.
+end_of_record
+
 SF:fs/ext4/dir.c
 FN:__ext4_check_dir_entry
 LFT:25,31 This lines can be covered if corrupt file and corrupt directory.
@@ -506,6 +512,30 @@ end_of_record
 
 SF:fs/ext4/mmp.c
 LFT:143,146 Can be covered with "-O mmp" mkfs options enabled and remounting partition read-only.
+end_of_record
+
+SF:fs/ext4/resize.c
+FN:add_new_gdb This function could be covered if we add groups until we have the gdb full. After that a new group descriptor block will be created.
+end_of_record
+
+SF:fs/ext4/resize.c
+FN:ext4_group_add
+LFT:95,98 This lines could be covered if we add groups until we have the gdb full. After that a new group descriptor block will be created.
+end_of_record
+
+SF:fs/ext4/resize.c
+FN:ext4_group_extend
+LFT:21,26 This block could be covered if we try to perform a very big resize.
+LFT:30,31 This block could be covered if we try to perform resize when size is more that partition size.
+LFT:45,46 This block could be covered if we try to perform resize with when "last" will be bigger that "blocks_per_group" value.
+LFT:59,60 This block could be covered if we perform fault simulation with bread point enabled.
+LFT:69,71 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+LFT:76,78 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/resize.c
+LFT:680,682 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+LFT:730,734 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
 end_of_record
 
 SF:fs/ext4/inode.c
