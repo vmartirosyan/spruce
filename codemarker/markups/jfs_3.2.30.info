@@ -121,8 +121,6 @@ SF:fs/jfs/jfs_dtree.c
 FN:dtSplitUp
 LFT:55,55 It is dead code, as this parameter has a previous check in caller function  
 LFT:92,135 This code works only when block size != 4096
-LFT:275,275 This code is supported only in OS/2
-LFT:261,264 Can be covered by test jfs/JfsOverloadTests/CiGetLeafPrefixKeyFSim which is marked as dangerous.
 LFT:167,167 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
 LFT:210,211 Can be covered by test JFS/JfsOverloadTests/dtSplitPageFail which is marked as dangerous.
 LFT:287,287 This is self checking/correcting code. This situation is imposible
@@ -156,7 +154,6 @@ FN:JFS_SBI Function is inline and its call is usually integrated.
 end_of_record
 
 SF:fs/jfs/jfs_incore.h
-#LFT:0,0 Function is inline and its call is usually integrated.
 LFT:222,222 This line is covered, gcov bug.
 end_of_record
 
@@ -345,12 +342,10 @@ LFT:9,9 The line is covered by test jfs/Ioctl/UnfreezeFail which is marked as da
 end_of_record
 
 SF:fs/jfs/jfs_metapage.c
+LFT:174,174 Function is inline and its call is usually integrated.
 LFT:179,179 This line is covered, but gcov doesn't show it, gcov bug.
 LFT:403,423 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
 LFT:478,478 Code is called only when the bio->bi_size iz zero and and bio_add_page does not fail. Such a situation cannot be controlled neither via fault simulation, nor via on-disk changes.
-end_of_record
-
-SF:fs/jfs/jfs_metapage.c
 LFT:266,266 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
 LFT:611,614 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
 LFT:648,653 This block is not covered because logical size of "metapage" is equal to page size.
@@ -366,7 +361,6 @@ FN:metapage_readpage
 LFT:26,26 Code is called only when PAGE_CACHE_SIZE>PSIZE. Currently PAGE_CACHE_SIZE=PAGE_SIZE=4096 on x86. For Linux JFS PSIZE is 4096.
 end_of_record
 
-
 SF:fs/jfs/jfs_metapage.c
 FN:metapage_read_end_io
 LFT:5,5 Can be covered if fault simulation in submit_bio would not bring to system crash. 
@@ -375,20 +369,6 @@ end_of_record
 SF:fs/jfs/jfs_metapage.c
 FN:metapage_write_end_io
 LFT:7,7 Can be covered if fault simulation in submit_bio would not bring to system crash.
-end_of_record
-
-SF:fs/jfs/jfs_metapage.c
-FN:metapage_writepage
-LFT:123,123 This block is not covered because these lines cannot be covered from user space.
-end_of_record
-
-SF:fs/jfs/jfs_metapage.c
-FN:last_write_complete
-LFT:27,27 This block is not covered because these lines cannot be covered from user space.
-end_of_record
-
-SF:fs/jfs_metapage.c		
-FN:remove_metapage Function is inline and its call is usually integrated.
 end_of_record
 
 SF:fs/jfs_metapage.c		
@@ -405,14 +385,8 @@ end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogInit
-LFT:79,79 Code is covered by test jfs/MountWithOptions/lmLogInitFail3 which is marked as dangerous.
 LFT:111,111 This block is not covered because we can't control the amount of written data in pages.
 LFT:169,171 These lines could be covered if there wouldn't be system crash due to submit_bio payload.
-end_of_record
-
-SF:fs/jfs/jfs_logmgr.c
-FN:jfs_flush_journal
-LFT:72,72 Code is marked as it was not executed due to compiler optimisations.
 end_of_record
 
 SF:fs/jfs/jfs_logmgr.c
@@ -626,7 +600,6 @@ end_of_record
 SF:fs/jfs/jfs_logmgr.c
 FN:lmLogOpen
 LFT:16,27 Code would be called if jfs/mount/MultiplePartitionsSingleLog didn't failed with fatal.
-LFT:67,67 These lines could be covered if there wouldn't be system crash due to "submit_bio" failure.
 LFT:83,84 These lines could be covered if there wouldn't be system crash due to "submit_bio" failure.
 end_of_record
 
@@ -668,8 +641,6 @@ LFT:4302,4303 See the 903 line for more details.
 LFT:4273,4273 See the 903 line for more details.
 LFT:4368,4368 See the 903 line for more details.
 LFT:4397,4398 See the 903 line for more details.
-LFT:3222,3234 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
-LFT:3307,3308 This code can be covered when fschk.jfs recovers a corrupted directory, but doesn't add a corresponding record to directory index. This code cannot be covered at least from userspace.
 LFT:3254,3260 This is self checking/correcting code.
 LFT:3150,3150 This is self checking/correcting code.
 LFT:3067,3070 This is impossible to cover, as when we corrupt the inodes next index, then the coverage doesn't gain the desired block. Function returns with the previous return statement on line 3063. 
@@ -767,11 +738,6 @@ SF:fs/jfs/jfs_xtree.c
 FN:xtSplitPage
 LFT:133,134 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitPage. 
 LFT:239,240 These lines could be covered if we corrupt the inode, but in that case the failure comes up in xtSearch, which is called earlier than xtSplitPage.
-end_of_record
-
-SF:fs/jfs/jfs_xtree.c
-FN:xtSplitRoot
-LFT:33,34 Can be covered by test jfs/JfsOverloadTests/xtSplitRootFail, but it brings to OOPS in driver.
 end_of_record
 
 SF:fs/jfs/jfs_xtree.c

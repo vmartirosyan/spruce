@@ -127,7 +127,7 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_expand_extra_isize
 LFT:0,0 This function is inline and its call is usually integrated.
-LFT:13,13 Code is marked as it was not executed due to compiler optimisations.
+LFT:21,21 This line is covered, but gcov doesn't show it.
 end_of_record
 
 SF:fs/ext4/mballoc.c
@@ -138,7 +138,6 @@ LFT:702,702 This line is covered, gcov bug
 LFT:1028,1028 Function is inline and its call is usually integrated.
 LFT:1038,1038 This line is covered, gcov bug
 LFT:4429,4429 Function is inline and its call is usually integrated.
-LFT:4436,4436 This line is covered, gcov buge
 end_of_record
 
 SF:fs/ext4/move_extent.c
@@ -146,7 +145,8 @@ LFT:88,88 This line is covered, gcov bug
 end_of_record
 
 SF:fs/ext4/mballoc.c
-FN:ext4_trim_fs Fitrim ioctl works only for solid-state drives.
+FN:ext4_trim_fs 
+LFT:0,71 Fitrim ioctl works only for solid-state drives.
 end_of_record
 
 SF:fs/ext4/mballoc.c
@@ -199,9 +199,10 @@ LFT:1718,1718 This function is inline and its call is usually integrated.
 end_of_record
 
 SF:fs/ext4/super.c
-LFT:426,431 These lines are covered, but gcov doesn't show it. gcov bug
-LFT:758,761 The call of this function is coming from function which call is marked as non-executable, but it is called. gcov bug
-LFT:763,773 The call of this function is marked as non-executable, but it is called. gcov bug
+LFT:426,426 This function is inline and its call is usually integrated.
+LFT:431,431 These lines are covered, but gcov doesn't show it. gcov bug
+LFT:763,763 This function is inline and its call is usually integrated.
+LFT:773,773 These lines are covered, but gcov doesn't show it. gcov bug
 LFT:776,779 This is called only from dump_orphan_list function which is marked as dead.
 LFT:781,795 This code can't be covered changing the superblock, as in that case we'll have error on mounting partition, but the function is called when unmounting partition.
 LFT:2932,2936 These lines could be covered if we perform a fault simulation on mount tests, but it leads to unrecoverable crash.
@@ -299,14 +300,10 @@ FN:ext4_mb_good_group
 LFT:48,48 This is self checking/correcting code.
 end_of_record
 
-SF:fs/ext4/super.c
-FN:ext4_decode_error This function can't be covered as we have no tool for failing functions from JBD/JBD2, even with KEDR. In this case we need to have jbd2_journal error occured.
-end_of_record
-
 SF:fs/ext4/block_validity.c
 FN:can_merge
 LFT:0,0 This line is not covered because the function is inline and it's call is usualy integrated.
-LFT:5,5 This line is not covered because the function is inline and it's call is usualy integrated.
+LFT:7,7 This line is covered, gcov bug
 end_of_record
 
 SF:fs/ext4/ext4_jbd2.h
@@ -333,11 +330,6 @@ SF:fs/ext4/acl.c
 FN:ext4_get_acl
 LFT:22,22 This is just a self-checking code.
 LFT:36,36 Covered if posix_acl_alloc is failed in ext4_acl_from_disk function(called by ACLGetNotCached test).
-end_of_record
-
-SF:fs/ext4/acl.c
-FN:ext4_set_acl
-LFT:39,39 Covered if kmalloc is failed in ext4_acl_to_disk function(called by ACLGetSet test).
 end_of_record
 
 SF:fs/ext4/file.c
@@ -410,20 +402,12 @@ FN:__ext4_error This function can be covered if we corrupt the inode.
 end_of_record
 
 SF:fs/ext4/super.c
-FN:ext4_handle_error This function can be covered if we corrupt the inode.
-end_of_record
-
-SF:fs/ext4/super.c
 FN:__ext4_abort
 LFT:22,22 Could be covered using errors=panic mount option in an abort case.
 end_of_record
 
 SF:fs/ext4/super.c
 FN:__ext4_grp_locked_error This function can be covered if we corrupt the bitmap.
-end_of_record
-
-SF:fs/ext4/super.c
-FN:__ext4_std_error This function can be covered if we corrupt the inode.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -484,7 +468,7 @@ LFT:4082,4084 these lines can be covered with usage of mkfs options like this -b
 LFT:4091,4093 Probably these lines can be covered if we perform a fault simulation on this function with __bread payload.
 LFT:4107,4109 These lines can be covered if we corrupt the superblock.
 LFT:5098,5098 This line can be covered if we add new payload (kobject_init_and_add) to kedr and perform a fault simulation on ext4 Init/Exit functions.
-LFT:5169,5182 These lines can be covered if we perform a fault simulation on ext4 Init/Exit functions.
+LFT:5169,5181 These lines can be covered if we perform a fault simulation on ext4 Init/Exit functions.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -516,7 +500,8 @@ end_of_record
 
 SF:fs/ext4/dir.c
 FN:__ext4_check_dir_entry
-LFT:25,38 This lines can be covered if corrupt file and corrupt directory.
+LFT:25,31 This lines can be covered if corrupt file and corrupt directory.
+LFT:36,38 This lines can be covered if corrupt file and corrupt directory.
 end_of_record
 
 SF:fs/ext4/mmp.c
