@@ -21,10 +21,7 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="Truncate">
-	<StartUp>
-		Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");
-	</StartUp>
+<TestSet Name="Truncate" per-mount-options="false">
 	<Requires>sys/stat.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>JFSCtl.hpp</Requires>	
@@ -133,14 +130,13 @@
 			
 		</Code>
 	</Test>
-	<Test Name="TruncateFail" FaultSimulationReady="true">
-		<Description>jfs_truncate_nolock fail .</Description>
+	<Test Name="TruncateFail" FaultSimulationReady="true" mount-oriented="false" use-mount="true">
+		<Description>jfs_truncate_nolock fail.</Description>
 		<Header>
 			int fd = -1;
 			char FilePath[] = "TruncateFail_file";
 		</Header>
 		<Code>
-			
 			fd = open(FilePath, O_RDWR | O_CREAT , S_IRUSR | S_IWUSR);
 			const string buf = "1234";
 			const int length = buf.size();
@@ -165,13 +161,10 @@
 			Unres (chdir(MountPoint) == -1, "Changing directory failed.");
 			Unres((fd = open(FilePath, O_RDWR , S_IRUSR | S_IWUSR)) == -1,"Open failed.");
 			Fail ( truncate(FilePath, length_after_truncate) != 0, "truncate failed");
-			
-			
 		</Code>
 		<Footer>
 			unlink(FilePath);
 			close(fd);
-			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success,"Mount failed" );
 		</Footer>
 	</Test>
 </TestSet>
