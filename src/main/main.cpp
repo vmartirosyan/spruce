@@ -229,6 +229,10 @@ int main(int argc, char ** argv)
 		if ( (configValues.find("subfolders") != configValues.end()) && (configValues["subfolders"] == "false" ))
 		{
 			Logger::LogWarn("No subfolders will be created. The Log file will be overwritten.");
+			if(system(("rm -f " + logfolder + "/* > /dev/null 2>&1").c_str()) == -1)
+			{
+				Logger::LogWarn("Couldn't remove xml files from logfolder. The report may be incomplete.");
+			}
 		}
 		else // by default subfolders are to be created
 		{
@@ -511,6 +515,8 @@ int main(int argc, char ** argv)
 				UnixCommand find("find");
 				vector<string> find_args;
 				find_args.push_back(logfolder);
+				find_args.push_back("-maxdepth"); 
+				find_args.push_back("1"); 
 				find_args.push_back("-name");
 				find_args.push_back( *fs + "*.xml");
 				
