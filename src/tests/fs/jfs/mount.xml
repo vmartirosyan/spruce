@@ -1,0 +1,628 @@
+<!--    mount.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Nellie Danielyan <Nellie.92.d@gmail.com>
+//      	Vahram Martirosyan <vmartirosyan@gmail.com>
+//          Karen Tsirunyan <ktsirunyan@gmail.com>
+//			Ruzanna Karakozova <r.karakozova@gmail.com>
+//
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<!--Test set covers most of JFS resize.c and some of dmap.c code
+(the functions called from resize.c which weren't called before.)
+It seems the part of resize.c refering to invalid block number checks 
+isn't covered as mount options are parsed and checked in super.c-->
+<TestSet Name="mount">
+	<StartUp>
+		Skip ( !PartitionManager::NoOptionsEnabled()
+				&amp;&amp; !PartitionManager::IsOptionEnabled("-j", true),
+			"These tests should run only when no options are provided." );
+	</StartUp>
+        <Requires>sys/mount.h</Requires>
+        <Requires>sstream</Requires>
+        <Requires>JFSCtl.hpp</Requires>
+        <Test Name="RemountResize" FaultSimulationReady="true">
+                <Description>Resize.</Description>              
+                <Code>
+						int res;
+                        Unres ( chdir("/") == -1, "Cannot change directory." );
+						res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+						if( res!= PS_Success )
+						{
+							if( res == PS_Fatal )
+							{
+								Error("Device too small.");
+								Return(Unresolved);
+							}						
+							Error("Partition mount or umount failed");
+							Return(Unresolved);	
+						}
+						
+                        Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");					
+                </Code>
+				<Footer>
+						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+						{
+							Error("Mount failed!");
+							Return(Fatal);
+						}
+				</Footer>
+        </Test>
+        <Test Name="RemountResizeModifyIAG" FaultSimulationReady="true">
+                <Description>Resize.</Description>              
+                <Code>
+						int res;
+						JFSCtl jfs;
+                        Unres ( chdir("/") == -1, "Cannot change directory." );
+						res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+						if( res!= PS_Success )
+						{
+							if( res == PS_Fatal )
+							{
+								Error("Device too small.");
+								Return(Unresolved);
+							}						
+							Error("Partition mount or umount failed");
+							Return(Unresolved);	
+						}
+						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+						int fd = creat("a",0777);
+						fsync(fd);
+						int inode_num = jfs.GetInodeNum("a");
+						close(fd);
+
+						Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+						
+						
+						iag * iag = jfs.GetIAG(DeviceName, inode_num);
+						
+						Unres(iag == NULL, "Cannot get IAG.");
+						iag->nfreeexts = EXTSPERIAG;
+						Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");	
+						Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+			
+						Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+			
+                        mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize");					
+                </Code>
+				<Footer>
+						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+						{
+							Error("Mount failed!");
+							Return(Fatal);
+						}
+				</Footer>
+        </Test>
+         <Test Name="RemountResizeFail" FaultSimulationReady="true">
+	    <Dangerous/>
+                <Description>Resize.</Description>              
+                <Code>
+					int res;
+					Unres ( chdir("/") == -1, "Cannot change directory." );
+					res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+					if( res!= PS_Success )
+					{
+						if( res == PS_Fatal )
+						{
+							Error("Device too small.");
+							Return(Unresolved);
+						}						
+						Error("Partition mount or umount failed");
+						Return(Unresolved);	
+					}
+					
+					Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");					
+                </Code>
+				<Footer>
+					if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true)!= PS_Success )
+					{
+						Error("Mount failed!");
+						Return(Fatal);
+					}
+				</Footer>
+        </Test>
+		<Test Name="MultipleResize" FaultSimulationReady="true">
+			<Description>Multiple resize.</Description>
+			<Code>
+				Unres ( chdir("/") == -1, "Cannot change directory." );
+				Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
+				
+				uint64_t DeviceSize = PartitionManager::GetDeviceSize(DeviceName);
+				
+				uint64_t PartSize = DeviceSize / 20;
+				
+				uint64_t PartSizeInBlocks = PartSize / 4096;
+				
+				stringstream str;
+				str << PartSizeInBlocks;
+				
+				MkfsCommand cmd("mkfs.jfs");
+				
+				vector<string> args;
+				args.push_back(DeviceName);
+				args.push_back("-f");
+				args.push_back(str.str());
+				
+				ProcessResult * res = cmd.Execute(args);
+				
+				Unres( res == NULL || res->GetStatus() != Success, "Cannot create partition. " + res->GetOutput() );
+				
+				delete res;
+				
+				Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false,
+						"Cannot mount partition.");
+				
+				for ( int i = 0; i < 20; ++i ) // Must be more than 18 (XTROOTMAXSLOT)
+				{
+					stringstream newsize;
+					newsize << (PartSizeInBlocks + i*10000);
+					Unres(mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, ("resize=" + newsize.str()).c_str()) == -1,
+						"Cannot extend partition.");
+				}
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+		</Test>
+		<Test Name="MultipleResizeFail" FaultSimulationReady="true">
+		    <Dangerous/>
+			<Description>Multiple resize.</Description>
+			<Code>
+				Unres ( chdir("/") == -1, "Cannot change directory." );
+				Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
+				
+				uint64_t DeviceSize = PartitionManager::GetDeviceSize(DeviceName);
+				
+				uint64_t PartSize = DeviceSize / 20;
+				
+				uint64_t PartSizeInBlocks = PartSize / 4096;
+				
+				stringstream str;
+				str << PartSizeInBlocks;
+				
+				MkfsCommand cmd("mkfs.jfs");
+				
+				vector<string> args;
+				args.push_back(DeviceName);
+				args.push_back("-f");
+				args.push_back(str.str());
+				
+				ProcessResult * res = cmd.Execute(args);
+				
+				Unres( res == NULL || res->GetStatus() != Success, "Cannot create partition. " + res->GetOutput() );
+				
+				delete res;
+				
+				Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false,
+						"Cannot mount partition.");
+				
+				for ( int i = 0; i < 20; ++i ) // Must be more than 18 (XTROOTMAXSLOT)
+				{
+					stringstream newsize;
+					newsize << (PartSizeInBlocks + i*10000);
+					Fail(mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, ("resize=" + newsize.str()).c_str()) == -1,
+						"Cannot extend partition.");
+				}
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+		</Test>
+		 <Test Name="MountResize" FaultSimulationReady="true">
+			<Description>Try to resize without remount flag.</Description>              
+			<Code>
+					Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
+					
+					Check(mount( DeviceName, MountPoint, FileSystem, 0, "resize") != -1, "Mount didn't fail on readonly filesystem.");
+					
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+        </Test>
+		 <Test Name="RemountResizeRO" FaultSimulationReady="true">
+                <Description>Resize read-only filesystem.</Description>              
+                <Code>
+                        Unres( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Mount failed.");
+
+                        Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") != -1, "Mount didn't fail on readonly filesystem.");
+                </Code>
+				<Footer>
+					if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+					{
+						Error("Mount failed!");
+						Return(Fatal);
+					}
+				</Footer>
+        </Test>
+
+		 <Test Name="RemountResizeWrong" FaultSimulationReady="true">
+				<Description>Resize error cases.</Description>
+				<Code>
+						uint64_t size = PartitionManager::GetDeviceSize(DeviceName)+100;
+						stringstream ss;
+						ss << size;
+						mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, ("resize=" + ss.str()).c_str());
+						mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize=1");
+						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+						{
+							Error("Mount failed!");
+							Return(Fatal);
+						}
+				</Code>
+		</Test>		
+		<Test Name="WrongErrorOption" FaultSimulationReady="true">
+				<Description>.</Description>
+				<Code>
+						//this mount should fail as there is no error option "unknown", so there is no need to Restore the partition after.
+						mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=unknown");						
+				</Code>
+		</Test>
+		
+		<Test Name="WrongIOCharset" FaultSimulationReady="true">
+			<Description>Mount with wrong charset.</Description>
+			<Code>
+				//this mount should fail as there is no charset value "unknown", so there is no need to Restore the partition after.
+				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=unknown");						
+			</Code>
+		</Test>
+		
+		<Test Name="WrongUmask" FaultSimulationReady="true">
+			<Description>Mount with wrong umask.</Description>
+			<Code>
+				//this mount should fail as there is no umask value "07777", so there is no need to Restore the partition after.
+				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "umask=07777");						
+			</Code>
+		</Test>
+		
+		<Test Name="NoIntegrityOption" FaultSimulationReady="true">
+		    <Dangerous/>
+			<Description>Mount with no integrity option</Description>
+			<Code>				
+				Unres(PartitionManager:: ReleasePartition(MountPoint) == false, "Failed to release partition");
+				system("rmmod jfs.ko");
+				EnableFaultSim();
+				mount(DeviceName, MountPoint, FileSystem, 0, "nointegrity");
+				DisableFaultSim();
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem) != PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+		</Test>		
+        <Test Name="MultipleExternalLogs">
+            <Description>Create multiple jfs partiotions with external log</Description>
+            <Header>
+					bool NeedsRemount = false;
+					Skip(PartitionManager::IsOptionEnabled("-j", true), 
+						"These tests should run only when no options are provided.");
+						
+					try
+					{
+						KedrIntegrator::DoesModuleExist("brd");
+						Unsupp("To run this test rebuild the kernel with CONFIG_BLK_DEV_RAM:=y configuration option.");
+					}
+					catch (...)
+					{
+					}
+			</Header>
+            <Code>
+                Unres(chdir("/") == -1, "Failed to change directory");
+               
+                Unres(umount(MountPoint) == -1, "Failed to release partition");
+				NeedsRemount = true;
+                system("rmmod jfs.ko");
+               
+                string Device0 = string("/dev/ram0");
+                string ExtJournalName0 = string("/dev/ram1");
+               
+                string Device1 = string("/dev/ram2");
+                string ExtJournalName1 = string("/dev/ram3");
+               
+                string MountPoint0 = string("/tmp/MultipleExternalLogs_MountPoint0");
+                string MountPoint1 = string("/tmp/MultipleExternalLogs_MountPoint1");
+                Directory dir1(MountPoint0);
+                Directory dir2(MountPoint1);
+               
+                dev_t devt0 = makedev(1,0);
+                dev_t devt1 = makedev(1,1);
+                dev_t devt2 = makedev(1,2);
+                dev_t devt3 = makedev(1,3);
+                
+                Unres(unlink("/dev/ram0") == -1 && errno != ENOENT, "unlink failed");
+				Unres(unlink("/dev/ram1") == -1 && errno != ENOENT, "unlink failed");
+				Unres(unlink("/dev/ram2") == -1 && errno != ENOENT, "unlink failed");
+				Unres(unlink("/dev/ram3") == -1 && errno != ENOENT, "unlink failed");
+                
+                Unres(mknod(Device0.c_str(), S_IFBLK, devt0) == -1 && errno != EEXIST, "mknod failed");
+                Unres(mknod(ExtJournalName0.c_str(), S_IFBLK, devt1) == -1 && errno != EEXIST, "mknod failed");
+                Unres(mknod(Device1.c_str(), S_IFBLK, devt2) == -1 && errno != EEXIST, "mknod failed");
+                Unres(mknod(ExtJournalName1.c_str(), S_IFBLK, devt3) == -1 && errno != EEXIST, "mknod failed");
+               
+                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device0, false, string("-j ") + ExtJournalName0), "Failed to create filesystem")
+                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device1, false, string("-j ") + ExtJournalName1), "Failed to create fs");
+                               
+                Unres(mount(Device0.c_str(), MountPoint0.c_str(), FileSystem, 0, "") == -1, "Failed to mount");
+                Unres(mount(Device1.c_str(), MountPoint1.c_str(), FileSystem, 0, "") == -1, "Failed to mount");
+               
+                Unres(umount(MountPoint0.c_str()) == -1, "Failed to release partition");
+                Unres(umount(MountPoint1.c_str()) == -1, "Failed to release partition");
+               
+            </Code>
+            <Footer>
+                if(!PartitionManager::IsOptionEnabled("-j", true))
+				{
+					if(NeedsRemount && mount(DeviceName, MountPoint, FileSystem, 0, "") == -1)
+					{
+						Error("Failed to restore partition");
+						Return(Fatal);
+					}
+                }
+            </Footer>
+        </Test>
+        
+        <Test Name="SingleExternalLog">
+            <Description>Create and mount jfs partiotions with external log</Description>
+               <Header>
+					bool NeedsRemount = false;
+					Skip(!PartitionManager::NoOptionsEnabled(), 
+						"These tests should run only when no options are provided.");
+				
+					try
+					{
+						KedrIntegrator::DoesModuleExist("brd");
+						Unsupp("To run this test rebuild the kernel with CONFIG_BLK_DEV_RAM:=y configuration option.");
+					}
+					catch (...)
+					{
+					}
+					
+			</Header>
+            <Code>
+                Unres(chdir("/") == -1, "Failed to change directory");
+				system("lsof | grep spruce");
+                Unres(!PartitionManager:: ReleasePartition(MountPoint), "Failed to release partition");
+				NeedsRemount = true;
+                system("rmmod jfs.ko");
+               
+                string Device0 = string("/dev/ram0");
+                string ExtJournalName0 = string("/dev/ram1");
+                              
+                string MountPoint0 = string("/tmp/MultipleExternalLogs_MountPoint0");
+                Directory dir1(MountPoint0);
+                
+                dev_t devt0 = makedev(1,0);
+                dev_t devt1 = makedev(1,1);
+                
+                Unres(unlink("/dev/ram0") == -1 && errno != ENOENT, "unlink failed");
+				Unres(unlink("/dev/ram1") == -1 && errno != ENOENT, "unlink failed");
+				
+                Unres(mknod(Device0.c_str(), S_IFBLK, devt0) == -1 && errno != EEXIST, "mknod failed");
+                Unres(mknod(ExtJournalName0.c_str(), S_IFBLK, devt1) == -1 && errno != EEXIST, "mknod failed");
+                
+                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device0, false, string("-j ") + ExtJournalName0), "Failed to create filesystem")
+                
+                EnableFaultSim();
+                mount(Device0.c_str(), MountPoint0.c_str(), FileSystem, 0, "");
+                DisableFaultSim();
+                
+                Unres(!PartitionManager:: ReleasePartition(MountPoint0.c_str()) == -1, "Failed to release partition");
+               
+            </Code>
+            <Footer>
+                if(!PartitionManager::IsOptionEnabled("-j", true))
+				{
+					if(NeedsRemount && mount(DeviceName, MountPoint, FileSystem, 0, "") == -1)
+					{
+						Error("Failed to restore partition");
+						Return(Fatal);
+					}
+                }
+            </Footer>
+        </Test>
+
+        <!--This test causes fatal error, because of BUG-->
+        <!--Test covers code in jfs/jfs_logmgr.c file-->
+        <Test Name="MultiplePartitionsSingleLog">
+	    <Dangerous/>
+            <Description>Create multiple jfs partiotions with single log</Description>
+            <Header>
+				bool NeedsRemount = false;
+            </Header>
+            <Code>
+				try
+				{
+					KedrIntegrator::DoesModuleExist("brd");
+					Unsupp("To run this test rebuild the kernel with CONFIG_BLK_DEV_RAM:=y configuration option.");
+				}
+				catch (...)
+				{
+				}
+                Unres(chdir("/") == -1, "Failed to change directory");
+               
+                Unres(umount(MountPoint) == -1, "Failed to release partition");
+                NeedsRemount = true;
+                
+                system("rmmod jfs.ko");
+               
+                string Device0 = string("/dev/ram0");
+                string ExtJournalName0 = string("/dev/ram1");
+               
+                string Device1 = string("/dev/ram2");
+                
+                string MountPoint0 = string("/tmp/MultipleExternalLogs_MountPoint0");
+                string MountPoint1 = string("/tmp/MultipleExternalLogs_MountPoint1");
+                Directory dir1(MountPoint0);
+                Directory dir2(MountPoint1);
+               
+				dev_t devt0 = makedev(1,0);
+                dev_t devt1 = makedev(1,1);
+                dev_t devt2 = makedev(1,2);
+                 
+                Unres(unlink("/dev/ram0") == -1 && errno != ENOENT, "unlink failed");
+				Unres(unlink("/dev/ram1") == -1 && errno != ENOENT, "unlink failed");
+				Unres(unlink("/dev/ram2") == -1 && errno != ENOENT, "unlink failed");
+				
+                Unres(mknod(Device0.c_str(), S_IFBLK, devt0) == -1 && errno != EEXIST, "mknod failed");
+                Unres(mknod(ExtJournalName0.c_str(), S_IFBLK, devt1) == -1 && errno != EEXIST, "mknod failed");
+                Unres(mknod(Device1.c_str(), S_IFBLK, devt2) == -1 && errno != EEXIST, "mknod failed");
+                
+                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device0, false, string("-j ") + ExtJournalName0), "Failed to create filesystem")
+                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device1, false, string("-j ") + ExtJournalName0), "Failed to create filesystem");
+                               
+                Unres(mount(Device0.c_str(), MountPoint0.c_str(), FileSystem, 0, "") == -1, "Failed to mount");
+                Unres(mount(Device1.c_str(), MountPoint1.c_str(), FileSystem, 0, "") == -1, "Failed to mount");
+               
+                Unres(umount(MountPoint0.c_str()) == -1, "Failed to release partition");
+                Unres(umount(MountPoint1.c_str()) == -1, "Failed to release partition");
+               
+            </Code>
+            <Footer>
+                if(NeedsRemount && mount(DeviceName, MountPoint, FileSystem, 0, "") == -1)
+                {
+                    Error("Failed to restore partition");
+                    Return(Fatal);
+                }
+            </Footer>
+        </Test>
+		<Test Name="NoIntegrityOption1" FaultSimulationReady="true">
+			<Description>Mount with no integrity option and remount without it.</Description>
+			<Code>
+				mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, "nointegrity");
+				EnableFaultSim();
+				mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, 0);
+				DisableFaultSim();
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Code>
+		</Test>
+		
+		<Test Name="ErrPanicOption" FaultSimulationReady="true">
+			<Description>Mount with errors=panic option</Description>
+			<Code>
+				mount(DeviceName, MountPoint, FileSystem, MS_REMOUNT, "errors=panic");
+				umount(DeviceName);
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+		</Test>
+		
+		<Test Name="DoubleIOCharset" FaultSimulationReady="true">
+			<Description>Mount with wrong charset.</Description>
+			<Code>
+				//this mount should fail as there is no charset value "unknown", so there is no need to Restore the partition after.
+				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=ascii,iocharset=cp1251");						
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+		</Test>
+		
+		<Test Name="DoubleIOCharsetUnknown" FaultSimulationReady="true">
+			<Description>Mount with wrong charset.</Description>
+			<Code>
+				//this mount should fail as there is no charset value "unknown", so there is no need to Restore the partition after.
+				mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=ascii,unknown");						
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+		</Test>
+		
+		<Test Name="Mount444" FaultSimulationReady="true">
+			<Description>Mount with umask=444.</Description>
+			<Code>
+				string dirname = "dir";
+				
+				system(("rm -rf " + (string)MountPoint + "/*").c_str());
+				
+				Unres( mkdir(dirname.c_str(), 444) == -1, "Cannot create directory.");
+				
+				chdir("/");
+				
+				Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
+				
+				Unres( mount( DeviceName, MountPoint, FileSystem, 0, "umask=000") == -1, "Cannot mount device with umask = 000");
+			</Code>
+			<Footer>
+				system("lsof | grep spruce");
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem) != PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+		</Test>
+		
+		<Test Name="RemountRW" FaultSimulationReady="true">
+		    <Dangerous/>
+            <Description>Resize read-only filesystem.</Description>              
+            <Code>
+				Unres( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Mount failed.");
+
+				Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, 0) == -1, "Remount rw failed.");
+			</Code>
+			<Footer>
+				if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
+				{
+					Error("Mount failed!");
+					Return(Fatal);
+				}
+			</Footer>
+        </Test>
+        <Test Name="MountfailWithNls" FaultSimulationReady="true">
+	    <Dangerous/>
+		<Description>Trying to mount the device with iocahrset and perform fault simulation.</Description>
+		<Code>
+			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition." );
+			Fail (mount( DeviceName, MountPoint, FileSystem, 0, "iocharset=cp1251") == -1, "Mount failed");			
+		</Code>
+	</Test>
+</TestSet>

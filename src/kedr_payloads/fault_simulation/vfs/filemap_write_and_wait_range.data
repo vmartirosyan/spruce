@@ -1,0 +1,15 @@
+[group]
+	# Name and return type of the target function
+	function.name = filemap_write_and_wait_range
+	returnType = int
+
+	# Names and types of the arguments of the target function
+	arg.type = struct address_space *
+	arg.name = mapping
+	
+	arg.type = loff_t
+	arg.name = lstart
+	
+	arg.type = loff_t
+	arg.name = lend
+#######################################################################
