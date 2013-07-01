@@ -83,11 +83,9 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
 <!-- Use standart 'if(false)' construction for template-generated alternatives -->
 #if 0
         <xsl:if test="Requires/@KernelVersion!=''">
-#elif LINUX_VERSION_CODE &lt; KERNEL_VERSION(<xsl:call-template name="string-replace-all">
-        <xsl:with-param name="text" select="Requires/@KernelVersion"/>
-        <xsl:with-param name="replace" select="'.'"/>
-        <xsl:with-param name="by" select="','"/>
-            </xsl:call-template>)
+#elif LINUX_VERSION_CODE &lt; <xsl:call-template name="kernel-version-value">
+        <xsl:with-param name="version" select="Requires/@KernelVersion"/>
+            </xsl:call-template>
     Unsupp_direct("Operation is not supported. Kernel version should be at least <xsl:value-of select="Requires/@KernelVersion" />.");
         </xsl:if>
         <xsl:if test="Requires/@Defined!=''">
@@ -111,7 +109,9 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
     <xsl:for-each select="Dangerous">
         Skip_direct(1 <xsl:if test="@check">
                 &amp;&amp; <xsl:call-template name="is-check"><xsl:with-param name="text" select="@check"/></xsl:call-template></xsl:if><xsl:if test="@fs">
-                &amp;&amp; !strcmp(FileSystem, "<xsl:value-of select="@fs"></xsl:value-of>")</xsl:if>,
+                &amp;&amp; !strcmp(FileSystem, "<xsl:value-of select="@fs"></xsl:value-of>")</xsl:if><xsl:if test="@since-kernel">
+                &amp;&amp; (LINUX_VERSION_CODE &gt;= <xsl:call-template name="kernel-version-value"><xsl:with-param name="version" select="@since-kernel"/></xsl:call-template>)</xsl:if><xsl:if test="@until-kernel">
+                &amp;&amp; (LINUX_VERSION_CODE &lt; <xsl:call-template name="kernel-version-value"><xsl:with-param name="version" select="@until-kernel"/></xsl:call-template>)</xsl:if>,
                 "Test is skipped as dangerous. For execute it add 'dangerous' to 'checks' parameter.");
     </xsl:for-each>
     }
@@ -366,6 +366,16 @@ TestSet Init_<xsl:value-of select="$PackageName" />_<xsl:value-of select="/TestS
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+
+
+<xsl:template name="kernel-version-value">
+  <xsl:param name="version"/>KERNEL_VERSION(<xsl:call-template name="string-replace-all">
+        <xsl:with-param name="text" select="$version"/>
+        <xsl:with-param name="replace" select="'.'"/>
+        <xsl:with-param name="by" select="','"/>
+    </xsl:call-template>)<!--Strip unwanted newline using that comment-->
+</xsl:template>
+
 
 <!--
     Check, whether test is currently executed for given check.
