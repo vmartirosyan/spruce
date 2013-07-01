@@ -82,7 +82,7 @@ class LFT_ST
 class Function
 {
 	public: 
-	string SF; // Sounre files
+	string SF; // Source files
 	string FN; // Function name 
 	string FNDESC;// Function description
 	vector<LFT_ST> LFT;
@@ -490,6 +490,11 @@ int main (int argc, char* argv[])
 									cout<<info_buf<<endl;
 									#endif
 									fout<<info_buf<<endl;
+									if( fns[i].FNDESC != "" )
+									{
+										cout<<"**************************WARNING**************************"<<endl;
+										cout<<"The function: "<<fns[i].FN<<" is covered, but we mark it as not covered"<<endl;  
+									}
 								}
 							}
 							else
@@ -527,7 +532,15 @@ int main (int argc, char* argv[])
 						{
 							// This line is in marked range
 							if(cov > 0) // If this line is covered
+							{
 								aviableLft[i].markup_is_wrong = true;
+								if(currSF[currSF.size() - 1] == 'c') 
+								{
+									cout<<"**************************WARNING**************************"<<endl;
+									cout<<"In source file: "<<currSF<<" we have marked line, which is already covered"<<endl;
+									cout<<"Start line: "<<aviableLft[i].st<<". End line: "<<aviableLft[i].end<<endl;
+								}
+							}
 							
 							if(aviableLft[i].markup_is_wrong == true)
 								break;
@@ -609,7 +622,6 @@ int main (int argc, char* argv[])
 	}
 
 	fout.close();
-	
 	
 	#ifdef DEBUG
 	cout<<endl<<endl<<"Marker file info"<<endl;
