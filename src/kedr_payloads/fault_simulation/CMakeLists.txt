@@ -115,7 +115,7 @@ endfunction(add_fsim_payload name functions)
 #add_subdirectory(bio)
 #add_subdirectory(kthread)
 add_subdirectory(mempool)
-add_subdirectory(vfs)
+#add_subdirectory(vfs)
 
 # Install configuration file itself
 install(FILES "${custom_config_file}"
