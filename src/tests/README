@@ -1,0 +1,62 @@
+    Control test's setup/finalize logic via attributes:
+
+- per-mount-options
+
+'true'(default): Specify that test should be run for different
+mount/mkfs options.
+NOTE: Options filtering can safetly be combine with 'true' value of
+option.
+
+'false': Test will be run only once.
+
+Implementation: if attrivute is set to 'false', then test will only be
+run when no options for mkfs and mount are provided.
+
+
+- mount-oriented
+
+'true'(default): Specify that test use mounted partition, do not change
+that partition except of file/directories content and do not depends on
+file/directories pre-content of that partition.
+In other words, test can share same mounted partition with other tests.
+
+'false': Specify that test cannot share partition with other tests.
+
+NOTE: If test uses any method from PartitionManager except Is*Enabled(),
+then it should have 'false' attribute value. Same is true for cases when
+test use mount/umount/remount for current mountpoint.
+
+Implementation: Partition is restored after every test with 'false' value
+of that attribute. Also, already mounted partition is umount'ed before
+every such test.
+
+
+-use-mkfs (only when mount-oriented='false')
+
+'true': Specify that test requires pre-created partition.
+'false'(default): Specify that test doesn't require pre-created partition.
+
+NOTE: As this options has a sence only when mount-oriented='false', then
+in case of 'true' value of attribute partition is created only for the
+given test and do not reused in other tests.
+
+Implementation: Partition is recreated before every test with 'true'
+value of that attribute.
+
+
+- use-mount (only when mount-oriented='false')
+
+'true': Specify that test requires pre-mounted partition(and chdir() to
+the mount point).
+'false'(default): Specify that test doesn't require pre-mounted partition.
+
+NOTE: 'true' value for this options imply use-mkfs='true'.
+
+Implementation: Partition is recreated, mounted and chdir() is performed
+before every test with 'true' value of that attribute.
+
+
+Each of the attributes above can be used for TestSet. In that case the
+attribute will be applied to every test in the testset.
+NOTE: If different values of attribute are (explicitly) set in TestSet
+and in inner Test element, behaviour is undefined.
