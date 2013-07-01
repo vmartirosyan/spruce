@@ -130,6 +130,11 @@ LFT:0,0 This function is inline and its call is usually integrated.
 LFT:21,21 This line is covered, but gcov doesn't show it.
 end_of_record
 
+SF:fs/ext4/inode.c
+FN:ext4_num_dirty_pages
+LFT:30,30 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
 SF:fs/ext4/mballoc.c
 LFT:509,521 Function is inline and its call is usually integrated.
 LFT:688,688 Function is inline and its call is usually integrated.
@@ -376,6 +381,17 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_print_free_blocks Called from mpage_da_map_and_submit+83
 end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_write_begin
+LFT:25,26 Can be covered if ext4_write_begin() function is called with "noload" mount option.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_write_begin
+LFT:28,29 Can be covered if ext4_da_write_begin() function is called(write of specific ammount with "delalloc" mount option) with "noload" mount option.
+end_of_record
+
 
 SF:fs/ext4/ioctl.c
 LFT:103,103 This is just a self-checking code.
