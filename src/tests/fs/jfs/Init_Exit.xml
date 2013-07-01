@@ -31,7 +31,7 @@
 			Unres(chdir("/") == -1, "Cannot chdir.");
 			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot releaase partition." );
 			Unres ( system("rmmod jfs") != 0, "Cannot unload module.");
-			Fail(system("modprobe jfs commit_threads=100") != 0, "Cannot insert module");
+			Fail(system("modprobe jfs) != 0, "Cannot insert module");
 		</Code>
 		<Footer>
 			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,
