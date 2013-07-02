@@ -339,7 +339,7 @@ end_of_record
 
 SF:fs/ext4/file.c
 LFT:60,62 Called from file.c+133.
-LFT:75,90 Called from file.c+133.
+LFT:75,90 Called from file.c+119.
 LFT:119,119 Needs async direct write.
 LFT:127,133 Covered if file.c+119 is covered.
 end_of_record
@@ -622,9 +622,21 @@ LFT:161,184 These lines could not be covered as they depend on race conditions.
 end_of_record
 
 SF:fs/ext4/mmp.c
-FN:dump_mmp_msg This would be covered if either the device was active on another node (that is it's seq number changed) or the filesystem was multiply mounted. 
+FN:__dump_mmp_msg This would be covered if either the device was active on another node (that is it's seq number changed) or the filesystem was multiply mounted. 
 end_of_record
 
 SF:fs/ext4/mmp.c
 LFT:243,244 These lines will be covered if there will be a bad mmp block in superblock.
+end_of_record
+
+SF:fs/ext4/migrate.c
+FN:free_ext_block Can be covered if fault simulation is performed while migrating.
+end_of_record
+
+SF:fs/ext4/migrate.c
+FN:free_ext_idx Can be covered if fault simulation is performed while migrating.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_split_unwritten_extents Can be covered if by a test similar to common/fallocate/FallocateNormalPunchHole4 but with Direct IO.
 end_of_record
