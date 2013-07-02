@@ -336,8 +336,12 @@ int main (int argc, char* argv[])
 						continue;
 					#endif
 					
+					fout<<(string)info_buf<<endl; 
+					#ifdef DEBUG
+					cout<<(string)info_buf<<endl; 
+					#endif
+					
 					string sub = ((string)info_buf).substr(match_arr[2].rm_so, match_arr[2].rm_eo - match_arr[2].rm_so); // get function name
-					bool line_added = false;
 					
 					for(unsigned int i = 0; i < fns.size(); ++i)
 					{
@@ -348,7 +352,7 @@ int main (int argc, char* argv[])
 							sub = ((string)info_buf).substr(match_arr[1].rm_so, match_arr[1].rm_eo - match_arr[1].rm_so);	
 							std::stringstream convert;
 							convert << sub;
-							convert>>fnst;
+							convert >> fnst;
 							
 							if(fns[i].LFT.size())
 							{
@@ -403,13 +407,6 @@ int main (int argc, char* argv[])
 								info.seekg(fpos);											
 							}
 							
-							
-							fout<<(string)info_buf<<endl; 
-							#ifdef DEBUG
-							cout<<(string)info_buf<<endl; 
-							#endif
-							line_added = true;
-							
 							if(aviableLft.size() == 0)
 								cerr<<"Not aviable LFT for some function!"<<endl;
 								
@@ -421,8 +418,6 @@ int main (int argc, char* argv[])
 							#endif
 						}
 					}
-					if(!line_added)
-						fout<<info_buf<<endl;
 					continue;
 				}
 
