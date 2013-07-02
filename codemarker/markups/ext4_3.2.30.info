@@ -152,6 +152,11 @@ FN:ext4_num_dirty_pages
 LFT:30,30 Code is marked as it was not executed due to compiler optimisations.
 end_of_record
 
+SF:fs/ext4/inode.c
+FN:ext4_inode_blocks_set
+LFT:16,16 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
 SF:fs/ext4/mballoc.c
 LFT:509,521 Function is inline and its call is usually integrated.
 LFT:688,688 Function is inline and its call is usually integrated.
@@ -415,6 +420,11 @@ LFT:36,36 Can be covered by setting and then unsetting EXT4_INODE_JOURNAL_DATA f
 LFT:45,45 Can be covered by setting and then unsetting EXT4_INODE_JOURNAL_DATA flag with EXT4_IOC_SETFLAGS ioctl with "noload" mount option.
 end_of_record
 
+SF:fs/ext4/inode.c
+FN:ext4_do_update_inode
+LFT:66,75 This block can be covered if we corrupt the superblock.
+end_of_record
+
 SF:fs/ext4/xattr.c
 FN:ext4_xattr_shift_entries
 LFT:79,100 This block can be covered by writing xattr to a file which would be less than 128bytes, so that there is place in inode for it, than write another xattr with different name and call migrate ioctl on  the file(see ext4/Ioclt/MigrateFileWithXattr2 test, which needs just slight modification).
@@ -588,6 +598,11 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_journalled_write_end
 LFT:53,60 Can be covered if we change inode->i_size on disk. 
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_inode_blocks
+LFT:194,194 This line can be covered if lookup is done for a socket or a pipe(see ext4/Lookup testset)
 end_of_record
 
 SF:fs/ext4/migrate.c
