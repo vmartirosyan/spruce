@@ -622,7 +622,8 @@ LFT:161,184 These lines could not be covered as they depend on race conditions.
 end_of_record
 
 SF:fs/ext4/mmp.c
-FN:__dump_mmp_msg This would be covered if either the device was active on another node (that is it's seq number changed) or the filesystem was multiply mounted. 
+FN:__dump_mmp_msg
+LFT:0,9 This would be covered if either the device was active on another node (that is it's seq number changed) or the filesystem was multiply mounted. 
 end_of_record
 
 SF:fs/ext4/mmp.c
@@ -630,7 +631,8 @@ LFT:243,244 These lines will be covered if there will be a bad mmp block in supe
 end_of_record
 
 SF:fs/ext4/migrate.c
-FN:free_ext_block Can be covered if fault simulation is performed while migrating.
+FN:free_ext_block
+LFT:0,19 Can be covered if fault simulation is performed while migrating.
 end_of_record
 
 SF:fs/ext4/migrate.c
