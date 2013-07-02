@@ -141,6 +141,7 @@
 	</Test>
 	<Test Name="ACLGetSetFail" FaultSimulationReady="true">
 		<Dangerous check="stability" fs="jfs"/>
+		<Dangerous check="stability" fs="ext4"/>
 		<Description>Intialize an ACL and validate it .</Description>		
 		
 		<Dir count ="1" />
