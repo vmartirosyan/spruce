@@ -356,7 +356,7 @@ end_of_record
 
 SF:fs/ext4/file.c
 LFT:60,62 Called from file.c+133.
-LFT:75,90 Called from file.c+133.
+LFT:75,90 Called from file.c+119.
 LFT:119,119 Needs async direct write.
 LFT:127,133 Covered if file.c+119 is covered.
 end_of_record
