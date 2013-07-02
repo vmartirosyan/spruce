@@ -392,6 +392,16 @@ FN:ext4_da_write_begin
 LFT:28,29 Can be covered if ext4_da_write_begin() function is called(write of specific ammount with "delalloc" mount option) with "noload" mount option.
 end_of_record
 
+SF:fs/ext4/inode.c
+FN:ext4_change_inode_journal_flag
+LFT:36,36 Can be covered by setting and then unsetting EXT4_INODE_JOURNAL_DATA flag with EXT4_IOC_SETFLAGS ioctl.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_change_inode_journal_flag
+LFT:45,45 Can be covered by setting and then unsetting EXT4_INODE_JOURNAL_DATA flag with EXT4_IOC_SETFLAGS ioctl with "noload" mount option.
+end_of_record
+
 SF:fs/ext4/xattr.c
 FN:ext4_xattr_shift_entries
 LFT:79,100 This block can be covered by writing xattr to a file which would be less than 128bytes, so that there is place in inode for it, than write another xattr with different name and call migrate ioctl on  the file(see ext4/Ioclt/MigrateFileWithXattr2 test, which needs just slight modification).
