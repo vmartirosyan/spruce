@@ -67,7 +67,24 @@ LFT:4,4 Function is inline and its call is usually integrated.
 end_of_record
 
 SF:fs/ext4/ext4.h
-FN:ext4_isize_set
+LFT:1252,1252 Function is inline and its call is usually integrated.
+LFT:1254,1254 Function is inline and its call is usually integrated.
+LFT:1276,1276 Function is inline and its call is usually integrated.
+LFT:1283,1283 Function is inline and its call is usually integrated.
+LFT:1326,1326 Function is inline and its call is usually integrated.
+LFT:1328,1328 Function is inline and its call is usually integrated.
+LFT:1546,1546 Function is inline and its call is usually integrated.
+LFT:1618,1618 Function is inline and its call is usually integrated.
+LFT:1620,1620 Function is inline and its call is usually integrated.
+LFT:2008,2017 Function is inline and its call is usually integrated.
+LFT:2045,2045 Function is inline and its call is usually integrated.
+LFT:2056,2056 Function is inline and its call is usually integrated.
+LFT:2060,2060 Function is inline and its call is usually integrated.
+LFT:2087,2095 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/ext4.h
+FN:ext4_clear_state_flags
 LFT:0,0 Function is inline and its call is usually integrated.
 LFT:5,5 Function is inline and its call is usually integrated.
 end_of_record
@@ -339,7 +356,7 @@ end_of_record
 
 SF:fs/ext4/file.c
 LFT:60,62 Called from file.c+133.
-LFT:75,90 Called from file.c+119.
+LFT:75,90 Called from file.c+133.
 LFT:119,119 Needs async direct write.
 LFT:127,133 Covered if file.c+119 is covered.
 end_of_record
@@ -649,6 +666,30 @@ SF:fs/ext4/migrate.c
 FN:free_ext_idx Can be covered if fault simulation is performed while migrating.
 end_of_record
 
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_show_ac
+LFT:6,6 This block can be covered if we write 1 to debugfs file: /sys/kernel/debug/ext4/mballoc-debug
+LFT:9,56 This block can be covered if we write 1 to debugfs file: /sys/kernel/debug/ext4/mballoc-debug
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_add_n_trim
+LFT:15,31 This block can be covered if we call ext4_mb_add_n_trim function several times. It is possible if we run many threads and alloc/release blocks.  
+LFT:40,40 This line can be covered if we could call ext4_mb_add_n_trim function 8 times at the same time.
+end_of_record
+
 SF:fs/ext4/extents.c
 FN:ext4_split_unwritten_extents Can be covered if by a test similar to common/fallocate/FallocateNormalPunchHole4 but with Direct IO.
 end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_discard_lg_preallocations The function is called from ext4_mb_add_n_trim+40.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+LFT:2596,2616 These lines can be covered if we previously set s_mb_stats flag in super block.
+LFT:3100,3109 These lines can be covered if we previously set s_mb_stats flag in super block.
+LFT:4380,4385 These lines can be covered if we interrupt process when we try to allocate blocks. 
+end_of_record
+
+
