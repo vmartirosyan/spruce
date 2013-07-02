@@ -385,16 +385,16 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_write_begin
 LFT:25,26 Can be covered if ext4_write_begin() function is called with "noload" mount option.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_write_begin
 LFT:28,29 Can be covered if ext4_da_write_begin() function is called(write of specific ammount with "delalloc" mount option) with "noload" mount option.
 end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_change_inode_journal_flag
 LFT:36,36 Can be covered by setting and then unsetting EXT4_INODE_JOURNAL_DATA flag with EXT4_IOC_SETFLAGS ioctl.
-end_of_record
-
-SF:fs/ext4/inode.c
-FN:ext4_change_inode_journal_flag
 LFT:45,45 Can be covered by setting and then unsetting EXT4_INODE_JOURNAL_DATA flag with EXT4_IOC_SETFLAGS ioctl with "noload" mount option.
 end_of_record
 
