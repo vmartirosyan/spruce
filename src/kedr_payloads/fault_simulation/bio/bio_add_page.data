@@ -15,5 +15,8 @@
 	
 	arg.type = unsigned int
 	arg.name = offset
+	
+	# Fault Simulation
+	fpoint.fault_code =	ret_val = -EIO;
 
 #######################################################################

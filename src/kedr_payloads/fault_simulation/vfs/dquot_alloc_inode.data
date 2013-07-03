@@ -6,4 +6,7 @@
 	# Names and types of the arguments of the target function
 	arg.type = struct inode *
 	arg.name = inode
+	
+	# Fault Simulation
+	fpoint.fault_code =	ret_val = -EDQUOT;
 #######################################################################

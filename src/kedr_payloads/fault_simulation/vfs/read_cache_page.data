@@ -15,4 +15,7 @@
 	
 	arg.type = void *
 	arg.name = data
+	
+	# Fault Simulation
+	fpoint.fault_code =	ret_val = NULL;
 #######################################################################

@@ -18,4 +18,7 @@
 	
 	#arg.type = ...
 	#arg.name = 
+	
+	# Fault Simulation
+	fpoint.fault_code =	ret_val = NULL;
 #######################################################################

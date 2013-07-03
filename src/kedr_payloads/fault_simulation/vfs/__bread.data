@@ -12,4 +12,7 @@
 
 	arg.type = unsigned
 	arg.name = size
+	
+	# Fault Simulation
+	fpoint.fault_code =	ret_val = NULL;
 #######################################################################
