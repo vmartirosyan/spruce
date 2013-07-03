@@ -6,4 +6,7 @@
 	# Names and types of the arguments of the target function
 	arg.type = struct super_block *
 	arg.name = sb
+	
+	# Fault Simulation
+	fpoint.fault_code =	ret_val = NULL;
 #######################################################################

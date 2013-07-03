@@ -9,4 +9,7 @@
 
 	arg.type = u32
 	arg.name = fs_flags
+	
+	# Fault Simulation
+	fpoint.fault_code =	ret_val = -EBADR;
 #######################################################################
