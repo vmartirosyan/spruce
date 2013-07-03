@@ -74,6 +74,7 @@ LFT:1283,1283 Function is inline and its call is usually integrated.
 LFT:1326,1326 Function is inline and its call is usually integrated.
 LFT:1328,1328 Function is inline and its call is usually integrated.
 LFT:1546,1546 Function is inline and its call is usually integrated.
+LFT:1546,1546 This line is a self checking code.
 LFT:1618,1618 Function is inline and its call is usually integrated.
 LFT:1620,1620 Function is inline and its call is usually integrated.
 LFT:2008,2017 Function is inline and its call is usually integrated.
@@ -95,7 +96,12 @@ LFT:0,0 Function is inline and its call is usually integrated.
 LFT:5,5 Function is inline and its call is usually integrated.
 end_of_record
 
-SF:fs/ext4/ext4_extents.hextend_credit_for_blkdel
+SF:fs/ext4/ext4_extents.h
+FN:ext4_ext_is_uninitialized
+LFT:0,4 The function is called actually from copy_extent_status() + 2
+end_of_record
+
+SF:fs/ext4/ext4_extents.h
 FN:ext4_ext_get_actual_len
 LFT:0,0 Function is inline and its call is usually integrated.
 end_of_record
@@ -115,6 +121,10 @@ end_of_record
 SF:fs/ext4/ext4_extents.h
 FN:ext_block_hdr
 LFT:0,3 These lines are covered from "ext4_ext_split" function in extent.c file, gcov bug.
+end_of_record
+
+SF:fs/ext4/extents.c
+LFT:383,388 These lines can be covered if the extent header in inode is corrupted.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -565,6 +575,10 @@ SF:fs/ext4/dir.c
 FN:__ext4_check_dir_entry
 LFT:25,31 This lines can be covered if corrupt file and corrupt directory.
 LFT:36,38 This lines can be covered if corrupt file and corrupt directory.
+end_of_record
+
+SF:fs/ext4/dir.c
+LFT:189,206 This lines can be covered by a test which does a getdents() call, then addes new entries and makes another call to getdents().
 end_of_record
 
 SF:fs/ext4/mmp.c
