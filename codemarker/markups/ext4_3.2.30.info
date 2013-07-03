@@ -681,6 +681,25 @@ SF:fs/ext4/migrate.c
 FN:free_ext_idx Can be covered if fault simulation is performed while migrating.
 end_of_record
 
+SF:fs/ext4/migrate.c
+FN:finish_range
+LFT:17,19 These lines can be covered if fault simulation is performed while migrating.
+end_of_record
+
+SF:fs/ext4/migrate.c
+FN:ext4_ext_swap_inode_data
+LFT:14,15 These lines can be covered if fault simulation is performed while migrating.
+end_of_record
+
+SF:fs/ext4/migrate.c
+LFT:271,271 This line can be covered if there will be kedr payload failing "sb_bread" function.
+LFT:465,466 These lines can be covered if the log is corrupted/aborted during migrate.
+LFT:475,477 This line can be covered if fault simulation is performed while migrating.
+LFT:517,519 These lines can be covered if the log is corrupted/aborted during migrate.
+LFT:567,567 This line can be covered if fault simulation is performed while migrating.
+LFT:575,575 This line can be covered if there will be kedr payload failing "sb_bread" function.
+end_of_record
+
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_show_ac
 LFT:6,6 This block can be covered if we write 1 to debugfs file: /sys/kernel/debug/ext4/mballoc-debug
