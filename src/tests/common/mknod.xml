@@ -24,6 +24,7 @@
 
 <TestSet Name="mknod">	
 	<Test Name="MknodNormal1" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="ext4" />
 		<Description>The system call mknod() creates a file system node (file, device special file or named pipe) named pathname, with attributes specified by mode and dev.</Description>
 		<Code>
 			if ( PartitionManager::IsOptionEnabled("ro") )
