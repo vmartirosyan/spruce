@@ -806,10 +806,23 @@ LFT:59,65 This code can be covered if we call this function with new extent wich
 end_of_record
 
 SF:fs/ext4/move_extent.c
+LFT:695,698 This is self checking/correcting code.
+LFT:700,706 This is self checking/correcting code.
+LFT:730,750 This code can be covered if we make very big file with many extents and try to move big part of these extents. 
 LFT:1252,1264 This code can be covered if we try to move extent, but the hole exists between extents or the tail of original file.
 LFT:1267,1267 This code can be covered if we try to move extent, but the hole exists at the beginning of original file.
 LFT:1275,1276 This code can be covered if we try to move extent, but we have no blocks within the specified range.
 LFT:1359,1364 This is self checking/correcting code.
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_next_extent
+LFT:33,44 These lines can be covered if the extent for moving is betven other extents. 
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_insert_extents
+LFT:53,53 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
 end_of_record
 
 SF:fs/ext4/ext4_jbd2.c
