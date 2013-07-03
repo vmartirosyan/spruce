@@ -1227,18 +1227,52 @@ end_of_record
 
 SF:fs/ext4/namei.c
 FN:ext4_add_entry
+LFT:20,22 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:28,28 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:38,48 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_compat".
+LFT:172,172 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:183,183 This block could be covered if perform a fault simulation on jbd2 payloads.
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:ext4_lookup
+LFT:15,16 These lines can be covered if we corrupt inode entry.
+LFT:19,22 These lines can be covered if we corrupt inode entry.
+LFT:26,29 These lines can be covered if we corrupt inode entry.
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:ext4_unlink
+LFT:16,16 This block could be covered if perform a fault simulation on jbd2 payloads.
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:ext4_symlink
+LFT:37,37 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:77,78 This block could be covered if perform a fault simulation on jbd2 payloads.
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:ext4_link
+LFT:16,16 This block could be covered if perform a fault simulation on jbd2 payloads.
 end_of_record
 
 SF:fs/ext4/namei.c
 LFT:363,367 These lines can be covered if we corrupt pages.
+LFT:378,382 These lines can be covered if we corrupt pages.
+LFT:386,390 These lines can be covered if we corrupt pages.
+LFT:589,592 These lines can be covered if we corrupt inode entry.
 LFT:999,1000 This block can be covered if we write a KEDR payload for "search_dirblock" function.
 LFT:1007,1011 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:1241,1246 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:1172,1174 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:1293,1293 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:1374,1376 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:1383,1384 This block could be covered if perform a fault simulation on jbd2 payloads (see markup for lines 66,67 in namei.c).
+LFT:1665,1665 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:1681,1681 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:2419,2419 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:2140,2140 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:2486,2486 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:2515,2519 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:2523,2523 This block could be covered if perform a fault simulation on jbd2 payloads.
