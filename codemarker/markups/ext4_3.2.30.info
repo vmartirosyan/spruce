@@ -242,6 +242,8 @@ LFT:187,187 This function is inline and its call is usually integrated.
 LFT:189,189 This line is covered, but gcov doesn't show it. gcov bug
 LFT:198,200 This line is covered, but gcov doesn't show it. gcov bug
 LFT:208,210 This line is covered, but gcov doesn't show it. gcov bug
+LFT:682,683 These lines aren't covered because function "ext4_htree_next_block" return 0 or 1, and never return value < 0. 
+LFT:827,827 This line is covered, gcov bug.
 LFT:1714,1714 This function is inline and its call is usually integrated.
 LFT:1718,1718 This function is inline and its call is usually integrated.
 end_of_record
@@ -1099,4 +1101,23 @@ end_of_record
 
 SF:fs/ext4/ext4_extents.h 		
 LFT:218,219 These lines can be covered if we make extent which length is EXT_INIT_MAX_LEN 		
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:ext4_append
+LFT:14,15 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:ext4_update_dx_flag
+LFT:4,4 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
+end_of_record
+
+SF:fs/ext4/namei.c
+LFT:999,1000 This block can be covered if we write a KEDR payload for "search_dirblock" function.
+LFT:1007,1011 This block can be covered if we write a KEDR payload for "__getblk" function.
+LFT:2486,2486 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:2515,2519 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:2523,2523 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:2540,2540 This block could be covered if perform a fault simulation on jbd2 payloads.
 end_of_record
