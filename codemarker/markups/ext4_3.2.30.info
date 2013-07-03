@@ -348,6 +348,10 @@ FN:ext4_journal_start
 LFT:0,0 This line is not covered because the function is inline and it's call is usualy integrated.
 end_of_record
 
+SF:fs/ext4/balloc.c
+LFT:324,324 This line is covered, gcov bug.
+end_of_record
+
 ################################################ext4#####################
 #################Section for free code markup##########################
 #######################################################################
@@ -807,6 +811,10 @@ LFT:3100,3109 These lines can be covered if we previously set s_mb_stats flag in
 LFT:4380,4385 These lines can be covered if we interrupt process when we try to allocate blocks. 
 end_of_record
 
+SF:fs/ext4/balloc.c
+LFT:148,148 This line can be covered if we change the superblock.
+end_of_record
+
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_load_buddy
 LFT:48,70 This block can be covered if we fail function find_get_page with fault sumulation.
@@ -814,12 +822,32 @@ LFT:87,99 This block can be covered if we fail function find_get_page with fault
 LFT:116,123 Called from ext4_mb_load_buddy+96
 end_of_record
 
+SF:fs/ext4/balloc.c
+FN:ext4_get_group_desc
+LFT:11,14 These lines can be covered if we change the superblock.
+LFT:20,23 These lines can be covered if we change the superblock.
+end_of_record
+
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_seq_groups_show
 LFT:25,26 This block can be covered if we fail ext4_mb_load_buddy function. It can be relized if we run fault simulation on these function
 end_of_record
 
+SF:fs/ext4/balloc.c
+FN:ext4_read_block_bitmap
+LFT:12,12 This line can be covered if there will be kedr payload failing "sb_getblk" function.
+LFT:15,15 This line can be covered if there will be kedr payload failing "sb_getblk" function.
+LFT:23,24 These lines can be covered if we change superblock.
+LFT:42,43 These lines can be covered if we change superblock.
+LFT:55,58 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload").
+end_of_record
+
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_discard_group_preallocations
 LFT:25,27 This block can be covered if we fail ext4_mb_load_buddy function. See ext4_mb_load_buddy+116 line
+end_of_record
+
+SF:fs/ext4/balloc.c
+FN:ext4_count_free_clusters
+LFT:44,44 This line can be covered if we change superblock.
 end_of_record
