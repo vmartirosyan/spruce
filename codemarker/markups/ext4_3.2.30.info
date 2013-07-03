@@ -534,6 +534,11 @@ LFT:8,10 This block is possible to cover failing the sb_bread function with kedr
 LFT:14,16 We can't cover this block. It is possible to fail the sb_bread function, but in that case the error will come up earlier.
 end_of_record
 
+SF:fs/ext4/xattr.c
+FN:ext4_xattr_cache_find
+LFT:22,22 This block is possible to cover failing the sb_bread function with kedr.
+end_of_record
+
 SF:fs/ext4/ioctl.c
 LFT:103,103 This is just a self-checking code.
 end_of_record
@@ -548,6 +553,41 @@ end_of_record
 
 SF:fs/ext4/xattr_security.c
 FN:ext4_initxattrs  Can be covered if SELinux package is installed.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_block_bitmap_set
+LFT:5,5 This block can be covered if change the superblock->desc_size.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_inode_bitmap_set
+LFT:5,5 This block can be covered if change the superblock->desc_size.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_inode_table_set
+LFT:5,5 This block can be covered if change the superblock->desc_size.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_free_group_clusters_set
+LFT:5,5 This block can be covered if change the superblock->desc_size.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_free_inodes_set
+LFT:5,5 This block can be covered if change the superblock->desc_size.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_used_dirs_set
+LFT:5,5 This block can be covered if change the superblock->desc_size.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_itable_unused_set
+LFT:5,5 This block can be covered if change the superblock->desc_size.
 end_of_record
 
 SF:fs/ext4/super.c
