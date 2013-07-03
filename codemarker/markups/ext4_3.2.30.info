@@ -495,6 +495,24 @@ FN:ext4_getblk
 LFT:22,23 This block can be covered if we write a KEDR payload for fs/buffer.c/__getblk function.
 end_of_record
 
+SF:fs/ext4/inode.c
+FN:mpage_da_submit_io
+LFT:123,125 This block can only be covered if buffer page is set uninit in upper do-while loop and buffer is not dirty so that it is not skipped and in that casse we can unset  MBLK_IO_SUBMIT in inode->i_sb so that we get to the neccessary else condition. 
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_writepage
+LFT:58,59 Covered only if mpage_da_submit_io+123 is covered.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_set_bh_endio Called from ext4_writepage+58 and mpage_da_submit_io+123
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_end_io_buffer_write Called from ext4_set_bh_endio+25
+end_of_record
+
 SF:fs/ext4/xattr.c
 FN:ext4_xattr_shift_entries
 LFT:79,100 This block can be covered by writing xattr to a file which would be less than 128bytes, so that there is place in inode for it, than write another xattr with different name and call migrate ioctl on  the file(see ext4/Ioclt/MigrateFileWithXattr2 test, which needs just slight modification).
