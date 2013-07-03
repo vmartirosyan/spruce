@@ -1184,3 +1184,8 @@ LFT:2515,2519 This block could be covered if perform a fault simulation on jbd2 
 LFT:2523,2523 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:2540,2540 This block could be covered if perform a fault simulation on jbd2 payloads.
 end_of_record
+
+SF:fs/ext4/ialloc.c
+LFT:208,210 This line can be covered if we corrupt superblock.
+LFT:234,235 This line can be covered if we corrupt inode and change i_no.
+end_of_record
