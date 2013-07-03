@@ -175,7 +175,7 @@ end_of_record
 
 SF:fs/ext4/page-io.c
 FN:ext4_end_bio
-LFT:29,29 This block can be covered if failure is simulated during bio submission.
+LFT:29,44 This block can be covered if failure is simulated during bio submission.
 end_of_record
 
 SF:fs/ext4/page-io.c
@@ -325,6 +325,22 @@ LFT:502,502 This function is inline and its call is usually integrated.
 LFT:554,554 This line is covered, but gcov doesn't show it. gcov bug
 LFT:562,562 This function is inline and its call is usually integrated.
 LFT:573,573 This line is covered, but gcov doesn't show it. gcov bug
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_convert_to_initialized
+LFT:63,107 This block can be covered if we try to write at the begninning of a preallocated extent (allocated by fallocate()).
+LFT:141,18 This block can be covered if we try to write at the middle of a preallocated extent (allocated by fallocate()).
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:check_eofblocks_fl
+LFT:12,41 This block can be covered if we try to write in allocated after EOF region.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_xattr_fiemap
+LFT:14,23 The block can be covered if FIEMAP ioctl command is executed on a life with in-inode extended attributes.
 end_of_record
 
 SF:fs/ext4/move_extent.c
