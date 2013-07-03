@@ -457,6 +457,16 @@ FN:walk_page_buffers
 LFT:20,22 This is just a self-checking code. 
 end_of_record
 
+SF:fs/ext4/inode.c
+FN:ext4_ordered_write_end
+LFT:34,41 This is just a self-checking code. 
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_mark_inode_dirty
+LFT:68,77 Can be covered with fault-simulation on ext4/Ioctl/MigrateFileWithXattr2 test.
+end_of_record
+
 SF:fs/ext4/xattr.c
 LFT:1032,1033 this block could be covered corrupting the inode and setting the (inode)->i_extra_isize == 0. 
 LFT:1032,1033 this block could be covered corrupting the inode and setting the (inode)->i_file_acl != 0.
@@ -484,6 +494,7 @@ LFT:35,37 This block can be covered if we write a KEDR payload for grab_cache_pa
 end_of_record
 
 SF:fs/ext4/inode.c
+LFT:2507,2507 Write of certain amount with "delalloc" and "data=writeback" options.
 LFT:2510,2510 This is just a self-checking code. 
 LFT:2551,2551 This block can be covered if we write a KEDR payload for generic_write_end function.
 LFT:3457,3457 Can be covered if we truncate a symlink.
@@ -529,7 +540,12 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_ordered_write_end
-LFT:25,26 This block can be covered if we write a KEDR payload for fs/jbd2/jbd2_journal_file_inode function.
+LFT:25,26 This block can be covered if we write a KEDR payload for fs/jbd2/transaction.c/jbd2_journal_file_inode function.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_reserve_inode_write
+LFT:10,10 This block can be covered if we write a KEDR payload for fs/jbd2/transaction.c/jbd2_journal_get_write_access function.
 end_of_record
 
 SF:fs/ext4/xattr.c
@@ -840,7 +856,8 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_setattr
-LFT:27,27 This block can be covered if we write a KEDR payload for fs/quota/dquot.c/dquot_transfer function.
+LFT:27,28 This block can be covered if we write a KEDR payload for fs/quota/dquot.c/dquot_transfer function.
+LFT:76,84 This block can be covered if we write a KEDR payload for /fs/jbd2/transaction.c/jbd2_journal_begin_ordered_truncate function.
 end_of_record
 
 SF:fs/ext4/migrate.c
