@@ -995,11 +995,20 @@ LFT:37,37 This line can be covered if we change superblock member "sb->s_fs_info
 end_of_record
 
 SF:fs/ext4/balloc.c
+FN:ext4_has_free_clusters
+LFT:24,26 This block can be covered if we change superblock member "sb->s_fs_info->s_resuid".
+end_of_record
+
+SF:fs/ext4/balloc.c
 LFT:91,97 These lines can be covered if we change superblock member "sb->s_fs_info->s_es->s_first_data_block".
 LFT:102,108 These lines can be covered if we change superblock member "sb->s_fs_info->s_es->s_first_data_block".
 LFT:115,124 These lines can be covered if we change superblock member "sb->s_fs_info->s_es->s_first_data_block".
 LFT:129,129 This line will be covered if line 91 is covered (see markup for lines 91-97).
 LFT:131,131 This line will be covered if line 102 is covered (see markup for lines 102-108).
 LFT:170,174 These lines can be covered if we corrupt block group.
+LFT:181,181 This line can be covered if we change superblock.
+LFT:191,191 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
+LFT:195,195 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
+LFT:201,201 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
 LFT:640,640 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
 end_of_record
