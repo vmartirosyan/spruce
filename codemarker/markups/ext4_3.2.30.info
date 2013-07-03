@@ -807,4 +807,19 @@ LFT:3100,3109 These lines can be covered if we previously set s_mb_stats flag in
 LFT:4380,4385 These lines can be covered if we interrupt process when we try to allocate blocks. 
 end_of_record
 
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_load_buddy
+LFT:48,70 This block can be covered if we fail function find_get_page with fault sumulation.
+LFT:87,99 This block can be covered if we fail function find_get_page with fault sumulation.
+LFT:116,123 Called from ext4_mb_load_buddy+96
+end_of_record
 
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_seq_groups_show
+LFT:25,26 This block can be covered if we fail ext4_mb_load_buddy function. It can be relized if we run fault simulation on these function
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_discard_group_preallocations
+LFT:25,27 This block can be covered if we fail ext4_mb_load_buddy function. See ext4_mb_load_buddy+116 line
+end_of_record
