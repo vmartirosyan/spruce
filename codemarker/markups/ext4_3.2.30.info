@@ -357,6 +357,7 @@ end_of_record
 
 SF:fs/ext4/balloc.c
 LFT:324,324 This line is covered, gcov bug.
+LFT:624,628 These lines are covered (see line 664, balloc.c), gcov bug.
 end_of_record
 
 ################################################ext4#####################
@@ -855,7 +856,7 @@ end_of_record
 
 SF:fs/ext4/mmp.c
 LFT:51,52 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload").
-LFT:56,58 This line can be covered if there will be kedr payload failing "sb_getblk" function.
+LFT:56,58 This line can be covered if there will be kedr payload failing "__getblk" function.
 LFT:117,117 This line depends on race conditions.
 LFT:129,131 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload").
 LFT:136,139 These lines depend on race conditions.
@@ -953,8 +954,8 @@ end_of_record
 
 SF:fs/ext4/balloc.c
 FN:ext4_read_block_bitmap
-LFT:12,12 This line can be covered if there will be kedr payload failing "sb_getblk" function.
-LFT:15,15 This line can be covered if there will be kedr payload failing "sb_getblk" function.
+LFT:12,12 This line can be covered if there will be kedr payload failing "__getblk" function.
+LFT:15,15 This line can be covered if there will be kedr payload failing "__getblk" function.
 LFT:23,24 These lines can be covered if we change superblock.
 LFT:42,43 These lines can be covered if we change superblock.
 LFT:55,58 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload").
@@ -988,4 +989,6 @@ LFT:102,108 These lines can be covered if we change superblock member "sb->s_fs_
 LFT:115,124 These lines can be covered if we change superblock member "sb->s_fs_info->s_es->s_first_data_block".
 LFT:129,129 This line will be covered if line 91 is covered (see markup for lines 91-97).
 LFT:131,131 This line will be covered if line 102 is covered (see markup for lines 102-108).
+LFT:170,174 These lines can be covered if we corrupt block group.
+LFT:640,640 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
 end_of_record
