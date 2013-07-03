@@ -152,6 +152,33 @@ FN:ext4_blks_to_allocate
 LFT:0,0 Function is inline and its call is usually integrated.
 end_of_record
 
+SF:fs/ext4/indirect.c
+FN:ext4_block_to_path
+LFT:24,29 This block can be covered if read/write operations are performed on larger than 4GB files.
+LFT:31,33 Self checking code.
+end_of_record
+
+SF:fs/ext4/indirect.c
+FN:ext4_alloc_branch
+LFT:30,31 This block can be covered performing fault simulation for function __getblk().
+LFT:72,85 This block can be covered performing fault simulation for function __getblk().
+end_of_record
+
+SF:fs/ext4/indirect.c
+FN:ext4_clear_blocks
+LFT:22,38 This block can be covered if truncate() is performed on Ext3 FS (for indirect blocking) and there is no room for log in journal.
+end_of_record
+
+SF:fs/ext4/page-io.c
+FN:ext4_end_bio
+LFT:29,29 This block can be covered if failure is simulated during bio submission.
+end_of_record
+
+SF:fs/ext4/page-io.c
+FN:buffer_io_error
+LFT:0,7 The function is called from ext4_end_bio() + 40.
+end_of_record
+
 SF:fs/ext4/mballoc.h
 LFT:216,216 Function is inline and its call is usually integrated.
 LFT:219,219 This line is covered, but gcov doesn't show it.
