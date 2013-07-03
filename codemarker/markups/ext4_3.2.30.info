@@ -123,8 +123,8 @@ FN:ext_block_hdr
 LFT:0,3 These lines are covered from "ext4_ext_split" function in extent.c file, gcov bug.
 end_of_record
 
-SF:fs/ext4/ext4_extents.h 		
-LFT:224,224 These lines are covered from "ext4_ext_split" function in extent.c file, gcov bug. 		
+SF:fs/ext4/ext4_extents.h
+LFT:224,224 These lines are covered from "ext4_ext_split" function in extent.c file, gcov bug.
 end_of_record
 
 SF:fs/ext4/extents.c
@@ -681,17 +681,17 @@ SF:fs/ext4/super.c
 FN:ext4_journal_abort_handle Could be covered if we perform a fault simulation on jbd/jbd2 functions.
 end_of_record
 
-SF:fs/ext4/super.c 		
-FN:ext4_handle_error 		
-LFT:6,10 This block could be covered with errors=continue mount option. 		
-LFT:13,14 This block could be covered with errors=remount-ro mount option. 		
-LFT:17,18 This block could be covered with errors=panic mount option. 		
-end_of_record 		
- 			
-SF:fs/ext4/super.c 		
-FN:ext4_decode_error 		
-LFT:13,17 This block couldn't be covered, as when the __ext4_std_error function gets EROFS error, it returns and doesn't call ext4_decode_error function. 		
-LFT:23,26 Probably may be covered, when doing a fault simulation on jbd/jbd2 functions. This is really a very rear case. 		
+SF:fs/ext4/super.c
+FN:ext4_handle_error
+LFT:6,10 This block could be covered with errors=continue mount option.
+LFT:13,14 This block could be covered with errors=remount-ro mount option.
+LFT:17,18 This block could be covered with errors=panic mount option.
+end_of_record
+	
+SF:fs/ext4/super.c
+FN:ext4_decode_error
+LFT:13,17 This block couldn't be covered, as when the __ext4_std_error function gets EROFS error, it returns and doesn't call ext4_decode_error function.
+LFT:23,26 Probably may be covered, when doing a fault simulation on jbd/jbd2 functions. This is really a very rear case.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -746,34 +746,34 @@ LFT:45,47 This block can be covered if we corrupt the superblock.
 LFT:74,79 This block can be covered if we corrupt the inode.
 end_of_record
 
-SF:fs/ext4/super.c 		
-FN:ext4_nfs_get_inode 		
-LFT:22,22 This block can be covered if we corrupt the inode. 		
-end_of_record 		
-
-SF:fs/ext4/super.c 		
-FN:get_sb_block 		
-LFT:12,14 This block is not covered because this is a self-check. 		
-LFT:17,17 This block is not covered because this is a self-check. 		
-end_of_record
-
-SF:fs/ext4/super.c 		
-FN:ext4_destroy_inode 		
-LFT:3,9 This block can be covered if we corrupt the inode. 		
-end_of_record
-
-SF:fs/ext4/super.c 		
-FN:ext4_update_dynamic_rev 		
-LFT:7,14 This function can be covered if we corrupt the superblock. 		
+SF:fs/ext4/super.c
+FN:ext4_nfs_get_inode
+LFT:22,22 This block can be covered if we corrupt the inode.
 end_of_record
 
 SF:fs/ext4/super.c
-LFT:750,750 This line could be covered writing a special fault_sim payload for blkdev_get_by_dev. 		
-LFT:1050,1050 This line can be covered if we corrupt the superblock. 		
-LFT:1056,1056 This line can be covered if we corrupt the superblock. 		
-LFT:1059,1059 This line can be covered if we corrupt the superblock. 		
-LFT:1063,1063 This line can be covered if we corrupt the superblock. 		
-LFT:1072,1072 This line can be covered using errors=continue mount option. 		
+FN:get_sb_block
+LFT:12,14 This block is not covered because this is a self-check.
+LFT:17,17 This block is not covered because this is a self-check.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_destroy_inode
+LFT:3,9 This block can be covered if we corrupt the inode.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_update_dynamic_rev
+LFT:7,14 This function can be covered if we corrupt the superblock.
+end_of_record
+
+SF:fs/ext4/super.c
+LFT:750,750 This line could be covered writing a special fault_sim payload for blkdev_get_by_dev.
+LFT:1050,1050 This line can be covered if we corrupt the superblock.
+LFT:1056,1056 This line can be covered if we corrupt the superblock.
+LFT:1059,1059 This line can be covered if we corrupt the superblock.
+LFT:1063,1063 This line can be covered if we corrupt the superblock.
+LFT:1072,1072 This line can be covered using errors=continue mount option.
 LFT:1092,1093 This line can be covered if we corrupt the superblock.
 LFT:2029,2031 These lines probably can be covered if we corrupt/change the superblock.
 LFT:3422,3424 These lines could be covered if we use mkfs option which indicates blocksize and give an unsupported value.
@@ -930,24 +930,24 @@ FN:mext_insert_extents
 LFT:53,53 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
 end_of_record
 
-SF:fs/ext4/move_extent.c 		
-FN:get_ext_path 		
-LFT:7,8 Could be covered if we perform a fault simulation on ext4_ext_find_extent function (kzalloc). 		
-end_of_record 		
+SF:fs/ext4/move_extent.c
+FN:get_ext_path
+LFT:7,8 Could be covered if we perform a fault simulation on ext4_ext_find_extent function (kzalloc).
+end_of_record
 
-SF:fs/ext4/move_extent.c 		
-FN:mext_calc_swap_extents 		
-LFT:41,41 This line can be covered if donor extent is larger than orig 		
-end_of_record 		
+SF:fs/ext4/move_extent.c
+FN:mext_calc_swap_extents
+LFT:41,41 This line can be covered if donor extent is larger than orig
+end_of_record
 
-SF:fs/ext4/move_extent.c 		
-FN:move_extent_per_page 		
-LFT:28,29 Could be covered if we perform a fault simulation on jbd/jbd2 functions. 		
-end_of_record 		
- 			
-SF:fs/ext4/move_extent.c 		
-FN:move_extent_per_page 		
-LFT:98,101 Could be covered if we perform a fault simulation on mext_replace_branches function (kzalloc). 		
+SF:fs/ext4/move_extent.c
+FN:move_extent_per_page
+LFT:28,29 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+end_of_record
+	
+SF:fs/ext4/move_extent.c
+FN:move_extent_per_page
+LFT:98,101 Could be covered if we perform a fault simulation on mext_replace_branches function (kzalloc).
 end_of_record
 
 SF:fs/ext4/ext4_jbd2.c
@@ -1051,6 +1051,8 @@ end_of_record
 SF:fs/ext4/mballoc.c
 LFT:2596,2616 These lines can be covered if we previously set s_mb_stats flag in super block.
 LFT:3100,3109 These lines can be covered if we previously set s_mb_stats flag in super block.
+LFT:4298,4298 These lines can be covered if we previously set S_NOQUOTA flag in inode i_flags.
+LFT:4325,4326 These lines can be covered if we previously set EXT4_MB_USE_ROOT_BLOCKS flag in inode.
 LFT:4380,4385 These lines can be covered if we interrupt process when we try to allocate blocks. 
 end_of_record
 
@@ -1102,9 +1104,9 @@ LFT:13,14 These lines can be covered if we change superblock member "sb->s_fs_in
 LFT:17,17 These lines can be covered if we change superblock members "sb->s_fs_info->s_es->s_feature_incompat", "sb->s_fs_info->s_es->s_first_meta_bg" and "sb->s_fs_info->s_desc_per_block".
 end_of_record
 
-SF:fs/ext4/balloc.c 		
-FN:ext4_has_free_clusters 		
-LFT:24,26 This block can be covered if we change superblock member "sb->s_fs_info->s_resuid". 		
+SF:fs/ext4/balloc.c
+FN:ext4_has_free_clusters
+LFT:24,26 This block can be covered if we change superblock member "sb->s_fs_info->s_resuid".
 end_of_record
 
 SF:fs/ext4/balloc.c
@@ -1119,15 +1121,15 @@ LFT:115,124 These lines can be covered if we change superblock member "sb->s_fs_
 LFT:129,129 This line will be covered if line 91 is covered (see markup for lines 91-97).
 LFT:131,131 This line will be covered if line 102 is covered (see markup for lines 102-108).
 LFT:170,174 These lines can be covered if we corrupt block group.
-LFT:181,181 This line can be covered if we change superblock. 		
-LFT:191,191 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat". 		
-LFT:195,195 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat". 		
+LFT:181,181 This line can be covered if we change superblock.
+LFT:191,191 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
+LFT:195,195 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
 LFT:201,201 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
 LFT:640,640 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
 end_of_record
 
-SF:fs/ext4/ext4_extents.h 		
-LFT:218,219 These lines can be covered if we make extent which length is EXT_INIT_MAX_LEN 		
+SF:fs/ext4/ext4_extents.h
+LFT:218,219 These lines can be covered if we make extent which length is EXT_INIT_MAX_LEN
 end_of_record
 
 SF:fs/ext4/namei.c
