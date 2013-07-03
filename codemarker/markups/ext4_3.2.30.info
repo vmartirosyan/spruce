@@ -713,7 +713,9 @@ end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_setup_super
+LFT:7,9 This block could be covered if we corrupt the superblock.
 LFT:21,23 This block could be covered if we perform mount multiple times until we reach the maximum mount count.
+LFT:35,35 This block could be covered if we corrupt the superblock.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -758,11 +760,35 @@ LFT:17,17 This block is not covered because this is a self-check.
 end_of_record
 
 SF:fs/ext4/super.c
+<<<<<<< local
+FN:set_qf_name
+LFT:6,10 This block can be covered if we try to change journaled quota options when the quotas are turned ON.
+LFT:14,16 This block can be covered if we give a very long quotafile name.
+LFT:19,23 This block probably can be covered if we corrupt/change the superblock.
+LFT:27,31 This block can be covered if we had a quotafile NOT on the filesystem root.
+=======
 FN:ext4_destroy_inode
 LFT:3,9 This block can be covered if we corrupt the inode.
+>>>>>>> other
 end_of_record
 
 SF:fs/ext4/super.c
+<<<<<<< local
+FN:clear_qf_name
+LFT:6,9 This block can be covered if we try to change journaled quota options when the quotas are turned ON.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:parse_options
+LFT:186,186 This block can be covered if we mount a file system with Opt_data_journal option the remount it with no journal.
+LFT:231,235 This block can be covered if we try to change journaled quota options when the quotas are turned ON.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_group_desc_csum
+LFT:16,19 These lines can be covered if we corrupt/change the superblock.
+end_of_record
+
 FN:ext4_update_dynamic_rev
 LFT:7,14 This function can be covered if we corrupt the superblock.
 end_of_record
@@ -775,7 +801,12 @@ LFT:1059,1059 This line can be covered if we corrupt the superblock.
 LFT:1063,1063 This line can be covered if we corrupt the superblock.
 LFT:1072,1072 This line can be covered using errors=continue mount option.
 LFT:1092,1093 This line can be covered if we corrupt the superblock.
-LFT:2029,2031 These lines probably can be covered if we corrupt/change the superblock.
+LFT:2017,2018 These lines can be covered if we corrupt/change the superblock.
+LFT:2029,2031 These lines can be covered if we corrupt/change the superblock.
+LFT:2121,2124 These lines can be covered if we corrupt/change the superblock.
+LFT:2128,2131 These lines can be covered if we corrupt/change the superblock.
+LFT:2136,2139 These lines can be covered if we corrupt/change the superblock.
+LFT:2143,2149 These lines can be covered if we corrupt/change the superblock.
 LFT:3422,3424 These lines could be covered if we use mkfs option which indicates blocksize and give an unsupported value.
 LFT:3528,3531 Probably could be covered with bigalloc mount option and with corrupted superblock.
 LFT:3538,3541 Probably could be covered with bigalloc mount option and with corrupted superblock.
