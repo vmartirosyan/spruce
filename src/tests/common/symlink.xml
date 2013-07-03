@@ -44,6 +44,7 @@
 		</Code>
 	</Test>
 	<Test Name="SymlinkDangling" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="ext4" />
 		<Description>Create a symlink of a non-exitsting file.</Description>
 		<Code>
 			const char * OldFilePath = "old_file";

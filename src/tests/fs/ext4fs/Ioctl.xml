@@ -576,6 +576,7 @@
     </Test>
 
         <Test Name="Migrate" FaultSimulationReady="true" Shallow="true">
+				<Dangerous check="stability" />
                 <Description>Migrate an Ext3 partition to Ext4</Description>
                 <Header>
                     
@@ -712,7 +713,8 @@
                         
                         Unres( (fd = open(FilePath, O_LARGEFILE, O_RDONLY)) == -1, "Cannot open file");
                         
-                        Fail ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
+                        // No meaning in Fail. It just brings to lots of skippings of the test.
+                        Check ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
                         
                 </Code>
                 <Footer>       
@@ -726,6 +728,7 @@
                 </Footer>
         </Test>
         <Test Name="MigrateFileWithXattr1" FaultSimulationReady="true" Shallow="true">
+				<Dangerous check="stability" />
                 <Description>Migrate an Ext3 file with extended attributes to Ext4</Description>
                 <Header>
                         int fd = -1;
@@ -782,7 +785,8 @@
                         
                         Unres( (fd = open(FilePath, O_RDONLY)) == -1, "Cannot open file");
                         
-                        Fail ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
+                        // No meaning in Fail(). It just brings to lots of skipping os the test.
+                        Check ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
                         
                 </Code>
                 <Footer>       
@@ -796,6 +800,7 @@
                 </Footer>
         </Test>
         <Test Name="MigrateFileWithXattr2" FaultSimulationReady="true" Shallow="true">
+				<Dangerous check="stability" />
                 <Description>Migrate an Ext3 file with extended attributes to Ext4</Description>
                 <Header>
                         int fd = -1;
@@ -852,7 +857,8 @@
                         
                         Unres( (fd = open(FilePath, O_RDONLY)) == -1, "Cannot open file");
                         
-                        Fail ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
+                        // No meaning in the Fail(). It just brings to lots of skippings of the test.
+                        Check ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
                         
                 </Code>
                 <Footer>       

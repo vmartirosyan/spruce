@@ -73,7 +73,8 @@
                         me.len = 5000;
                         me.moved_len = 0;                   
                         
-                        Fail ( ioctl(FDs[0], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
+                        // No meaning in the Fail(). It just brings to lots of skipping of the test.
+                        Check ( ioctl(FDs[0], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
                 </Code>
         </Test>
         

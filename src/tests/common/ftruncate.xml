@@ -23,6 +23,7 @@
 
 <TestSet Name="ftruncate">	
 	<Test Name="FtruncateNormalIncrease" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="ext4" />
 		<Description></Description>
 		<File count="1"/>
 		<Code>
@@ -48,6 +49,7 @@
 		</Code>
 	</Test>
 	<Test Name="FtruncateNormalDecrease" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="ext4" />
 		<Description></Description>
 		<File count="1"/>
 		<Code>
@@ -67,6 +69,7 @@
 		</Code>
 	</Test>
 	<Test Name="TruncateNormalDecreaseUnlinked" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="ext4" />
 		<Description>Truncate an unlinked file.</Description>
 		<File count="1"/>
 		<Code>

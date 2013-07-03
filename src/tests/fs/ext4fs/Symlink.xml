@@ -21,7 +21,8 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="Symlink">	
+<TestSet Name="Symlink">
+	<Dangerous check="stability" />
 	<Test Name="SymlinkLongName" FaultSimulationReady="true" Shallow="true">
 		<Description>Create a symlink with a long path.</Description>
 		<Code>

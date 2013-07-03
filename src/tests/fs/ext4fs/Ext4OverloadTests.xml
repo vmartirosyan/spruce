@@ -70,6 +70,7 @@
 	</Test>			
 	
 	<Test Name="DirectoriesInserted" FaultSimulationReady="true">
+		<Dangerous check="stability" />
 		<Description>Trying to create many directories</Description>
 		<Code>
 			system(("rm -rf " + (string)MountPoint + "/*").c_str());
