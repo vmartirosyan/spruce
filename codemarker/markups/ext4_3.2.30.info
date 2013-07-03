@@ -582,7 +582,7 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_reserve_inode_write
-LFT:10,10 This block can be covered if we write a KEDR payload for fs/jbd2/transaction.c/jbd2_journal_get_write_access function.
+LFT:10,11 This block can be covered if we write a KEDR payload for fs/jbd2/transaction.c/jbd2_journal_get_write_access function.
 end_of_record
 
 SF:fs/ext4/xattr.c
@@ -764,18 +764,20 @@ LFT:17,17 This block is not covered because this is a self-check.
 end_of_record
 
 SF:fs/ext4/super.c
+<<<<<<< local
 FN:set_qf_name
 LFT:6,10 This block can be covered if we try to change journaled quota options when the quotas are turned ON.
 LFT:14,16 This block can be covered if we give a very long quotafile name.
 LFT:19,23 This block probably can be covered if we corrupt/change the superblock.
 LFT:27,31 This block can be covered if we had a quotafile NOT on the filesystem root.
-end_of_record
-
+=======
 FN:ext4_destroy_inode
 LFT:3,9 This block can be covered if we corrupt the inode.
+>>>>>>> other
 end_of_record
 
 SF:fs/ext4/super.c
+<<<<<<< local
 FN:clear_qf_name
 LFT:6,9 This block can be covered if we try to change journaled quota options when the quotas are turned ON.
 end_of_record
@@ -886,8 +888,36 @@ FN:add_new_gdb This function could be covered if we add groups until we have the
 end_of_record
 
 SF:fs/ext4/resize.c
+LFT:328,330 Can be covered if superblock s_feature_ro_compat value is changed and group add ioctl is called.
+end_of_record
+
+SF:fs/ext4/resize.c
+FN:ext4_group_add
+LFT:18,19 Can be covered if superblock s_feature_ro_compat value is changed and group add ioctl is called.
+LFT:30,31 Can be covered if superblock s_indoes_countt value is changed and group add ioctl is called.
+LFT:38,40 Can be covered if superblock EXT4_FEATURE_COMPAT_RESIZE_INODE is unset in s_feature_compat and group add ioctl is called.
+LFT:44,45 Change on-disk inode i_mode to an invalid value and call group add ioctl for it.
+end_of_record
+
+SF:fs/ext4/resize.c
 FN:ext4_group_add
 LFT:95,98 This lines could be covered if we add groups until we have the gdb full. After that a new group descriptor block will be created.
+end_of_record
+
+SF:fs/ext4/resize.c
+FN:bclean
+LFT:10,11 This block can be covered if we write a KEDR payload for fs/jbd2/transaction.c/jbd2_journal_get_write_access function.
+end_of_record
+
+SF:fs/ext4/resize.c
+FN:setup_new_group_blocks
+LFT:39,40 This block can be covered if we write a KEDR payload for fs/jbd2/transaction.c/jbd2_journal_get_write_access function.
+end_of_record
+
+SF:fs/ext4/resize.c
+FN:setup_new_group_blocks
+LFT:66,67 Covered if resize.c/bclean+10 is covered.
+LFT:105,106 Covered if resize.c/bclean+10 is covered.
 end_of_record
 
 SF:fs/ext4/resize.c
