@@ -125,6 +125,13 @@ end_of_record
 
 SF:fs/ext4/extents.c
 LFT:383,388 These lines can be covered if the extent header in inode is corrupted.
+LFT:937,1001 These lines can be covered by a test similar to common/fallocate/FallocateNormalPunchHole4 but with more holes and more distances between data blocks.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_fiemap_cb
+LFT:65,101 This block can be covered if FIEMAP ioctl command is parformed on a file with lots of allocated blocks.
+LFT:107,179 This block can be covered if FIEMAP ioctl command is parformed on a file with blocks which are allocated via "delayed allocation".
 end_of_record
 
 SF:fs/ext4/inode.c
