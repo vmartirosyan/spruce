@@ -891,3 +891,15 @@ SF:fs/ext4/balloc.c
 FN:ext4_count_free_clusters
 LFT:44,44 This line can be covered if we change superblock.
 end_of_record
+
+SF:fs/ext4/balloc.c
+FN:ext4_num_base_meta_clusters
+LFT:10,11 These lines can be covered if we change superblock member "s_es->s_feature_incompat".
+LFT:13,14 These lines can be covered if we change superblock member "s_es->s_es->s_feature_ro_compat".
+LFT:17,17 These lines can be covered if we change superblock members "s_es->s_feature_incompat", "sb->s_fs_info->s_es->s_first_meta_bg" and "sb->s_fs_info->s_desc_per_block".
+end_of_record
+
+SF:fs/ext4/balloc.c
+FN:ext4_inode_to_goal_block
+LFT:37,37 This line can be covered if we change superblock member "sb->s_fs_info->s_es".
+end_of_record
