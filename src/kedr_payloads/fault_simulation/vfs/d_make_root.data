@@ -7,6 +7,9 @@
 	arg.type = struct inode * 
 	arg.name = root_inode
 	
-	# Fault Simulation
-	fpoint.fault_code =	ret_val = NULL;
+	# Fault simulation
+	fpoint.fault_code =>>
+		if(root_inode) iput(root_inode);
+		ret_val = NULL;
+	<<
 #######################################################################

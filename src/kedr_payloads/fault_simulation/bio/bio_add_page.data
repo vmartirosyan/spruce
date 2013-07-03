@@ -17,6 +17,5 @@
 	arg.name = offset
 	
 	# Fault Simulation
-	fpoint.fault_code =	ret_val = -EIO;
-
-#######################################################################
+	# TODO: Addition of single page into empty bio always succeed.
+	fpoint.fault_code = ret_val = 0;

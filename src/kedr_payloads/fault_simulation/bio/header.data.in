@@ -6,7 +6,6 @@ module.license = GPL
 
 header =>>
 /* ========================================================================
- * Copyright (C) 2012, KEDR development team
  * Copyright (C) 2010-2012, Institute for System Programming 
  *                          of the Russian Academy of Sciences (ISPRAS)
  * Authors: 
@@ -16,5 +15,6 @@ header =>>
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
  ======================================================================== */
- #include <linux/bio.h>
+ 
+#include <linux/bio.h>
 <<

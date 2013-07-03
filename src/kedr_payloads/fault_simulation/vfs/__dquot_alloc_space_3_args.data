@@ -14,5 +14,6 @@
 	arg.name = flags
 	
 	# Fault Simulation
+	# TODO: Check code
 	fpoint.fault_code =	ret_val = -EDQUOT;
 #######################################################################

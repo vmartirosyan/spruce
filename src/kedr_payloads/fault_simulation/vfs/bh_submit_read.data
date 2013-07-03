@@ -8,5 +8,11 @@
 	arg.name = bh
 	
 	# Fault Simulation
-	fpoint.fault_code =	ret_val = -EIO;
+	fpoint.fault_code =>>
+		get_bh(bh);
+		clear_buffer_uptodate(bh);
+		unlock_buffer(bh);
+		put_bh(bh);
+		ret_val = -EIO;
+	<<
 #######################################################################
