@@ -420,6 +420,7 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:mpage_da_map_and_submit
 LFT:73,89 Can probably be covered by running stability check in common/fallocate/FallocateNormalPunchHole1 test which is marked as dangerous.
+LFT:106,107 This block can be covered if we write a KEDR payload for fs/jbd2/jbd2_journal_file_inode function.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -449,6 +450,11 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_do_update_inode
 LFT:66,75 This block can be covered if we corrupt the superblock.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:walk_page_buffers
+LFT:20,22 This is just a self-checking code. 
 end_of_record
 
 SF:fs/ext4/xattr.c
@@ -519,6 +525,11 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_end_io_buffer_write Called from ext4_set_bh_endio+25
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_ordered_write_end
+LFT:25,26 This block can be covered if we write a KEDR payload for fs/jbd2/jbd2_journal_file_inode function.
 end_of_record
 
 SF:fs/ext4/xattr.c
