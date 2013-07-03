@@ -123,6 +123,10 @@ FN:ext_block_hdr
 LFT:0,3 These lines are covered from "ext4_ext_split" function in extent.c file, gcov bug.
 end_of_record
 
+SF:fs/ext4/ext4_extents.h
+LFT:224,224 These lines are covered from "ext4_ext_split" function in extent.c file, gcov bug.
+end_of_record
+
 SF:fs/ext4/extents.c
 LFT:383,388 These lines can be covered if the extent header in inode is corrupted.
 LFT:937,1001 These lines can be covered by a test similar to common/fallocate/FallocateNormalPunchHole4 but with more holes and more distances between data blocks.
@@ -883,6 +887,7 @@ LFT:1252,1264 This code can be covered if we try to move extent, but the hole ex
 LFT:1267,1267 This code can be covered if we try to move extent, but the hole exists at the beginning of original file.
 LFT:1275,1276 This code can be covered if we try to move extent, but we have no blocks within the specified range.
 LFT:1359,1364 This is self checking/correcting code.
+LFT:1418,1418 Could be covered if we perform a fault simulation on get_ext_path function (kzalloc).
 end_of_record
 
 SF:fs/ext4/move_extent.c
@@ -893,6 +898,26 @@ end_of_record
 SF:fs/ext4/move_extent.c
 FN:mext_insert_extents
 LFT:53,53 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:get_ext_path
+LFT:7,8 Could be covered if we perform a fault simulation on ext4_ext_find_extent function (kzalloc).
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_calc_swap_extents
+LFT:41,41 This line can be covered if donor extent is larger than orig
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:move_extent_per_page
+LFT:28,29 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:move_extent_per_page
+LFT:98,101 Could be covered if we perform a fault simulation on mext_replace_branches function (kzalloc).
 end_of_record
 
 SF:fs/ext4/ext4_jbd2.c
@@ -1069,4 +1094,8 @@ LFT:191,191 This line can be covered if we change superblock member "sb->s_fs_in
 LFT:195,195 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
 LFT:201,201 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
 LFT:640,640 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
+end_of_record
+
+SF:fs/ext4/ext4_extents.h
+LFT:218,219 These lines can be covered if we make extent which length is EXT_INIT_MAX_LEN
 end_of_record
