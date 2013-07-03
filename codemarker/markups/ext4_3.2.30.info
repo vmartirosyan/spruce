@@ -78,7 +78,7 @@ LFT:1283,1283 Function is inline and its call is usually integrated.
 LFT:1326,1326 Function is inline and its call is usually integrated.
 LFT:1328,1328 Function is inline and its call is usually integrated.
 LFT:1546,1546 Function is inline and its call is usually integrated.
-LFT:1546,1546 This line is a self checking code.
+LFT:1553,1553 This line is a self checking code.
 LFT:1618,1618 Function is inline and its call is usually integrated.
 LFT:1620,1620 Function is inline and its call is usually integrated.
 LFT:2008,2017 Function is inline and its call is usually integrated.
