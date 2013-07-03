@@ -891,6 +891,7 @@ LFT:36,38 This lines can be covered if corrupt file and corrupt directory.
 end_of_record
 
 SF:fs/ext4/dir.c
+LFT:169,179 This block can be covered if we write a KEDR payload for fs/buffer.c/__getblk function and run fault simulation on readdir syscall.
 LFT:189,206 This lines can be covered by a test which does a getdents() call, then addes new entries and makes another call to getdents().
 end_of_record
 
