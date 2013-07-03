@@ -656,20 +656,25 @@ LFT:12,12 This line is covered, but marked as not covered. This is GCOV bug.
 end_of_record
 
 SF:fs/ext4/mmp.c
-LFT:129,131 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload")
-end_of_record
-
-SF:fs/ext4/mmp.c
+LFT:51,52 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload").
+LFT:56,58 This line can be covered if there will be kedr payload failing "sb_getblk" function.
+LFT:117,117 This line depends on race conditions.
+LFT:129,131 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload").
+LFT:136,139 These lines depend on race conditions.
 LFT:161,184 These lines could not be covered as they depend on race conditions.
+LFT:243,244 These lines will be covered if there will be a bad mmp block in superblock.
+LFT:254,254 This block can be covered if we corrupt the superblock.
+LFT:268,269 These lines can be covered if "fsck" is running on the filesystem while "ext4_multi_mount_protect" function.
+LFT:277,277 This line can be covered if MMP interval is too high.
+LFT:281,281 This line can be covered if "ext4_multi_mount_protect" function is interrupted.
+LFT:290,290 This line can be covered if device is already active on another node.
+LFT:319,321 This would be covered if either the device was active on another node (that is it's seq number changed).
+LFT:349,349 This line is covered, see line 292, gcov bug.
 end_of_record
 
 SF:fs/ext4/mmp.c
 FN:__dump_mmp_msg
 LFT:0,9 This would be covered if either the device was active on another node (that is it's seq number changed) or the filesystem was multiply mounted. 
-end_of_record
-
-SF:fs/ext4/mmp.c
-LFT:243,244 These lines will be covered if there will be a bad mmp block in superblock.
 end_of_record
 
 SF:fs/ext4/migrate.c
