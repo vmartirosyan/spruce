@@ -764,20 +764,19 @@ LFT:17,17 This block is not covered because this is a self-check.
 end_of_record
 
 SF:fs/ext4/super.c
-<<<<<<< local
 FN:set_qf_name
 LFT:6,10 This block can be covered if we try to change journaled quota options when the quotas are turned ON.
 LFT:14,16 This block can be covered if we give a very long quotafile name.
 LFT:19,23 This block probably can be covered if we corrupt/change the superblock.
 LFT:27,31 This block can be covered if we had a quotafile NOT on the filesystem root.
-=======
-FN:ext4_destroy_inode
-LFT:3,9 This block can be covered if we corrupt the inode.
->>>>>>> other
 end_of_record
 
 SF:fs/ext4/super.c
-<<<<<<< local
+FN:ext4_destroy_inode
+LFT:3,9 This block can be covered if we corrupt the inode.
+end_of_record
+
+SF:fs/ext4/super.c
 FN:clear_qf_name
 LFT:6,9 This block can be covered if we try to change journaled quota options when the quotas are turned ON.
 end_of_record
