@@ -443,11 +443,21 @@ FN:ext4_do_update_inode
 LFT:66,75 This block can be covered if we corrupt the superblock.
 end_of_record
 
+<<<<<<< local
+
+SF:fs/ext4/xattr.c
+LFT:1032,1033 this block could be covered corrupting the inode and setting the (inode)->i_extra_isize == 0. 
+LFT:1032,1033 this block could be covered corrupting the inode and setting the (inode)->i_file_acl != 0.
+LFT:1156,1157 this block could be covered if we corrupt the inode.
+=======
 SF:fs/ext4/inode.c
 FN:ext4_evict_inode
 LFT:53,60 ext4_evict_inode should be called with "noload" mount option(unlink and umount a file).
+>>>>>>> other
 end_of_record
 
+<<<<<<< local
+=======
 SF:fs/ext4/inode.c
 FN:ext4_da_writepages
 LFT:293,298 Write of certain amount should be done with "noload" and "delalloc" mount options enabled.
@@ -489,9 +499,44 @@ FN:ext4_getblk
 LFT:22,23 This block can be covered if we write a KEDR payload for fs/buffer.c/__getblk function.
 end_of_record
 
+>>>>>>> other
 SF:fs/ext4/xattr.c
 FN:ext4_xattr_shift_entries
 LFT:79,100 This block can be covered by writing xattr to a file which would be less than 128bytes, so that there is place in inode for it, than write another xattr with different name and call migrate ioctl on  the file(see ext4/Ioclt/MigrateFileWithXattr2 test, which needs just slight modification).
+end_of_record
+
+SF:fs/ext4/xattr.c
+FN:ext4_xattr_block_get
+LFT:22,25 We can't cover this block. It is possible to fail the sb_bread function, but in that case the error will come up earlier.
+end_of_record
+
+SF:fs/ext4/xattr.c
+FN:ext4_xattr_block_list
+LFT:20,23 We can't cover this block. It is possible to fail the sb_bread function, but in that case the error will come up earlier.
+end_of_record
+
+SF:fs/ext4/xattr.c
+FN:ext4_xattr_block_find
+LFT:19,22 We can't cover this block. It is possible to fail the sb_bread function, but in that case the error will come up earlier.
+end_of_record
+
+SF:fs/ext4/xattr.c
+FN:ext4_xattr_block_set
+LFT:153,156 This block could be covered if there would be a Kedr payload of __getblk.
+LFT:161,162 This block probably could be covered if perform a fault simulation on jbd/jbd2 payloads.
+LFT:197,197 We can't cover this block. It is possible to fail the sb_bread function, but in that case the error will come up earlier.
+end_of_record
+
+SF:fs/ext4/xattr.c
+FN:ext4_xattr_set
+LFT:9,9 This block probably could be covered if perform a fault simulation on jbd/jbd2 payloads.
+LFT:17,17 This block probably could be covered if perform a fault simulation on jbd/jbd2 payloads.
+end_of_record
+
+SF:fs/ext4/xattr.c
+FN:ext4_xattr_delete_inode
+LFT:8,10 This block is possible to cover failing the sb_bread function with kedr.
+LFT:14,16 We can't cover this block. It is possible to fail the sb_bread function, but in that case the error will come up earlier.
 end_of_record
 
 SF:fs/ext4/ioctl.c
