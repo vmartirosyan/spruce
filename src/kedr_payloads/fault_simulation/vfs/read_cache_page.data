@@ -17,5 +17,6 @@
 	arg.name = data
 	
 	# Fault Simulation
-	fpoint.fault_code =	ret_val = NULL;
+	# TODO: Check code
+	fpoint.fault_code =	ret_val = ERR_PTR(-EIO);
 #######################################################################

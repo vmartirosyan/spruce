@@ -1,4 +1,5 @@
 [group]
+	# Since 2.6.38
 	# Name and return type of the target function
 	function.name = blkdev_get_by_dev
 	returnType = struct block_device *
@@ -12,7 +13,8 @@
 
 	arg.type = void *
 	arg.name = holder
-	
-	# Fault Simulation
-	fpoint.fault_code =	ret_val = NULL;
+
+	# Fault simulation
+	fpoint.fault_code = ret_val = ERR_PTR(-ENOMEM);
 #######################################################################
+

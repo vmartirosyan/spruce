@@ -1,16 +1,22 @@
 [group]
 	# Name and return type of the target function
-	function.name = write_one_page
+	function.name = __dquot_alloc_space
 	returnType = int
 
 	# Names and types of the arguments of the target function
-	arg.type = struct page *
-	arg.name = page
+	arg.type = struct inode *
+	arg.name = inode
+
+	arg.type = qsize_t 
+	arg.name = number
+
+	arg.type = int
+	arg.name = warn
 	
 	arg.type = int
-	arg.name = wait
-	
+	arg.name = reserve
+
 	# Fault Simulation
 	# TODO: Check code
-	fpoint.fault_code =	ret_val = -EIO;
+	fpoint.fault_code =	ret_val = -EDQUOT;
 #######################################################################
