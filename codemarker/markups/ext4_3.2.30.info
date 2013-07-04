@@ -1208,7 +1208,7 @@ end_of_record
 SF:fs/ext4/resize.c
 FN:ext4_group_add
 LFT:18,19 Can be covered if superblock s_feature_ro_compat value is changed and group add ioctl is called.
-LFT:24,25 This block can be covered if we change "s_fs_info->s_es" superblock field.
+LFT:24,25 This block can be covered if we change "s_blocks_count_hi" and "s_blocks_count_lo" superblock fields.
 LFT:30,31 Can be covered if superblock s_indoes_countt value is changed and group add ioctl is called.
 LFT:38,40 Can be covered if superblock EXT4_FEATURE_COMPAT_RESIZE_INODE is unset in s_feature_compat and group add ioctl is called.
 LFT:44,45 Change on-disk inode i_mode to an invalid value and call group add ioctl for it.
@@ -1573,9 +1573,9 @@ end_of_record
 
 SF:fs/ext4/balloc.c
 FN:ext4_num_base_meta_clusters
-LFT:10,11 These lines can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
-LFT:13,14 These lines can be covered if we change superblock member "sb->s_fs_info->s_es->s_es->s_feature_ro_compat".
-LFT:17,17 These lines can be covered if we change superblock members "sb->s_fs_info->s_es->s_feature_incompat", "sb->s_fs_info->s_es->s_first_meta_bg" and "sb->s_fs_info->s_desc_per_block".
+LFT:10,11 These lines can be covered if we change superblock member "s_feature_incompat".
+LFT:13,14 These lines can be covered if we change superblock member "s_feature_ro_compat".
+LFT:17,17 These lines can be covered if we change superblock members "s_feature_incompat", "s_first_meta_bg" and "s_desc_size".
 end_of_record
 
 SF:fs/ext4/balloc.c
@@ -1589,17 +1589,17 @@ LFT:37,37 This line can be covered if we change superblock member "sb->s_fs_info
 end_of_record
 
 SF:fs/ext4/balloc.c
-LFT:91,97 These lines can be covered if we change superblock member "sb->s_fs_info->s_es->s_first_data_block".
-LFT:102,108 These lines can be covered if we change superblock member "sb->s_fs_info->s_es->s_first_data_block".
-LFT:115,124 These lines can be covered if we change superblock member "sb->s_fs_info->s_es->s_first_data_block".
+LFT:91,97 These lines can be covered if we change superblock member "s_first_data_block".
+LFT:102,108 These lines can be covered if we change superblock member "s_first_data_block".
+LFT:115,124 These lines can be covered if we change superblock member "s_first_data_block".
 LFT:129,129 This line will be covered if line 91 is covered (see markup for lines 91-97).
 LFT:131,131 This line will be covered if line 102 is covered (see markup for lines 102-108).
 LFT:170,174 These lines can be covered if we corrupt block group.
 LFT:181,181 This line can be covered if we change superblock.
-LFT:191,191 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
-LFT:195,195 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
-LFT:201,201 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
-LFT:640,640 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
+LFT:191,191 This line can be covered if we change superblock member "s_feature_incompat".
+LFT:195,195 This line can be covered if we change superblock member "s_feature_incompat".
+LFT:201,201 This line can be covered if we change superblock member "s_feature_incompat".
+LFT:640,640 This line can be covered if we change superblock member "s_feature_incompat".
 end_of_record
 
 SF:fs/ext4/ext4_extents.h
@@ -1613,7 +1613,7 @@ end_of_record
 
 SF:fs/ext4/namei.c
 FN:ext4_update_dx_flag
-LFT:4,4 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_incompat".
+LFT:4,4 This line can be covered if we change superblock member "s_feature_incompat".
 end_of_record
 
 SF:fs/ext4/namei.c
@@ -1624,7 +1624,7 @@ SF:fs/ext4/namei.c
 FN:ext4_add_entry
 LFT:20,22 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:28,28 This block can be covered if we write a KEDR payload for "__getblk" function.
-LFT:38,48 This line can be covered if we change superblock member "sb->s_fs_info->s_es->s_feature_compat".
+LFT:38,48 This line can be covered if we change superblock member "s_feature_compat".
 LFT:172,172 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:183,183 This block could be covered if perform a fault simulation on jbd2 payloads.
 end_of_record
