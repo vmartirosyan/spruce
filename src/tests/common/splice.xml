@@ -24,7 +24,6 @@
 <TestSet Name="splice">
 	<Requires>fcntl.h</Requires>
 	<Test Name="SpliceNormal1" FaultSimulationReady="true">
-		<Dangerous check="stability" fs="ext4" />
 		<Description>splice()  moves  data  between  two  file  descriptors  without copying between kernel address space and user address space. File -> Pipe </Description>
 		<File count="1"/>
 		<Code>
@@ -46,7 +45,6 @@
 		</Code>
 	</Test>
 	<Test Name="SpliceNormal2" FaultSimulationReady="true">
-		<Dangerous check="stability" fs="ext4" />
 		<Description>splice()  moves  data  between  two  file  descriptors  without copying between kernel address space and user address space. Pipe -> File </Description>			
 		<File count="1"/>
 		<Code>

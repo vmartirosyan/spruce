@@ -23,7 +23,6 @@
 
 <TestSet Name="truncate">	
 	<Test Name="TruncateNormalIncrease" FaultSimulationReady="true">
-		<Dangerous check="stability" fs="ext4" />
 		<Description>Truncate a file to a specified length. If the file previously was shorter, it is extended, and the extended part reads as null bytes ('\0').</Description>
 		<File count="1"/>
 		<Code>
@@ -47,7 +46,6 @@
 		</Code>
 	</Test>
 	<Test Name="TruncateNormalDecrease" FaultSimulationReady="true">
-		<Dangerous check="stability" fs="ext4" />
 		<Description>Truncate a file to a specified length. If the file previously was larger than this size,  the  extra  data  is lost.</Description>
 		<File count="1"/>
 		<Code>

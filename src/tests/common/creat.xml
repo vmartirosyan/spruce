@@ -24,7 +24,6 @@
 
 <TestSet Name="creat">		
 	<Test Name="CreatNormal" FaultSimulationReady="true">
-		<Dangerous fs="ext4" check="stability" />
 		<Description>Open and possibly create a file or device.</Description>			
 		<Code>
 			if ( PartitionManager::IsOptionEnabled("ro") )

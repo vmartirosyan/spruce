@@ -25,7 +25,6 @@
 	<Requires>sys/timerfd.h</Requires>
 	<Requires>sys/mman.h</Requires>
 	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
-		<Dangerous check="stability"/>
 		<Description>Rewrite after seek to the beginning in the O_DIRECT mode</Description>
 		<Header>
 			if ( PartitionManager::IsOptionEnabled("data=journal") )

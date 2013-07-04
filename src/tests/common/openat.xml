@@ -24,7 +24,6 @@
 
 <TestSet Name="openat">	
 	<Test Name="OpenAtNormal" FaultSimulationReady="true">
-		<Dangerous check="stability" fs="ext4" />
 		<Description>Open a file relative to a directory file descriptor.</Description>
 		<Dir count="1"/>
 		<Code>

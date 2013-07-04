@@ -42,7 +42,6 @@
 		</Code>
 	</Test>
 	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
-		<Dangerous check="stability" fs="ext4"/>
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
 		<Header>
 			if ( PartitionManager::IsOptionEnabled("data=journal") )
