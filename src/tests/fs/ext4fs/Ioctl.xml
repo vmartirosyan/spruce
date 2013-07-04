@@ -596,6 +596,7 @@
                 <Code>                                 
                         UnixCommand mkfs("mkfs.ext3");
                         vector<string> args;
+                        args.push_back("-F");
                         args.push_back(DeviceName);
                         ProcessResult * res;
                         res = mkfs.Execute(args);
@@ -671,6 +672,7 @@
                         Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!"); 
                         UnixCommand mkfs("mkfs.ext3");
                         vector<string> args;
+                        args.push_back("-F");
                         args.push_back(DeviceName);
                         ProcessResult * res;
                         res = mkfs.Execute(args);
@@ -744,6 +746,7 @@
                         Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!"); 
                         UnixCommand mkfs("mkfs.ext3");
                         vector<string> args;
+                        args.push_back("-F");
                         args.push_back(DeviceName);
                         ProcessResult * res;
                         res = mkfs.Execute(args);
@@ -816,12 +819,13 @@
                         Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!"); 
                         UnixCommand mkfs("mkfs.ext3");
                         vector<string> args;
+                        args.push_back("-F");
                         args.push_back(DeviceName);
                         ProcessResult * res;
                         res = mkfs.Execute(args);
                         Unres ( res == NULL || res->GetStatus() != Success, "Cannot create ext3 filesystem on device " + (string)DeviceName);
                         Unres ( mount( DeviceName, MountPoint, "ext3", 0, 0) == -1, "Cannot mount ext3 FS " + (string)DeviceName + " to " + (string)MountPoint);
-                         Unres ( chdir(MountPoint) != 0,"Cannot change current dir to " );
+                         Unres ( chdir(MountPoint) != 0,"Cannot change current dir to mount point" );
                         
                         fd = open(FilePath,O_RDWR | O_CREAT | O_EXCL | O_LARGEFILE, S_IRUSR | S_IWUSR);    
                         Unres(fd == -1, "Cannot create file.") ;
