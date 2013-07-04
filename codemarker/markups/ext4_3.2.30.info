@@ -1720,6 +1720,7 @@ SF:fs/ext4/extents.c
 LFT:68,70 This block can be covered if we write a KEDR payload for ext4_journal_extend function (fs/jbd2/transaction.c).
 LFT:383,388 These lines can be covered if the extent header in inode is corrupted.
 LFT:684,686 These lines can be covered if we corrupt inode.
+LFT:863,865 Never gets here because of a previuos check.
 LFT:869,870 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:819,820 Can be covered by corrupting extent tree.
 LFT:887,891 Can be covered by corrupting extent tree.
@@ -1754,6 +1755,7 @@ end_of_record
 SF:fs/ext4/extents.c
 FN:ext4_ext_walk_space
 LFT:28,30 Can be covered by corrupting extent tree.
+LFT:81,83 Can be covered by corrupting extent tree.
 end_of_record
 
 SF:fs/ext4/extents.c
