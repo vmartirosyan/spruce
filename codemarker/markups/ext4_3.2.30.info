@@ -1263,6 +1263,8 @@ SF:fs/ext4/resize.c
 FN:verify_group_input
 LFT:32,32 This block can be covered if we change "s_fs_info->s_blocks_per_group", "s_fs_info->s_cluster_bits", "s_fs_info->s_groups_count" and superblock fields.
 LFT:40,40 This line can be covered if there will be kedr payload failing "__getblk" function.
+LFT:66,66 This block can be covered changing the value of input->block_bitmap field. It is similar to GroupAdd test.
+LFT:66,66 This block can be covered changing the value of input->inode_bitmap field. It is similar to GroupAdd test.
 end_of_record
 
 SF:fs/ext4/inode.c
