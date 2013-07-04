@@ -1095,6 +1095,7 @@ LFT:2143,2149 These lines can be covered if we corrupt/change the superblock.
 LFT:2406,2406 These lines can be covered if we corrupt/change the superblock s_feature_incompat field and set it to EXT4_FEATURE_INCOMPAT_META_BG value.
 LFT:2408,2412 These lines can be covered if we corrupt/change the superblock s_feature_incompat field and set it to EXT4_FEATURE_INCOMPAT_META_BG value.
 LFT:3309,3309 This line can be covered using errors=panic mount option.
+LFT:3383,3385 These lines can be covered if we corrupt/change the superblock s_feature_incompat field.
 LFT:3422,3424 These lines could be covered if we use mkfs option which indicates blocksize and give an unsupported value.
 LFT:3479,3485 This block can be covered if we corrupt the superblock s_desc_size field and s_feature_incompat field.	
 LFT:3528,3531 Probably could be covered with bigalloc mount option and with corrupted superblock.
@@ -1121,6 +1122,7 @@ LFT:4756,4756 This block can be covered if we write a KEDR payloads for jbd/jbd2
 LFT:4789,4790 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:4082,4084 these lines can be covered with usage of mkfs options like this -b 2048: or -b 1024 -g 8192:
 LFT:4091,4093 Probably these lines can be covered if we perform a fault simulation on this function with __bread payload.
+LFT:4100,4103 These lines can be covered if we change the superblock s_feature_incompat field.
 LFT:4107,4109 These lines can be covered if we corrupt the superblock.
 LFT:4575,4576 This is a self check.
 LFT:4595,4600 These lines can be covered if we corrupt the superblock.
