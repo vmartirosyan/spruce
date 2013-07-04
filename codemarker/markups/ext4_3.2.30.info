@@ -1717,3 +1717,17 @@ SF:fs/ext4/page-io.c
 FN:ext4_bio_write_page
 LFT:58,59 This block can be covered if failure is simulated during bio submission.
 end_of_record
+
+SF:fs/ext4/block_validity.c
+LFT:152,152 This line can be covered if we change "s_fs_info->system_blks.rb_node" superblock field.
+end_of_record
+
+SF:fs/ext4/block_validity.c
+FN:ext4_data_block_valid
+LFT:9,10 This line can be covered if we change "s_fs_info->s_es->s_first_data_block" and "s_fs_info->s_es" superblock fields.
+end_of_record
+
+SF:fs/ext4/block_validity.c
+FN:ext4_check_blockref
+LFT:12,13 This line can be covered if we change inode superblock field.
+end_of_record
