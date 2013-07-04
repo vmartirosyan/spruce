@@ -361,9 +361,9 @@ isn't covered as mount options are parsed and checked in super.c-->
         </Test>
         
         <Test Name="DoubleIOCharset" use-mount="true">
-            <Description>Mount with wrong charset.</Description>
+            <Description>Mount with double charsets.</Description>
             <Code>
-                Check(mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=ascii,iocharset=cp1251") != -1,
+                Check(mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "iocharset=ascii,iocharset=cp1251") == -1,
                     "Remount with iocharset option redefinition failed.");
             </Code>
         </Test>
