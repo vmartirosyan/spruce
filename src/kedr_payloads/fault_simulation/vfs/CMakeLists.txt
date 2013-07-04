@@ -4,10 +4,6 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/header.data.in"
     "${CMAKE_CURRENT_BINARY_DIR}/header.data")
 
 set(functions
-# Callback function cannot be currently intercepted by KEDR.
-# Also, fail in that function may be triggered by corersponded quotas set in userspace.
-# Currently is leaved active.
-	"dquot_alloc_inode"
 	"filemap_write_and_wait_range"
 	"read_cache_page"
 # TODO: check code for fault simulation	
@@ -48,6 +44,51 @@ kmodule_is_function_exist(d_make_root EXISTS_d_make_root)
 if(EXISTS_d_make_root)
 	list(APPEND functions "d_make_root")
 endif(EXISTS_d_make_root)
+
+
+# Fail in dquot_alloc_inode kernel function should be triggered by
+# corersponded quotas set in userspace.
+# Currently is leaved active.
+set(dquot_alloc_inode_message "Check dquot_alloc_inode kernel function signature")
+
+if(DEFINED dquot_alloc_inode_HAS_1_ARG OR DEFINED dquot_alloc_inode_HAS_2_ARGS)
+	set(dquot_alloc_inode_message "${dquot_alloc_inode_message} [cached]")
+else(DEFINED dquot_alloc_inode_HAS_1_ARG OR DEFINED dquot_alloc_inode_HAS_2_ARGS)
+	kmodule_try_compile(dquot_alloc_inode_HAS_1_ARG_tmp
+		"${CMAKE_CURRENT_BINARY_DIR}/dquot_alloc_inode_has_1_arg"
+		"dquot_alloc_inode_has_1_arg.c")
+	if(dquot_alloc_inode_HAS_1_ARG_tmp)
+		set(dquot_alloc_inode_HAS_1_ARG "TRUE" CACHE INTERNAL "Does dquot_alloc_inode has 1 arg?")
+	else(dquot_alloc_inode_HAS_1_ARG_tmp)
+		set(dquot_alloc_inode_HAS_1_ARG "FALSE" CACHE INTERNAL "Does dquot_alloc_inode has 1 arg?")
+		kmodule_try_compile(dquot_alloc_inode_HAS_2_ARGS_tmp
+			"${CMAKE_CURRENT_BINARY_DIR}/dquot_alloc_inode_has_2_args"
+			"dquot_alloc_inode_has_2_args.c")
+		if(dquot_alloc_inode_HAS_2_ARGS_tmp)
+			set(dquot_alloc_inode_HAS_2_ARGS "TRUE" CACHE INTERNAL "Does dquot_alloc_inode has 4 args?")
+		else(dquot_alloc_inode_HAS_2_ARGS_tmp)
+			set(dquot_alloc_inode_HAS_2_ARGS "FALSE" CACHE INTERNAL "Does dquot_alloc_inode has 4 args?")
+		endif(dquot_alloc_inode_HAS_2_ARGS_tmp)
+	endif(dquot_alloc_inode_HAS_1_ARG_tmp)
+endif(DEFINED dquot_alloc_inode_HAS_1_ARG OR DEFINED dquot_alloc_inode_HAS_2_ARGS)
+
+if(dquot_alloc_inode_HAS_1_ARG)
+	set(dquot_alloc_inode_message "${dquot_alloc_inode_message} - has 1 arg")
+	list(APPEND functions "dquot_alloc_inode")
+	rule_copy_file("${CMAKE_CURRENT_BINARY_DIR}/dquot_alloc_inode.data"
+		"${CMAKE_CURRENT_SOURCE_DIR}/dquot_alloc_inode_1_arg.data")
+elseif(dquot_alloc_inode_HAS_2_ARGS)
+	set(dquot_alloc_inode_message "${dquot_alloc_inode_message} - has 2 args")
+	list(APPEND functions "dquot_alloc_inode")
+	rule_copy_file("${CMAKE_CURRENT_BINARY_DIR}/dquot_alloc_inode.data"
+		"${CMAKE_CURRENT_SOURCE_DIR}/dquot_alloc_inode_2_args.data")
+else(dquot_alloc_inode_HAS_1_ARG)
+	set(dquot_alloc_inode_message "${dquot_alloc_inode_message} - not found")
+	# Function should exists
+	message(FATAL_ERROR ${dquot_alloc_inode_message})
+endif(dquot_alloc_inode_HAS_1_ARG)
+
+message(STATUS ${dquot_alloc_inode_message})
 
 
 # Fail in __dquot_alloc_space kernel function should be triggered by

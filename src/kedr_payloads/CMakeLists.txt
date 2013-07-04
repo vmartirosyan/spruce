@@ -13,7 +13,15 @@ function(kmodule_try_compile RESULT_VAR bindir srcfile)
             "${kedr_payloads_dir}/kmodule_files"
             "kmodule_try_compile"
             CMAKE_FLAGS "-DSRC_FILE:path=${src_abs_path}"
-                "-DKERNELDIR=/lib/modules/${CMAKE_SYSTEM_VERSION}/build")
+                "-DKERNELDIR=/lib/modules/${CMAKE_SYSTEM_VERSION}/build"
+            # debug
+            #OUTPUT_VARIABLE output_var
+    )
+    # debug
+    #if(NOT result_tmp)
+        #message("Kernel module compilation output: ${output_var}")
+    #endif(NOT result_tmp)
+    
 	set("${RESULT_VAR}" "${result_tmp}" PARENT_SCOPE)
 endfunction(kmodule_try_compile RESULT_VAR bindir srcfile)
 
