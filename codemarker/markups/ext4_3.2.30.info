@@ -219,6 +219,7 @@ end_of_record
 SF:fs/ext4/indirect.c
 LFT:704,706 This block can be covered if we change inode member "i_sb->s_feature_ro_compat".
 LFT:942,942 This block can be covered if perform a fault simulation on jbd2 payloads.
+LFT:180,180 The can be covered if __getblk() function fails (via JEDR fault simulation payload).
 end_of_record
 
 SF:fs/ext4/indirect.c
@@ -229,6 +230,11 @@ end_of_record
 SF:fs/ext4/indirect.c
 FN:ext4_blks_to_allocate
 LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/indirect.c
+FN:ext4_alloc_blocks
+LFT:31,36 This block can be covered if we try to allocate more space than there is on device.
 end_of_record
 
 SF:fs/ext4/indirect.c
@@ -259,6 +265,12 @@ end_of_record
 SF:fs/ext4/indirect.c
 FN:ext4_ind_direct_IO
 LFT:20,21 This block can be covered if perform a fault simulation on jbd2 payloads.
+end_of_record
+
+SF:fs/ext4/indirect.c
+FN:ext4_free_branches
+LFT:21,25 This block can be covered corrupting the superblock.
+LFT:68,70 This block can be covered truncating a file on Ext3 FS when there is no space left on device.
 end_of_record
 
 SF:fs/ext4/page-io.c
