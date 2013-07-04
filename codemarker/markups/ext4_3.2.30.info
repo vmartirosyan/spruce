@@ -1264,6 +1264,7 @@ end_of_record
 SF:fs/ext4/inode.c
 LFT:3800,3800 Change on-disk unlinked inode i_mode and call lookup for it(see ext4/Lookup testset)
 LFT:3814,3815 Change superblock s_feature_incompat value and call lookup(see ext4/Lookup testset)
+LFT:3893,3896 Can be covered if the inode acl block is corrupted.
 LFT:3929,3929 This line can be covered if lookup is done for a socket or a pipe(see ext4/Lookup testset)
 LFT:3938,3940 Change on-disk inode i_mode to an invalid value and call lookup for it(see ext4/Lookup testset)
 end_of_record
@@ -1313,6 +1314,11 @@ end_of_record
 F:fs/ext4/inode.c
 FN:_ext4_get_block
 LFT:18,19 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_write_inode
+LFT:9,11 This block can be covered if two or more threads try to write inode back at once.
 end_of_record
 
 SF:fs/ext4/migrate.c
