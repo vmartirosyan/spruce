@@ -424,10 +424,6 @@ LFT:239,239 Function is inline and its call is usually integrated.
 LFT:250,250 Code is marked as it was not executed due to compiler optimisations.
 end_of_record
 
-SF:fs/ext4/ioctl.c
-LFT:359,376 Fitrim ioctl works only for solid-state drives.
-end_of_record
-
 SF:fs/ext4/mmp.c
 LFT:267,267 This line is covered (see line 292), gcov bug.
 LFT:272,272 This line is covered (see line 292), gcov bug.
@@ -483,11 +479,27 @@ LFT:22,22 This is just a self-checking code.
 LFT:36,36 Covered if posix_acl_alloc is failed in ext4_acl_from_disk function(called by ACLGetNotCached test).
 end_of_record
 
+SF:fs/ext4/acl.c
+FN:ext4_acl_chmod
+LFT:22,23 These lines can be covered if the log is corrupted/aborted during acl calls.
+end_of_record
+
+SF:fs/ext4/acl.c
+FN:ext4_xattr_set_acl
+LFT:30,30 These line can be covered if the log is corrupted/aborted during acl calls.
+end_of_record
+
 SF:fs/ext4/file.c
 LFT:60,62 Called from file.c+133.
 LFT:75,90 Called from file.c+119.
+LFT:114,115 This is just a self-checking code.
 LFT:119,119 Needs async direct write.
 LFT:127,133 Covered if file.c+119 is covered.
+LFT:139,139 Covered if file.c+119 is covered.
+end_of_record
+
+SF:fs/ext4/hash.c
+LFT:199,200 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/fsync.c
@@ -523,6 +535,7 @@ SF:fs/ext4/inode.c
 FN:mpage_da_map_and_submit
 LFT:73,89 Can probably be covered by running stability check in common/fallocate/FallocateNormalPunchHole1 test which is marked as dangerous.
 LFT:106,107 This block can be covered if we write a KEDR payload for fs/jbd2/jbd2_journal_file_inode function.
+LFT:122,124 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -535,18 +548,18 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_write_begin
-LFT:25,26 Can be covered if ext4_write_begin() function is called with "noload" mount option.
+LFT:25,26 Can be covered if ext4_write_begin() function is called and the log is corrupted/aborted.
 end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_da_write_begin
-LFT:28,29 Can be covered if ext4_da_write_begin() function is called(write of specific ammount with "delalloc" mount option) with "noload" mount option.
+LFT:28,29 Can be covered if ext4_da_write_begin() function is called(write of specific ammount with "delalloc" mount option) and if the log is corrupted/aborted.
 end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_change_inode_journal_flag
 LFT:36,36 Can be covered by setting and then unsetting EXT4_INODE_JOURNAL_DATA flag with EXT4_IOC_SETFLAGS ioctl.
-LFT:45,45 Can be covered by setting and then unsetting EXT4_INODE_JOURNAL_DATA flag with EXT4_IOC_SETFLAGS ioctl with "noload" mount option.
+LFT:45,45 Can be covered by setting and then unsetting EXT4_INODE_JOURNAL_DATA flag with EXT4_IOC_SETFLAGS ioctl and if the log is corrupted/aborted.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -577,12 +590,14 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_evict_inode
-LFT:53,60 ext4_evict_inode should be called with "noload" mount option(unlink and umount a file).
+LFT:53,60 ext4_evict_inode should be called(unlink and umount a file) and the log must be corrupted/aborted.
+LFT:68,69 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function.
+LFT:115,115 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function.
 end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_da_writepages
-LFT:293,298 Write of certain amount should be done with "noload" and "delalloc" mount options enabled.
+LFT:293,298 These lines can be covered if the log is corrupted/aborted during write of certain amount with "delalloc" option enabled.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -620,6 +635,7 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_getblk
 LFT:22,23 This block can be covered if we write a KEDR payload for fs/buffer.c/__getblk function.
+LFT:52,54 This block can be covered if we write a KEDR payload for fs/jbd2/transaction.c/jjbd2_journal_get_create_access function.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -642,7 +658,13 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_ordered_write_end
+LFT:21,21 This block can be covered if we change the on-disk inode of a regular file and write to it with "data=ordered" option enabled.
 LFT:25,26 This block can be covered if we write a KEDR payload for fs/jbd2/transaction.c/jbd2_journal_file_inode function.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:_ext4_get_block
+LFT:18,19 These lines can be covered if the log is corrupted/aborted.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -696,11 +718,16 @@ end_of_record
 
 SF:fs/ext4/ioctl.c
 LFT:50,50 This line can be covered if we write a KEDR payload for fs/namespace.c/mnt_want_write function.
+LFT:107,108 These lines can be covered if the log is corrupted/aborted during set flags ioctl.
+LFT:139,139 Try to set EXT4_EXTENTS_FL flag with "-t ext3" mkfs option enabled.
 LFT:160,160 This line can be covered if we write a KEDR payload for fs/namespace.c/mnt_want_write function.
+LFT:168,169 These lines can be covered if the log is corrupted/aborted during set version ioctl.
+LFT:276,276 These line can be covered if the superblock is corrupted and add group ioctl is called(see ext4/Ioctl/GroupExtendFail test).
 LFT:319,319 This line can be covered if we write a KEDR payload for fs/namespace.c/mnt_want_write function.
 LFT:341,341 This line can be covered if we write a KEDR payload for fs/namespace.c/mnt_want_write function.
 LFT:103,103 This is just a self-checking code.
 LFT:247,249 Can be covered by calling move extent ioctl with bigalloc mkfs option.
+LFT:359,376 Fitrim ioctl works only for solid-state drives.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -1002,6 +1029,7 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_journalled_write_end
+LFT:47,47 This block can be covered if we change the on-disk inode of a regular file and write to it with "data=journal" option enabled.
 LFT:53,60 Can be covered if we change inode->i_size on disk. 
 end_of_record
 
@@ -1018,8 +1046,27 @@ LFT:18,33 Change on-disk inode i_blocks to be more than ~0U and call EXT4_IOC_SE
 end_of_record
 
 SF:fs/ext4/inode.c
+FN:ext4_end_io_dio
+LFT:19,23 To cover this block we need async direct write to a file of a greater size than the size after the write(see ext4/ReadWrite/ReadWriteDirect test)
+LFT:26,26 To cover this block we need async direct write to a file of a greater size than the size after the write with unwritten extents, lseek instead of the first write can probably work(see ext4/ReadWrite/ReadWriteDirect test)
+LFT:31,46 To cover this block we need async direct write to a file of a greater size than the size after the write withount unwritten extents(see ext4/ReadWrite/ReadWriteDirect test)
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_ext_direct_IO
+LFT:83,87 To cover this block we need to change and then perform a direct write to that file of a greater size than the size after the write(see ext4/ReadWrite/ReadWriteDirect test)
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_discard_partial_page_buffers_no_lock
+LFT:22,22 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
 FN:ext4_setattr
+LFT:22,23 These lines can be covered if the log is corrupted/aborted during chmod.
 LFT:27,28 This block can be covered if we write a KEDR payload for fs/quota/dquot.c/dquot_transfer function.
+LFT:58,59 These lines can be covered if the log is corrupted/aborted during chmod.
 LFT:76,84 This block can be covered if we write a KEDR payload for /fs/jbd2/transaction.c/jbd2_journal_begin_ordered_truncate function.
 end_of_record
 
