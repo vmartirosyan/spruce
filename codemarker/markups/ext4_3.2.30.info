@@ -39,6 +39,11 @@ LFT:3,3 This line could be easily covered if we perform a fault simulation on mo
 end_of_record
 
 SF:fs/ext4/super.c
+FN:ext4_orphan_cleanup
+LFT:60,60 This line is covered, but marked as not covered. Gcov bug.
+end_of_record
+
+SF:fs/ext4/super.c
 FN:ext4_fh_to_parent This is dead code as its call is only from vfs, but the corresponing function from VFS can never call this funcion. See the same function in JFS for more details.
 end_of_record
 
