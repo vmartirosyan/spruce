@@ -94,6 +94,7 @@ isn't covered as mount options are parsed and checked in super.c-->
                 </Code>
         </Test>
         <Test Name="MultipleResize" FaultSimulationReady="true">
+			<Dangerous check="stability" />
             <Description>Multiple resize.</Description>
             <Code>
                 uint64_t DeviceSize = PartitionManager::GetDeviceSize(DeviceName);
