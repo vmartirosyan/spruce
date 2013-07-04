@@ -1,0 +1,99 @@
+<!--    access.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Giorgi Gulabyan<gulabyang@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="name_to_handle">
+	<GlobalHeader>
+#include <linux/version.h>
+#include <unistd.h>
+#include <sys/syscall.h>
+#if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,39)
+	EmptyTestSet(common, name_to_handle, Unsupported, "name_to_handle_at or/and open_by_handle_at is/are not supported.")
+#else
+	#if !defined(__NR_name_to_handle_at) || !defined(__NR_open_by_handle_at)
+		EmptyTestSet(common, name_to_handle, Unsupported, "name_to_handle_at or/and open_by_handle_at is/are not supported.")
+	#else
+		#if HAVE_STRUCT_FILE_HANDLE!=1
+		#pragma GCC diagnostic ignored "-pedantic" 
+				struct file_handle {
+					     uint32_t handle_bytes;
+						 int handle_type;
+						 /* file identifier */
+						 unsigned char f_handle[0];
+						 //unsigned char f_handle[1];
+					};
+		#pragma GCC diagnostic warning "-pedantic" 
+		#endif
+	</GlobalHeader>
+	<Requires>unistd.h</Requires>
+	<Requires>sys/syscall.h</Requires>
+	<Requires>fcntl.h</Requires>
+	<Requires>stdio.h</Requires>
+	<Requires>stdlib.h</Requires>
+	<Test Name="NameToHandleNormalForFile" FaultSimulationReady="true" Shallow="true">
+		<Description>name_to_handle_at: Convert name to handle and open_by_handle_at: Open the file handle</Description>
+		<File count="1"/>
+		<Code>
+			struct file_handle *fh = static_cast<file_handle*>(malloc(sizeof(struct file_handle)));
+			fh->handle_bytes = 0;
+			int mnt_id; 
+			int ret = syscall(__NR_name_to_handle_at, AT_FDCWD, (FilePrefix + "0").c_str(), fh, &mnt_id, 0);
+			if(ret == -1 && errno == EOVERFLOW )
+			{
+				int sz = fh->handle_bytes;
+				free(fh);
+				fh = static_cast<file_handle*>(malloc(sizeof(struct file_handle) + sz));
+				fh->handle_bytes = sz;
+				Fail( syscall(__NR_name_to_handle_at, AT_FDCWD, (FilePrefix + "0").c_str(), fh, &mnt_id, 0) == -1, "name_to_handle_at failed");				
+			}
+			
+			Fail (syscall(__NR_open_by_handle_at, AT_FDCWD, fh, 0) == -1, "open_by_handle_at failed");
+		</Code>
+	</Test>
+	<Test Name="NameToHandleNormalForDirectory" FaultSimulationReady="true" Shallow="true">
+		<Description>name_to_handle_at: Convert name to handle and open_by_handle_at: Open the file handle</Description>
+		<Dir count="1"/>
+		<Code>
+			struct file_handle *fh = static_cast<file_handle*>(malloc(sizeof(struct file_handle)));
+			fh->handle_bytes = 0;
+			int mnt_id; 
+			int ret = syscall(__NR_name_to_handle_at, AT_FDCWD, (DirPrefix + "0").c_str(), fh, &mnt_id, 0);
+			if(ret == -1 && errno == EOVERFLOW )
+			{
+				int sz = fh->handle_bytes;				
+				free(fh);
+				fh = static_cast<file_handle*>(malloc(sizeof(struct file_handle) + sz));
+				fh->handle_bytes = sz;
+				Fail ( syscall(__NR_name_to_handle_at, AT_FDCWD, (DirPrefix + "0").c_str(), fh, &mnt_id, 0) == -1, "name_to_handle_at failed");	
+			}
+			
+			Fail ( syscall(__NR_open_by_handle_at, AT_FDCWD, fh, 0) == -1, "open_by_handle_at failed");
+		</Code>
+	</Test>
+	<GlobalFooter>
+	#endif
+#endif
+	</GlobalFooter>
+</TestSet>
+
+

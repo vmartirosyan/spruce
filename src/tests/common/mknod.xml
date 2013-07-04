@@ -1,0 +1,148 @@
+<!--    mknod.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//      	Ani Tumanyan <ani.tumanyan92@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="mknod">	
+	<Test Name="MknodNormal1" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="ext4" />
+		<Description>The system call mknod() creates a file system node (file, device special file or named pipe) named pathname, with attributes specified by mode and dev.</Description>
+		<Code>
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
+			struct stat st_buf;
+			const char *node_name = "nodename";
+			
+			Fail ( mknod( node_name, S_IFREG | 0777, 0 ) == -1, "Mknod failed.");
+						
+			Unres ( stat( node_name, &st_buf ) == -1, "Error in stat system call");
+			
+			Check ( st_buf.st_uid != getuid(), "Mknod failed. Different user ID.");
+			
+			Check ( (st_buf.st_mode & (S_IFREG | 0777)) == 0, "Mknod failed. Wrong mode is set.");
+			
+			unlink( node_name );
+		</Code>
+	</Test>
+	<Test Name="MknodNormal2" FaultSimulationReady="true">
+		<Description></Description>
+		<Code>
+			Unres ( getuid() != 0, "This test should be executed by root.");
+			
+			if ( PartitionManager::IsOptionEnabled("ro") )
+				Unsupp("Read-only file system.");
+			
+			struct test_cases
+			{
+				int mode;
+				string msg;
+			} Test[] = {
+			{S_IFREG | 0777,	"ordinary file with mode 0777"},
+			{S_IFIFO | 0777,	"fifo special with mode 0777"},
+			{S_IFCHR | 0777,	"character special with mode 0777"},
+			{S_IFBLK | 0777,	"block special with mode 0777 "}
+			};
+			
+			const char *node_name = "node_name";
+			struct stat st;
+			
+			int n = sizeof(Test)/sizeof(test_cases);
+			
+			for ( int i = 0; i < n - 1; ++i )
+			{
+				
+				Fail ( mknod( node_name, Test[i].mode, 0 ) == -1, 
+					(string)"For " + Test[i].msg.c_str() + " mknod failed.");
+				
+				Unres ( stat( node_name, &st ) == -1,
+					(string)"For " + Test[i].msg + " stat failed with error.");
+				
+				Check ( st.st_uid != getuid(),
+					(string)"For " + Test[i].msg.c_str() + " mknod failed. "); 
+					
+				Check( (st.st_mode & Test[i].mode)  == 0,
+					(string)"For " + Test[i].msg.c_str() + " mknod failed. ");
+				
+				Check ( st.st_nlink != 1,
+					(string)"For " + Test[i].msg.c_str() + " mknod failed. ");
+
+				unlink( node_name );
+			}
+		</Code>
+	</Test>
+	<Test Name="MknodPathExists">
+		<Description>Path already exists.</Description>
+		<Code>
+			ErrorTest(mknod("/", 0777, 0), -1, EEXIST);
+		</Code>
+	</Test>
+	<Test Name="MknodSymlink">
+		<Description>Path is a symlink.</Description>
+		<File count="1"/>
+		<Code>
+			const char * SymlinkPath = "some_link";
+			Unres(symlink(FilePaths[0].c_str(), SymlinkPath) == -1, "Cannot create symlink.");
+			ErrorTest(mknod(SymlinkPath, 0777, 0), -1, EEXIST);
+		</Code>
+	</Test>
+	<Test Name="MknodInvalidArg1">
+		<Description>Invalid mode.</Description>
+		<Code>
+			ErrorTest(mknod("some_node", -1, 0), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MknodInvalidArg2">
+		<Description>Invalid device number.</Description>
+		<Code>
+			ErrorTest(mknod("some_node", 0777, -1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MknodFault">
+		<Description>pathname points outside your accessible address space.</Description>
+		<Code>
+			ErrorTest(mknod(reinterpret_cast<const char *>(-1), 0777, 0), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="MknodTooLongPath">
+		<Description>pathname too long.</Description>
+		<Code>
+			ENameTooLongTest(mknod(path, 0777, 0), -1);
+		</Code>
+	</Test>
+	<Test Name="MknodNotDir">
+		<Description>A component of pathname is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+			ENotDirTest(mknod(path, 0777, 0), -1);
+		</Code>
+	</Test>
+	<Test Name="MknodPermDenied">
+		<Description>Permission denied.</Description>
+		<Dir count="1"/>
+		<Code>
+			Unres( chmod(DirPaths[0].c_str(), 0700) == -1, "Cannot change permissions on directory." );
+			Unres ( chdir(DirPaths[0].c_str()) == -1, "Cannot change directory." );
+			const char * path = "some_node";
+			ENoAccessTest(mknod(path, 0777, 0), -1);
+		</Code>
+	</Test>
+</TestSet>

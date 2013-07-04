@@ -1,0 +1,54 @@
+<!--    close.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Gurgen Torozyan <gurgen.torozyan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="close">
+	<Requires>fcntl.h</Requires>
+	<Test Name="CloseCorrectDescriptorTest" FaultSimulationReady="true">
+		<Description>close()  closes  a  file descriptor, so that it no longer refers to any file and may be reused.</Description>			
+		<File count="1" />
+		<Code>
+			Fail ( close(FDs[0]) != 0, "Cannot close file.");
+		</Code>
+	</Test>
+	<Test Name="CloseCorrectDescriptorUnlinkTest" FaultSimulationReady="true">
+		<Description>if the descriptor was the last reference to a file which has been removed using unlink() the file is deleted.</Description>			
+		<File count="1" />
+		<Code>
+		
+			Unres(unlink(FilePaths[0].c_str()) == -1, "Cannot unlink file: Aborting test.");
+			
+			Fail ( close(FDs[0]) == -1, "Cannot close file.");
+			
+			// Check if the file is really deleted.
+			
+			Check ( access(FilePaths[0].c_str(), F_OK) == 0, "File was not deleted.");
+		</Code>
+	</Test>
+	<Test Name="CloseBadFileDescriptorTest">
+		<Description>Close a file descriptor.</Description>			
+		<Code>			
+			ErrorTest(close(-1), -1, EBADF);
+		</Code>
+	</Test>
+</TestSet>

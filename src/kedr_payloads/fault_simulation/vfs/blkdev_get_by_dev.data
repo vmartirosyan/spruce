@@ -1,0 +1,20 @@
+[group]
+	# Since 2.6.38
+	# Name and return type of the target function
+	function.name = blkdev_get_by_dev
+	returnType = struct block_device *
+
+	# Names and types of the arguments of the target function
+	arg.type = dev_t
+	arg.name = dev
+
+	arg.type = fmode_t
+	arg.name = mode
+
+	arg.type = void *
+	arg.name = holder
+
+	# Fault simulation
+	fpoint.fault_code = ret_val = ERR_PTR(-ENOMEM);
+#######################################################################
+
