@@ -1,0 +1,16 @@
+[group]
+	# Until 2.6.34
+	# Name and return type of the target function
+	function.name = dquot_alloc_inode
+	returnType = int
+
+	# Names and types of the arguments of the target function
+	arg.type = struct inode *
+	arg.name = inode
+	
+	arg.type = qsize_t
+	arg.name = number
+
+	# Fault Simulation
+	fpoint.fault_code =	ret_val = NO_QUOTA;
+#######################################################################
