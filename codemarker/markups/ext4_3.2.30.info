@@ -1792,15 +1792,23 @@ LFT:58,59 This block can be covered if failure is simulated during bio submissio
 end_of_record
 
 SF:fs/ext4/block_validity.c
+FN:add_system_zone
+LFT:26,31 This block can be covered manipulating the value of s_itb_per_group field, which is calculated based on s_inodes_per_group, s_blocks_per_group and s_inode_size fields of superblock.
+end_of_record
+
+SF:fs/ext4/block_validity.c
+LFT:50,50 Self check, as the data passed to the can_merge() function cannot be corrupt from outside.
 LFT:152,152 This line can be covered if we change "s_fs_info->system_blks.rb_node" superblock field.
 end_of_record
 
 SF:fs/ext4/block_validity.c
 FN:ext4_data_block_valid
-LFT:9,10 This line can be covered if we change "s_fs_info->s_es->s_first_data_block" and "s_fs_info->s_es" superblock fields.
+LFT:9,10 This block cannot be covered as these values cannot be controlled during FS execution. Data curroptions will cause the parition mount failure.
+LFT:19,19 This block cannot be covered as these values cannot be controlled during FS execution. Data curroptions will cause the parition mount failure.
 end_of_record
 
 SF:fs/ext4/block_validity.c
 FN:ext4_check_blockref
 LFT:12,13 This line can be covered if we change inode superblock field.
 end_of_record
+
