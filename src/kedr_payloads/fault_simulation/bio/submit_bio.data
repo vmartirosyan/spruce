@@ -1,0 +1,14 @@
+[group]
+	# Name and return type of the target function
+	function.name = submit_bio
+
+	# Names and types of the arguments of the target function
+	arg.type = int
+	arg.name = rw
+	
+	arg.type = struct bio*
+	arg.name = bio
+	
+	# Fault simulation
+	fpoint.fault_code = bio_endio(bio, -EIO);
+#######################################################################

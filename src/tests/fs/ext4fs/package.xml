@@ -1,0 +1,14 @@
+<TestPackage Name="ext4" FS="ext4">
+	<TestSet Name="Acl" />
+	<TestSet Name="Ioctl" />
+	<TestSet Name="BigAlloc" />
+	<TestSet Name="mount" />
+	<TestSet Name="Ext4OverloadTests" />
+	<TestSet Name="Lookup" />
+	<TestSet Name="ReadWrite" />
+	<TestSet Name="truncate" />
+	<TestSet Name="ShowAndStoreFunctions" />
+	<TestSet Name="Symlink" />
+	<TestSet Name="MoveExtent" />
+	<TestSet Name="statfs" />
+</TestPackage>

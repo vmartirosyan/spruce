@@ -1,0 +1,22 @@
+[group]
+	# Name and return type of the target function
+	function.name = read_cache_page
+	returnType = struct page *
+
+	# Names and types of the arguments of the target function
+	arg.type = struct address_space *
+	arg.name = mapping
+	
+	arg.type = pgoff_t
+	arg.name = index
+	
+	arg.type = read_cache_page_filler_t
+	arg.name = filler
+	
+	arg.type = void *
+	arg.name = data
+	
+	# Fault Simulation
+	# TODO: Check code
+	fpoint.fault_code =	ret_val = ERR_PTR(-EIO);
+#######################################################################

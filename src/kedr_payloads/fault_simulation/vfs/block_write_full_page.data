@@ -1,0 +1,19 @@
+[group]
+	# Name and return type of the target function
+	function.name = block_write_full_page
+	returnType = int
+
+	# Names and types of the arguments of the target function
+	arg.type = struct page *
+	arg.name = page
+
+	arg.type = get_block_t *
+	arg.name = get_block
+
+	arg.type = struct writeback_control *
+	arg.name = wbc
+	
+	# Fault Simulation
+	# TODO: check code
+	fpoint.fault_code =	ret_val = -EIO;
+#######################################################################

@@ -1,0 +1,18 @@
+[group]
+	# Name and return type of the target function
+	function.name = bh_submit_read
+	returnType = int
+
+	# Names and types of the arguments of the target function
+	arg.type = struct buffer_head *
+	arg.name = bh
+	
+	# Fault Simulation
+	fpoint.fault_code =>>
+		get_bh(bh);
+		clear_buffer_uptodate(bh);
+		unlock_buffer(bh);
+		put_bh(bh);
+		ret_val = -EIO;
+	<<
+#######################################################################
