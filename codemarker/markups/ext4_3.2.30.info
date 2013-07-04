@@ -992,6 +992,7 @@ end_of_record
 SF:fs/ext4/super.c
 FN:ext4_load_journal
 LFT:29,36 This block could be covered if change the superblock.
+LFT:42,44 This block could be covered if we have both : journal and inode journal.
 LFT:61,63 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:82,84 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 end_of_record
@@ -1081,6 +1082,9 @@ LFT:3570,3573 This line can be covered if we corrupt the superblock. Also need t
 LFT:3597,3600 This line can be covered if we corrupt the superblock.	
 LFT:3636,3637 This line can be covered if we corrupt the superblock.	
 LFT:3649,3652 This line can be covered if we corrupt the superblock.	
+LFT:3748,3751 This line can be covered if we corrupt the superblock block count.	
+LFT:3788,3790 This block can be probably covered combinig two mount options...data = writeback and data = journal.
+LFT:3815,3815 This line can be covered if we corrupt the superblock s_overhead_clusters.	
 LFT:3867,3868 This line can be covered if we corrupt the superblock.	
 LFT:3871,3872 This line can be covered if we corrupt the superblock.	
 LFT:3878,3880 This line can be covered if we corrupt the superblock.	
