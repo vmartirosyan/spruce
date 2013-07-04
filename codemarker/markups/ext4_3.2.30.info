@@ -3,6 +3,11 @@
 #######################################################################
 DEADCODE:
 
+SF:fs/ext4/inode.c
+FN:ext4_discard_partial_page_buffers_no_lock
+LFT:63,63 Can't be covered as flags is always 0.
+end_of_record
+
 SF:fs/ext4/acl.c
 FN:ext4_set_acl
 LFT:30,30 Never gets here because of a previous check.
@@ -278,8 +283,14 @@ LFT:219,219 This line is covered, but gcov doesn't show it.
 end_of_record
 
 SF:fs/ext4/inode.c
+FN:ext4_page_mkwrite
+LFT:25,25 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/ext4/inode.c
 FN:ext4_inode_blocks
 LFT:0,0 This function is inline and its call is usually integrated.
+LFT:11,11 Code is marked as it was not executed due to compiler optimisations.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -636,7 +647,7 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_evict_inode
 LFT:53,60 ext4_evict_inode should be called(unlink and umount a file) and the log must be corrupted/aborted.
-LFT:68,69 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function.
+LFT:68,70 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function.
 LFT:82,91 Covered if there is no space left in journal.
 LFT:115,116 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function.
 end_of_record
@@ -703,7 +714,26 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_writepage
+LFT:22,22 This is just a self-checking code.
+LFT:48,48 Covered only if ext4_writepage+22 is covered.
+LFT:55,55 Can be covered in case of a write to a mmaped page with journalling enabled.
 LFT:58,59 Covered only if mpage_da_submit_io+123 is covered.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_writepages
+LFT:90,90 This is just a self-checking code.
+LFT:107,108 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_discard_partial_page_buffers_no_lock
+LFT:33,35 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_page_mkwrite
+LFT:56,80 This block need page without buffers or with unmapped buffers which can't be controled.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -738,7 +768,64 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:_ext4_get_block
+LFT:14,14 Can be covered if we change on-disk inode.
 LFT:18,19 These lines can be covered if the log is corrupted/aborted.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_bread
+LFT:14,15 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:do_journal_get_write_access
+LFT:20,20 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_write_begin
+LFT:42,42 Can be covered if we corrupt inode and superblock(so that ext4_should_dioread_nolock returns 1) and write to a file.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_journalled_write_end
+LFT:19,21 This block can be covered in case of a journalled write without AOP_FLAG_UNINTERRUPTIBLE flag.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_inode_blocks
+LFT:14,14 Can be covered if we corrupt inode.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_inode_blocks
+LFT:158,161 Can't be covered as we can't simulate bad block state.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_do_update_inode
+LFT:86,89 Can be covered if we spoil inode i_rdev value.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_map_blocks
+LFT:8,8 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:noalloc_get_block_write Called only from marked lines.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:mpage_da_submit_io
+LFT:61,61 This is just a self-checking code.
+LFT:109,109 Covered if mpage_da_submit_io+61 is covered.
+LFT:118,118 Can probably be covered with write with "data=journal" and "delalloc" options enabled at the same time
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:mpage_add_bh_to_extent
+LFT:33,34 Can be covered if we corrupt inode.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -1143,6 +1230,16 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_discard_partial_page_buffers_no_lock
 LFT:22,22 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_discard_partial_page_buffers_no_lock
+LFT:107,111 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:__ext4_get_inode_loc
+LFT:47,48 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/inode.c
