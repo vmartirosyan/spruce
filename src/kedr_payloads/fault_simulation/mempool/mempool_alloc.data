@@ -11,4 +11,5 @@
     arg.name = mask
 
 	# Fault Simulation
+    # TODO: Function shouldn't fail with GFP_ATOMIC flag.
 	fpoint.fault_code =	ret_val = NULL;
