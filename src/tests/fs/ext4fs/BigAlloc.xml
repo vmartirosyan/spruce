@@ -34,7 +34,6 @@
 	<Test Name="bigAlloc_GROUP_EXTEND">
 		<Description>groupExtend with bigalloc mkfs option.</Description>              
 		<Code>
-				int res;
 				ext4_super_block sb;
 				Unres( !PartitionManager::GetSuperBlock(&sb, sizeof(sb)), "Cannot read superblock" );
 				int BlockSize = (1 << (sb.s_log_block_size+10));
@@ -67,7 +66,6 @@
 		<Description>Trying to split the parent page.</Description>
 		<File count = "1"/>
 		<Code>
-	
 			char *buf = new char[1024*1024];
 			memcpy(buf, "asdfg", 5);
 				
