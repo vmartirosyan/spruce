@@ -137,16 +137,6 @@ LFT:224,224 These lines are covered from "ext4_ext_split" function in extent.c f
 end_of_record
 
 SF:fs/ext4/extents.c
-LFT:383,388 These lines can be covered if the extent header in inode is corrupted.
-LFT:937,1001 These lines can be covered by a test similar to common/fallocate/FallocateNormalPunchHole4 but with more holes and more distances between data blocks.
-LFT:2315,2316 Self checking code.
-LFT:3465,3477 Can be covered if by a test similar to common/fallocate/FallocateNormalPunchHole4 but with Direct IO.
-LFT:3766,3771 Self checking code.
-LFT:3884,3891 The block can be covered if punch hole request punches out many consequent blocks.
-LFT:4045,4053 The block can be covered if writing to a file fails because of e.g. no space left on device.
-end_of_record
-
-SF:fs/ext4/extents.c
 FN:ext4_fallocate
 LFT:42,44 This block can be covered by a call to fallocate() exceeding the partition size.
 LFT:62,63 This block can be covered by simulation failures in jbd2_journal_start() function.
@@ -1698,4 +1688,16 @@ LFT:47,50 Could be covered if we corrupt superblock.
 LFT:91,91 Could be covered if we corrupt superblock.
 LFT:189,190 Could be covered if we corrupt inode. 
 LFT:221,221 Could be covered if we corrupt inode. 
+end_of_record
+
+SF:fs/ext4/extents.c
+LFT:383,388 These lines can be covered if the extent header in inode is corrupted.
+LFT:937,1001 These lines can be covered by a test similar to common/fallocate/FallocateNormalPunchHole4 but with more holes and more distances between data blocks.
+LFT:1053,1055 This block can be covered if we write a KEDR payload for "__getblk" function.
+LFT:1061,1062 This block can be covered if we write a KEDR payload for /fs/jbd2/transaction.c/jbd2_journal_get_create_access function.
+LFT:2315,2316 Self checking code.
+LFT:3465,3477 Can be covered if by a test similar to common/fallocate/FallocateNormalPunchHole4 but with Direct IO.
+LFT:3766,3771 Self checking code.
+LFT:3884,3891 The block can be covered if punch hole request punches out many consequent blocks.
+LFT:4045,4053 The block can be covered if writing to a file fails because of e.g. no space left on device.
 end_of_record
