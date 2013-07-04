@@ -1156,11 +1156,13 @@ end_of_record
 SF:fs/ext4/resize.c
 LFT:328,330 Can be covered if superblock s_feature_ro_compat value is changed and group add ioctl is called.
 LFT:712,712 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
+LFT:716,716 This block can be covered if we write a KEDR payload for jbd2_journal_stop function (fs/jbd2/transaction.c).
 end_of_record
 
 SF:fs/ext4/resize.c
 FN:ext4_group_add
 LFT:18,19 Can be covered if superblock s_feature_ro_compat value is changed and group add ioctl is called.
+LFT:24,25 This block can be covered if we change "s_fs_info->s_es" superblock field.
 LFT:30,31 Can be covered if superblock s_indoes_countt value is changed and group add ioctl is called.
 LFT:38,40 Can be covered if superblock EXT4_FEATURE_COMPAT_RESIZE_INODE is unset in s_feature_compat and group add ioctl is called.
 LFT:44,45 Change on-disk inode i_mode to an invalid value and call group add ioctl for it.
@@ -1192,7 +1194,8 @@ SF:fs/ext4/resize.c
 FN:ext4_group_extend
 LFT:21,26 This block could be covered if we try to perform a very big resize.
 LFT:30,31 This block could be covered if we try to perform resize when size is more that partition size.
-LFT:45,46 This block could be covered if we try to perform resize with when "last" will be bigger that "blocks_per_group" value.
+LFT:38,39 This block can be covered if we change "s_fs_info->s_blocks_per_group" and "s_fs_info->s_cluster_bits" superblock fields.
+LFT:45,46 This block could be covered if we try to perform resize with when block number plus added block number will be bigger than the number of blocks we want to resize.
 LFT:59,60 This block could be covered if we perform fault simulation with bread point enabled.
 LFT:69,71 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
 LFT:76,78 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
@@ -1206,6 +1209,7 @@ end_of_record
 
 SF:fs/ext4/resize.c
 FN:verify_group_input
+LFT:32,32 This block can be covered if we change "s_fs_info->s_blocks_per_group", "s_fs_info->s_cluster_bits", "s_fs_info->s_groups_count" and superblock fields.
 LFT:40,40 This line can be covered if there will be kedr payload failing "__getblk" function.
 end_of_record
 
