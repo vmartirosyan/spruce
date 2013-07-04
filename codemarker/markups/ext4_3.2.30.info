@@ -1305,11 +1305,42 @@ FN:ext4_mb_discard_lg_preallocations The function is called from ext4_mb_add_n_t
 end_of_record
 
 SF:fs/ext4/mballoc.c
+LFT:2227,2229 Could be covered if we perform a fault simulation. 
+LFT:2241,2242 Could be covered if we perform a fault simulation. 
+LFT:2283,2284 Could be covered if we perform a fault simulation. 
+LFT:2336,2337 Could be covered if we perform a fault simulation. 
+LFT:2341,2342 Could be covered if we perform a fault simulation. 
+LFT:2353,2354 Could be covered if we perform a fault simulation. 
+LFT:2363,2371 Could be covered if we perform a fault simulation. 
 LFT:2596,2616 These lines can be covered if we previously set s_mb_stats flag in super block.
+LFT:2741,2742 Could be covered if we perform a fault simulation. 
+LFT:2748,2750 Could be covered if we perform a fault simulation. 
 LFT:3100,3109 These lines can be covered if we previously set s_mb_stats flag in super block.
+LFT:3325,3327 This line can be covered if we change the superblock.
 LFT:4298,4298 These lines can be covered if we previously set S_NOQUOTA flag in inode i_flags.
 LFT:4325,4326 These lines can be covered if we previously set EXT4_MB_USE_ROOT_BLOCKS flag in inode.
 LFT:4380,4385 These lines can be covered if we interrupt process when we try to allocate blocks. 
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_generate_from_pa
+LFT:20,30 This line can be covered if we change the superblock.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_init
+LFT:106,114 Could be covered if we perform a fault simulation. 
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_simple_scan_group
+LFT:32,32 This line can be covered if we change the superblock.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_free_blocks
+LFT:80,81 These lines can be covered if we previously set EXT4_FREE_BLOCKS_NOFREE_FIRST_CLUSTER flag.
+LFT:87,88 These lines can be covered if we previously set EXT4_FREE_BLOCKS_NOFREE_LAST_CLUSTER flag.
 end_of_record
 
 SF:fs/ext4/balloc.c
@@ -1323,6 +1354,18 @@ LFT:87,99 This block can be covered if we fail function find_get_page with fault
 LFT:116,123 Called from ext4_mb_load_buddy+96
 end_of_record
 
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_generate_buddy
+LFT:44,44 This line can be covered if we change the superblock.
+LFT:51,51 This line can be covered if we change the superblock.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_discard_preallocations
+LFT:76,79 This block can be covered if we fail ext4_mb_load_buddy function. See ext4_mb_load_buddy+116 line
+LFT:83,86 Could be covered if we perform a fault simulation. 
+end_of_record
+
 SF:fs/ext4/balloc.c
 FN:ext4_get_group_desc
 LFT:11,14 These lines can be covered if we change the superblock.
@@ -1331,7 +1374,7 @@ end_of_record
 
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_seq_groups_show
-LFT:25,26 This block can be covered if we fail ext4_mb_load_buddy function. It can be relized if we run fault simulation on these function
+LFT:25,26 This block can be covered if we fail ext4_mb_load_buddy function. It can be relized if we run fault simulation on these function.
 end_of_record
 
 SF:fs/ext4/balloc.c
@@ -1345,6 +1388,7 @@ end_of_record
 
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_discard_group_preallocations
+LFT:19,20 Could be covered if we perform a fault simulation.
 LFT:25,27 This block can be covered if we fail ext4_mb_load_buddy function. See ext4_mb_load_buddy+116 line
 end_of_record
 
