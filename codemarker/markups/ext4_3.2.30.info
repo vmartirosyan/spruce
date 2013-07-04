@@ -1022,6 +1022,9 @@ end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_orphan_cleanup
+LFT:14,16 Can be covered if we corrupt the s_last_orphan field of sb and then remount partititon ReadOnly, then run  OrphanCleanup2 test
+LFT:21,23 This block can be covered if we corrupt the superblock s_feature_incompat value and run the OrphanCleanup2 test
+LFT:27,31 This block can be covered if we corrupt the superblock s_state field and run the OrphanCleanup2 test.
 LFT:45,47 This block can be covered if we corrupt the superblock.
 LFT:74,79 This block can be covered if we corrupt the inode.
 end_of_record
@@ -1066,6 +1069,8 @@ SF:fs/ext4/super.c
 FN:parse_options
 LFT:186,186 This block can be covered if we mount a file system with Opt_data_journal option the remount it with no journal.
 LFT:231,235 This block can be covered if we try to change journaled quota options when the quotas are turned ON.
+LFT:418,418 This line can be covered with USRQUOTA mount option enabled, and managing quotas with for example edquota command.
+LFT:421,421 This line can be covered with GRPQUOTA mount option enabled, and managing quotas with for example edquota command.
 end_of_record
 
 SF:fs/ext4/super.c
