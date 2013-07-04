@@ -1,0 +1,59 @@
+# A plugin to KERD LeakChecker that tracks some function calls for
+# simulate allocation and frees from the sence of KEDR LeakChecker.
+#
+# Based on 'leak_check' example from KEDR package.
+
+module.name = leak_simulator
+module.author = Andrey Tsyvarev
+module.license = GPL
+
+header =>>
+#include <linux/fs.h> /* new_inode */
+#include <linux/bio.h> /* bio_put */
+
+#include "simulation_params.h"
+
+<<
+
+[group]
+	# Name and return type of the target function
+	function.name = new_inode
+	returnType = struct inode *
+
+	# Names and types of the arguments of the target function
+	arg.type = struct super_block *
+	arg.name = sb
+	
+	# The body of the replacement function.
+	# For allocation events, kedr_lc_handle_alloc() should be 
+	# called in the post-handler. 
+	# Note that only successful memory allocations should be 
+	# reported to LeakCheck via kedr_lc_handle_alloc().
+	#
+	# 'target_module' and 'caller_address' variables are provided
+	# by KEDR core and LeakCheck, no need to bother about them.
+	#
+	handler.post =>>
+	if (/*simulate_allocs &&*/ (ret_val != NULL))
+		kedr_lc_handle_alloc(target_module, ret_val, sizeof(*ret_val),
+			caller_address);
+	<< 
+# End of the group of definitions for bio_alloc().
+#######################################################################
+
+[group]
+	# Name of the target function
+	function.name = bio_put
+
+	# Names and types of the arguments of the target function
+	arg.type = struct bio *
+	arg.name = bio
+	
+	# The body of the replacement function
+	handler.pre =>>
+	/*if(simulate_frees)*/
+		kedr_lc_handle_free(target_module, bio, 
+			caller_address);
+	<< 
+# End of the group of definitions for mempool_free().
+#######################################################################

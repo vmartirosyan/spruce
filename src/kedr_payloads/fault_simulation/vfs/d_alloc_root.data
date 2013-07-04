@@ -1,0 +1,12 @@
+[group]
+	# Name and return type of the target function
+	function.name = d_alloc_root
+	returnType = struct dentry *
+
+	# Names and types of the arguments of the target function
+	arg.type = struct inode * 
+	arg.name = root_inode
+	
+	# Fault Simulation
+	fpoint.fault_code =	ret_val = NULL;
+#######################################################################

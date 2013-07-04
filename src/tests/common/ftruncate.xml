@@ -1,0 +1,120 @@
+<!--    ftruncate.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="ftruncate">	
+	<Test Name="FtruncateNormalIncrease" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="ext4" />
+		<Description></Description>
+		<File count="1"/>
+		<Code>
+			const string buf = "1234";
+			const int length = buf.size();
+			int length_after_truncate = 5;
+			
+			Unres ( write(FDs[0], buf.c_str(), length) != length, "Cannot write to the file.");
+			
+			Fail ( ftruncate(FDs[0], length_after_truncate) != 0, "ftruncate failed.");
+			
+			// Ensure the file size.
+			struct stat stat_buf;
+			Unres ( fstat(FDs[0], &stat_buf) == -1, "Cannot stat file.");
+			
+			Check ( stat_buf.st_size != length_after_truncate, "Different file size after truncate.");
+						
+			// Ensure the trailing NULLs are there.
+			char buf_read;		
+			Unres ( read(FDs[0], &buf_read, 1) != 1, "Cannot read from truncated file.");
+			
+			Check ( buf_read != '\0', "After truncation file was not filled with NULLs.");
+		</Code>
+	</Test>
+	<Test Name="FtruncateNormalDecrease" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="ext4" />
+		<Description></Description>
+		<File count="1"/>
+		<Code>
+			const string buf = "1234";
+			const int length = buf.size();
+			int length_after_truncate = 1;
+			
+			Unres ( write(FDs[0], buf.c_str(), length) != length, "Cannot writeto the file.");
+			
+			Fail ( ftruncate(FDs[0], length_after_truncate) != 0, "ftruncate failed." );
+			
+			
+			struct stat stat_buf;
+			Unres ( fstat(FDs[0], &stat_buf) == -1, "Cannot stat file.");
+			
+			Check ( stat_buf.st_size != length_after_truncate , "Different file size after truncate.");
+		</Code>
+	</Test>
+	<Test Name="TruncateNormalDecreaseUnlinked" FaultSimulationReady="true">
+		<Dangerous check="stability" fs="ext4" />
+		<Description>Truncate an unlinked file.</Description>
+		<File count="1"/>
+		<Code>
+			const int length = 10*4096;
+			
+			const char buf[length] = {0};
+			
+			int length_after_truncate = 1;
+			
+			Unres ( write(FDs[0], buf, length) != length, "Cannot write  to the file.");
+			
+			Unres ( fsync(FDs[0]) == -1, "Cannot sync file");
+			
+			Unres ( unlink(FilePaths[0].c_str()) == -1, "Cannot remove file." );
+			
+			Unres ( fsync(FDs[0]) == -1, "Cannot sync file");
+			
+			Fail ( ftruncate(FDs[0], length_after_truncate) != 0, "truncate failed");
+			
+			struct stat stat_buf;
+			Unres ( fstat(FDs[0], &stat_buf) == -1, "Cannot stat file.");
+			
+			Check ( stat_buf.st_size != length_after_truncate, "Wrong file size after truncate.");
+		</Code>
+	</Test>
+	<Test Name="FtruncateBadFile">
+		<Description></Description>
+		<Code>
+			ErrorTest(ftruncate(-1,1), -1, EBADF);
+		</Code>
+	</Test>
+	<Test Name="FtruncateInval1">
+		<Description></Description>
+		<Code>
+			File f("FtruncateInval1", S_IRUSR, O_CREAT | O_RDONLY);
+			int fd = f.GetFileDescriptor();
+						
+			Fail ( ftruncate(fd, 1) == 0 || ( ( errno != EBADF ) && ( errno != EINVAL ) ), 
+				"ftruncate should return EBADF or EINVAL but it did not.");
+		</Code>
+	</Test>
+	<Test Name="FtruncateInval2">
+		<Description></Description>
+		<Code>
+			ErrorTest(ftruncate(0,1), -1, EINVAL);
+		</Code>
+	</Test>
+</TestSet>
