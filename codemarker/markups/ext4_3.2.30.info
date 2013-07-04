@@ -195,6 +195,22 @@ FN:ext4_block_zero_page_range
 LFT:0,90 Called only from ext4_block_truncate_page.
 end_of_record
 
+SF:fs/ext4/inode.c
+FN:ext4_evict_inode
+LFT:82,91 This block can be covered if unlink() is called when the journal is full.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_update_reserve_space
+LFT:9,14 Self checking/correcting code.
+LFT:18,23 Self checking/correcting code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:_ext4_get_block
+LFT:18,19 This block can be covered by simulating failure in jbd2_journal_start() function.
+end_of_record
+
 SF:fs/ext4/indirect.c
 FN:ext4_blks_to_allocate
 LFT:0,0 Function is inline and its call is usually integrated.
@@ -220,6 +236,7 @@ end_of_record
 SF:fs/ext4/page-io.c
 FN:ext4_end_bio
 LFT:29,44 This block can be covered if failure is simulated during bio submission.
+LFT:53,60 This block can be covered if failure is simulated during bio submission.
 end_of_record
 
 SF:fs/ext4/page-io.c
