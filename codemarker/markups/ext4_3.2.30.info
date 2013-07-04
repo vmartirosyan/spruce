@@ -1078,12 +1078,15 @@ end_of_record
 
 SF:fs/ext4/resize.c
 FN:setup_new_group_blocks
+LFT:19,19 This block can be covered if we write a KEDR payload for jbd2_journal_start function (fs/jbd2/transaction.c).
 LFT:39,40 This block can be covered if we write a KEDR payload for fs/jbd2/transaction.c/jbd2_journal_get_write_access function.
+LFT:46,47 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
 LFT:66,67 Covered if resize.c/bclean+10 is covered.
 LFT:97,98 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
 LFT:105,106 Covered if resize.c/bclean+10 is covered.
 LFT:113,113 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
 LFT:119,119 This block can be covered if we write a KEDR payload for jbd2_journal_stop function (fs/jbd2/transaction.c).
+LFT:716,716 This block can be covered if we write a KEDR payload for jbd2_journal_stop function (fs/jbd2/transaction.c).	
 end_of_record
 
 SF:fs/ext4/resize.c
