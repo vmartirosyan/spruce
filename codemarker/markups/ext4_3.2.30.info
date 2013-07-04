@@ -305,6 +305,11 @@ LFT:216,216 Function is inline and its call is usually integrated.
 LFT:219,219 This line is covered, but gcov doesn't show it.
 end_of_record
 
+SF:fs/ext4/super.c
+FN:ext4_orphan_cleanup
+LFT:60,60 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
 SF:fs/ext4/inode.c
 FN:ext4_page_mkwrite
 LFT:25,25 Code is marked as it was not executed due to compiler optimisations.
@@ -1032,6 +1037,7 @@ LFT:21,23 This block can be covered if we corrupt the superblock s_feature_incom
 LFT:27,31 This block can be covered if we corrupt the superblock s_state field and run the OrphanCleanup2 test.
 LFT:45,47 This block can be covered if we corrupt the superblock.
 LFT:74,79 This block can be covered if we corrupt the inode.
+LFT:87,87 Covered if ext4_orphan_cleanup+79 is covered.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -1072,10 +1078,16 @@ end_of_record
 
 SF:fs/ext4/super.c
 FN:parse_options
+LFT:165,165 This block can be covered if we mount a file system with "max_batch_time=0" mount option.
 LFT:186,186 This block can be covered if we mount a file system with Opt_data_journal option the remount it with no journal.
 LFT:231,235 This block can be covered if we try to change journaled quota options when the quotas are turned ON.
+LFT:293,293 This block can be covered if we mount a file system with "barrier=0" mount option.
+LFT:304,307 This block could be covered if it was possible to mount fylesystem with "resize" option but it is not.
+LFT:353,356 This block can be covered if we mount a file system with "inode_readahead_blks=x" where x is not a power of two for example "inode_readahead_blks=3".
+LFT:380,380 This block can be covered if we mount a file system with "auto_da_alloc=0" mount option.
 LFT:418,418 This line can be covered with USRQUOTA mount option enabled, and managing quotas with for example edquota command.
 LFT:421,421 This line can be covered with GRPQUOTA mount option enabled, and managing quotas with for example edquota command.
+LFT:424,426 This block can be covered if we mount a file system with "usrquota" and "grpquota" mount options at the same time.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -1105,9 +1117,11 @@ LFT:2143,2149 These lines can be covered if we corrupt/change the superblock.
 LFT:2406,2406 These lines can be covered if we corrupt/change the superblock s_feature_incompat field and set it to EXT4_FEATURE_INCOMPAT_META_BG value.
 LFT:2408,2412 These lines can be covered if we corrupt/change the superblock s_feature_incompat field and set it to EXT4_FEATURE_INCOMPAT_META_BG value.
 LFT:3309,3309 This line can be covered using errors=panic mount option.
+LFT:3313,3313 This line can be covered if we change superblock s_errors value.
 LFT:3383,3385 These lines can be covered if we corrupt/change the superblock s_feature_incompat field.
 LFT:3422,3424 These lines could be covered if we use mkfs option which indicates blocksize and give an unsupported value.
 LFT:3479,3485 This block can be covered if we corrupt the superblock s_desc_size field and s_feature_incompat field.	
+LFT:3511,3511 This line can be covered if we change superblock s_flags value.
 LFT:3528,3531 Probably could be covered with bigalloc mount option and with corrupted superblock.
 LFT:3538,3541 Probably could be covered with bigalloc mount option and with corrupted superblock.
 LFT:3545,3549 This code could be covered when mounted with bigalloc option, and the sperblock is corrupted.
@@ -1140,6 +1154,21 @@ LFT:4610,4615 These lines can be covered if we corrupt the superblock(especially
 LFT:4833,4833 These lines can be covered if we corrupt the superblock. See the line 2227 for more details.
 LFT:5098,5098 This line can be covered if we add new payload (kobject_init_and_add) to kedr and perform a fault simulation on ext4 Init/Exit functions.
 LFT:5169,5181 These lines can be covered if we perform a fault simulation on ext4 Init/Exit functions.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_load_journal
+LFT:13,16 External journal mkfs is needed.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_mark_recovery_complete
+LFT:6,6 Can be covered if we change s_feature_compat superblock value.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_unfreeze
+LFT:167,167 Can be covered if we change s_feature_incompat superblock value and remount or just remount filesystem with multiple mount protect turned on(-O mmp mkfs option).
 end_of_record
 
 SF:fs/ext4/super.c
