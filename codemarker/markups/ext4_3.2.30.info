@@ -3,6 +3,16 @@
 #######################################################################
 DEADCODE:
 
+SF:fs/ext4/extents.c
+FN:ext4_ext_put_gap_in_cache
+LFT:35,36 Unreachable else condition.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_discard_partial_page_buffers_no_lock
+LFT:63,63 Can't be covered as flags is always 0.
+end_of_record
+
 SF:fs/ext4/acl.c
 FN:ext4_set_acl
 LFT:30,30 Never gets here because of a previous check.
@@ -132,16 +142,6 @@ LFT:224,224 These lines are covered from "ext4_ext_split" function in extent.c f
 end_of_record
 
 SF:fs/ext4/extents.c
-LFT:383,388 These lines can be covered if the extent header in inode is corrupted.
-LFT:937,1001 These lines can be covered by a test similar to common/fallocate/FallocateNormalPunchHole4 but with more holes and more distances between data blocks.
-LFT:2315,2316 Self checking code.
-LFT:3465,3477 Can be covered if by a test similar to common/fallocate/FallocateNormalPunchHole4 but with Direct IO.
-LFT:3766,3771 Self checking code.
-LFT:3884,3891 The block can be covered if punch hole request punches out many consequent blocks.
-LFT:4045,4053 The block can be covered if writing to a file fails because of e.g. no space left on device.
-end_of_record
-
-SF:fs/ext4/extents.c
 FN:ext4_fallocate
 LFT:42,44 This block can be covered by a call to fallocate() exceeding the partition size.
 LFT:62,63 This block can be covered by simulation failures in jbd2_journal_start() function.
@@ -214,6 +214,7 @@ end_of_record
 SF:fs/ext4/indirect.c
 LFT:704,706 This block can be covered if we change inode member "i_sb->s_feature_ro_compat".
 LFT:942,942 This block can be covered if perform a fault simulation on jbd2 payloads.
+LFT:180,180 The can be covered if __getblk() function fails (via JEDR fault simulation payload).
 end_of_record
 
 SF:fs/ext4/indirect.c
@@ -224,6 +225,11 @@ end_of_record
 SF:fs/ext4/indirect.c
 FN:ext4_blks_to_allocate
 LFT:0,0 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/indirect.c
+FN:ext4_alloc_blocks
+LFT:31,36 This block can be covered if we try to allocate more space than there is on device.
 end_of_record
 
 SF:fs/ext4/indirect.c
@@ -256,6 +262,12 @@ FN:ext4_ind_direct_IO
 LFT:20,21 This block can be covered if perform a fault simulation on jbd2 payloads.
 end_of_record
 
+SF:fs/ext4/indirect.c
+FN:ext4_free_branches
+LFT:21,25 This block can be covered corrupting the superblock.
+LFT:68,70 This block can be covered truncating a file on Ext3 FS when there is no space left on device.
+end_of_record
+
 SF:fs/ext4/page-io.c
 FN:ext4_end_bio
 LFT:29,44 This block can be covered if failure is simulated during bio submission.
@@ -278,8 +290,14 @@ LFT:219,219 This line is covered, but gcov doesn't show it.
 end_of_record
 
 SF:fs/ext4/inode.c
+FN:ext4_page_mkwrite
+LFT:25,25 Code is marked as it was not executed due to compiler optimisations.
+end_of_record
+
+SF:fs/ext4/inode.c
 FN:ext4_inode_blocks
 LFT:0,0 This function is inline and its call is usually integrated.
+LFT:11,11 Code is marked as it was not executed due to compiler optimisations.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -636,7 +654,7 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_evict_inode
 LFT:53,60 ext4_evict_inode should be called(unlink and umount a file) and the log must be corrupted/aborted.
-LFT:68,69 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function.
+LFT:68,70 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function.
 LFT:82,91 Covered if there is no space left in journal.
 LFT:115,116 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function.
 end_of_record
@@ -703,7 +721,26 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_writepage
+LFT:22,22 This is just a self-checking code.
+LFT:48,48 Covered only if ext4_writepage+22 is covered.
+LFT:55,55 Can be covered in case of a write to a mmaped page with journalling enabled.
 LFT:58,59 Covered only if mpage_da_submit_io+123 is covered.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_writepages
+LFT:90,90 This is just a self-checking code.
+LFT:107,108 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_discard_partial_page_buffers_no_lock
+LFT:33,35 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_page_mkwrite
+LFT:56,80 This block need page without buffers or with unmapped buffers which can't be controled.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -738,7 +775,64 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:_ext4_get_block
+LFT:14,14 Can be covered if we change on-disk inode.
 LFT:18,19 These lines can be covered if the log is corrupted/aborted.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_bread
+LFT:14,15 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:do_journal_get_write_access
+LFT:20,20 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_write_begin
+LFT:42,42 Can be covered if we corrupt inode and superblock(so that ext4_should_dioread_nolock returns 1) and write to a file.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_journalled_write_end
+LFT:19,21 This block can be covered in case of a journalled write without AOP_FLAG_UNINTERRUPTIBLE flag.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_inode_blocks
+LFT:14,14 Can be covered if we corrupt inode.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_inode_blocks
+LFT:158,161 Can't be covered as we can't simulate bad block state.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_do_update_inode
+LFT:86,89 Can be covered if we spoil inode i_rdev value.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_map_blocks
+LFT:8,8 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:noalloc_get_block_write Called only from marked lines.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:mpage_da_submit_io
+LFT:61,61 This is just a self-checking code.
+LFT:109,109 Covered if mpage_da_submit_io+61 is covered.
+LFT:118,118 Can probably be covered with write with "data=journal" and "delalloc" options enabled at the same time
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:mpage_add_bh_to_extent
+LFT:33,34 Can be covered if we corrupt inode.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -898,6 +992,7 @@ end_of_record
 SF:fs/ext4/super.c
 FN:ext4_load_journal
 LFT:29,36 This block could be covered if change the superblock.
+LFT:42,44 This block could be covered if we have both : journal and inode journal.
 LFT:61,63 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:82,84 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 end_of_record
@@ -987,6 +1082,9 @@ LFT:3570,3573 This line can be covered if we corrupt the superblock. Also need t
 LFT:3597,3600 This line can be covered if we corrupt the superblock.	
 LFT:3636,3637 This line can be covered if we corrupt the superblock.	
 LFT:3649,3652 This line can be covered if we corrupt the superblock.	
+LFT:3748,3751 This line can be covered if we corrupt the superblock block count.	
+LFT:3788,3790 This block can be probably covered combinig two mount options...data = writeback and data = journal.
+LFT:3815,3815 This line can be covered if we corrupt the superblock s_overhead_clusters.	
 LFT:3867,3868 This line can be covered if we corrupt the superblock.	
 LFT:3871,3872 This line can be covered if we corrupt the superblock.	
 LFT:3878,3880 This line can be covered if we corrupt the superblock.	
@@ -997,6 +1095,10 @@ LFT:4789,4790 This block can be covered if we write a KEDR payloads for jbd/jbd2
 LFT:4082,4084 these lines can be covered with usage of mkfs options like this -b 2048: or -b 1024 -g 8192:
 LFT:4091,4093 Probably these lines can be covered if we perform a fault simulation on this function with __bread payload.
 LFT:4107,4109 These lines can be covered if we corrupt the superblock.
+LFT:4107,4109 These lines can be covered if we corrupt the superblock. See the line 2227 for more details.
+LFT:4575,4576 This is a self check.
+LFT:4595,4600 These lines can be covered if we corrupt the superblock.
+LFT:4610,4615 These lines can be covered if we corrupt the superblock(especially s_last_orphan value.) This is similar to the orphan_cleanup tests in mount testset, but instead of doing a mount we have to do remount.
 LFT:5098,5098 This line can be covered if we add new payload (kobject_init_and_add) to kedr and perform a fault simulation on ext4 Init/Exit functions.
 LFT:5169,5181 These lines can be covered if we perform a fault simulation on ext4 Init/Exit functions.
 end_of_record
@@ -1012,7 +1114,13 @@ end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_quota_on
+LFT:15,15 This block probably could be covered if we make the quota file not on a filesystem root.
 LFT:30,33 This block can be probably covered combining two mount options (data=journal and quota).
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_statfs
+LFT:21,21 This is just a self check.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -1020,12 +1128,15 @@ FN:ext4_quota_write
 LFT:11,14 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:21,24 This lines can be covered if we corrupt/change the superblock.
 LFT:33,34 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:44,45 This block can be covered if we write a KEDR payloads for jbd2 functions.
 LFT:48,50 This lines can be covered if we corrupt the inode.
 end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_quota_read
-LFT:15,15 his line can be covered if we corrupt the inode.
+LFT:15,15 This line can be covered if we corrupt the inode.
+LFT:22,22 This line can be covered if there will be kedr payload which fails "__getblk" function.
+LFT:24,24 This line can be covered if there will be kedr payload which fails "__getblk" function.
 end_of_record
 
 SF:fs/ext4/xattr.c
@@ -1056,19 +1167,21 @@ end_of_record
 
 SF:fs/ext4/resize.c
 LFT:328,330 Can be covered if superblock s_feature_ro_compat value is changed and group add ioctl is called.
+LFT:712,712 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
+LFT:716,716 This block can be covered if we write a KEDR payload for jbd2_journal_stop function (fs/jbd2/transaction.c).
 end_of_record
 
 SF:fs/ext4/resize.c
 FN:ext4_group_add
 LFT:18,19 Can be covered if superblock s_feature_ro_compat value is changed and group add ioctl is called.
+LFT:24,25 This block can be covered if we change "s_fs_info->s_es" superblock field.
 LFT:30,31 Can be covered if superblock s_indoes_countt value is changed and group add ioctl is called.
 LFT:38,40 Can be covered if superblock EXT4_FEATURE_COMPAT_RESIZE_INODE is unset in s_feature_compat and group add ioctl is called.
 LFT:44,45 Change on-disk inode i_mode to an invalid value and call group add ioctl for it.
-end_of_record
-
-SF:fs/ext4/resize.c
-FN:ext4_group_add
+LFT:67,68 This block can be covered if we write a KEDR payload for jbd2_journal_start function (fs/jbd2/transaction.c).
 LFT:95,98 This lines could be covered if we add groups until we have the gdb full. After that a new group descriptor block will be created.
+LFT:179,179 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
+LFT:213,213 This block can be covered if we write a KEDR payload for jbd2_journal_stop function (fs/jbd2/transaction.c).
 end_of_record
 
 SF:fs/ext4/resize.c
@@ -1078,28 +1191,39 @@ end_of_record
 
 SF:fs/ext4/resize.c
 FN:setup_new_group_blocks
+LFT:19,19 This block can be covered if we write a KEDR payload for jbd2_journal_start function (fs/jbd2/transaction.c).
 LFT:39,40 This block can be covered if we write a KEDR payload for fs/jbd2/transaction.c/jbd2_journal_get_write_access function.
-end_of_record
-
-SF:fs/ext4/resize.c
-FN:setup_new_group_blocks
+LFT:46,47 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
 LFT:66,67 Covered if resize.c/bclean+10 is covered.
+LFT:97,98 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
 LFT:105,106 Covered if resize.c/bclean+10 is covered.
+LFT:113,113 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
+LFT:119,119 This block can be covered if we write a KEDR payload for jbd2_journal_stop function (fs/jbd2/transaction.c).
+LFT:716,716 This block can be covered if we write a KEDR payload for jbd2_journal_stop function (fs/jbd2/transaction.c).	
 end_of_record
 
 SF:fs/ext4/resize.c
 FN:ext4_group_extend
 LFT:21,26 This block could be covered if we try to perform a very big resize.
 LFT:30,31 This block could be covered if we try to perform resize when size is more that partition size.
-LFT:45,46 This block could be covered if we try to perform resize with when "last" will be bigger that "blocks_per_group" value.
+LFT:38,39 This block can be covered if we change "s_fs_info->s_blocks_per_group" and "s_fs_info->s_cluster_bits" superblock fields.
+LFT:45,46 This block could be covered if we try to perform resize with block number overflow.
+LFT:50,50 This block could be covered if we try to perform resize with block number plus added block number will be bigger than the number of blocks we want to resize.
 LFT:59,60 This block could be covered if we perform fault simulation with bread point enabled.
 LFT:69,71 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
 LFT:76,78 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+LFT:90,90 This block can be covered if we write a KEDR payload for jbd2_journal_stop function (fs/jbd2/transaction.c).
 end_of_record
 
 SF:fs/ext4/resize.c
 LFT:680,682 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
 LFT:730,734 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/resize.c
+FN:verify_group_input
+LFT:32,32 This block can be covered if we change "s_fs_info->s_blocks_per_group", "s_fs_info->s_cluster_bits", "s_fs_info->s_groups_count" and superblock fields.
+LFT:40,40 This line can be covered if there will be kedr payload failing "__getblk" function.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -1135,6 +1259,16 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_discard_partial_page_buffers_no_lock
 LFT:22,22 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_discard_partial_page_buffers_no_lock
+LFT:107,111 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:__ext4_get_inode_loc
+LFT:47,48 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -1305,11 +1439,42 @@ FN:ext4_mb_discard_lg_preallocations The function is called from ext4_mb_add_n_t
 end_of_record
 
 SF:fs/ext4/mballoc.c
+LFT:2227,2229 Could be covered if we perform a fault simulation. 
+LFT:2241,2242 Could be covered if we perform a fault simulation. 
+LFT:2283,2284 Could be covered if we perform a fault simulation. 
+LFT:2336,2337 Could be covered if we perform a fault simulation. 
+LFT:2341,2342 Could be covered if we perform a fault simulation. 
+LFT:2353,2354 Could be covered if we perform a fault simulation. 
+LFT:2363,2371 Could be covered if we perform a fault simulation. 
 LFT:2596,2616 These lines can be covered if we previously set s_mb_stats flag in super block.
+LFT:2741,2742 Could be covered if we perform a fault simulation. 
+LFT:2748,2750 Could be covered if we perform a fault simulation. 
 LFT:3100,3109 These lines can be covered if we previously set s_mb_stats flag in super block.
+LFT:3325,3327 This line can be covered if we change the superblock.
 LFT:4298,4298 These lines can be covered if we previously set S_NOQUOTA flag in inode i_flags.
 LFT:4325,4326 These lines can be covered if we previously set EXT4_MB_USE_ROOT_BLOCKS flag in inode.
 LFT:4380,4385 These lines can be covered if we interrupt process when we try to allocate blocks. 
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_generate_from_pa
+LFT:20,30 This line can be covered if we change the superblock.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_init
+LFT:106,114 Could be covered if we perform a fault simulation. 
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_simple_scan_group
+LFT:32,32 This line can be covered if we change the superblock.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_free_blocks
+LFT:80,81 These lines can be covered if we previously set EXT4_FREE_BLOCKS_NOFREE_FIRST_CLUSTER flag.
+LFT:87,88 These lines can be covered if we previously set EXT4_FREE_BLOCKS_NOFREE_LAST_CLUSTER flag.
 end_of_record
 
 SF:fs/ext4/balloc.c
@@ -1323,6 +1488,18 @@ LFT:87,99 This block can be covered if we fail function find_get_page with fault
 LFT:116,123 Called from ext4_mb_load_buddy+96
 end_of_record
 
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_generate_buddy
+LFT:44,44 This line can be covered if we change the superblock.
+LFT:51,51 This line can be covered if we change the superblock.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_discard_preallocations
+LFT:76,79 This block can be covered if we fail ext4_mb_load_buddy function. See ext4_mb_load_buddy+116 line
+LFT:83,86 Could be covered if we perform a fault simulation. 
+end_of_record
+
 SF:fs/ext4/balloc.c
 FN:ext4_get_group_desc
 LFT:11,14 These lines can be covered if we change the superblock.
@@ -1331,7 +1508,7 @@ end_of_record
 
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_seq_groups_show
-LFT:25,26 This block can be covered if we fail ext4_mb_load_buddy function. It can be relized if we run fault simulation on these function
+LFT:25,26 This block can be covered if we fail ext4_mb_load_buddy function. It can be relized if we run fault simulation on these function.
 end_of_record
 
 SF:fs/ext4/balloc.c
@@ -1345,6 +1522,7 @@ end_of_record
 
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_discard_group_preallocations
+LFT:19,20 Could be covered if we perform a fault simulation.
 LFT:25,27 This block can be covered if we fail ext4_mb_load_buddy function. See ext4_mb_load_buddy+116 line
 end_of_record
 
@@ -1519,4 +1697,56 @@ LFT:47,50 Could be covered if we corrupt superblock.
 LFT:91,91 Could be covered if we corrupt superblock.
 LFT:189,190 Could be covered if we corrupt inode. 
 LFT:221,221 Could be covered if we corrupt inode. 
+end_of_record
+
+SF:fs/ext4/extents.c
+LFT:68,70 This block can be covered if we write a KEDR payload for ext4_journal_extend function (fs/jbd2/transaction.c).
+LFT:383,388 These lines can be covered if the extent header in inode is corrupted.
+LFT:684,686 These lines can be covered if we corrupt inode.
+LFT:869,870 This block can be covered if we write a KEDR payload for "__getblk" function.
+LFT:937,1001 These lines can be covered by a test similar to common/fallocate/FallocateNormalPunchHole4 but with more holes and more distances between data blocks.
+LFT:1053,1055 This block can be covered if we write a KEDR payload for "__getblk" function.
+LFT:1061,1062 This block can be covered if we write a KEDR payload for /fs/jbd2/transaction.c/jbd2_journal_get_create_access function.
+LFT:1674,1675 Can be covered by corrupting extent tree.
+LFT:1680,1681 Can be covered by corrupting extent tree.
+LFT:2315,2316 Self checking code.
+LFT:3465,3477 Can be covered if by a test similar to common/fallocate/FallocateNormalPunchHole4 but with Direct IO.
+LFT:3766,3771 Self checking code.
+LFT:3884,3891 The block can be covered if punch hole request punches out many consequent blocks.
+LFT:4045,4053 The block can be covered if writing to a file fails because of e.g. no space left on device.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_search_right
+LFT:98,98 Can be covered by corrupting extent tree.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_walk_space
+LFT:66,66 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_rm_idx
+LFT:10,11 Can be covered by corrupting extent tree.
+LFT:18,20 Can be covered by corrupting extent tree.
+end_of_record
+
+SF:fs/ext4/page-io.c
+FN:ext4_bio_write_page
+LFT:58,59 This block can be covered if failure is simulated during bio submission.
+end_of_record
+
+SF:fs/ext4/block_validity.c
+LFT:152,152 This line can be covered if we change "s_fs_info->system_blks.rb_node" superblock field.
+end_of_record
+
+SF:fs/ext4/block_validity.c
+FN:ext4_data_block_valid
+LFT:9,10 This line can be covered if we change "s_fs_info->s_es->s_first_data_block" and "s_fs_info->s_es" superblock fields.
+end_of_record
+
+SF:fs/ext4/block_validity.c
+FN:ext4_check_blockref
+LFT:12,13 This line can be covered if we change inode superblock field.
 end_of_record
