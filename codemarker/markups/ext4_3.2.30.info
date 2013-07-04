@@ -1692,6 +1692,7 @@ end_of_record
 
 SF:fs/ext4/extents.c
 LFT:383,388 These lines can be covered if the extent header in inode is corrupted.
+LFT:869,870 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:937,1001 These lines can be covered by a test similar to common/fallocate/FallocateNormalPunchHole4 but with more holes and more distances between data blocks.
 LFT:1053,1055 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:1061,1062 This block can be covered if we write a KEDR payload for /fs/jbd2/transaction.c/jbd2_journal_get_create_access function.
@@ -1700,6 +1701,16 @@ LFT:3465,3477 Can be covered if by a test similar to common/fallocate/FallocateN
 LFT:3766,3771 Self checking code.
 LFT:3884,3891 The block can be covered if punch hole request punches out many consequent blocks.
 LFT:4045,4053 The block can be covered if writing to a file fails because of e.g. no space left on device.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_search_right
+LFT:98,98 Can be covered by corrupting extent tree.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_rm_idx
+LFT:18,20 Can be covered by corrupting extent tree.
 end_of_record
 
 SF:fs/ext4/page-io.c
