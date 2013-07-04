@@ -1019,15 +1019,13 @@ SF:fs/ext4/move_extent.c
 FN:mext_calc_swap_extents
 LFT:41,41 This line can be covered if donor extent is larger than orig
 end_of_record
-
-SF:fs/ext4/move_extent.c
-FN:move_extent_per_page
-LFT:28,29 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
-end_of_record
 	
 SF:fs/ext4/move_extent.c
 FN:move_extent_per_page
+LFT:28,29 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+LFT:33,33 This line can be covered if kernel is compiled with option CONFIG_EXT4_FS=y 
 LFT:98,101 Could be covered if we perform a fault simulation on mext_replace_branches function (kzalloc).
+LFT:129,132 Called from move_extent_per_page+103
 end_of_record
 
 SF:fs/ext4/ext4_jbd2.c
