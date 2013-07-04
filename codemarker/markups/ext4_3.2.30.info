@@ -212,6 +212,16 @@ LFT:18,19 This block can be covered by simulating failure in jbd2_journal_start(
 end_of_record
 
 SF:fs/ext4/indirect.c
+LFT:704,706 This block can be covered if we change inode member "i_sb->s_feature_ro_compat".
+LFT:942,942 This block can be covered if perform a fault simulation on jbd2 payloads.
+end_of_record
+
+SF:fs/ext4/indirect.c
+FN:try_to_extend_transaction
+LFT:6,6 This block can be covered if perform a fault simulation on jbd2 payloads.
+end_of_record
+
+SF:fs/ext4/indirect.c
 FN:ext4_blks_to_allocate
 LFT:0,0 Function is inline and its call is usually integrated.
 end_of_record
@@ -223,14 +233,27 @@ LFT:31,33 Self checking code.
 end_of_record
 
 SF:fs/ext4/indirect.c
+FN:ext4_free_branches
+LFT:36,38 This block can be covered performing fault simulation for function __getblk().
+end_of_record
+
+SF:fs/ext4/indirect.c
 FN:ext4_alloc_branch
 LFT:30,31 This block can be covered performing fault simulation for function __getblk().
+LFT:41,42 This block can be covered if perform a fault simulation on jbd2 payloads.
 LFT:72,85 This block can be covered performing fault simulation for function __getblk().
 end_of_record
 
 SF:fs/ext4/indirect.c
 FN:ext4_clear_blocks
-LFT:22,38 This block can be covered if truncate() is performed on Ext3 FS (for indirect blocking) and there is no room for log in journal.
+LFT:22,38 This block can be covered if perform a fault simulation on jbd2 payloads.
+LFT:69,71 This block can be covered if perform a fault simulation on jbd2 payloads.
+LFT:94,94 This block can be covered if perform a fault simulation on jbd2 payloads.
+end_of_record
+
+SF:fs/ext4/indirect.c
+FN:ext4_ind_direct_IO
+LFT:20,21 This block can be covered if perform a fault simulation on jbd2 payloads.
 end_of_record
 
 SF:fs/ext4/page-io.c
@@ -242,6 +265,11 @@ end_of_record
 SF:fs/ext4/page-io.c
 FN:buffer_io_error
 LFT:0,7 The function is called from ext4_end_bio() + 40.
+end_of_record
+
+SF:fs/ext4/page-io.c
+FN:io_submit_init
+LFT:24,24 This line is covered, gcov bug.
 end_of_record
 
 SF:fs/ext4/mballoc.h
@@ -659,6 +687,7 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:__ext4_get_inode_loc
 LFT:29,31 This block can be covered if we write a KEDR payload for fs/buffer.c/__getblk function.
+LFT:129,132 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload").
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -1003,6 +1032,7 @@ SF:fs/ext4/xattr.c
 LFT:167,167 This line is covered but is not marked as covered. It is gcov bug.
 LFT:171,171 Function is inline and its call is usually integrated.
 LFT:178,178 Function is inline and its call is usually integrated.
+LFT:459,461 This block can be covered if we change superblock member "s_feature_compat".
 end_of_record
 
 SF:fs/ext4/dir.c
@@ -1113,6 +1143,13 @@ LFT:22,23 These lines can be covered if the log is corrupted/aborted during chmo
 LFT:27,28 This block can be covered if we write a KEDR payload for fs/quota/dquot.c/dquot_transfer function.
 LFT:58,59 These lines can be covered if the log is corrupted/aborted during chmod.
 LFT:76,84 This block can be covered if we write a KEDR payload for /fs/jbd2/transaction.c/jbd2_journal_begin_ordered_truncate function.
+LFT:22,23 Can be covered if we perform a fault simulation on jbd2 functions.
+LFT:58,59 Can be covered if we perform a fault simulation on jbd2 functions.
+end_of_record
+
+F:fs/ext4/inode.c
+FN:_ext4_get_block
+LFT:18,19 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
 end_of_record
 
 SF:fs/ext4/migrate.c
