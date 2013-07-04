@@ -1691,7 +1691,9 @@ LFT:221,221 Could be covered if we corrupt inode.
 end_of_record
 
 SF:fs/ext4/extents.c
+LFT:68,70 This block can be covered if we write a KEDR payload for ext4_journal_extend function (fs/jbd2/transaction.c).
 LFT:383,388 These lines can be covered if the extent header in inode is corrupted.
+LFT:684,686 These lines can be covered if we corrupt inode.
 LFT:869,870 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:937,1001 These lines can be covered by a test similar to common/fallocate/FallocateNormalPunchHole4 but with more holes and more distances between data blocks.
 LFT:1053,1055 This block can be covered if we write a KEDR payload for "__getblk" function.
