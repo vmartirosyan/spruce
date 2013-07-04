@@ -1701,3 +1701,8 @@ LFT:3766,3771 Self checking code.
 LFT:3884,3891 The block can be covered if punch hole request punches out many consequent blocks.
 LFT:4045,4053 The block can be covered if writing to a file fails because of e.g. no space left on device.
 end_of_record
+
+SF:fs/ext4/page-io.c
+FN:ext4_bio_write_page
+LFT:58,59 This block can be covered if failure is simulated during bio submission.
+end_of_record
