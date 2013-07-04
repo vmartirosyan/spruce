@@ -24,7 +24,6 @@
 
 <TestSet Name="open">	
 	<Test Name="OpenNormal" FaultSimulationReady="true">
-		<Dangerous check="stability" fs="ext4" />
 		<Description>Open and possibly create a file or device.</Description>
 		<Code>
 			if ( PartitionManager::IsOptionEnabled("ro") )
@@ -40,7 +39,6 @@
 		</Code>
 	</Test>
 	<Test Name="OpenDirect" FaultSimulationReady="true">
-		<Dangerous check="stability" fs="ext4" />
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
 		<Code>
 			if ( PartitionManager::IsOptionEnabled("ro") )

@@ -56,7 +56,6 @@
         
 
         <Test Name="MoveExtent3" FaultSimulationReady="true" Shallow="true">
-        <Dangerous check="stability"/>
                 <Description>Move extent new.</Description>
                 <File count="2"/>
                 <Code>                       
@@ -73,7 +72,6 @@
                         me.len = 5000;
                         me.moved_len = 0;                   
                         
-                        // No meaning in the Fail(). It just brings to lots of skipping of the test.
                         Check ( ioctl(FDs[0], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
                 </Code>
         </Test>

@@ -24,7 +24,6 @@
 
 <TestSet Name="mkdir_rmdir">	
 	<Test Name="MkdirRmdirNormal" FaultSimulationReady="true">
-		<Dangerous check="stability" fs="ext4" />
 		<Description>Create and remove a directory.</Description>
 		<Code>
 			if ( PartitionManager::IsOptionEnabled("ro") )

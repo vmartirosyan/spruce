@@ -14,5 +14,5 @@
 	arg.name = buflen
 	
 	# Fault Simulation
-	fpoint.fault_code =	ret_val = NULL;
+	fpoint.fault_code =	ret_val = ERR_PTR(-ENOMEM);
 #######################################################################

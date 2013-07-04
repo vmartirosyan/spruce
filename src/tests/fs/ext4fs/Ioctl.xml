@@ -142,7 +142,6 @@
                 </Code>         
         </Test-->
         <Test Name="GroupExtend" FaultSimulationReady="true">
-        <Dangerous check="stability" fs="ext4"/>
                 <Description>Group extend.</Description>
                 <Header>            
                           Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
@@ -352,7 +351,6 @@
                 </Footer>
         </Test>
         <Test Name="GroupAdd" FaultSimulationReady="true" Shallow="true">
-        <Dangerous check="stability" fs="ext4"/>
                 <Description>Group add.</Description>
                  <Header>            
                           Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
@@ -576,8 +574,7 @@
     </Test>
 
         <Test Name="Migrate" FaultSimulationReady="true" Shallow="true">
-				<Dangerous check="stability" />
-                <Description>Migrate an Ext3 partition to Ext4</Description>
+				<Description>Migrate an Ext3 partition to Ext4</Description>
                 <Header>
                     
                         int _file = -1;
@@ -656,7 +653,6 @@
                 </Footer>
         </Test>
         <Test Name="MigrateFile" FaultSimulationReady="true" Shallow="true">
-            <Dangerous check="stability"/>
                 <Description>Migrate a large Ext3 file to Ext4</Description>
                 <Header>
                         int fd = -1;
@@ -730,8 +726,7 @@
                 </Footer>
         </Test>
         <Test Name="MigrateFileWithXattr1" FaultSimulationReady="true" Shallow="true">
-				<Dangerous check="stability" />
-                <Description>Migrate an Ext3 file with extended attributes to Ext4</Description>
+				<Description>Migrate an Ext3 file with extended attributes to Ext4</Description>
                 <Header>
                         int fd = -1;
                         char FilePath[] = "Migrate_file";            
@@ -788,8 +783,7 @@
                         
                         Unres( (fd = open(FilePath, O_RDONLY)) == -1, "Cannot open file");
                         
-                        // No meaning in Fail(). It just brings to lots of skipping os the test.
-                        Check ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
+                        Fail ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
                         
                 </Code>
                 <Footer>       
@@ -803,8 +797,7 @@
                 </Footer>
         </Test>
         <Test Name="MigrateFileWithXattr2" FaultSimulationReady="true" Shallow="true">
-				<Dangerous check="stability" />
-                <Description>Migrate an Ext3 file with extended attributes to Ext4</Description>
+				<Description>Migrate an Ext3 file with extended attributes to Ext4</Description>
                 <Header>
                         int fd = -1;
                         char FilePath[] = "Migrate_file";            
@@ -861,8 +854,7 @@
                         
                         Unres( (fd = open(FilePath, O_RDONLY)) == -1, "Cannot open file");
                         
-                        // No meaning in the Fail(). It just brings to lots of skippings of the test.
-                        Check ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
+                        Fail ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
                         
                 </Code>
                 <Footer>       
