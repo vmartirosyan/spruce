@@ -1056,6 +1056,7 @@ end_of_record
 
 SF:fs/ext4/resize.c
 LFT:328,330 Can be covered if superblock s_feature_ro_compat value is changed and group add ioctl is called.
+LFT:712,712 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
 end_of_record
 
 SF:fs/ext4/resize.c
@@ -1064,11 +1065,10 @@ LFT:18,19 Can be covered if superblock s_feature_ro_compat value is changed and 
 LFT:30,31 Can be covered if superblock s_indoes_countt value is changed and group add ioctl is called.
 LFT:38,40 Can be covered if superblock EXT4_FEATURE_COMPAT_RESIZE_INODE is unset in s_feature_compat and group add ioctl is called.
 LFT:44,45 Change on-disk inode i_mode to an invalid value and call group add ioctl for it.
-end_of_record
-
-SF:fs/ext4/resize.c
-FN:ext4_group_add
+LFT:67,68 This block can be covered if we write a KEDR payload for jbd2_journal_start function (fs/jbd2/transaction.c).
 LFT:95,98 This lines could be covered if we add groups until we have the gdb full. After that a new group descriptor block will be created.
+LFT:179,179 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
+LFT:213,213 This block can be covered if we write a KEDR payload for jbd2_journal_stop function (fs/jbd2/transaction.c).
 end_of_record
 
 SF:fs/ext4/resize.c
@@ -1079,12 +1079,11 @@ end_of_record
 SF:fs/ext4/resize.c
 FN:setup_new_group_blocks
 LFT:39,40 This block can be covered if we write a KEDR payload for fs/jbd2/transaction.c/jbd2_journal_get_write_access function.
-end_of_record
-
-SF:fs/ext4/resize.c
-FN:setup_new_group_blocks
 LFT:66,67 Covered if resize.c/bclean+10 is covered.
+LFT:97,98 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
 LFT:105,106 Covered if resize.c/bclean+10 is covered.
+LFT:113,113 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
+LFT:119,119 This block can be covered if we write a KEDR payload for jbd2_journal_stop function (fs/jbd2/transaction.c).
 end_of_record
 
 SF:fs/ext4/resize.c
@@ -1095,11 +1094,17 @@ LFT:45,46 This block could be covered if we try to perform resize with when "las
 LFT:59,60 This block could be covered if we perform fault simulation with bread point enabled.
 LFT:69,71 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
 LFT:76,78 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+LFT:90,90 This block can be covered if we write a KEDR payload for jbd2_journal_stop function (fs/jbd2/transaction.c).
 end_of_record
 
 SF:fs/ext4/resize.c
 LFT:680,682 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
 LFT:730,734 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+end_of_record
+
+SF:fs/ext4/resize.c
+FN:verify_group_input
+LFT:40,40 This line can be covered if there will be kedr payload failing "__getblk" function.
 end_of_record
 
 SF:fs/ext4/inode.c
