@@ -1301,3 +1301,23 @@ SF:fs/ext4/ialloc.c
 FN:ext4_orphan_get
 LFT:57,66 This block can be covered by a test similar to ext4/mount/OrphanCleanup2 when the file is created via mknod().
 end_of_record
+
+SF:fs/ext4/ialloc.c
+LFT:680,680 This line is covered, gcov bug.
+LFT:819,820 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+LFT:933,933 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
+LFT:941,941 Could be covered if we perform a fault simulation on jbd/jbd2 functions. 
+LFT:974,975 Could be covered if we corrupt superblock.
+LFT:982,983 Could be covered if we perform a fault simulation. 
+LFT:1076,1076 Could be covered if we corrupt group descriptor point in inode. 
+LFT:1093,1093 Could be covered if we corrupt group descriptor point in inode. 
+LFT:1137,1138 Could be covered if we perform a fault simulation on jbd/jbd2 functions. 
+end_of_record
+
+SF:fs/ext4/ialloc.c
+FN:ext4_init_inode_bitmap
+LFT:47,50 Could be covered if we corrupt superblock.
+LFT:91,91 Could be covered if we corrupt superblock.
+LFT:189,190 Could be covered if we corrupt inode. 
+LFT:221,221 Could be covered if we corrupt inode. 
+end_of_record
