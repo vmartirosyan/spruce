@@ -230,6 +230,7 @@ end_of_record
 SF:fs/ext4/indirect.c
 FN:ext4_alloc_blocks
 LFT:31,36 This block can be covered if we try to allocate more space than there is on device.
+LFT:50,54 This code is self-checking code.
 end_of_record
 
 SF:fs/ext4/indirect.c
@@ -495,6 +496,8 @@ SF:fs/ext4/indirect.c
 LFT:205,205 Function is inline and its call is usually integrated.
 LFT:239,239 Function is inline and its call is usually integrated.
 LFT:250,250 Code is marked as it was not executed due to compiler optimisations.
+LFT:1459,1460 This code can be covered working with big space allocated.
+LFT:1471,1472 This code can be covered working with big space allocated.
 end_of_record
 
 SF:fs/ext4/mmp.c
