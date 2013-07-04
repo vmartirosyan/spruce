@@ -90,7 +90,11 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
         </xsl:if>
         <xsl:if test="Requires/@Defined!=''">
 #elif ! defined <xsl:value-of select="Requires/@Defined" />
-    Unsupp_direct("The value of <xsl:value-of select="Requires/@Defined" /> is not defined.");
+    Unsupp_direct("Required macro <xsl:value-of select="Requires/@Defined" /> is not defined.");
+        </xsl:if>            
+        <xsl:if test="Requires/@Condition!=''">
+#elif ! (<xsl:value-of select="Requires/@Condition" />)
+    Unsupp_direct("Required condition <xsl:value-of select="Requires/@Condition" /> is not satisfied.");
         </xsl:if>            
 #else
     </xsl:if>
