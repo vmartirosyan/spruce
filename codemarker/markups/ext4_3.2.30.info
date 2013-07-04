@@ -1812,3 +1812,6 @@ FN:ext4_check_blockref
 LFT:12,13 This line can be covered if we change inode superblock field.
 end_of_record
 
+SF:fs/ext4/ext4_jbd2.h 
+LFT:280,280 This line can be covered if we change inode flag to EXT4_INODE_JOURNAL_DATA, mount without "data=journal" option enabled and perform lookup(see ext4/Lookup testset).
+end_of_record
