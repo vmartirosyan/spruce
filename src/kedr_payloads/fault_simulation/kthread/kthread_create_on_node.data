@@ -28,7 +28,7 @@
 		}
 		else
 		{
-			ret_val = ERR_PTR(-ENOMEM)
+			ret_val = ERR_PTR(-ENOMEM);
 		}
 	<< 
 	
