@@ -134,12 +134,56 @@ end_of_record
 SF:fs/ext4/extents.c
 LFT:383,388 These lines can be covered if the extent header in inode is corrupted.
 LFT:937,1001 These lines can be covered by a test similar to common/fallocate/FallocateNormalPunchHole4 but with more holes and more distances between data blocks.
+LFT:2315,2316 Self checking code.
+LFT:3465,3477 Can be covered if by a test similar to common/fallocate/FallocateNormalPunchHole4 but with Direct IO.
+LFT:3766,3771 Self checking code.
+LFT:3884,3891 The block can be covered if punch hole request punches out many consequent blocks.
+LFT:4045,4053 The block can be covered if writing to a file fails because of e.g. no space left on device.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_fallocate
+LFT:42,44 This block can be covered by a call to fallocate() exceeding the partition size.
+LFT:62,63 This block can be covered by simulation failures in jbd2_journal_start() function.
 end_of_record
 
 SF:fs/ext4/extents.c
 FN:ext4_ext_fiemap_cb
 LFT:65,101 This block can be covered if FIEMAP ioctl command is parformed on a file with lots of allocated blocks.
 LFT:107,179 This block can be covered if FIEMAP ioctl command is parformed on a file with blocks which are allocated via "delayed allocation".
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_search_left
+LFT:9,10 This block is not covered because of a previous check (path cannot be null).
+LFT:25,40 Self checking code.
+LFT:47,50 Self checking code.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_search_right
+LFT:14,15 This block is not covered because of a previous check (path cannot be null).
+LFT:30,42 Self checking code.
+LFT:49,52 Self checking code.
+LFT:78,88 This block can be covered if data is written into the file at a location which has right neighbour (e.g. data written after that position) quite far from the current location.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_remove_blocks
+LFT:72,82 This block can be covered if punching hole at the beginning of the file.
+LFT:85,87 Self checking code.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_split_extent_at
+LFT:37,46 This block can be covered if punch hole request covers the whole extent.
+LFT:72,79 This block can be covered if punch hole request brings to an extent split, which is fully in the file written data range and there is no space left on device.
+LFT:88,89 This block can be covered in case of previous comment, and if the function blkdev_issue_zeroout() fails (can be done via KEDR fault simulation).
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_convert_to_initialized
+LFT:141,182 This block can be covered if split (e.g. because of punching a hole) alters an extent with more than 14 blocks len.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -331,6 +375,11 @@ SF:fs/ext4/extents.c
 FN:ext4_ext_convert_to_initialized
 LFT:63,107 This block can be covered if we try to write at the begninning of a preallocated extent (allocated by fallocate()).
 LFT:141,18 This block can be covered if we try to write at the middle of a preallocated extent (allocated by fallocate()).
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_convert_unwritten_extents
+LFT:26,27 This block can be covered by simulating failure in jfs2_journal_start() function.
 end_of_record
 
 SF:fs/ext4/extents.c
