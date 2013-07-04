@@ -1096,6 +1096,10 @@ LFT:4789,4790 This block can be covered if we write a KEDR payloads for jbd/jbd2
 LFT:4082,4084 these lines can be covered with usage of mkfs options like this -b 2048: or -b 1024 -g 8192:
 LFT:4091,4093 Probably these lines can be covered if we perform a fault simulation on this function with __bread payload.
 LFT:4107,4109 These lines can be covered if we corrupt the superblock.
+LFT:4107,4109 These lines can be covered if we corrupt the superblock. See the line 2227 for more details.
+LFT:4575,4576 This is a self check.
+LFT:4595,4600 These lines can be covered if we corrupt the superblock.
+LFT:4610,4615 These lines can be covered if we corrupt the superblock(especially s_last_orphan value.) This is similar to the orphan_cleanup tests in mount testset, but instead of doing a mount we have to do remount.
 LFT:5098,5098 This line can be covered if we add new payload (kobject_init_and_add) to kedr and perform a fault simulation on ext4 Init/Exit functions.
 LFT:5169,5181 These lines can be covered if we perform a fault simulation on ext4 Init/Exit functions.
 end_of_record
@@ -1111,7 +1115,13 @@ end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_quota_on
+LFT:15,15 This block probably could be covered if we make the quota file not on a filesystem root.
 LFT:30,33 This block can be probably covered combining two mount options (data=journal and quota).
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_statfs
+LFT:21,21 This is just a self check.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -1119,12 +1129,15 @@ FN:ext4_quota_write
 LFT:11,14 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:21,24 This lines can be covered if we corrupt/change the superblock.
 LFT:33,34 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:44,45 This block can be covered if we write a KEDR payloads for jbd2 functions.
 LFT:48,50 This lines can be covered if we corrupt the inode.
 end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_quota_read
-LFT:15,15 his line can be covered if we corrupt the inode.
+LFT:15,15 This line can be covered if we corrupt the inode.
+LFT:22,22 This line can be covered if there will be kedr payload which fails "__getblk" function.
+LFT:24,24 This line can be covered if there will be kedr payload which fails "__getblk" function.
 end_of_record
 
 SF:fs/ext4/xattr.c
