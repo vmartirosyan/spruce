@@ -95,10 +95,10 @@ message(STATUS ${dquot_alloc_inode_message})
 # corresponded quotas set in userspace.
 # 
 # Currently is leaved active.
-set(dquot_alloc_space_message "Check __dquot_alloc_space kernel function existence and signature")
+set(__dquot_alloc_space_message "Check __dquot_alloc_space kernel function existence and signature")
 
 if(DEFINED __dquot_alloc_space_HAS_3_ARGS OR DEFINED __dquot_alloc_space_HAS_4_ARGS)
-	set(dquot_alloc_space_message "${dquot_alloc_space_message} [cached]")
+	set(__dquot_alloc_space_message "${__dquot_alloc_space_message} [cached]")
 else(DEFINED __dquot_alloc_space_HAS_3_ARGS OR DEFINED __dquot_alloc_space_HAS_4_ARGS)
 	kmodule_try_compile(__dquot_alloc_space_HAS_3_ARGS_tmp
 		"${CMAKE_CURRENT_BINARY_DIR}/__dquot_alloc_space_has_3_args"
@@ -119,19 +119,19 @@ else(DEFINED __dquot_alloc_space_HAS_3_ARGS OR DEFINED __dquot_alloc_space_HAS_4
 endif(DEFINED __dquot_alloc_space_HAS_3_ARGS OR DEFINED __dquot_alloc_space_HAS_4_ARGS)
 
 if(__dquot_alloc_space_HAS_3_ARGS)
-	set(dquot_alloc_space_message "${dquot_alloc_space_message} - has 3 args")
+	set(__dquot_alloc_space_message "${__dquot_alloc_space_message} - has 3 args")
 	list(APPEND functions "__dquot_alloc_space")
 	rule_copy_file("${CMAKE_CURRENT_BINARY_DIR}/__dquot_alloc_space.data"
 		"${CMAKE_CURRENT_SOURCE_DIR}/__dquot_alloc_space_3_args.data")
 elseif(__dquot_alloc_space_HAS_4_ARGS)
-	set(dquot_alloc_space_message "${dquot_alloc_space_message} - has 4 args")
+	set(__dquot_alloc_space_message "${__dquot_alloc_space_message} - has 4 args")
 	list(APPEND functions "__dquot_alloc_space")
 	rule_copy_file("${CMAKE_CURRENT_BINARY_DIR}/__dquot_alloc_space.data"
 		"${CMAKE_CURRENT_SOURCE_DIR}/__dquot_alloc_space_4_args.data")
 else(__dquot_alloc_space_HAS_3_ARGS)
-	set(dquot_alloc_space_message "${dquot_alloc_space_message} - not found")
+	set(__dquot_alloc_space_message "${__dquot_alloc_space_message} - not found")
 endif(__dquot_alloc_space_HAS_3_ARGS)
 
-message(STATUS ${dquot_alloc_space_message})
+message(STATUS ${__dquot_alloc_space_message})
 
 add_fsim_payload(${kmodule_name} ${functions})
