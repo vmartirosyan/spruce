@@ -10,7 +10,7 @@ static int __init
 my_init(void)
 {
     // Call target function
-    int res = __d_quot_alloc_space(NULL, 1, 0);
+    int res = __dquot_alloc_space(NULL, 1, 0);
     return res;
 }
 

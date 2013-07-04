@@ -50,47 +50,47 @@ if(EXISTS_d_make_root)
 endif(EXISTS_d_make_root)
 
 
-# Fail in __d_quot_alloc_space kernel function should be triggered by
+# Fail in __dquot_alloc_space kernel function should be triggered by
 # corresponded quotas set in userspace.
 # 
 # Currently is leaved active.
-set(d_quot_alloc_space_message "Check __d_quot_alloc_space kernel function existence and signature")
+set(dquot_alloc_space_message "Check __dquot_alloc_space kernel function existence and signature")
 
-if(DEFINED __d_quot_alloc_space_HAS_3_ARGS OR DEFINED __d_quot_alloc_space_HAS_4_ARGS)
-	set(d_quot_alloc_space_message "${d_quot_alloc_space_message} [cached]")
-else(DEFINED __d_quot_alloc_space_HAS_3_ARGS OR DEFINED __d_quot_alloc_space_HAS_4_ARGS)
-	kmodule_try_compile(__d_quot_alloc_space_HAS_3_ARGS_tmp
-		"${CMAKE_CURRENT_BINARY_DIR}/__d_quot_alloc_space_has_3_args"
-		"__d_quot_alloc_space_has_3_args.c")
-	if(__d_quot_alloc_space_HAS_3_ARGS_tmp)
-		set(__d_quot_alloc_space_HAS_3_ARGS "TRUE" CACHE INTERNAL "Does __d_quot_alloc_space has 3 args?")
-	else(__d_quot_alloc_space_HAS_3_ARGS_tmp)
-		set(__d_quot_alloc_space_HAS_3_ARGS "FALSE" CACHE INTERNAL "Does __d_quot_alloc_space has 3 args?")
-		kmodule_try_compile(__d_quot_alloc_space_HAS_4_ARGS_tmp
-			"${CMAKE_CURRENT_BINARY_DIR}/__d_quot_alloc_space_has_4_args"
-			"__d_quot_alloc_space_has_4_args.c")
-		if(__d_quot_alloc_space_HAS_4_ARGS_tmp)
-			set(__d_quot_alloc_space_HAS_4_ARGS "TRUE" CACHE INTERNAL "Does __d_quot_alloc_space has 4 args?")
-		else(__d_quot_alloc_space_HAS_4_ARGS_tmp)
-			set(__d_quot_alloc_space_HAS_4_ARGS "FALSE" CACHE INTERNAL "Does __d_quot_alloc_space has 4 args?")
-		endif(__d_quot_alloc_space_HAS_4_ARGS_tmp)
-	endif(__d_quot_alloc_space_HAS_3_ARGS_tmp)
-endif(DEFINED __d_quot_alloc_space_HAS_3_ARGS OR DEFINED __d_quot_alloc_space_HAS_4_ARGS)
+if(DEFINED __dquot_alloc_space_HAS_3_ARGS OR DEFINED __dquot_alloc_space_HAS_4_ARGS)
+	set(dquot_alloc_space_message "${dquot_alloc_space_message} [cached]")
+else(DEFINED __dquot_alloc_space_HAS_3_ARGS OR DEFINED __dquot_alloc_space_HAS_4_ARGS)
+	kmodule_try_compile(__dquot_alloc_space_HAS_3_ARGS_tmp
+		"${CMAKE_CURRENT_BINARY_DIR}/__dquot_alloc_space_has_3_args"
+		"__dquot_alloc_space_has_3_args.c")
+	if(__dquot_alloc_space_HAS_3_ARGS_tmp)
+		set(__dquot_alloc_space_HAS_3_ARGS "TRUE" CACHE INTERNAL "Does __dquot_alloc_space has 3 args?")
+	else(__dquot_alloc_space_HAS_3_ARGS_tmp)
+		set(__dquot_alloc_space_HAS_3_ARGS "FALSE" CACHE INTERNAL "Does __dquot_alloc_space has 3 args?")
+		kmodule_try_compile(__dquot_alloc_space_HAS_4_ARGS_tmp
+			"${CMAKE_CURRENT_BINARY_DIR}/__dquot_alloc_space_has_4_args"
+			"__dquot_alloc_space_has_4_args.c")
+		if(__dquot_alloc_space_HAS_4_ARGS_tmp)
+			set(__dquot_alloc_space_HAS_4_ARGS "TRUE" CACHE INTERNAL "Does __dquot_alloc_space has 4 args?")
+		else(__dquot_alloc_space_HAS_4_ARGS_tmp)
+			set(__dquot_alloc_space_HAS_4_ARGS "FALSE" CACHE INTERNAL "Does __dquot_alloc_space has 4 args?")
+		endif(__dquot_alloc_space_HAS_4_ARGS_tmp)
+	endif(__dquot_alloc_space_HAS_3_ARGS_tmp)
+endif(DEFINED __dquot_alloc_space_HAS_3_ARGS OR DEFINED __dquot_alloc_space_HAS_4_ARGS)
 
-if(__d_quot_alloc_space_HAS_3_ARGS)
-	set(d_quot_alloc_space_message "${d_quot_alloc_space_message} - has 3 args")
-	list(APPEND functions "__d_quot_alloc_space")
-	rule_copy_file("${CMAKE_CURRENT_BINARY_DIR}/__d_quot_alloc_space.data"
-		"${CMAKE_CURRENT_SOURCE_DIR}/__d_quot_alloc_space_3_args.data")
-elseif(__d_quot_alloc_space_HAS_4_ARGS)
-	set(d_quot_alloc_space_message "${d_quot_alloc_space_message} - has 4 args")
-	list(APPEND functions "__d_quot_alloc_space")
-	rule_copy_file("${CMAKE_CURRENT_BINARY_DIR}/__d_quot_alloc_space.data"
-		"${CMAKE_CURRENT_SOURCE_DIR}/__d_quot_alloc_space_4_args.data")
-else(__d_quot_alloc_space_HAS_3_ARGS)
-	set(d_quot_alloc_space_message "${d_quot_alloc_space_message} - not found")
-endif(__d_quot_alloc_space_HAS_3_ARGS)
+if(__dquot_alloc_space_HAS_3_ARGS)
+	set(dquot_alloc_space_message "${dquot_alloc_space_message} - has 3 args")
+	list(APPEND functions "__dquot_alloc_space")
+	rule_copy_file("${CMAKE_CURRENT_BINARY_DIR}/__dquot_alloc_space.data"
+		"${CMAKE_CURRENT_SOURCE_DIR}/__dquot_alloc_space_3_args.data")
+elseif(__dquot_alloc_space_HAS_4_ARGS)
+	set(dquot_alloc_space_message "${dquot_alloc_space_message} - has 4 args")
+	list(APPEND functions "__dquot_alloc_space")
+	rule_copy_file("${CMAKE_CURRENT_BINARY_DIR}/__dquot_alloc_space.data"
+		"${CMAKE_CURRENT_SOURCE_DIR}/__dquot_alloc_space_4_args.data")
+else(__dquot_alloc_space_HAS_3_ARGS)
+	set(dquot_alloc_space_message "${dquot_alloc_space_message} - not found")
+endif(__dquot_alloc_space_HAS_3_ARGS)
 
-message(STATUS ${d_quot_alloc_space_message})
+message(STATUS ${dquot_alloc_space_message})
 
 add_fsim_payload(${kmodule_name} ${functions})
