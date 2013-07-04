@@ -3,6 +3,11 @@
 #######################################################################
 DEADCODE:
 
+SF:fs/ext4/extents.c
+FN:ext4_ext_put_gap_in_cache
+LFT:35,36 Unreachable else condition.
+end_of_record
+
 SF:fs/ext4/inode.c
 FN:ext4_discard_partial_page_buffers_no_lock
 LFT:63,63 Can't be covered as flags is always 0.
@@ -1698,6 +1703,8 @@ LFT:869,870 This block can be covered if we write a KEDR payload for "__getblk" 
 LFT:937,1001 These lines can be covered by a test similar to common/fallocate/FallocateNormalPunchHole4 but with more holes and more distances between data blocks.
 LFT:1053,1055 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:1061,1062 This block can be covered if we write a KEDR payload for /fs/jbd2/transaction.c/jbd2_journal_get_create_access function.
+LFT:1674,1675 Can be covered by corrupting extent tree.
+LFT:1680,1681 Can be covered by corrupting extent tree.
 LFT:2315,2316 Self checking code.
 LFT:3465,3477 Can be covered if by a test similar to common/fallocate/FallocateNormalPunchHole4 but with Direct IO.
 LFT:3766,3771 Self checking code.
@@ -1711,7 +1718,13 @@ LFT:98,98 Can be covered by corrupting extent tree.
 end_of_record
 
 SF:fs/ext4/extents.c
+FN:ext4_ext_walk_space
+LFT:66,66 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/extents.c
 FN:ext4_ext_rm_idx
+LFT:10,11 Can be covered by corrupting extent tree.
 LFT:18,20 Can be covered by corrupting extent tree.
 end_of_record
 
