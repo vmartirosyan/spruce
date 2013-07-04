@@ -252,6 +252,7 @@ end_of_record
 
 SF:fs/ext4/indirect.c
 FN:ext4_clear_blocks
+LFT:15,18 This block can be covered if we change inode.
 LFT:22,38 This block can be covered if perform a fault simulation on jbd2 payloads.
 LFT:69,71 This block can be covered if perform a fault simulation on jbd2 payloads.
 LFT:94,94 This block can be covered if perform a fault simulation on jbd2 payloads.
@@ -260,12 +261,21 @@ end_of_record
 SF:fs/ext4/indirect.c
 FN:ext4_ind_direct_IO
 LFT:20,21 This block can be covered if perform a fault simulation on jbd2 payloads.
+LFT:69,71 This block can be covered by simulating failure in jfs2_journal_start() function.
 end_of_record
 
 SF:fs/ext4/indirect.c
 FN:ext4_free_branches
 LFT:21,25 This block can be covered corrupting the superblock.
 LFT:68,70 This block can be covered truncating a file on Ext3 FS when there is no space left on device.
+end_of_record
+
+SF:fs/ext4/indirect.c
+FN:ext4_splice_branch
+LFT:56,56 This line is covered, gcov bug.
+LFT:59,59 This line is covered, gcov bug.
+LFT:65,65 This line is covered, gcov bug.
+LFT:71,71 This line is covered, gcov bug.
 end_of_record
 
 SF:fs/ext4/page-io.c
