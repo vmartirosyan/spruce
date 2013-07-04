@@ -609,7 +609,19 @@ SF:fs/ext4/inode.c
 FN:ext4_evict_inode
 LFT:53,60 ext4_evict_inode should be called(unlink and umount a file) and the log must be corrupted/aborted.
 LFT:68,69 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function.
-LFT:115,115 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function.
+LFT:82,91 Covered if there is no space left in journal.
+LFT:115,116 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_update_reserve_space
+LFT:9,14 This is just a self-checking code.
+LFT:18,23 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:__check_block_validity
+LFT:6,8 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -676,7 +688,23 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_ordered_write_end
 LFT:21,21 This block can be covered if we change the on-disk inode of a regular file and write to it with "data=ordered" option enabled.
+LFT:23,23 This block can be covered if we write a KEDR payload for fs/buffer.c/block_write_end function.
 LFT:25,26 This block can be covered if we write a KEDR payload for fs/jbd2/transaction.c/jbd2_journal_file_inode function.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_journalled_write_end
+LFT:110,118 Can be covered in case of lack of space on the device.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_release_space
+LFT:18,23 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_page_release_reservation
+LFT:31,31 Can be covered if we corrupt the superblock.
 end_of_record
 
 SF:fs/ext4/inode.c
