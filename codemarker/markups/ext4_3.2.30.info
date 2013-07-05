@@ -1490,6 +1490,7 @@ end_of_record
 
 SF:fs/ext4/mballoc.c
 LFT:2227,2229 Could be covered if we perform a fault simulation. 
+LFT:2284,2284 This line is covered, gcov bug.
 LFT:2336,2337 Could be covered if we perform a fault simulation. 
 LFT:2341,2342 Could be covered if we perform a fault simulation. 
 LFT:2353,2354 Could be covered if we perform a fault simulation. 
@@ -1498,6 +1499,7 @@ LFT:2596,2616 These lines can be covered if we previously set s_mb_stats flag in
 LFT:2741,2742 Could be covered if we perform a fault simulation. 
 LFT:2748,2750 Could be covered if we perform a fault simulation. 
 LFT:3100,3109 These lines can be covered if we previously set s_mb_stats flag in super block.
+LFT:3124,3134 Could be covered if we perform a fault simulation during the preallocation. 
 LFT:3325,3327 This line can be covered if we change the superblock.
 LFT:4298,4298 These lines can be covered if we previously set S_NOQUOTA flag in inode i_flags.
 LFT:4325,4326 These lines can be covered if we previously set EXT4_MB_USE_ROOT_BLOCKS flag in inode.
@@ -1564,18 +1566,23 @@ FN:ext4_mb_mark_diskspace_used
 LFT:42,54 These lines can be covered if we change sbi field in the superblock.
 end_of_record
 
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_discard_group_preallocations
+LFT:19,20 These lines can be covered if we perform a fault simulation.
+LFT:25,27 These lines can be covered if we fail ext4_mb_load_buddy function. See ext4_mb_load_buddy+116 line
+LFT:88,88 These lines can be covered if we previously set preallocations type MB_GROUP_PA.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_release_group_pa The function is called from ext4_mb_discard_group_preallocations+88
+end_of_record
+
 SF:fs/ext4/balloc.c
 FN:ext4_read_block_bitmap
 LFT:12,12 This line can be covered if there will be kedr payload failing "__getblk" function.
 LFT:15,15 This line can be covered if there will be kedr payload failing "__getblk" function.
 LFT:23,24 These lines can be covered if we change superblock.
 LFT:42,43 These lines can be covered if we change superblock.
-end_of_record
-
-SF:fs/ext4/mballoc.c
-FN:ext4_mb_discard_group_preallocations
-LFT:19,20 Could be covered if we perform a fault simulation.
-LFT:25,27 This block can be covered if we fail ext4_mb_load_buddy function. See ext4_mb_load_buddy+116 line
 end_of_record
 
 SF:fs/ext4/balloc.c
