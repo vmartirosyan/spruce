@@ -1890,9 +1890,11 @@ LFT:1053,1055 This block can be covered if we write a KEDR payload for "__getblk
 LFT:1061,1062 This block can be covered if we write a KEDR payload for /fs/jbd2/transaction.c/jbd2_journal_get_create_access function.
 LFT:1674,1675 Can be covered by corrupting extent tree.
 LFT:1680,1681 Can be covered by corrupting extent tree.
+LFT:1729,1729 Can probably be covered by running stability check in common/fallocate/FallocateNormalPunchHole1 test which is marked as dangerous.
 LFT:2315,2316 Self checking code.
 LFT:3465,3477 Can be covered if by a test similar to common/fallocate/FallocateNormalPunchHole4 but with Direct IO.
 LFT:3766,3771 Self checking code.
+LFT:3858,3860 Can probably be covered by running stability check in common/fallocate/FallocateNormalPunchHole1 test which is marked as dangerous.
 LFT:3884,3891 The block can be covered if punch hole request punches out many consequent blocks.
 LFT:4045,4053 The block can be covered if writing to a file fails because of e.g. no space left on device.
 end_of_record
