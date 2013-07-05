@@ -783,6 +783,8 @@ LFT:37,39 This block can be covered if we write a KEDR payload for grab_cache_pa
 end_of_record
 
 SF:fs/ext4/inode.c
+LFT:2088,2088 This is just a self-checking code.
+LFT:2105,2108 This is just a self-checking code.
 LFT:2507,2507 Write of certain amount with "delalloc" and "data=writeback" options.
 LFT:2510,2510 This is just a self-checking code. 
 LFT:2551,2551 This block can be covered if we write a KEDR payload for generic_write_end function.
@@ -883,6 +885,8 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_journalled_write_end
 LFT:19,21 This block can be covered in case of a journalled write without AOP_FLAG_UNINTERRUPTIBLE flag.
+LFT:47,47 This block can be covered if we change the on-disk inode of a regular file and write to it with "data=journal" option enabled.
+LFT:53,60 Can be covered if we change inode->i_size on disk.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -897,6 +901,7 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_do_update_inode
+LFT:68,75 Can be covered if superblock s_feature_ro_compat or s_rev_level are corrupted amd inode is updated.
 LFT:86,89 Can be covered if we spoil inode i_rdev value.
 end_of_record
 
@@ -1438,6 +1443,8 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_ext_direct_IO
+LFT:34,47 To cover this block we need async direct write to a file of a greater size than the size after the write(see ext4/ReadWrite/ReadWriteDirect test)
+LFT:58,58 Covered if ext4_ext_direct_IO+39 is covered.
 LFT:83,87 To cover this block we need to change and then perform a direct write to that file of a greater size than the size after the write(see ext4/ReadWrite/ReadWriteDirect test)
 end_of_record
 
@@ -1472,8 +1479,14 @@ LFT:18,19 Could be covered if we perform a fault simulation on jbd/jbd2 function
 end_of_record
 
 SF:fs/ext4/inode.c
+FN:ext4_invalidatepage_free_endio
+LFT:11,13 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
 FN:ext4_write_inode
 LFT:9,11 This block can be covered if two or more threads try to write inode back at once.
+LFT:27,29 This block can be covered if two or more threads try to write inode back at once.
 end_of_record
 
 SF:fs/ext4/migrate.c
