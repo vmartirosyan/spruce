@@ -1561,7 +1561,10 @@ end_of_record
 SF:fs/ext4/mballoc.c
 FN:ext4_discard_preallocations
 LFT:76,79 This block can be covered if we fail ext4_mb_load_buddy function. See ext4_mb_load_buddy+116 line
-LFT:83,86 Could be covered if we perform a fault simulation. 
+LFT:83,86 Could be covered if we perform a fault simulation.
+LFT:32,38 This block depends on some race conditions.
+LFT:50,51 This block depends on some race conditions.
+LFT:65,66 This block depends on some race conditions.
 end_of_record
 
 SF:fs/ext4/balloc.c
@@ -1585,6 +1588,8 @@ FN:ext4_mb_discard_group_preallocations
 LFT:19,20 These lines can be covered if we perform a fault simulation.
 LFT:25,27 These lines can be covered if we fail ext4_mb_load_buddy function. See ext4_mb_load_buddy+116 line
 LFT:88,88 These lines can be covered if we previously set preallocations type MB_GROUP_PA.
+LFT:40,42 This block depends on some race conditions.
+LFT:45,46 This block depends on some race conditions.
 end_of_record
 
 SF:fs/ext4/mballoc.c
