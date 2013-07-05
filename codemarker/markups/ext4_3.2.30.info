@@ -1877,11 +1877,14 @@ SF:fs/ext4/extents.c
 LFT:68,70 This block can be covered if we write a KEDR payload for ext4_journal_extend function (fs/jbd2/transaction.c).
 LFT:383,388 These lines can be covered if the extent header in inode is corrupted.
 LFT:684,686 These lines can be covered if we corrupt inode.
+LFT:711,712 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload"), see line 673 fs/ext4/extents.c	.
 LFT:863,865 Never gets here because of a previuos check.
 LFT:869,870 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:819,820 Can be covered by corrupting extent tree.
 LFT:887,891 Can be covered by corrupting extent tree.
 LFT:937,1001 These lines can be covered by a test similar to common/fallocate/FallocateNormalPunchHole4 but with more holes and more distances between data blocks.
+LFT:1010,1011 This block can be covered, if lines 937-1001 fs/ext4/extents.c are covered (see markups for these lines).
+LFT:1017,1020 This block can be covered if we corrupt inode.
 LFT:1053,1055 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:1061,1062 This block can be covered if we write a KEDR payload for /fs/jbd2/transaction.c/jbd2_journal_get_create_access function.
 LFT:1674,1675 Can be covered by corrupting extent tree.
