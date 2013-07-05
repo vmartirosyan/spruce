@@ -593,11 +593,17 @@ end_of_record
 SF:fs/ext4/acl.c
 FN:ext4_acl_chmod
 LFT:22,23 These lines can be covered if the log is corrupted/aborted during acl calls.
+LFT:29,29 These line can be covered if there is no space in inode for xattr(128bytes) and no space on disk for external xattrs. 
 end_of_record
 
 SF:fs/ext4/acl.c
 FN:ext4_xattr_set_acl
 LFT:30,30 These line can be covered if the log is corrupted/aborted during acl calls.
+end_of_record
+
+SF:fs/ext4/acl.c
+FN:ext4_init_acl
+LFT:9,9 Can be covered if ACLGetNotCached is refactored to deal with default acls and fault-simulation is done.
 end_of_record
 
 SF:fs/ext4/file.c
