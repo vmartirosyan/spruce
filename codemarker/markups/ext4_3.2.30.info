@@ -679,10 +679,6 @@ FN:bget_one Called from __ext4_journalled_writepage+13
 end_of_record
 
 SF:fs/ext4/inode.c
-LFT:82,82 Code is marked as it was not executed due to compiler optimisations.
-end_of_record
-
-SF:fs/ext4/inode.c
 FN:mpage_da_map_and_submit
 LFT:73,89 Can probably be covered by running stability check in common/fallocate/FallocateNormalPunchHole1 test which is marked as dangerous.
 LFT:106,107 This block can be covered if we write a KEDR payload for fs/jbd2/jbd2_journal_file_inode function.
@@ -756,21 +752,18 @@ LFT:6,8 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/inode.c
-FN:ext4_da_writepages
-LFT:293,298 These lines can be covered if the log is corrupted/aborted during write of certain amount with "delalloc" option enabled.
-end_of_record
-
-SF:fs/ext4/inode.c
 FN:ext4_da_write_begin
 LFT:37,39 This block can be covered if we write a KEDR payload for grab_cache_page_write_begin.
 end_of_record
 
 SF:fs/ext4/inode.c
+LFT:82,82 Code is marked as it was not executed due to compiler optimisations.
 LFT:2088,2088 This is just a self-checking code.
 LFT:2105,2108 This is just a self-checking code.
 LFT:2507,2507 Write of certain amount with "delalloc" and "data=writeback" options.
 LFT:2510,2510 This is just a self-checking code. 
 LFT:2551,2551 This block can be covered if we write a KEDR payload for generic_write_end function.
+LFT:3866,3866 This line can be covered changing the inode i_extra_isize field.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -812,11 +805,14 @@ SF:fs/ext4/inode.c
 FN:ext4_da_writepages
 LFT:90,90 This is just a self-checking code.
 LFT:107,108 This is just a self-checking code.
+LFT:293,298 These lines can be covered if the log is corrupted/aborted during write of certain amount with "delalloc" option enabled.
+LFT:347,351 These lines can be covered if the write_cache_pages_da function is called to map a single contiguous memory region.
 end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_page_mkwrite
 LFT:56,80 This block need page without buffers or with unmapped buffers which can't be controled.
+LFT:34,36 This block can be covered when truncating file with two threads concurrently.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -1429,6 +1425,7 @@ SF:fs/ext4/inode.c
 FN:ext4_ext_direct_IO
 LFT:34,47 To cover this block we need async direct write to a file of a greater size than the size after the write(see ext4/ReadWrite/ReadWriteDirect test)
 LFT:58,58 Covered if ext4_ext_direct_IO+39 is covered.
+LFT:74,75 Can be covered writing a special payload for __blockdev_direct_IO function.
 LFT:83,87 To cover this block we need to change and then perform a direct write to that file of a greater size than the size after the write(see ext4/ReadWrite/ReadWriteDirect test)
 end_of_record
 
