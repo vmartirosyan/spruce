@@ -1721,11 +1721,19 @@ SF:fs/ext4/namei.c
 LFT:363,367 These lines can be covered if we corrupt pages.
 LFT:378,382 These lines can be covered if we corrupt pages.
 LFT:386,390 These lines can be covered if we corrupt pages.
+LFT:398,401 These lines can be covered if we corrupt the directory inode.
+LFT:454,458 These lines can be covered if we corrupt the directory inode.
+LFT:464,469 These lines can be covered if we corrupt the directory inode. See the previous markup for details.
 LFT:409,413 This block will be covered when the count of directory_index entries will be bigger than limit.
 LFT:549,555 These lines can be covered if "__u32 hash" parameter of "ext4_htree_next_block" function is not equal to "HASH_NB_ALWAYS" const.
+LFT:578,578 These lines can be covered if we write a KEDR payload for "__getblk" function.
 LFT:589,592 These lines can be covered if we corrupt inode entry.
+LFT:651,651 This line can be covered if we corrupt directory inode.
+LFT:673,674 This line can be covered if we corrupt directory inode, but in that case the error comes up earlier in dx_probe function call.
+LFT:699,699 This line can be covered if we corrupt directory inode. See the previous markup for more details.
 LFT:999,1000 This block can be covered if we write a KEDR payload for "search_dirblock" function.
 LFT:1007,1011 This block can be covered if we write a KEDR payload for "__getblk" function.
+LFT:1241,1244 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:1293,1293 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:1311,1311 These lines can be covered if we corrupt the inode.
 LFT:1363,1365 This block could be covered if perform a fault simulation on jbd2 payloads.
