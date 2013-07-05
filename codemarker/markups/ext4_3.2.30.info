@@ -1212,6 +1212,7 @@ LFT:3829,3830 This line can be covered if we perform a fault simulation(new payl
 LFT:3867,3868 This line can be covered if we corrupt the superblock.	
 LFT:3871,3872 This line can be covered if we corrupt the superblock.	
 LFT:3878,3880 This line can be covered if we corrupt the superblock.	
+LFT:3781,3781 This line can be covered if we corrupt the superblock, using "data=journal" mount option.	
 LFT:3968,3968 This line can be covered if we corrupt the superblock.
 LFT:4119,4120 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:4126,4127 This block has to be covered if we write a KEDR payloads for jbd/jbd2 functions. But in that case the error will come up earlier on a previous check.
