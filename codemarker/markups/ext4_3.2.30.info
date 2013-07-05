@@ -1413,6 +1413,7 @@ SF:fs/ext4/move_extent.c
 LFT:695,698 This is self checking/correcting code.
 LFT:700,706 This is self checking/correcting code.
 LFT:730,750 This code can be covered if we make very big file with many extents and try to move big part of these extents. 
+LFT:1228,1228 This is self checking/correcting code.
 LFT:1252,1264 This code can be covered if we try to move extent, but the hole exists between extents or the tail of original file.
 LFT:1267,1267 This code can be covered if we try to move extent, but the hole exists at the beginning of original file.
 LFT:1275,1276 This code can be covered if we try to move extent, but we have no blocks within the specified range.
@@ -1441,6 +1442,12 @@ LFT:33,33 This line can be covered if kernel is compiled with option CONFIG_EXT4
 LFT:78,79 this block depends on race conditions.
 LFT:98,101 Could be covered if we perform a fault simulation on mext_replace_branches function (kzalloc).
 LFT:129,132 Called from move_extent_per_page+103
+end_of_record
+
+SF:fs/ext4/move_extent.c
+FN:mext_check_arguments
+LFT:89,89 This line can be covered if we try to move extent when the end offset is larger than donor file blocks.
+LFT:109,109 This line can be covered if we try to move extent when the original file size is less than start offset plus wanted count (orig_start + len > orig_blocks).
 end_of_record
 
 SF:fs/ext4/ext4_jbd2.c
@@ -1812,6 +1819,7 @@ LFT:234,235 This line can be covered if we corrupt inode and change i_no.
 LFT:629,634 Self checking code.
 LFT:586,586 Self checking/correcting code.
 LFT:804,804 The code can be executed in cocurrent conditions. Cannot be controlled by tests.
+LFT:950,950 This block can be covered if perform a fault simulation.
 LFT:1153,1159 This block can be covered corrupting s_itb_per_group value in the superblock.
 end_of_record
 
