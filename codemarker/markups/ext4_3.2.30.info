@@ -1245,11 +1245,22 @@ LFT:143,146 Can be covered with "-O mmp" mkfs options enabled and remounting par
 end_of_record
 
 SF:fs/ext4/resize.c
+FN:verify_reserved_gdb
+LFT:46,52 This block probably could be covered if we change the superblocks s_blocks_per_group field.
+end_of_record
+
+SF:fs/ext4/resize.c
+FN:reserve_backup_gdb
+LFT:46,47 See the 46-52 markup of verify_reserved_gdb function for details.
+end_of_record
+
+SF:fs/ext4/resize.c
 FN:add_new_gdb This function could be covered if we add groups until we have the gdb full. After that a new group descriptor block will be created.
 end_of_record
 
 SF:fs/ext4/resize.c
 LFT:328,330 Can be covered if superblock s_feature_ro_compat value is changed and group add ioctl is called.
+LFT:690,691 This block can be covered if we write a KEDR payload for jbd2_journal_start function (fs/jbd2/transaction.c). But failing this function with not an error code.. Just a corresponding value of handle.
 LFT:712,712 This block can be covered if we write a KEDR payload for jbd2_journal_dirty_metadata function (fs/jbd2/transaction.c).
 LFT:716,716 This block can be covered if we write a KEDR payload for jbd2_journal_stop function (fs/jbd2/transaction.c).
 end_of_record
