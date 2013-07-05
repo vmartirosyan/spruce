@@ -290,6 +290,16 @@ LFT:71,71 This line is covered, gcov bug.
 end_of_record
 
 SF:fs/ext4/page-io.c
+FN:ext4_end_io_work
+LFT:18,33 This block can be covered in some certain race conditions which cannot be controlled by tests (it was covered on one of the earlier executions).
+end_of_record
+
+SF:fs/ext4/page-io.c
+FN:ext4_bio_write_page
+LFT:18,20 This block cannot be covered even with fault simulation, as the function is being called asynchronously.
+end_of_record
+
+SF:fs/ext4/page-io.c
 FN:ext4_end_bio
 LFT:29,44 This block can be covered if failure is simulated during bio submission.
 LFT:53,60 This block can be covered if failure is simulated during bio submission.
@@ -591,6 +601,7 @@ end_of_record
 
 SF:fs/ext4/hash.c
 LFT:199,200 This is just a self-checking code.
+LFT:204,204 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/fsync.c
@@ -1763,6 +1774,12 @@ FN:ext4_init_inode_bitmap
 LFT:47,50 Could be covered if we corrupt superblock.
 LFT:189,190 Could be covered if we corrupt inode. 
 LFT:221,221 Could be covered if we corrupt inode. 
+end_of_record
+
+SF:fs/ext4/hash.c
+FN:str2hashbuf_unsigned
+LFT:11,11 Self checking/correcting code.
+LFT:17,19 The block can be covered by a test similar to ext4/mount/HashTeaUnsigned but with long enough directory entry names.
 end_of_record
 
 SF:fs/ext4/extents.c
