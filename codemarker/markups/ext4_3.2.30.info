@@ -2136,6 +2136,7 @@ LFT:28,30 Can be covered by corrupting extent tree.
 LFT:53,53 This is just a self-checking code.
 LFT:66,66 This is just a self-checking code.
 LFT:81,83 Can be covered by corrupting extent tree.
+LFT:92,92 This is a dead code. The EXT_REPEAT == 2, but ext4_ext_fiemap_cb function never returns 2.
 LFT:100,101 This block can be covered changing the inode depth.
 end_of_record
 
