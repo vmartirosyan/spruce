@@ -1681,12 +1681,15 @@ end_of_record
 SF:fs/ext4/namei.c
 FN:ext4_unlink
 LFT:16,16 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:33,33 This block can be covere when unlinking non-existant file.
 end_of_record
 
 SF:fs/ext4/namei.c
 FN:ext4_symlink
-LFT:37,37 This block could be covered if perform a fault simulation on jbd2 payloads.
-LFT:77,78 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:37,37 This block could be covered if we perform a fault simulation on jbd2 payloads.
+LFT:77,78 This block could be covered if we perform a fault simulation on jbd2 payloads.
+LFT:83,83 See the ext4_orphan_del functions markups for details.
+LFT:102,103 See the ext4_orphan_del functions markups for details.
 end_of_record
 
 SF:fs/ext4/namei.c
@@ -1696,6 +1699,8 @@ end_of_record
 
 SF:fs/ext4/namei.c
 FN:ext4_find_entry
+LFT:24,24 This line is possible to cover when working with "." or ".."
+LFT:48,48 This is just a self correction code.
 LFT:82,85 This block can be covered if we corrupt inode.
 end_of_record
 
@@ -1711,9 +1716,26 @@ LFT:17,17 This block can be covered if perform a fault simulation on jbd2 payloa
 end_of_record
 
 SF:fs/ext4/namei.c
+FN:ext4_mknod
+LFT:17,17 This block can be covered if perform a fault simulation on jbd2 payloads.
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:ext4_orphan_add
+LFT:35,35 This block can be covered if we corrupt the superblock s_inodes_count field.
+end_of_record
+
+SF:fs/ext4/namei.c
+FN:ext4_orphan_del
+LFT:46,55 This block can be covered corrupting superblock and inode.
+LFT:69,70 This block can be covered corrupting superblock and inode. See the lines 46-55 of this function for more details.
+end_of_record
+
+SF:fs/ext4/namei.c
 LFT:363,367 These lines can be covered if we corrupt pages.
 LFT:378,382 These lines can be covered if we corrupt pages.
 LFT:386,390 These lines can be covered if we corrupt pages.
+LFT:409,413 This block will be covered when the count of directory_index entries will be bigger than limit.
 LFT:549,555 These lines can be covered if "__u32 hash" parameter of "ext4_htree_next_block" function is not equal to "HASH_NB_ALWAYS" const.
 LFT:589,592 These lines can be covered if we corrupt inode entry.
 LFT:999,1000 This block can be covered if we write a KEDR payload for "search_dirblock" function.
@@ -1721,16 +1743,22 @@ LFT:1007,1011 This block can be covered if we write a KEDR payload for "__getblk
 LFT:1241,1246 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:1172,1174 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:1293,1293 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:1311,1311 These lines can be covered if we corrupt the inode.
 LFT:1363,1365 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:1374,1376 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:1383,1384 This block could be covered if perform a fault simulation on jbd2 payloads (see markup for lines 66,67 in namei.c).
 LFT:1430,1432 This block can be covered if we fail "do_split" function, and this function can be failed if we perform a fault simulation on jbd2 payloads.  
+LFT:1521,1521 This block could be covered if perform a fault simulation with __get_blk payload.
+LFT:1551,1553 This block could be covered when the directory index is full.
 LFT:1665,1665 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:1681,1681 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:1914,1918 This block can be covered if we corrupt the inode.
+LFT:1929,1933 This block can be covered if we corrupt the inode.
 LFT:1947,1952 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:1957,1960 These lines can be covered if we corrupt inode entry.
 LFT:2419,2419 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:2140,2140 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:2164,2164 This block could be covered if we have too many links on an empty directory.
 LFT:2486,2486 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:2515,2519 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:2523,2523 This block could be covered if perform a fault simulation on jbd2 payloads.
