@@ -558,6 +558,23 @@ LFT:624,628 These lines are covered (see line 664, balloc.c), gcov bug.
 end_of_record
 
 SF:fs/ext4/mballoc.c
+LFT:3207,3215 This is really dead code. This function is called only from one place where the cpa is always null before that invokation.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_put_pa
+LFT:12,12 This block can be called in concurrent envoirement, which cannot be controlled with tests.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_discard_group_preallocations
+LFT:31,31 This is really a dead code. This function is called only once and the argument "needed" is always > 0 when calling the function.
+LFT:40,42 This block depends on some race conditions.
+LFT:45,46 This block depends on some race conditions.
+LFT:63,70 This block depends on race conditions.
+end_of_record
+
+SF:fs/ext4/mballoc.c
 FN:ext4_mb_release_inode_pa
 LFT:37,42 This block depends on race conditions.
 end_of_record
@@ -1640,12 +1657,16 @@ LFT:42,54 These lines can be covered if we change sbi field in the superblock.
 end_of_record
 
 SF:fs/ext4/mballoc.c
+FN:ext4_group_add_blocks
+LFT:25,28 Can be covered when adding too much blocks to group.
+LFT:48,52 This seems to be a self checking code.
+end_of_record
+
+SF:fs/ext4/mballoc.c
 FN:ext4_mb_discard_group_preallocations
 LFT:19,20 These lines can be covered if we perform a fault simulation.
 LFT:25,27 These lines can be covered if we fail ext4_mb_load_buddy function. See ext4_mb_load_buddy+116 line
 LFT:88,88 These lines can be covered if we previously set preallocations type MB_GROUP_PA.
-LFT:40,42 This block depends on some race conditions.
-LFT:45,46 This block depends on some race conditions.
 end_of_record
 
 SF:fs/ext4/mballoc.c
