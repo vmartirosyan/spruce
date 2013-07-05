@@ -2058,6 +2058,7 @@ LFT:3465,3477 Can be covered if by a test similar to common/fallocate/FallocateN
 LFT:3547,3550 Can be covered setting the flag EXT4_GET_BLOCKS_DELALLOC_RESERVE previously.
 LFT:3766,3771 Self checking code.
 LFT:3828,3828 Self checking code.
+LFT:3837,3837 Will be covered if space left in extent is greater than the allocation request.
 LFT:3845,3846 Can be covered with fault simulation, but the tests which cover these lines are dangerous. See the fallocate testest.
 LFT:3858,3860 Can probably be covered by running stability check in common/fallocate/FallocateNormalPunchHole1 test which is marked as dangerous.
 LFT:3884,3891 The block can be covered if punch hole request punches out many consequent blocks.
@@ -2094,6 +2095,17 @@ SF:fs/ext4/extents.c
 FN:ext4_convert_unwritten_extents
 LFT:26,27 This block can be covered by simulating failure in jfs2_journal_start() function.
 LFT:32,33 This block can be covered by fault simulation.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_find_goal
+LFT:33,33 Can be covered if we corrupt extent tree.
+LFT:39,39 Can be covered if we corrupt extent tree.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:get_reserved_cluster_alloc
+LFT:23,23 This is just a self checking code.
 end_of_record
 
 SF:fs/ext4/extents.c
