@@ -1668,6 +1668,10 @@ LFT:163,167 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/mballoc.c
+FN:ext4_mb_release_group_pa The function is called from ext4_mb_discard_group_preallocations+88.
+end_of_record
+
+SF:fs/ext4/mballoc.c
 FN:ext4_mb_use_preallocated
 LFT:48,48 This block depends on race conditions.
 LFT:60,60 This block depends on race conditions.
