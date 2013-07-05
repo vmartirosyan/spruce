@@ -611,6 +611,7 @@ FN:ext4_mb_init_cache
 LFT:57,58 This block depends on race conditions.
 LFT:76,77 This block depends on race conditions.
 LFT:95,97 This block depends on race conditions.
+LFT:133,133 This is self checking/correcting code.
 end_of_record
 
 ################################################ext4#####################
@@ -777,8 +778,6 @@ LFT:37,39 This block can be covered if we write a KEDR payload for grab_cache_pa
 end_of_record
 
 SF:fs/ext4/inode.c
-LFT:2088,2088 This is just a self-checking code.
-LFT:2105,2108 This is just a self-checking code.
 LFT:2507,2507 Write of certain amount with "delalloc" and "data=writeback" options.
 LFT:2510,2510 This is just a self-checking code. 
 LFT:2551,2551 This block can be covered if we write a KEDR payload for generic_write_end function.
@@ -817,6 +816,12 @@ LFT:22,22 This is just a self-checking code.
 LFT:48,48 Covered only if ext4_writepage+22 is covered.
 LFT:55,55 Can be covered in case of a write to a mmaped page with journalling enabled.
 LFT:58,59 Covered only if mpage_da_submit_io+123 is covered.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_da_writepages
+LFT:90,90 This is just a self-checking code.
+LFT:107,108 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -873,8 +878,6 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_journalled_write_end
 LFT:19,21 This block can be covered in case of a journalled write without AOP_FLAG_UNINTERRUPTIBLE flag.
-LFT:47,47 This block can be covered if we change the on-disk inode of a regular file and write to it with "data=journal" option enabled.
-LFT:53,60 Can be covered if we change inode->i_size on disk.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -889,7 +892,6 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_do_update_inode
-LFT:68,75 Can be covered if superblock s_feature_ro_compat or s_rev_level are corrupted amd inode is updated.
 LFT:86,89 Can be covered if we spoil inode i_rdev value.
 end_of_record
 
@@ -1196,7 +1198,6 @@ LFT:3737,3739 These lines can be covered if we corrupt/change the superblock s_f
 LFT:3748,3751 This line can be covered if we corrupt the superblock block count.	
 LFT:3788,3790 This block can be probably covered combinig two mount options...data = writeback and data = journal.
 LFT:3815,3815 This line can be covered if we corrupt the superblock s_overhead_clusters.	
-LFT:3825,3826 This block can be covered if __alloc_workqueue_key() function fails (new payload for KEDR is needed).
 LFT:3867,3868 This line can be covered if we corrupt the superblock.	
 LFT:3871,3872 This line can be covered if we corrupt the superblock.	
 LFT:3878,3880 This line can be covered if we corrupt the superblock.	
@@ -1402,6 +1403,12 @@ LFT:7,12 This block could be covered if the journal will be full.
 end_of_record
 
 SF:fs/ext4/inode.c
+FN:ext4_journalled_write_end
+LFT:47,47 This block can be covered if we change the on-disk inode of a regular file and write to it with "data=journal" option enabled.
+LFT:53,60 Can be covered if we change inode->i_size on disk. 
+end_of_record
+
+SF:fs/ext4/inode.c
 LFT:3800,3800 Change on-disk unlinked inode i_mode and call lookup for it(see ext4/Lookup testset)
 LFT:3814,3815 Change superblock s_feature_incompat value and call lookup(see ext4/Lookup testset)
 LFT:3893,3896 Can be covered if the inode acl block is corrupted.
@@ -1423,14 +1430,16 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_ext_direct_IO
-LFT:34,47 To cover this block we need async direct write to a file of a greater size than the size after the write(see ext4/ReadWrite/ReadWriteDirect test)
-LFT:58,58 Covered if ext4_ext_direct_IO+39 is covered.
 LFT:83,87 To cover this block we need to change and then perform a direct write to that file of a greater size than the size after the write(see ext4/ReadWrite/ReadWriteDirect test)
 end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_discard_partial_page_buffers_no_lock
 LFT:22,22 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/inode.c
+FN:ext4_discard_partial_page_buffers_no_lock
 LFT:107,111 This is just a self-checking code.
 end_of_record
 
@@ -1455,14 +1464,8 @@ LFT:18,19 Could be covered if we perform a fault simulation on jbd/jbd2 function
 end_of_record
 
 SF:fs/ext4/inode.c
-FN:ext4_invalidatepage_free_endio
-LFT:11,13 This is just a self-checking code.
-end_of_record
-
-SF:fs/ext4/inode.c
 FN:ext4_write_inode
 LFT:9,11 This block can be covered if two or more threads try to write inode back at once.
-LFT:27,29 This block can be covered if two or more threads try to write inode back at once.
 end_of_record
 
 SF:fs/ext4/migrate.c
@@ -1719,6 +1722,12 @@ end_of_record
 
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_release_group_pa The function is called from ext4_mb_discard_group_preallocations+88
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_groupinfo_create_slab
+LFT:12,12 Could be covered if we try to create slab give size smaller than 2^10.
+LFT:31,31 Could be covered if we perform a fault simulation. 
 end_of_record
 
 SF:fs/ext4/balloc.c
