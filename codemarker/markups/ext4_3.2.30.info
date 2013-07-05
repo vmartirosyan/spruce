@@ -24,6 +24,22 @@ LFT:0,2 Function is inline and its call is usually integrated.
 end_of_record
 
 SF:fs/ext4/super.c
+FN:ext4_lazyinit_thread
+LFT:37,37 This block can be covered in cocurrent environment which cannot be controlled by tests.
+LFT:66,67 This block can be covered in cocurrent environment which cannot be controlled by tests.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_clear_request_list
+LFT:7,9 This block can be covered in cocurrent environment which cannot be controlled by tests.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:__ext4_std_error
+LFT:10,10 This block can be executed in cocurrent environment which cannot be made in tests.
+end_of_record
+
+SF:fs/ext4/super.c
 FN:ext4_kvmalloc
 LFT:6,6 This line could be easily covered if we perform a fault simulation on mount tests, but it leads to unrecoverable errors. 
 end_of_record
@@ -1073,6 +1089,7 @@ LFT:27,31 This block can be covered if we corrupt the superblock s_state field a
 LFT:45,47 This block can be covered if we corrupt the superblock.
 LFT:74,79 This block can be covered if we corrupt the inode.
 LFT:87,87 Covered if ext4_orphan_cleanup+79 is covered.
+LFT:96,96 The block can be covered if a test similar to OrphanCleanup2 is developed and the quotas are turned on on the file being added to orphan list.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -1149,8 +1166,11 @@ LFT:2121,2124 These lines can be covered if we corrupt/change the superblock.
 LFT:2128,2131 These lines can be covered if we corrupt/change the superblock.
 LFT:2136,2139 These lines can be covered if we corrupt/change the superblock.
 LFT:2143,2149 These lines can be covered if we corrupt/change the superblock.
+LFT:2391,2391 Self checking/correcting code.
+LFT:2437,2438 Can be covered if the value of field s_raid_stride in superblock is set to more than s_blocks_per_group.
 LFT:2406,2406 These lines can be covered if we corrupt/change the superblock s_feature_incompat field and set it to EXT4_FEATURE_INCOMPAT_META_BG value.
 LFT:2408,2412 These lines can be covered if we corrupt/change the superblock s_feature_incompat field and set it to EXT4_FEATURE_INCOMPAT_META_BG value.
+LFT:3246,3246 Self checking/correcting code. The s_id field of superblock is formed from block device name or filesystem type. Both of them should not contain '/' chars.
 LFT:3309,3309 This line can be covered using errors=panic mount option.
 LFT:3313,3313 This line can be covered if we change superblock s_errors value.
 LFT:3383,3385 These lines can be covered if we corrupt/change the superblock s_feature_incompat field.
@@ -1158,6 +1178,7 @@ LFT:3422,3424 These lines could be covered if we use mkfs option which indicates
 LFT:3468,3471 This block can be covered if we change es->s_inode_size and set it bigger than blocksize.
 LFT:3479,3485 This block can be covered if we corrupt the superblock s_desc_size field and s_feature_incompat field.	
 LFT:3511,3511 This line can be covered if we change superblock s_flags value.
+LFT:3517,3519 This line can be covered if we change superblock s_flags value.
 LFT:3528,3531 Probably could be covered with bigalloc mount option and with corrupted superblock.
 LFT:3538,3541 Probably could be covered with bigalloc mount option and with corrupted superblock.
 LFT:3545,3549 This code could be covered when mounted with bigalloc option, and the sperblock is corrupted.
@@ -1173,12 +1194,16 @@ LFT:3737,3739 These lines can be covered if we corrupt/change the superblock s_f
 LFT:3748,3751 This line can be covered if we corrupt the superblock block count.	
 LFT:3788,3790 This block can be probably covered combinig two mount options...data = writeback and data = journal.
 LFT:3815,3815 This line can be covered if we corrupt the superblock s_overhead_clusters.	
+LFT:3825,3826 This block can be covered if __alloc_workqueue_key() function fails (new payload for KEDR is needed).
 LFT:3867,3868 This line can be covered if we corrupt the superblock.	
 LFT:3871,3872 This line can be covered if we corrupt the superblock.	
 LFT:3878,3880 This line can be covered if we corrupt the superblock.	
 LFT:3968,3968 This line can be covered if we corrupt the superblock.
 LFT:4119,4120 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:4126,4127 This block has to be covered if we write a KEDR payloads for jbd/jbd2 functions. But in that case the error will come up earlier on a previous check.
+LFT:4256,4267 The block can be covered by test common/mount_umount/UmountGeneral (stability check) which is marked as dangerous.
+LFT:4287,4288 The block can be covered if there is no underlying hard disk partition (call the umount() syscall).
+LFT:4305,4308 The block can be covered by test common/mount_umount/UmountGeneral (stability check) which is marked as dangerous.
 LFT:4756,4756 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:4789,4790 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:4082,4084 these lines can be covered with usage of mkfs options like this -b 2048: or -b 1024 -g 8192:
@@ -1188,9 +1213,21 @@ LFT:4107,4109 These lines can be covered if we corrupt the superblock.
 LFT:4575,4576 This is a self check.
 LFT:4595,4600 These lines can be covered if we corrupt the superblock.
 LFT:4610,4615 These lines can be covered if we corrupt the superblock(especially s_last_orphan value.) This is similar to the orphan_cleanup tests in mount testset, but instead of doing a mount we have to do remount.
+LFT:4663,4663 Can be covered by a test remount partition with quotas enabled.
+LFT:4687,4687 Can be covered by a test remount partition with quotas enabled.
 LFT:4833,4833 These lines can be covered if we corrupt the superblock. See the line 2227 for more details.
 LFT:5098,5098 This line can be covered if we add new payload (kobject_init_and_add) to kedr and perform a fault simulation on ext4 Init/Exit functions.
 LFT:5169,5181 These lines can be covered if we perform a fault simulation on ext4 Init/Exit functions.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:session_write_kbytes_show
+LFT:6,6 This block can be covered if there is no underlying hard disk partition (e.g. ram disk device) and session_write_kbytes file in sysfs is being read.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:lifetime_write_kbytes_show
+LFT:6,6 This block can be covered if there is no underlying hard disk partition (e.g. ram disk device) and lifetime_write_kbytes file in sysfs is being read.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -1237,6 +1274,17 @@ FN:ext4_quota_read
 LFT:15,15 This line can be covered if we corrupt the inode.
 LFT:22,22 This line can be covered if there will be kedr payload which fails "__getblk" function.
 LFT:24,24 This line can be covered if there will be kedr payload which fails "__getblk" function.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:parse_options
+LFT:430,432 This block can be covered if either usrjquota or grpjquota mount option is provided without jqfmt option.
+LFT:436,436 This block can be covered if jqfmt mount option is provided, but neight usrjquota, nor grpjquota mount option is provided.
+end_of_record
+
+SF:fs/ext4/super.c
+FN:ext4_remount
+LFT:6,6 This block is covered by test common/mount_umount/RemountGeneral (stability check), which is marked as dangerous.
 end_of_record
 
 SF:fs/ext4/xattr.c
@@ -1950,6 +1998,11 @@ end_of_record
 SF:fs/ext4/extents.c
 FN:ext4_ext_correct_indexes
 LFT:13,15 Can be covered by corrupting extent tree.
+end_of_record
+
+SF:fs/ext4/file.c
+FN:ext4_release_file
+LFT:16,16 This block can be covered if a directory is deleted on which partial getdents() call was earlier made.
 end_of_record
 
 SF:fs/ext4/page-io.c
