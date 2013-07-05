@@ -1423,6 +1423,9 @@ LFT:1228,1228 This is self checking/correcting code.
 LFT:1252,1264 This code can be covered if we try to move extent, but the hole exists between extents or the tail of original file.
 LFT:1267,1267 This code can be covered if we try to move extent, but the hole exists at the beginning of original file.
 LFT:1275,1276 This code can be covered if we try to move extent, but we have no blocks within the specified range.
+LFT:1289,1289 This is self checking/correcting code.
+LFT:1295,1296 This code can be covered if we make empty leaf in extents tree.
+LFT:1306,1308 This code can be covered if we make contiguous extents in file and after that try to move these extents. 
 LFT:1359,1364 This is self checking/correcting code.
 end_of_record
 
@@ -1445,8 +1448,10 @@ SF:fs/ext4/move_extent.c
 FN:move_extent_per_page
 LFT:28,29 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
 LFT:33,33 This line can be covered if kernel is compiled with option CONFIG_EXT4_FS=y 
-LFT:78,79 this block depends on race conditions.
+LFT:57,66 This code can be covered if we try to move the last block of file.
+LFT:78,79 This block depends on race conditions.
 LFT:98,101 Could be covered if we perform a fault simulation on mext_replace_branches function (kzalloc).
+LFT:111,111 This line can be covered if we try to move extent when the offset in blocks count is not 0 (Offset is bigger than 4096).
 LFT:129,132 Called from move_extent_per_page+103
 end_of_record
 
