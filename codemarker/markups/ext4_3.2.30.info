@@ -1215,8 +1215,17 @@ LFT:36,38 This lines can be covered if corrupt file and corrupt directory.
 end_of_record
 
 SF:fs/ext4/dir.c
+FN:ext4_htree_store_dirent
+LFT:35,37 This code is self checking.
+end_of_record
+
+SF:fs/ext4/dir.c
+LFT:138,139 This line can be covered if we change directory index. 
 LFT:169,179 This block can be covered if we write a KEDR payload for fs/buffer.c/__getblk function and run fault simulation on readdir syscall.
 LFT:189,206 This lines can be covered by a test which does a getdents() call, then addes new entries and makes another call to getdents().
+LFT:218,219 These lines can be covered if corrupt file.
+LFT:428,430 These lines are self checking code.
+LFT:468,472 These lines can be covered if somewhere file position is messed up. 
 end_of_record
 
 SF:fs/ext4/mmp.c
