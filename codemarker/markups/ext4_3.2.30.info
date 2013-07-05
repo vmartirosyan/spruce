@@ -169,12 +169,6 @@ LFT:62,63 This block can be covered by simulation failures in jbd2_journal_start
 end_of_record
 
 SF:fs/ext4/extents.c
-FN:ext4_ext_fiemap_cb
-LFT:65,101 This block can be covered if FIEMAP ioctl command is parformed on a file with lots of allocated blocks.
-LFT:107,179 This block can be covered if FIEMAP ioctl command is parformed on a file with blocks which are allocated via "delayed allocation".
-end_of_record
-
-SF:fs/ext4/extents.c
 FN:ext4_ext_search_left
 LFT:9,10 This block is not covered because of a previous check (path cannot be null).
 LFT:25,40 Self checking code.
@@ -200,11 +194,6 @@ FN:ext4_split_extent_at
 LFT:37,46 This block can be covered if punch hole request covers the whole extent.
 LFT:72,79 This block can be covered if punch hole request brings to an extent split, which is fully in the file written data range and there is no space left on device.
 LFT:88,89 This block can be covered in case of previous comment, and if the function blkdev_issue_zeroout() fails (can be done via KEDR fault simulation).
-end_of_record
-
-SF:fs/ext4/extents.c
-FN:ext4_ext_convert_to_initialized
-LFT:141,182 This block can be covered if split (e.g. because of punching a hole) alters an extent with more than 14 blocks len.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -506,27 +495,6 @@ LFT:502,502 This function is inline and its call is usually integrated.
 LFT:554,554 This line is covered, but gcov doesn't show it. gcov bug
 LFT:562,562 This function is inline and its call is usually integrated.
 LFT:573,573 This line is covered, but gcov doesn't show it. gcov bug
-end_of_record
-
-SF:fs/ext4/extents.c
-FN:ext4_ext_convert_to_initialized
-LFT:63,107 This block can be covered if we try to write at the begninning of a preallocated extent (allocated by fallocate()).
-LFT:141,18 This block can be covered if we try to write at the middle of a preallocated extent (allocated by fallocate()).
-end_of_record
-
-SF:fs/ext4/extents.c
-FN:ext4_convert_unwritten_extents
-LFT:26,27 This block can be covered by simulating failure in jfs2_journal_start() function.
-end_of_record
-
-SF:fs/ext4/extents.c
-FN:check_eofblocks_fl
-LFT:12,41 This block can be covered if we try to write in allocated after EOF region.
-end_of_record
-
-SF:fs/ext4/extents.c
-FN:ext4_xattr_fiemap
-LFT:14,23 The block can be covered if FIEMAP ioctl command is executed on a life with in-inode extended attributes.
 end_of_record
 
 SF:fs/ext4/move_extent.c
@@ -1511,6 +1479,21 @@ FN:ext4_ext_swap_inode_data
 LFT:30,32 This code is not covered because we don't control the block allocation flow. 
 end_of_record
 
+SF:fs/ext4/extents.c
+FN:ext4_ext_calc_metadata_amount
+LFT:23,23 These lines can be covered if we corrupt the inode.
+LFT:25,26 These lines can be covered if we corrupt the inode.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_insert_index
+LFT:12,15 These lines can be covered if we corrupt the inode.
+LFT:20,24 These lines can be covered if we corrupt the inode.
+LFT:34,34 These lines can be covered if we corrupt the inode.
+LFT:47,48 These lines can be covered if we corrupt the inode.
+LFT:56,57 These lines can be covered if we corrupt the inode.
+end_of_record
+
 SF:fs/ext4/move_extent.c
 FN:mext_insert_across_blocks
 LFT:25,27 This code can be covered if start extent and end extent in original file are different. 
@@ -2045,20 +2028,90 @@ LFT:863,865 Never gets here because of a previuos check.
 LFT:869,870 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:819,820 Can be covered by corrupting extent tree.
 LFT:887,891 Can be covered by corrupting extent tree.
+LFT:927,929 These lines can be covered if we corrupt the inode.
 LFT:937,1001 These lines can be covered by a test similar to common/fallocate/FallocateNormalPunchHole4 but with more holes and more distances between data blocks.
-LFT:1010,1011 This block can be covered, if lines 937-1001 fs/ext4/extents.c are covered (see markups for these lines).
+LFT:1010,1012 This block can be covered, if lines 937-1001 fs/ext4/extents.c are covered (see markups for these lines).
 LFT:1017,1020 This block can be covered if we corrupt inode.
 LFT:1053,1055 This block can be covered if we write a KEDR payload for "__getblk" function.
 LFT:1061,1062 This block can be covered if we write a KEDR payload for /fs/jbd2/transaction.c/jbd2_journal_get_create_access function.
 LFT:1674,1675 Can be covered by corrupting extent tree.
 LFT:1680,1681 Can be covered by corrupting extent tree.
 LFT:1729,1729 Can probably be covered by running stability check in common/fallocate/FallocateNormalPunchHole1 test which is marked as dangerous.
+LFT:1747,1747 This line can be covered when there is no free space in the found leaf. We need to overflow the leaf.
 LFT:2315,2316 Self checking code.
+LFT:2351,2354 These lines can be covered if we corrupt the inode while truncating.
+LFT:2441,2451 These lines can be covered if we corrupt the inode depth.
+LFT:2610,2610 These lines can be covered if we delete an extent when using directories.
 LFT:3465,3477 Can be covered if by a test similar to common/fallocate/FallocateNormalPunchHole4 but with Direct IO.
+LFT:3547,3550 Can be covered setting the flag EXT4_GET_BLOCKS_DELALLOC_RESERVE previously.
 LFT:3766,3771 Self checking code.
+LFT:3828,3828 Self checking code.
+LFT:3845,3846 Can be covered with fault simulation, but the tests which cover these lines are dangerous. See the fallocate testest.
 LFT:3858,3860 Can probably be covered by running stability check in common/fallocate/FallocateNormalPunchHole1 test which is marked as dangerous.
 LFT:3884,3891 The block can be covered if punch hole request punches out many consequent blocks.
+LFT:3965,3965 Can be covered setting the flag EXT4_GET_BLOCKS_UNINIT_EXT previously.
 LFT:4045,4053 The block can be covered if writing to a file fails because of e.g. no space left on device.
+LFT:4060,4060 This is a self check.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:check_eofblocks_fl
+LFT:12,41 This block can be covered if we try to write in allocated after EOF region.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_xattr_fiemap
+LFT:14,23 The block can be covered if FIEMAP ioctl command is executed on a life with in-inode extended attributes.
+LFT:30,30 This line can be covered if we change the inode i_file_acl field.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_fiemap
+LFT:23,23 This is a self checking code.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_fiemap_cb
+LFT:56,56 This block can be covered if FIEMAP ioctl command is parformed on a file with blocks which are allocated via "delayed allocation".
+LFT:65,101 This block can be covered if FIEMAP ioctl command is parformed on a file with lots of allocated blocks.
+LFT:107,179 This block can be covered if FIEMAP ioctl command is parformed on a file with blocks which are allocated via "delayed allocation".
+LFT:189,189 This block can be covered doing many small alloctions.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_convert_unwritten_extents
+LFT:26,27 This block can be covered by simulating failure in jfs2_journal_start() function.
+LFT:32,33 This block can be covered by fault simulation.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_find_delalloc_range
+LFT:13,13 This block can be covered, changing the blocksize for ext4.
+LFT:45,46 This block can be covered when fs block size is less than page size and cluster starts/ends in middle of the page.
+LFT:62,62 This block can be covered changing fs blocksize. bigalloc mkfs option may be useful.
+LFT:75,75 This block can be covered changing fs blocksize. bigalloc mkfs option may be useful.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_convert_to_initialized
+LFT:22,22 Probably can be covered, changing the blocksize for ext4.
+LFT:63,107 This block can be covered if we try to write at the begninning of a preallocated extent (allocated by fallocate()).
+LFT:141,182 This block can be covered if we try to write at the middle of a preallocated extent (allocated by fallocate()).
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_zeroout
+LFT:11,11 This block can be covered if we write a KEDR payload for blkdev_issue_zeroout function.(Note, that it has to return value > 0).
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_try_to_merge_right
+LFT:18,18 This block can be covered using extent with size > 2^15.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_check_overlap
+LFT:30,32 This seems to be a self checking/correcting code.
 end_of_record
 
 SF:fs/ext4/extents.c
@@ -2068,19 +2121,18 @@ end_of_record
 
 SF:fs/ext4/extents.c
 FN:ext4_ext_walk_space
+LFT:21,23 This block can be covered performing fault simulation.
+LFT:28,30 Can be covered by corrupting extent tree.
+LFT:53,53 This is just a self-checking code.
 LFT:66,66 This is just a self-checking code.
+LFT:81,83 Can be covered by corrupting extent tree.
+LFT:100,101 This block can be covered changing the inode depth.
 end_of_record
 
 SF:fs/ext4/extents.c
 FN:ext4_ext_rm_idx
 LFT:10,11 Can be covered by corrupting extent tree.
 LFT:18,20 Can be covered by corrupting extent tree.
-end_of_record
-
-SF:fs/ext4/extents.c
-FN:ext4_ext_walk_space
-LFT:28,30 Can be covered by corrupting extent tree.
-LFT:81,83 Can be covered by corrupting extent tree.
 end_of_record
 
 SF:fs/ext4/extents.c
@@ -2091,6 +2143,7 @@ end_of_record
 SF:fs/ext4/extents.c
 FN:ext4_split_extent
 LFT:36,36 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload").
+LFT:44,44 Can be covered if by a test similar to common/fallocate/FallocateNormalPunchHole4 but with Direct IO.
 end_of_record
 
 SF:fs/ext4/extents.c
