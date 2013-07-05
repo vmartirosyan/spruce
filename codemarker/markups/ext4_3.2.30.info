@@ -384,7 +384,20 @@ LFT:699,699 This line is covered, gcov bug
 LFT:702,702 This line is covered, gcov bug
 LFT:1028,1028 Function is inline and its call is usually integrated.
 LFT:1038,1038 This line is covered, gcov bug
+LFT:1342,1344 This is just a self-checking code.
 LFT:4429,4429 Function is inline and its call is usually integrated.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_find_by_goal
+LFT:23,29 This block can be covered if s_raid_stride and/or s_raid_stripe_width fields in superblock are changed.
+LFT:41,46 This block can't be covered  because EXT4_MB_HINT_MERGE isn't set anywhere.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_complex_scan_group
+LFT:23,27 This block can be covered if s_clusters_per_group field in superblock are changed.
+LFT:33,42 This block can be covered if we corrupt on-disk bitmap.
 end_of_record
 
 SF:fs/ext4/move_extent.c
@@ -591,6 +604,7 @@ end_of_record
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_put_pa
 LFT:12,12 This block can be called in concurrent envoirement, which cannot be controlled with tests.
+LFT:25,25 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/mballoc.c
@@ -599,6 +613,7 @@ LFT:31,31 This is really a dead code. This function is called only once and the 
 LFT:40,42 This block depends on some race conditions.
 LFT:45,46 This block depends on some race conditions.
 LFT:63,70 This block depends on race conditions.
+LFT:75,75 This is just a self-checking code as we can't control block allocation flow.
 end_of_record
 
 SF:fs/ext4/mballoc.c
@@ -1638,14 +1653,25 @@ end_of_record
 
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_add_n_trim
+LFT:10,10 This code is self checking code.
 LFT:15,31 This block can be covered if we call ext4_mb_add_n_trim function several times. It is possible if we run many threads and alloc/release blocks.  
 LFT:40,40 This line can be covered if we could call ext4_mb_add_n_trim function 8 times at the same time.
 end_of_record
 
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_normalize_request
+LFT:91,92 This is just a self-checking code.
 LFT:113,113 This block depends on race conditions.
 LFT:116,117 This block depends on race conditions.
+LFT:138,140 This block depends on race conditions.
+LFT:163,167 This is just a self-checking code.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_use_preallocated
+LFT:48,48 This block depends on race conditions.
+LFT:60,60 This block depends on race conditions.
+LFT:75,75 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/extents.c
@@ -1654,6 +1680,18 @@ end_of_record
 
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_discard_lg_preallocations The function is called from ext4_mb_add_n_trim+40.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_free_blocks
+LFT:20,20 This is just a self-checking code.
+LFT:28,30 Covered if bock_validity.c/ext4_data_block_valid+9 or block_validity.c/ext4_data_block_valid+19 are covered.
+LFT:127,130 Covered if we corrupt on-disk group descriptors.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_group_add_blocks
+LFT:73,73 Can be covered if we corrupt block bitmap.
 end_of_record
 
 SF:fs/ext4/mballoc.c
@@ -1671,7 +1709,13 @@ LFT:3124,3134 Could be covered if we perform a fault simulation during the preal
 LFT:3325,3327 This line can be covered if we change the superblock.
 LFT:4298,4298 These lines can be covered if we previously set S_NOQUOTA flag in inode i_flags.
 LFT:4325,4326 These lines can be covered if we previously set EXT4_MB_USE_ROOT_BLOCKS flag in inode.
+LFT:4352,4353 These lines can't be covered as ext4_mb_initialize_context function always returns 0.
 LFT:4380,4385 These lines can be covered if we interrupt process when we try to allocate blocks. 
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_free_metadata
+LFT:44,44 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/mballoc.c
@@ -1748,10 +1792,11 @@ FN:ext4_mb_discard_group_preallocations
 LFT:19,20 These lines can be covered if we perform a fault simulation.
 LFT:25,27 These lines can be covered if we fail ext4_mb_load_buddy function. See ext4_mb_load_buddy+116 line
 LFT:88,88 These lines can be covered if we previously set preallocations type MB_GROUP_PA.
-end_of_record
-
-SF:fs/ext4/mballoc.c
-FN:ext4_mb_release_group_pa The function is called from ext4_mb_discard_group_preallocations+88
+LFT:31,31 This is really a dead code. This function is called only once and the argument "needed" is always > 0 when calling the function.
+LFT:40,42 This block depends on some race conditions.
+LFT:45,46 This block depends on some race conditions.
+LFT:63,70 This block depends on race conditions.
+LFT:75,75 This is just a self-checking code as we can't control block allocation flow.
 end_of_record
 
 SF:fs/ext4/mballoc.c
