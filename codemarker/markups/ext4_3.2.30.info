@@ -321,6 +321,8 @@ end_of_record
 SF:fs/ext4/page-io.c
 FN:ext4_end_io_nolock
 LFT:13,17 This block cannot be covered as unwritte extentes are not on disk, thus cannot be corrupted, and the function is called asynchronously, thus fault simulation cannot be performed.
+LFT:21,21 This block depends on some race conditions.
+LFT:24,24 This block depends on some race conditions.
 end_of_record
 
 SF:fs/ext4/page-io.c
@@ -2173,8 +2175,19 @@ LFT:58,59 This block can be covered if failure is simulated during bio submissio
 end_of_record
 
 SF:fs/ext4/page-io.c
+FN:ext4_end_io_work
+LFT:11,11 This block can be covered in some certain race conditions which cannot be controlled by tests
+end_of_record
+
+SF:fs/ext4/page-io.c
 FN:ext4_init_pageio
 LFT:7,7 This block can be covered by a test which fails the insmod call on ext4 module.
+end_of_record
+
+SF:fs/ext4/page-io.c
+FN:io_submit_add_bh
+LFT:11,11 This is just a self-checking code.
+LFT:15,19 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/block_validity.c
