@@ -305,7 +305,18 @@ end_of_record
 
 SF:fs/ext4/page-io.c
 FN:ext4_end_io_work
+LFT:18,33 This block can be covered in some certain race conditions which cannot be controlled by tests.
 LFT:18,33 This block can be covered in some certain race conditions which cannot be controlled by tests (it was covered on one of the earlier executions).
+end_of_record
+
+SF:fs/ext4/page-io.c
+FN:ext4_free_io_end
+LFT:8,8 This block can be covered in concurrent environment which cannot be controlled from a test.
+end_of_record
+
+SF:fs/ext4/page-io.c
+FN:ext4_end_io_nolock
+LFT:13,17 This block cannot be covered as unwritte extentes are not on disk, thus cannot be corrupted, and the function is called asynchronously, thus fault simulation cannot be performed.
 end_of_record
 
 SF:fs/ext4/page-io.c
