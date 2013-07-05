@@ -614,6 +614,11 @@ LFT:95,97 This block depends on race conditions.
 LFT:133,133 This is self checking/correcting code.
 end_of_record
 
+SF:fs/ext4/resize.c
+FN:ext4_resize_begin
+LFT:18,18 This line can be covered with two threads doing resize concurrently. It cannot be controled with test.
+end_of_record
+
 ################################################ext4#####################
 #################Section for free code markup##########################
 #######################################################################
@@ -1198,6 +1203,7 @@ LFT:3737,3739 These lines can be covered if we corrupt/change the superblock s_f
 LFT:3748,3751 This line can be covered if we corrupt the superblock block count.	
 LFT:3788,3790 This block can be probably covered combinig two mount options...data = writeback and data = journal.
 LFT:3815,3815 This line can be covered if we corrupt the superblock s_overhead_clusters.	
+LFT:3829,3830 This line can be covered if we perform a fault simulation(new payload for __alloc_workqueue_key is needed).
 LFT:3867,3868 This line can be covered if we corrupt the superblock.	
 LFT:3871,3872 This line can be covered if we corrupt the superblock.	
 LFT:3878,3880 This line can be covered if we corrupt the superblock.	
@@ -1328,7 +1334,9 @@ end_of_record
 
 SF:fs/ext4/resize.c
 FN:reserve_backup_gdb
+LFT:33,38 This block can be covered performing an on-disk layout corruption(need to change reserved_gdb value).
 LFT:46,47 See the 46-52 markup of verify_reserved_gdb function for details.
+LFT:51,51 This is a self checking/correcting code.
 end_of_record
 
 SF:fs/ext4/resize.c
