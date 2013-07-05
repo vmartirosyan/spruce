@@ -1477,6 +1477,11 @@ LFT:465,466 These lines can be covered if the log is corrupted/aborted during mi
 LFT:517,519 These lines can be covered if the log is corrupted/aborted during migrate.
 end_of_record
 
+SF:fs/ext4/migrate.c
+FN:free_ext_idx
+LFT:15,18 This block can be covered by a test similar to ext4/Ioctl/MigrateFile with fault simulation.
+end_of_record
+
 SF:fs/ext4/mballoc.c
 FN:ext4_mb_show_ac
 LFT:6,6 This block can be covered if we write 1 to debugfs file: /sys/kernel/debug/ext4/mballoc-debug
@@ -1745,17 +1750,25 @@ LFT:2540,2540 This block could be covered if perform a fault simulation on jbd2 
 end_of_record
 
 SF:fs/ext4/ialloc.c
+LFT:125,126 The block can be covered if another process changed the bh after line 120 was executed in current process. This cannot be controlled by tests.
 LFT:198,200 Self checking code.
 LFT:203,205 Self checking code.
 LFT:208,210 This line can be covered if we corrupt superblock.
 LFT:234,235 This line can be covered if we corrupt inode and change i_no.
 LFT:629,634 Self checking code.
+LFT:586,586 Self checking/correcting code.
+LFT:804,804 The code can be executed in cocurrent conditions. Cannot be controlled by tests.
 LFT:1153,1159 This block can be covered corrupting s_itb_per_group value in the superblock.
 end_of_record
 
 SF:fs/ext4/ialloc.c
 FN:ext4_init_inode_bitmap
 LFT:12,17 This block can be covered corrupting some velues in superblock (e.g s_desc_size).
+end_of_record
+
+SF:fs/ext4/ialloc.c
+FN:get_orlov_stats
+LFT:92,92 The block is a self checking/correcting code. The value of qstr canno be null normally.
 end_of_record
 
 SF:fs/ext4/ialloc.c
