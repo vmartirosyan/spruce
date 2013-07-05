@@ -742,9 +742,10 @@ LFT:67,67 This line is covered, gcov bug.
 end_of_record
 
 SF:fs/ext4/xattr.c
-LFT:1032,1033 this block could be covered corrupting the inode and setting the (inode)->i_extra_isize == 0. 
-LFT:1032,1033 this block could be covered corrupting the inode and setting the (inode)->i_file_acl != 0.
-LFT:1156,1157 this block could be covered if we corrupt the inode.
+LFT:1032,1033 This block could be covered corrupting the inode and setting the (inode)->i_extra_isize == 0. 
+LFT:1032,1033 This block could be covered corrupting the inode and setting the (inode)->i_file_acl != 0.
+LFT:1156,1157 This block could be covered if we corrupt the inode.
+LFT:1263,1270 This block could be covered if total_size is always less than free and total_size is less than min_total_size.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -947,6 +948,7 @@ end_of_record
 
 SF:fs/ext4/xattr.c
 FN:ext4_xattr_block_set
+LFT:185,185 This block could be covered if perform a fault simulation on jbd/jbd2 payloads.
 LFT:153,156 This block could be covered if there would be a Kedr payload of __getblk.
 LFT:161,162 This block probably could be covered if perform a fault simulation on jbd/jbd2 payloads.
 LFT:197,197 We can't cover this block. It is possible to fail the sb_bread function, but in that case the error will come up earlier.
@@ -1417,6 +1419,8 @@ LFT:53,60 Can be covered if we change inode->i_size on disk.
 end_of_record
 
 SF:fs/ext4/inode.c
+LFT:1036,1037 This block can be covered if we corrupt the inode.
+LFT:1044,1045 This seems to be a dead code. is.s.not_found is never  = 0.
 LFT:3800,3800 Change on-disk unlinked inode i_mode and call lookup for it(see ext4/Lookup testset)
 LFT:3814,3815 Change superblock s_feature_incompat value and call lookup(see ext4/Lookup testset)
 LFT:3893,3896 Can be covered if the inode acl block is corrupted.
