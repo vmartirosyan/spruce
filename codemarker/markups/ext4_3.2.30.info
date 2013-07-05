@@ -220,6 +220,7 @@ SF:fs/ext4/indirect.c
 LFT:704,706 This block can be covered if we change inode member "i_sb->s_feature_ro_compat".
 LFT:942,942 This block can be covered if perform a fault simulation on jbd2 payloads.
 LFT:180,180 The can be covered if __getblk() function fails (via JEDR fault simulation payload).
+LFT:1441,1441 This line is not covered due to some compiler optimisations.
 end_of_record
 
 SF:fs/ext4/indirect.c
@@ -236,6 +237,7 @@ SF:fs/ext4/indirect.c
 FN:ext4_alloc_blocks
 LFT:31,36 This block can be covered if we try to allocate more space than there is on device.
 LFT:50,54 This code is self-checking code.
+LFT:74,79 This code is self checking code.
 end_of_record
 
 SF:fs/ext4/indirect.c
@@ -251,6 +253,7 @@ end_of_record
 
 SF:fs/ext4/indirect.c
 FN:ext4_alloc_branch
+LFT:16,16 This block can be covered if we change inode.
 LFT:30,31 This block can be covered performing fault simulation for function __getblk().
 LFT:41,42 This block can be covered if perform a fault simulation on jbd2 payloads.
 LFT:72,85 This block can be covered performing fault simulation for function __getblk().
@@ -1435,6 +1438,7 @@ SF:fs/ext4/move_extent.c
 FN:move_extent_per_page
 LFT:28,29 Could be covered if we perform a fault simulation on jbd/jbd2 functions.
 LFT:33,33 This line can be covered if kernel is compiled with option CONFIG_EXT4_FS=y 
+LFT:78,79 this block depends on race conditions.
 LFT:98,101 Could be covered if we perform a fault simulation on mext_replace_branches function (kzalloc).
 LFT:129,132 Called from move_extent_per_page+103
 end_of_record
