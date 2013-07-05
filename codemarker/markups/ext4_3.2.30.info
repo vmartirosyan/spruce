@@ -785,6 +785,7 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_bmap
+LFT:7,13 This is self checking code.
 LFT:36,42 Can be covered if we change inode state.
 end_of_record
 
@@ -1471,6 +1472,7 @@ LFT:58,59 These lines can be covered if the log is corrupted/aborted during chmo
 LFT:76,84 This block can be covered if we write a KEDR payload for /fs/jbd2/transaction.c/jbd2_journal_begin_ordered_truncate function.
 LFT:22,23 Can be covered if we perform a fault simulation on jbd2 functions.
 LFT:58,59 Can be covered if we perform a fault simulation on jbd2 functions.
+LFT:93,94 These lines can be covered if we corrupt inode i_size field.
 end_of_record
 
 F:fs/ext4/inode.c
@@ -1486,6 +1488,7 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_write_inode
 LFT:9,11 This block can be covered if two or more threads try to write inode back at once.
+LFT:17,17 This line can be covered if wait for every mapping is enabled and journaling is enabled.
 LFT:27,29 This block can be covered if two or more threads try to write inode back at once.
 end_of_record
 
