@@ -1451,6 +1451,7 @@ end_of_record
 SF:fs/ext4/inode.c
 FN:ext4_discard_partial_page_buffers_no_lock
 LFT:22,22 This is just a self-checking code.
+LFT:107,111 This is just a self-checking code.
 end_of_record
 
 SF:fs/ext4/inode.c
