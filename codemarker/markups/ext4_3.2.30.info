@@ -742,11 +742,17 @@ LFT:67,67 This line is covered, gcov bug.
 end_of_record
 
 SF:fs/ext4/xattr.c
+FN:ext4_xattr_set_entry
+LFT:70,71 This is self control code.
+end_of_record
+
+SF:fs/ext4/xattr.c
 LFT:1032,1033 This block could be covered corrupting the inode and setting the (inode)->i_extra_isize == 0. 
 LFT:1036,1037 This block could be covered corrupting the inode and setting the (inode)->i_file_acl != 0.
 LFT:1044,1045 This seems to be a dead code. is.s.not_found is never  = 0.
 LFT:1156,1157 This block could be covered if we corrupt the inode.
 LFT:1263,1270 This block could be covered if total_size is always less than free and total_size is less than min_total_size.
+LFT:1310,1310 This block could be covered if we expand an inode by a big new_extra_isize bytes when EAs are present.
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -970,6 +976,7 @@ end_of_record
 
 SF:fs/ext4/xattr.c
 FN:ext4_xattr_cache_find
+LFT:16,16 This block is possible to cover with concurrent threads working together.
 LFT:22,22 This block is possible to cover failing the sb_bread function with kedr.
 end_of_record
 
