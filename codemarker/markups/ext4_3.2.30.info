@@ -1824,6 +1824,7 @@ LFT:208,210 This line can be covered if we corrupt superblock.
 LFT:234,235 This line can be covered if we corrupt inode and change i_no.
 LFT:629,634 Self checking code.
 LFT:586,586 Self checking/correcting code.
+LFT:790,792 The code can be covered if ialloc.c+634 is covered.
 LFT:804,804 The code can be executed in cocurrent conditions. Cannot be controlled by tests.
 LFT:950,950 This block can be covered if perform a fault simulation.
 LFT:1153,1159 This block can be covered corrupting s_itb_per_group value in the superblock.
