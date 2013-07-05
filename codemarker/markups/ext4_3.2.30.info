@@ -1691,6 +1691,7 @@ end_of_record
 SF:fs/ext4/namei.c
 FN:ext4_link
 LFT:16,16 This block could be covered if perform a fault simulation on jbd2 payloads.
+LFT:31,31 This block could be covered if corrupt the inode.
 end_of_record
 
 SF:fs/ext4/namei.c
@@ -1698,6 +1699,7 @@ FN:ext4_find_entry
 LFT:24,24 This line is possible to cover when working with "." or ".."
 LFT:48,48 This is just a self correction code.
 LFT:82,85 This block can be covered if we corrupt inode.
+LFT:117,117 This is self control code. This is really rare to happen.
 end_of_record
 
 SF:fs/ext4/namei.c
@@ -1756,6 +1758,7 @@ LFT:1957,1960 These lines can be covered if we corrupt inode entry.
 LFT:2419,2419 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:2140,2140 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:2164,2164 This block could be covered if we have too many links on an empty directory.
+LFT:2440,2441 These lines can be covered if we corrupt the new directory inode.
 LFT:2486,2486 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:2515,2519 This block could be covered if perform a fault simulation on jbd2 payloads.
 LFT:2523,2523 This block could be covered if perform a fault simulation on jbd2 payloads.
