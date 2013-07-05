@@ -554,6 +554,18 @@ LFT:324,324 This line is covered, gcov bug.
 LFT:624,628 These lines are covered (see line 664, balloc.c), gcov bug.
 end_of_record
 
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_release_inode_pa
+LFT:37,42 This block depends on race conditions.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_init_cache
+LFT:57,58 This block depends on race conditions.
+LFT:76,77 This block depends on race conditions.
+LFT:95,97 This block depends on race conditions.
+end_of_record
+
 ################################################ext4#####################
 #################Section for free code markup##########################
 #######################################################################
@@ -1489,9 +1501,20 @@ LFT:9,56 This block can be covered if we write 1 to debugfs file: /sys/kernel/de
 end_of_record
 
 SF:fs/ext4/mballoc.c
+FN:ext4_mb_regular_allocator
+LFT:89,91 This code is self checking code.
+end_of_record
+
+SF:fs/ext4/mballoc.c
 FN:ext4_mb_add_n_trim
 LFT:15,31 This block can be covered if we call ext4_mb_add_n_trim function several times. It is possible if we run many threads and alloc/release blocks.  
 LFT:40,40 This line can be covered if we could call ext4_mb_add_n_trim function 8 times at the same time.
+end_of_record
+
+SF:fs/ext4/mballoc.c
+FN:ext4_mb_normalize_request
+LFT:113,113 This block depends on race conditions.
+LFT:116,117 This block depends on race conditions.
 end_of_record
 
 SF:fs/ext4/extents.c
