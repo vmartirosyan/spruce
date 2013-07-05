@@ -956,6 +956,7 @@ end_of_record
 
 SF:fs/ext4/xattr.c
 FN:ext4_xattr_block_set
+LFT:121,121 This line is unfortunately not covered. We really don't know why, sorry.
 LFT:185,185 This block could be covered if perform a fault simulation on jbd/jbd2 payloads.
 LFT:153,156 This block could be covered if there would be a Kedr payload of __getblk.
 LFT:161,162 This block probably could be covered if perform a fault simulation on jbd/jbd2 payloads.
