@@ -39,11 +39,6 @@ LFT:3,3 This line could be easily covered if we perform a fault simulation on mo
 end_of_record
 
 SF:fs/ext4/super.c
-FN:ext4_orphan_cleanup
-LFT:60,60 This line is covered, but marked as not covered. Gcov bug.
-end_of_record
-
-SF:fs/ext4/super.c
 FN:ext4_fh_to_parent This is dead code as its call is only from vfs, but the corresponing function from VFS can never call this funcion. See the same function in JFS for more details.
 end_of_record
 
@@ -1014,10 +1009,12 @@ end_of_record
 
 SF:fs/ext4/super.c
 FN:ext4_load_journal
+LFT:13,16 External journal mkfs is needed.
 LFT:29,36 This block could be covered if change the superblock.
 LFT:42,44 This block could be covered if we have both : journal and inode journal.
 LFT:61,63 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:82,84 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:91,92 External journal mkfs is needed. Also we have to change the superblock s_journal_dev field.
 end_of_record
 
 SF:fs/ext4/super.c
@@ -1120,6 +1117,7 @@ LFT:3309,3309 This line can be covered using errors=panic mount option.
 LFT:3313,3313 This line can be covered if we change superblock s_errors value.
 LFT:3383,3385 These lines can be covered if we corrupt/change the superblock s_feature_incompat field.
 LFT:3422,3424 These lines could be covered if we use mkfs option which indicates blocksize and give an unsupported value.
+LFT:3468,3471 This block can be covered if we change es->s_inode_size and set it bigger than blocksize.
 LFT:3479,3485 This block can be covered if we corrupt the superblock s_desc_size field and s_feature_incompat field.	
 LFT:3511,3511 This line can be covered if we change superblock s_flags value.
 LFT:3528,3531 Probably could be covered with bigalloc mount option and with corrupted superblock.
@@ -1142,6 +1140,7 @@ LFT:3871,3872 This line can be covered if we corrupt the superblock.
 LFT:3878,3880 This line can be covered if we corrupt the superblock.	
 LFT:3968,3968 This line can be covered if we corrupt the superblock.
 LFT:4119,4120 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
+LFT:4126,4127 This block has to be covered if we write a KEDR payloads for jbd/jbd2 functions. But in that case the error will come up earlier on a previous check.
 LFT:4756,4756 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:4789,4790 This block can be covered if we write a KEDR payloads for jbd/jbd2 functions.
 LFT:4082,4084 these lines can be covered with usage of mkfs options like this -b 2048: or -b 1024 -g 8192:
@@ -1154,11 +1153,6 @@ LFT:4610,4615 These lines can be covered if we corrupt the superblock(especially
 LFT:4833,4833 These lines can be covered if we corrupt the superblock. See the line 2227 for more details.
 LFT:5098,5098 This line can be covered if we add new payload (kobject_init_and_add) to kedr and perform a fault simulation on ext4 Init/Exit functions.
 LFT:5169,5181 These lines can be covered if we perform a fault simulation on ext4 Init/Exit functions.
-end_of_record
-
-SF:fs/ext4/super.c
-FN:ext4_load_journal
-LFT:13,16 External journal mkfs is needed.
 end_of_record
 
 SF:fs/ext4/super.c
