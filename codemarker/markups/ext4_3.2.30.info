@@ -55,7 +55,7 @@ LFT:3,3 This line could be easily covered if we perform a fault simulation on mo
 end_of_record
 
 SF:fs/ext4/super.c
-FN:ext4_fh_to_parent This is dead code as its call is only from vfs, but the corresponing function from VFS can never call this funcion. See the same function in JFS for more details.
+FN:ext4_fh_to_parent This function can be covered with test written, which will use nfs filesystem, (for details see comment for revision fcbd3bd44656).
 end_of_record
 
 SF:fs/ext4/fsync.c
@@ -1516,6 +1516,7 @@ LFT:1289,1289 This is self checking/correcting code.
 LFT:1295,1296 This code can be covered if we make empty leaf in extents tree.
 LFT:1306,1308 This code can be covered if we make contiguous extents in file and after that try to move these extents. 
 LFT:1359,1364 This is self checking/correcting code.
+LFT:1856,1858 This block depends on race conditions.
 end_of_record
 
 SF:fs/ext4/move_extent.c
@@ -1548,6 +1549,12 @@ SF:fs/ext4/move_extent.c
 FN:mext_check_arguments
 LFT:89,89 This line can be covered if we try to move extent when the end offset is larger than donor file blocks.
 LFT:109,109 This line can be covered if we try to move extent when the original file size is less than start offset plus wanted count (orig_start + len > orig_blocks).
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_create_new_leaf
+LFT:33,33 This line could be covered if there was not system crash during fault simulation ("submit_bio payload").
+LFT:46,47 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload").
 end_of_record
 
 SF:fs/ext4/ext4_jbd2.c
@@ -2028,6 +2035,16 @@ end_of_record
 SF:fs/ext4/extents.c
 FN:ext4_ext_correct_indexes
 LFT:13,15 Can be covered by corrupting extent tree.
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_split_extent
+LFT:36,36 These lines could be covered if there was not system crash during fault simulation ("submit_bio payload").
+end_of_record
+
+SF:fs/ext4/extents.c
+FN:ext4_ext_punch_hole
+LFT:61,61 This block can be covered by simulation failures in jbd2_journal_start() function.
 end_of_record
 
 SF:fs/ext4/file.c
