@@ -728,7 +728,7 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:walk_page_buffers
-LFT:20,22 This is just a self-checking code. 
+LFT:20,22 Can be covered if page writting is failed, so that range [from, to) is not fully written to the device
 end_of_record
 
 SF:fs/ext4/inode.c
@@ -877,7 +877,7 @@ end_of_record
 
 SF:fs/ext4/inode.c
 FN:ext4_bread
-LFT:14,15 This is just a self-checking code.
+LFT:14,15 This code can be covered if KEDR payload is written for fs/buffer.c/ll_rw_block function.
 end_of_record
 
 SF:fs/ext4/inode.c
