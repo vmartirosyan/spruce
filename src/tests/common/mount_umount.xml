@@ -23,7 +23,8 @@
 -->
 
 <TestSet Name="mount_umount" per-mount-options="false" mount-oriented="false">
-	<!-- Requires sys/mount.h but it is included in the module.cpp file to overcome the conflicts with fs.h header file. -->
+	<Requires>sys/mount.h</Requires><!-- Should come before linux/fs.h-->
+	<Requires>linux/fs.h</Requires><!--For some mount flags-->
 	<Test Name="MountGeneral" FaultSimulationReady="true">
 		<Dangerous check="stability" fs="ext4"/>
 		<Dangerous check="stability" fs="btrfs"/>
@@ -70,7 +71,7 @@
 		<Code>
 			Unres (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed.");
 			
-			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
+			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, 0) == -1, "Remount failed.");
 		</Code>		
 	</Test>
 	<Test Name="RemountReadOnly" FaultSimulationReady="true">
@@ -147,15 +148,9 @@
 		</Code>	
 	</Test>
 	<Test Name="MountWrongOption" FaultSimulationReady="true">
-		<Description>Trying to mount the device to another partition</Description>		
+		<Description>Trying to mount the device with wrong mount option</Description>		
 		<Code>
 			Check( mount( DeviceName, MountPoint, FileSystem, 0, "NotAnOption") == 0, "Mount should fail, but it did not");
-		</Code>
-	</Test>
-	<Test Name="UmountInval">
-		<Description>Umount: Target is not a mount point.</Description>
-		<Code>
-			ErrorTest(umount("/bin"), -1, EINVAL);
 		</Code>
 	</Test>
 	<Test Name="UmountNameTooLong">
@@ -181,28 +176,6 @@
 			Unres ( mount( DeviceName, MountPoint, FileSystem, 0 | rdonlyflag, 0), "Cannot perform initial mount." );	
 			
 			ErrorTest(mount( DeviceName, MountPoint, FileSystem, 0 | rdonlyflag, 0), -1, EBUSY);
-		</Code>
-	</Test>
-	<Test Name="UmountBusy">
-		<Description>Umount: source is busy.</Description>
-		<Code>
-			ErrorTest(umount( "/" ), -1, EBUSY);
-		</Code>
-	</Test>
-	<Test Name="MountFault">
-		<Description>Mount: One of the pointer arguments points outside the user address space.</Description>
-		<Code>
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			ErrorTest(mount( reinterpret_cast<char*>(-1), reinterpret_cast<char*>(-1), reinterpret_cast<char*>(-1), 0 | rdonlyflag, 0 ), -1, EFAULT);
-		</Code>
-	</Test>
-	<Test Name="UmountFault">
-		<Description>Umount: target points outside the user address space.</Description>
-		<Code>
-			ErrorTest(umount( reinterpret_cast<char*>(-1) ), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="MountLoop2">
@@ -244,12 +217,6 @@
 			ErrorTest(mount( "/dev/zero", MountPoint, FileSystem, MS_MOVE | rdonlyflag, 0 ), -1, EINVAL);
 		</Code>
 	</Test>
-	<Test Name="UmountInval1">
-		<Description>Umount: target is not a mount point.</Description>
-		<Code>
-			ErrorTest(umount( "/dev/zero" ), -1, EINVAL);
-		</Code>
-	</Test>
 	<Test Name="UmountInval2">
 		<Description>Umount2:  umount2()  was  called  with MNT_EXPIRE and either MNT_DETACH or MNT_FORCE.</Description>
 		<Code>
@@ -284,16 +251,6 @@
 			if(PartitionManager::IsOptionEnabled("ro"))
 				rdonlyflag |= MS_RDONLY;
 			ErrorTest(mount( DeviceName, "non_existing_path", FileSystem, 0 | rdonlyflag, 0 ), -1, ENOENT);
-		</Code>
-	</Test>
-	<Test Name="MountNoDev">
-		<Description>Mount: filesystemtype not configured in the kernel.</Description>
-		<Code>
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			ErrorTest(mount( DeviceName, MountPoint, "NonExistingFS", 0 | rdonlyflag, 0 ), -1, ENODEV);
 		</Code>
 	</Test>
 	<Test Name="MountNotDir">
