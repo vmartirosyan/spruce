@@ -22,10 +22,10 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="mount_umount" per-mount-options="false" mount-oriented="false">
+<TestSet Name="mount_umount" per-mount-options="false" mount-oriented="false" use-mkfs="true">
 	<Requires>sys/mount.h</Requires><!-- Should come before linux/fs.h-->
 	<Requires>linux/fs.h</Requires><!--For some mount flags-->
-	<Test Name="MountGeneral" FaultSimulationReady="true">
+	<Test Name="MountGeneral">
 		<Dangerous check="stability" fs="ext4"/>
 		<Dangerous check="stability" fs="btrfs"/>
 		<Dangerous check="stability" fs="xfs"/>
@@ -34,17 +34,12 @@
 			Fail (mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed");
 		</Code>
 	</Test>
-	<Test Name="UmountGeneral" FaultSimulationReady="true">
+	<Test Name="UmountGeneral" use-mount="true">
 		<Dangerous check="stability" fs="ext4"/>
 		<Dangerous check="stability" fs="btrfs"/>
 		<Dangerous check="stability" fs="xfs"/>
 		<Description>Trying to unmount the partition.</Description>				
 		<Code>
-			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true) != PS_Success,
-				"Cannot restore partition.");
-			
-			Unres( chdir(MountPoint) == -1, "Cannot change directory.");
-			
 			File f("file");
 			int fd = f.GetFileDescriptor();
 			char * buf = new char[1024*1024];
@@ -63,7 +58,7 @@
 			Fail ( umount( MountPoint) == -1, "Unmount failed");
 		</Code>
 	</Test>
-	<Test Name="RemountGeneral" FaultSimulationReady="true">
+	<Test Name="RemountGeneral">
 		<Dangerous check="stability" fs="ext4"/>
 		<Dangerous check="stability" fs="btrfs"/>
 		<Dangerous check="stability" fs="xfs"/>
@@ -74,7 +69,7 @@
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, 0) == -1, "Remount failed.");
 		</Code>		
 	</Test>
-	<Test Name="RemountReadOnly" FaultSimulationReady="true">
+	<Test Name="RemountReadOnly">
 		<Dangerous check="stability" fs="ext4"/>
 		<Dangerous check="stability" fs="btrfs"/>
 		<Dangerous check="stability" fs="xfs"/>
@@ -84,76 +79,76 @@
 			Fail ( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT | MS_RDONLY, 0) == -1, "Remount failed.");
 		</Code>		
 	</Test>
-	<Test Name="NoATimeGeneral" FaultSimulationReady="true">
+	<Test Name="NoATimeGeneral">
 		<Description>Trying to mount the device with MS_NOATIME flag attempted.</Description>
 		<Code>
 			Check(mount( DeviceName, MountPoint, FileSystem, MS_NOATIME, 0) == -1, "Mount with MS_NOATIME flag attempted failed");
 		</Code>		
 	</Test>
-	<Test Name="NoDevGeneral" FaultSimulationReady="true">
+	<Test Name="NoDevGeneral">
 		<Description>Trying to mount the device with MS_NODEV flag attempted.</Description>
 		<Code>
 			Check (mount( DeviceName, MountPoint, FileSystem, MS_NODEV, 0) == -1,
 				"Mount with MS_NODEV flag attempted failed");
 		</Code>		
 	</Test>
-	<Test Name="NoDirATimeGeneral" FaultSimulationReady="true">
+	<Test Name="NoDirATimeGeneral">
 		<Description>Trying to mount the device with MS_NODIRATIME flag attempted.</Description>		
 		<Code>
 			Check (mount( DeviceName, MountPoint, FileSystem, MS_NODIRATIME, 0) == -1, "Mount with MS_NODIRATIME flag attempted failed");
 		</Code>		
 	</Test>
-	<Test Name="NoExecGeneral" FaultSimulationReady="true">
+	<Test Name="NoExecGeneral">
 		<Description>Trying to mount the device with MS_NOEXEC flag attempted.</Description>
 		<Code>
 			Check(mount( DeviceName, MountPoint, FileSystem, MS_NOEXEC, 0) == -1, "Mount with MS_NOEXEC flag attempted failed");
 		</Code>
 	</Test>
-	<Test Name="NoSUIDGeneral" FaultSimulationReady="true">
+	<Test Name="NoSUIDGeneral">
 		<Description>Trying to mount the device with MS_NOSUID flag attempted.</Description>
 		<Code>
 			Check (mount( DeviceName, MountPoint, FileSystem, MS_NOSUID, 0) == -1, "Mount with MS_NOSUID flag attempted failed");					
 		</Code>
 	</Test>
-	<Test Name="MountRdOnlyGeneral" FaultSimulationReady="true">
+	<Test Name="MountRdOnlyGeneral">
 		<Description>Trying to mount the device with MS_RDONLY flag attempted.</Description>		
 		<Code>
 			Check(mount( DeviceName, MountPoint, FileSystem, MS_RDONLY, 0) == -1, "Mount with MS_RDONLY flag attempted failed");			
 		</Code>		
 	</Test>
-	<Test Name="MountRELATIME" FaultSimulationReady="true">
+	<Test Name="MountRELATIME">
 		<Description>Trying to mount the device with MS_RELATIME flag attempted.</Description>		
 		<Code>
 			Check (mount( DeviceName, MountPoint, FileSystem, MS_RELATIME, 0) == -1, "Mount with MS_RELATIME flag attempted failed");
 		</Code>		
 	</Test>
 	
-	<Test Name="MountMS_SILENT" FaultSimulationReady="true">
+	<Test Name="MountMS_SILENT">
 		<Description>Trying to mount the device with MS_SILENT flag attempted.</Description>		
 		<Code>
 			Check (mount( DeviceName, MountPoint, FileSystem, MS_SILENT, 0) == -1, "Mount with MS_SILENT flag attempted failed");
 		</Code>		
 	</Test>
 	
-	<Test Name="MountMS_STRICTATIME" FaultSimulationReady="true">
+	<Test Name="MountMS_STRICTATIME">
 		<Description>Trying to mount the device with MS_STRICTATIME flag attempted.</Description>		
 		<Code>
 			Check (mount( DeviceName, MountPoint, FileSystem, MS_STRICTATIME, 0) == -1, "Mount with MS_STRICTATIME flag attempted failed");
 		</Code>
 	</Test>
-	<Test Name="MountMS_SYNCHRONOUS" FaultSimulationReady="true">
+	<Test Name="MountMS_SYNCHRONOUS">
 		<Description>Trying to mount the device with MS_SYNCHRONOUS flag attempted.</Description>		
 		<Code>
 			Check (mount( DeviceName, MountPoint, FileSystem, MS_SYNCHRONOUS, 0) == -1, "Mount with MS_SYNCHRONOUS flag attempted failed");
 		</Code>	
 	</Test>
-	<Test Name="MountWrongOption" FaultSimulationReady="true">
+	<Test Name="MountWrongOption">
 		<Description>Trying to mount the device with wrong mount option</Description>		
 		<Code>
 			Check( mount( DeviceName, MountPoint, FileSystem, 0, "NotAnOption") == 0, "Mount should fail, but it did not");
 		</Code>
 	</Test>
-	<Test Name="UmountNameTooLong">
+	<Test Name="UmountNameTooLong" use-mount="true">
 		<Description>Umount: Target name is too long.</Description>
 		<Code>
 			ENameTooLongTest(umount(path), -1);
@@ -189,10 +184,6 @@
 		</Code>
 	</Test>
 	<Test Name="MountInval1">
-		<Header>
-			//const char * tmp_mount_dir = "/tmp/spruce_test_mount_dir";
-			//Unres (mkdir(tmp_mount_dir, 0777) == -1, "Cannot create a mount point"); 
-		</Header>		
 		<Description>Mount: a  remount  (MS_REMOUNT) was  attempted,  but  source  was not already mounted on target.</Description>
 		<Code>
 			// sets MS_RDONLY flags for read-only mounted device just in case
@@ -203,9 +194,6 @@
 			
 			ErrorTest(mount( DeviceName, "/bin", FileSystem, MS_REMOUNT | rdonlyflag, 0 ), -1, EINVAL);
 		</Code>
-		<Footer>
-			//rmdir(tmp_mount_dir);
-		</Footer>
 	</Test>
 	<Test Name="MountInval2">
 		<Description>Mount: a move (MS_MOVE) was attempted, but source was not  a  mount point.</Description>
@@ -217,7 +205,7 @@
 			ErrorTest(mount( "/dev/zero", MountPoint, FileSystem, MS_MOVE | rdonlyflag, 0 ), -1, EINVAL);
 		</Code>
 	</Test>
-	<Test Name="UmountInval2">
+	<Test Name="UmountInval2" use-mount="true">
 		<Description>Umount2:  umount2()  was  called  with MNT_EXPIRE and either MNT_DETACH or MNT_FORCE.</Description>
 		<Code>
 			ErrorTest(umount2( MountPoint, MNT_EXPIRE | MNT_DETACH ), -1, EINVAL);
@@ -262,26 +250,6 @@
 			if(PartitionManager::IsOptionEnabled("ro"))
 				rdonlyflag |= MS_RDONLY;
 			ENotDirTest(mount( DeviceName, path, FileSystem, 0 | rdonlyflag, 0 ), -1);
-		</Code>
-	</Test>
-	<Test Name="MountNoPerm">
-		<Description>Mount: The caller does not have the required privileges.</Description>
-		<Code>
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;			
-			ENoAccessTest(mount( DeviceName, MountPoint, FileSystem, 0 | rdonlyflag, 0 ), -1);
-		</Code>
-	</Test>
-	<Test Name="UmountNoPerm">
-		<Description>Umount: The caller does not have the required privileges.</Description>
-		<Code>
-			// sets MS_RDONLY flags for read-only mounted device just in case
-			int rdonlyflag = 0;
-			if(PartitionManager::IsOptionEnabled("ro"))
-				rdonlyflag |= MS_RDONLY;
-			ENoAccessTest(mount( DeviceName, MountPoint, FileSystem, 0 | rdonlyflag, 0 ), -1);
 		</Code>
 	</Test>
 </TestSet>
