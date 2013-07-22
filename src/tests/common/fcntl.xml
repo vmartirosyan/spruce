@@ -25,14 +25,15 @@
 
 <TestSet Name="fcntl">
 	<Requires>fcntl.h</Requires>
-	<GlobalHeader>
+	<!-- Currently not used -->
+	<!--GlobalHeader>
 		int SignalNumber = 0;
 		void SignalHandler(int signum)
 		{
 			cerr << "Signal received: " << signum << endl;
 			SignalNumber = signum;			
 		}
-	</GlobalHeader>
+	</GlobalHeader-->
 	<!-- Normal functionality tests -->
 	<Test Name="FcntlDupFileDescriptor" FaultSimulationReady="true">
 		<Description>F_DUPFD: Find the lowest numbered available file descriptor greater than or equal to arg and make it be a copy of fd.</Description>
@@ -55,8 +56,6 @@
 
 			Check( strncmp(buff, nbuff, strlen(buff)) != 0,"Wrong or corrupted data." );
 			Check (new_fd < _arg, "Returned wrong file descriptor");
-			
-			
 		</Code>
 	</Test>
 	<Test Name="FcntlGetSetFileStatusFlagsIgnore" FaultSimulationReady="true">
@@ -75,9 +74,6 @@
 			// get File Descriptor Flags
 			Fail ( (get_flags2 = fcntl(FDs[0], F_GETFL)) == -1 , "Error in fcntl. Cannot get flags.");
 			Check ( get_flags1 !=  get_flags2, "The flags should be ignored." );
-			
- 	
-			
 		</Code>
 	</Test>
 	<Test Name="FcntlGetSetFileStatusFlags" FaultSimulationReady="true">
@@ -101,8 +97,6 @@
 			Fail( (get_flags = fcntl(FDs[0], F_GETFL)) == -1, "Error in fcntl. Cannot get finl flags." );
 	
 			Check( (set_flags | get_flags1) != get_flags, "Can't get right file descriptor flags!");
- 	
-			
 		</Code>
 	</Test>
 	<Test Name="FcntlGetSetFileDescriptorFlags" FaultSimulationReady="true">
@@ -137,7 +131,6 @@
 	  
 			Check( flocks.l_type != F_UNLCK && flocks.l_whence != SEEK_SET && 
 				flocks.l_start != 0 && flocks.l_len != 0, "Incompatible locks prevent this lock." )
-			
 		</Code>
 	</Test>
 	<Test Name="FcntlFDSetLock" FaultSimulationReady="true">
@@ -160,7 +153,6 @@
 			
 			flocks.l_type = F_UNLCK;
 			Fail ( ( ret_fcntl = fcntl( FDs[0], F_SETLK, &flocks ) ) == -1, "Cannot unlock." );
-			  
 		</Code>
 	</Test>
 	<Test Name="FcntlFDSetLockWithWait" FaultSimulationReady="true">
@@ -184,8 +176,6 @@
 			
 			flocks.l_type = F_UNLCK;
 			Fail ( ( ret_fcntl = fcntl( FDs[0], F_SETLKW, &flocks ) )== -1, "Cannot unlock." );
-				
-			
 		</Code>
 	</Test>
 	<!-- The command F_NOTIFY is in fact deprecated. The man page says that a new approach is there
@@ -343,7 +333,6 @@
 			Fail ( fcntl ( fd2, F_SETLEASE , F_UNLCK ) == -1, "Error in fcntl. Cannot remove lease." );
 	
 			Fail ( fcntl ( fd2, F_GETLEASE ) != F_UNLCK, "Get-set lease failed for remove lease." );
-			
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetOwn" FaultSimulationReady="true">
@@ -352,7 +341,6 @@
 		<Code>
 			Fail ( fcntl ( FDs[0], F_SETOWN, getpid() ) == -1, "Error in fcntl. Cannot set owner." );
 			Fail( fcntl( FDs[0], F_GETOWN ) != getpid(), "Get-set owner failed." );
-			
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetSig" FaultSimulationReady="true">
@@ -360,9 +348,7 @@
 		<File count="1"/>
 		<Code>
 			Fail( fcntl( FDs[0], F_SETSIG, SIGIO ) == -1, "Error in fcntl. Cannot set signal" );
-			
 			Fail ( fcntl( FDs[0], F_GETSIG ) != SIGIO, "Get-set signal failed." );
-			
 		</Code>
 	</Test>
 	<Test Name="FcntlFDGetSetOwn_Ex" FaultSimulationReady="true">
@@ -378,23 +364,6 @@
 
 			Fail ( fcntl( FDs[0], F_GETOWN_EX, &owner1 ) == -1, "Error in fcntl. Cannot get extended owner." );
 			Check ( owner1.type != F_OWNER_PID || owner1.pid != getpid(), "Get-set owner_ex failed." );
-		
-		</Code>
-	</Test>
-	<Test Name="FcntlFDGetSetPipeSize" FaultSimulationReady="true">
-		<Requires KernelVersion="2.6.35" Defined="F_SETPIPE_SZ" />
-		<Description>F_SETPIPE_SZ and F_GETPIPE_SZ (since Linux 2.6.35). Changing the capacity of a pipe.</Description>
-		<Code>
-			int pipefd[2];
-
-			Unres ( pipe ( pipefd ) == -1, "Error in creating pipe.");
-			
-			//setting pipe's capability to be at least arg_ bytes 
-			Fail ( fcntl( pipefd[1], F_SETPIPE_SZ, 100) == -1, "Error in fcntl. Cannot set pipe size." );
-		
-			// checking whether capability of the pipe is at least equal to arg_
-			Check ( fcntl ( pipefd[1], F_GETPIPE_SZ ) < 100, "Get-set pipe size failed" );
-			
 		</Code>
 	</Test>
 	<Test Name="FcntlFDDupWithClExFlag" FaultSimulationReady="true">
@@ -407,7 +376,6 @@
 			Fail ( (flags_ = fcntl( fd2, F_GETFD)) == -1, "Error in fcntl. Cannot get file descriptor flags." );
 		
 			Check ( flags_ != FD_CLOEXEC, "Setting the close-on-exec flag for the  duplicate  descriptor failed." );
-			
 		</Code>
 	</Test>
 	<!-- Error tests -->
@@ -429,12 +397,6 @@
 			flocks.l_type = F_WRLCK; // write lock 
 			
 			ErrorTest(fcntl ( fd, F_SETLK, &flocks ), -1, EBADF);
-		</Code>
-	</Test>
-	<Test Name="FcntlFDBadFileDescriptor2">
-		<Description>fd is not opened file descriptor.</Description>
-		<Code>
-			ErrorTest(fcntl(-1, F_SETFD, FD_CLOEXEC), -1, EBADF);
 		</Code>
 	</Test>
 	<Test Name="FcntlFDTooManyOpenedFiles">
@@ -476,7 +438,8 @@
 			ErrorTest(fcntl(1, F_SETLK, reinterpret_cast<struct flocks *>(-1)), -1, EFAULT);
 		</Code>
 	</Test>
-	<Test Name="FcntlFDResTempUnavailable">
+	<!-- TODO: Should be reworked for not use result macros in child process. -->
+	<!--Test Name="FcntlFDResTempUnavailable">
 		<Description>Operation is prohibited by locks held by other processes.</Description>
 		<File count="1"/>
 		<Code>
@@ -499,16 +462,14 @@
 			if ( pid == 0 )  //child process
 			{
 				ErrorTest ( fcntl ( FDs[0], F_SETLK , &flocks), -1, EAGAIN );
-				
 			}
 			else
 			{
 				//parent process waits for child process termination
 				wait(0);
 			}
-			;
 		</Code>
-	</Test>
+	</Test-->
 	<!--Test Name="FcntlFDNoLock">
 		<Description>Too many segment locks open.</Description>
 		<File count="1"/>
@@ -541,34 +502,10 @@
 			{
 				Error("flock failed with success or wrong error code.", Fail);
 			}
-			
-			;
 		</Code>
 	</Test-->
-	<Test Name="FcntlFDCapAboveLimit">
-		<Requires KernelVersion="2.6.35" Defined="F_SETPIPE_SZ" />
-		<Description></Description>
-		<File count="1"/>
-		<Code>
-			struct passwd pw;
-			int pipe_max_size, fd;
-			char buf[1024];
-			int pipefd[2];
-			
-			pw = *getpwnam("nobody");
-			Unres ( setuid( pw.pw_uid ) == -1, "Error in setuid.");
-			
-			Unres ( (fd = open( "/proc/sys/fs/pipe-max-size",O_CREAT, 0777 )) == -1, "Error in opening /proc/sys/fs/pipe-max-size file.");
-			Unres ( read( fd, buf, 1024 ) == -1, "Error in read system call.");
-			close( fd );
-			pipe_max_size = atoi( buf );
-			
-			Unres (pipe( pipefd ) == -1, "Error in creating file.");
-			
-			ErrorTest ( fcntl ( pipefd[1], F_SETPIPE_SZ, pipe_max_size + 10 ), -1, EPERM);
-		</Code>
-	</Test>
-	<Test Name="FcntlFDIntrSysCall">
+	<!-- TODO: Should be reworked for not use result macros in child process. -->
+	<!--Test Name="FcntlFDIntrSysCall">
 		<Description>For  F_SETLKW,  the command was interrupted by a signal.</Description>
 		<File count="1"/>
 		<Code>
@@ -590,7 +527,6 @@
 			if ( pid == 0 )    /* child proccess*/
 			{
 				Fail ( fcntl( FDs[0],F_SETLKW, &fl) == 0 || errno != EINTR, "Error in fcntl");
-				
 			} 
 			else
 			{
@@ -599,7 +535,7 @@
 				wait(0);
 			}			
 		</Code>
-	</Test>	
+	</Test-->	
 </TestSet>
 
 
