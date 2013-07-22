@@ -224,11 +224,9 @@
 	
 	<Test Name="IoctlFIFREEZE" FaultSimulationReady="true">
 		<Description>Ioctl FIFREEZE and FITHAW.</Description>
+		<Dangerous fs="jfs" mount_opt="nointegrity"/>
 		<File count="1"/>
 		<Code>
-			Skip(PartitionManager::IsOptionEnabled("nointegrity"), 
-				"The test cannot be executed. There is a BUG in JFS system.");
-			
 			if ( ioctl(FDs[0], FIFREEZE, 0) == -1 )
 			{
 				if ( errno == ENOTTY || errno == EINVAL )
