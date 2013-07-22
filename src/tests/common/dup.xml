@@ -233,44 +233,4 @@
 			Check(fdOffset != newFdOffset, "System call dup3 failed: first and second arguments fd's offsets are not equal");
 		</Code>
 	</Test>
-	<Test Name="DupErrBadF">
-		<Description>oldfd  isn't  an  open  file  descriptor</Description>
-		<Code>
-			ErrorTest(dup(-1), -1, EBADF);
-		</Code>
-	</Test>
-	<Test Name="Dup2ErrBadF">
-		<Description>oldfd  isn't  an  open  file  descriptor</Description>
-		<Code>
-			ErrorTest(dup2(-1, -1), -1, EBADF);
-		</Code>
-	</Test>
-		<Test Name="Dup3ErrBadF">
-		<Description>oldfd  isn't  an  open  file  descriptor</Description>
-		<File count ="1"/>
-		<Code>			
-			int newFd = -2;
-	
-			Fail(dup3(-1, newFd, 0) != -1 || errno != EBADF,
-				"EBADF error expected: first argument fd is not an open fd. Error code");
-				
-			newFd = -1;
-		
-			Fail(dup3(FDs[0], newFd, 0) != -1 || errno != EBADF,
-				"EBADF error expected: second argument fd is out of the allowed range for fds");
-		</Code>
-	</Test>
-	<Test Name="Dup3ErrInval">
-	<Description>flags contain an invalid value.  Or, oldfd was equal to newfd</Description>
-	<File count="1"/>
-	<Code>
-		int newFd = FDs[0];
-		Fail(dup3(FDs[0], newFd, 0) != -1 || errno != EINVAL,
-			"EINVAL error expected: first and second arguments fds are equal");
-		
-		newFd = -1;
-		Fail(dup3(FDs[0], newFd, 1) != -1 || errno != EINVAL,
-			"EINVAL error expected: flags contain invalid value");
-	</Code>
-	</Test>
 </TestSet>
