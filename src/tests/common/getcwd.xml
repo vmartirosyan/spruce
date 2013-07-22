@@ -54,19 +54,6 @@
 		</Code>
 	</Test>
 -->
-	<Test Name="GetcwdErrFault">
-		<Description>buf points to a bad address.</Description>
-		<Code>			
-			ErrorTest(getcwd(reinterpret_cast<char*>(-1), 100), NULL, EFAULT);
-		</Code>
-	</Test>
-	<Test Name="GetcwdErrInval">
-		<Description>The size argument is zero and buf is not a null pointer.</Description>		
-		<Code>			
-			char buf[1];
-			ErrorTest(getcwd(buf, 0), NULL, EINVAL);
-		</Code>
-	</Test>
 	<Test Name="GetcwdErrNoEnt">
 		<Description>The current working directory has been unlinked.</Description>		
 		<Code>
@@ -91,5 +78,4 @@
 			ErrorTest( getcwd(&buf, 1), NULL, ERANGE );
 		</Code>
 	</Test>
-	
 </TestSet>

@@ -45,18 +45,6 @@
 			
 		</Code>
 	</Test>
-	<Test Name="FdatasyncErrBadFD">
-		<Description>fd is not a valid file descriptor open for writing.</Description>
-		<Code>
-			ErrorTest(fdatasync(-1), -1, EBADF);
-		</Code>
-	</Test>
-	<Test Name="FdatasyncErrInvalidArg">
-		<Description>fd is bound to a special file which does not support synchronization.</Description>
-		<Code>
-			ErrorTest(fdatasync(0), -1, EINVAL);
-		</Code>
-	</Test>	
 </TestSet>
 
 

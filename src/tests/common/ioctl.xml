@@ -257,12 +257,6 @@
 			close(fd);
 		</Code>
 	</Test>
-	<Test Name="IoctlBadFile">
-		<Description>Not a valid descriptor.</Description>
-		<Code>
-			ErrorTest(ioctl(-1, 0, NULL), -1, EBADF);
-		</Code>
-	</Test>
 	<!-- There is no operation supported by all the filesystems to be able to check the EFAULT case -->
 	<!--Test Name="IoctlFault">
 		<Description>argp references an inaccessible memory area.</Description>
@@ -271,10 +265,4 @@
 			ErrorTest(ioctl(FDs[0], FS_IOC_GETVERSION, -1), -1, EFAULT);
 		</Code>
 	</Test-->
-	<Test Name="IoctlNoTTY">
-		<Description>File descriptor is not associated with a character special device.</Description>
-		<Code>
-			ErrorTest(ioctl(0, FS_IOC_GETVERSION, NULL), -1, EINVAL);
-		</Code>
-	</Test>
 </TestSet>
