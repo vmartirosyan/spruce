@@ -113,9 +113,10 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
     <xsl:for-each select="Dangerous">
         Skip_direct(1 <xsl:if test="@check">
                 &amp;&amp; <xsl:call-template name="is-check"><xsl:with-param name="text" select="@check"/></xsl:call-template></xsl:if><xsl:if test="@fs">
-                &amp;&amp; !strcmp(FileSystem, "<xsl:value-of select="@fs"></xsl:value-of>")</xsl:if><xsl:if test="@since-kernel">
+                &amp;&amp; !strcmp(FileSystem, "<xsl:value-of select="@fs"/>")</xsl:if><xsl:if test="@since-kernel">
                 &amp;&amp; (LINUX_VERSION_CODE &gt;= <xsl:call-template name="kernel-version-value"><xsl:with-param name="version" select="@since-kernel"/></xsl:call-template>)</xsl:if><xsl:if test="@until-kernel">
-                &amp;&amp; (LINUX_VERSION_CODE &lt; <xsl:call-template name="kernel-version-value"><xsl:with-param name="version" select="@until-kernel"/></xsl:call-template>)</xsl:if>,
+                &amp;&amp; (LINUX_VERSION_CODE &lt; <xsl:call-template name="kernel-version-value"><xsl:with-param name="version" select="@until-kernel"/></xsl:call-template>)</xsl:if><xsl:if test="@mount_opt">
+                &amp;&amp; PartitionManager::IsOptionEnabled("<xsl:value-of select="@mount_opt"/>")</xsl:if>,
                 "Test is skipped as dangerous. For execute it add 'dangerous' to 'checks' parameter.");
     </xsl:for-each>
     }
