@@ -77,13 +77,6 @@
 			ErrorTest( stat( "non_existing_file", &st ), -1, ENOENT );
 		</Code>
 	</Test>
-	<Test Name="StatNoEnt2">
-		<Description>Path is an empty string.</Description>
-		<Code>
-			struct stat st;
-			ErrorTest( stat( "", &st ), -1, ENOENT );
-		</Code>
-	</Test>
 	<Test Name="StatNotDir">
 		<Description>A component of the path prefix of path is not a directory.</Description>
 		<File count="1"/>

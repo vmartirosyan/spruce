@@ -44,16 +44,4 @@
 			Fail(fsync (DirDs[0]) == -1, "fsync failed.");
 		</Code>
 	</Test>
-	<Test Name="FsyncErrBadFD">
-		<Description>fd is not a valid file descriptor open for writing.</Description>
-		<Code>
-			ErrorTest(fsync(-1), -1, EBADF);
-		</Code>
-	</Test>
-	<Test Name="FsyncErrInvalidArg">
-		<Description>fd is bound to a special file which does not support synchronization.</Description>
-		<Code>
-			ErrorTest(fsync(0), -1, EINVAL);
-		</Code>
-	</Test>
 </TestSet>

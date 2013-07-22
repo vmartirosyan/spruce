@@ -72,13 +72,6 @@
 			ErrorTest( statfs( "non_existing_file", &st ), -1, ENOENT );
 		</Code>
 	</Test>
-	<Test Name="StatfsNoEnt2">
-		<Description>Path is an empty string.</Description>
-		<Code>
-			struct statfs st;
-			ErrorTest( statfs( "", &st ), -1, ENOENT );
-		</Code>
-	</Test>
 	<Test Name="StatfsNotDir">
 		<Description>A component of the path prefix of path is not a directory.</Description>
 		<File count="1"/>
