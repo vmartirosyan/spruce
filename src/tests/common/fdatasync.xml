@@ -42,7 +42,6 @@
 			Check (stat_buf_old.st_atime != stat_buf_new.st_atime, "fdatasync updated last access time of the file");
 			
 			Check (stat_buf_old.st_mtime != stat_buf_new.st_mtime, "fdatasync updated last modification time of the file");
-			
 		</Code>
 	</Test>
 </TestSet>

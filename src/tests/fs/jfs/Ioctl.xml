@@ -123,36 +123,6 @@
 			Check ( get_flags != old_flags, "Error get flags != old flags on read only FS.");	
 		</Code>
 	</Test>
-	<Test Name="FreezeFail">
-		<Dangerous/>
-		<Description>Simulate faults in freeze operation.</Description>	
-		<Header>
-			int fd = open("FreezeFail_file", O_CREAT | O_RDWR);
-		</Header>
-		<Code>
-			Fail(ioctl(fd, FIFREEZE , NULL) == -1, "Cannot freeze.");
-		</Code>
-		<Footer>
-			ioctl(fd, FITHAW , NULL);
-			close(fd);
-		</Footer>
-	</Test>
-	<Test Name="UnfreezeFail">
-		<Dangerous/>
-		<Description>Simulate faults in unfreeze operation.</Description>	
-		<Header>
-			int fd = open("UnfreezeFail_file", O_CREAT | O_RDWR);
-		</Header>
-		<Code>
-			Unres(ioctl(fd, FIFREEZE , NULL) == -1, "Cannot freeze.");
-			
-			Fail(ioctl(fd, FITHAW , NULL) == -1, "Cannot unfreeze.");
-		</Code>
-		<Footer>
-			ioctl(fd, FITHAW , NULL);
-			close(fd);
-		</Footer>
-	</Test>
 	<Test Name="SetFlagsNotOwner">
 		<Description>Change flag by not the file owner.</Description>
 		<File count="1"/>

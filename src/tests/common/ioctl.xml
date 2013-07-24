@@ -31,33 +31,16 @@
 		<File count="1"/>
 		<Code>
 			int old_version = 0;
-			if ( ioctl(FDs[0], FS_IOC_GETVERSION, &old_version ) == -1 )
-			{
-				if ( errno == ENOTTY || errno == EINVAL )
-				{
-					Unsupp("Get/set verion is not supported.");
-				}
-				else
-				{
-					Unres(1, "Error backing up old values.");
-				}
-			}		
+			Fail(ioctl(FDs[0], FS_IOC_GETVERSION, &old_version ) == -1, 
+				"Error getting version.");
+				
 			int set_version = 15; 
 			int get_version = 0;			
 			
-			if ( ioctl(FDs[0], FS_IOC_SETVERSION, &set_version ) == -1)
-			{
-				if ( errno == ENOTTY || errno == EINVAL )
-				{
-					Unsupp("Set verion is not supported.");
-				}
-				else
-				{
-					Check(1, "Error setting version.");
-				}
-			}
+			Fail(ioctl(FDs[0], FS_IOC_SETVERSION, &set_version ) == -1,
+				"Error setting version.");
 			
-			Fail (ioctl(FDs[0], FS_IOC_GETVERSION, &get_version) == -1, "Error getting newly set version.");
+			Check (ioctl(FDs[0], FS_IOC_GETVERSION, &get_version) == -1, "Error getting newly set version.");
 			
 			Unres (ioctl(FDs[0], FS_IOC_SETVERSION, &old_version) == -1, "Error restoring old values.");
 									
@@ -72,39 +55,19 @@
 			struct fstrim_range arg;
 			arg.start = 0;
 			arg.len = 10;
-			
-			if ( ioctl(FDs[0], FITRIM, &arg) == -1 )
-			{
-				if ( errno == ENOTTY || errno == EINVAL )
-				{
-					Unsupp("FITRIM is not supported.");
-				}
-				else
-				{
-					Check(1, "FITRIM operation failed.");
-				}
-			}			
+
+			Fail(ioctl(FDs[0], FITRIM, &arg) == -1, "FITRIM operation failed.");
 		</Code>		
 	</Test>
 	<Test Name="IoctlFIEMAP" FaultSimulationReady="true" Shallow="true">
 		<Description>Ioctl FIEMAP.</Description>
 		<File count="1"/>
 		<Code>
-			
 			struct fiemap arg;
 			memset(&arg, 0, sizeof(arg));
 			arg.fm_length = 1;
-			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
-			{
-				if ( errno == ENOTTY || errno == EINVAL )
-				{
-					Unsupp("FIEMAP is not supported.");
-				}
-				else
-				{
-					Check(1, "FIEMAP operation failed.");
-				}
-			}				
+
+			Fail(ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1, "FIEMAP operation failed.");
 		</Code>
 	</Test>
 		<Test Name="IoctlFIEMAPBigData" FaultSimulationReady="true" Shallow="true">
@@ -121,64 +84,33 @@
 			memset(&arg, 0, sizeof(arg));
 			arg.fm_length = 1;
 			Unres ( fallocate(FDs[0], 0, 0, 320000*4096), "Cannot allocate space for file.");
-			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
-			{
-				if ( errno == ENOTTY || errno == EINVAL )
-				{
-					Unsupp("FIEMAP is not supported.");
-				}
-				else
-				{
-					Check(1, "FIEMAP operation failed.");
-				}
-			}				
+
+			Fail(ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1,
+				"FIEMAP operation failed.");
 		</Code>
 	</Test>
 	<Test Name="IoctlFIEMAPBeforeExtent" FaultSimulationReady="true" Shallow="true">
-		<Description>Ioctl FIEMAP.</Description>
+		<Description>Ioctl FIEMAP before preallocated block.</Description>
 		<File count="1" flags="O_CREAT | O_RDWR | O_LARGEFILE"/>
 		<Code>
-			//uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
-			
 			struct fiemap arg;
 			memset(&arg, 0, sizeof(arg));
 			arg.fm_length = 1;
 			Unres ( fallocate(FDs[0], 0, 32000, 32000), "Cannot allocate space for file.");
-			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
-			{
-				if ( errno == ENOTTY || errno == EINVAL )
-				{
-					Unsupp("FIEMAP is not supported.");
-				}
-				else
-				{
-					Check(1, "FIEMAP operation failed.");
-				}
-			}			
+
+			Fail(ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1, "FIEMAP operation failed.");
 		</Code>
 	</Test>
 	<Test Name="IoctlFIEMAPAfterExtent" FaultSimulationReady="true" Shallow="true">
-		<Description>Ioctl FIEMAP.</Description>
+		<Description>Ioctl FIEMAP after preallocate block.</Description>
 		<File count="1" flags="O_CREAT | O_RDWR | O_LARGEFILE"/>
 		<Code>
-			//uint64_t size = PartitionManager::GetDeviceSize(DeviceName);
-			
 			struct fiemap arg;
 			memset(&arg, 0, sizeof(arg));
 			arg.fm_length = 1;
 			arg.fm_start = 134217728;//128MB
 			Unres ( fallocate(FDs[0], 0, 0, 134217728), "Cannot allocate space for file.");
-			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
-			{
-				if ( errno == ENOTTY || errno == EINVAL )
-				{
-					Unsupp("FIEMAP is not supported.");
-				}
-				else
-				{
-					Check(1, "FIEMAP operation failed.");
-				}
-			}			
+			Fail(ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1, "FIEMAP operation failed.");
 		</Code>
 	</Test>
 	<Test Name="IoctlFIEMAPWithXattrFlag" FaultSimulationReady="true" Shallow="true">
@@ -197,17 +129,8 @@
 			arg.fm_length = 1;
 			arg.fm_flags = FIEMAP_FLAG_XATTR;
 			
-			if ( ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1 )
-			{
-				if ( errno == ENOTTY || errno == EINVAL )
-				{
-					Unsupp("FIEMAP is not supported.");
-				}
-				else
-				{
-					Check(1, "FIEMAP operation with FIEMAP_FLAG_XATTR flag failed.");
-				}
-			}			
+			Fail(ioctl(FDs[0], FS_IOC_FIEMAP, &arg) == -1,
+				"FIEMAP operation with FIEMAP_FLAG_XATTR flag failed.");
 		</Code>
 	</Test>
 	<Test Name="IoctlFIBMAP" FaultSimulationReady="true" Shallow="true">
@@ -218,42 +141,43 @@
 				Unsupp("FIBMAP not supported in btrfs.");
 			int Block = 1;
 			
-			Fail( ioctl(FDs[0], FIBMAP, &Block) == -1, "FIBMAP operation failed." );
+			Fail(ioctl(FDs[0], FIBMAP, &Block) == -1, "FIBMAP operation failed." );
 		</Code>
 	</Test>
 	
 	<Test Name="IoctlFIFREEZE" FaultSimulationReady="true">
 		<Description>Ioctl FIFREEZE and FITHAW.</Description>
 		<Dangerous fs="jfs" mount_opt="nointegrity"/>
-		<File count="1"/>
+		<Dangerous fs="jfs" check="stability"/>
+		<Header>
+			bool isFreezed = false;
+			/* File should be created 'by hand', because it is used in 'Footer' section */
+			int fd = open("Freeze_file", O_WRONLY | O_CREAT, 0666);
+			Unres(fd == -1, "Cannot create file for test");
+		</Header>
 		<Code>
-			if ( ioctl(FDs[0], FIFREEZE, 0) == -1 )
-			{
-				if ( errno == ENOTTY || errno == EINVAL )
-				{
-					Unsupp("FIFREEZE is not supported.");
-				}
-				else
-				{
-					Check(1, "FIFREEZE operation failed.");
-				}
-			}
-			if ( ioctl(FDs[0], FITHAW, 0) == -1 )
-			{
-				if ( errno == ENOTTY || errno == EINVAL)
-				{
-					Unsupp("FITHAW is not supported.");
-				}
-				else
-				{
-					Check(1, "FITHAW operation failed.");
-				}
-			}
+			Fail(ioctl(fd, FIFREEZE, 0) == -1, "FIFREEZE operation failed.");
+			isFreezed = true;
+			Fail(ioctl(fd, FITHAW, 0) == -1, "FITHAW operation failed.");
+			isFreezed = false;
 			// Check if the FS is unfreezed.
-			int fd = open("IoctlFIFREEZE_file2", O_CREAT);
-			Check(fd == -1, "Cannot create file after unfreeze.");
-			close(fd);
+			int fd1 = open("IoctlFIFREEZE_file2", O_WRONLY | O_CREAT, 0666);
+			Check(fd1 == -1, "Cannot create file after unfreeze.");
+			close(fd1);
 		</Code>
+		<Footer>
+			/* 
+			 * If unfreeze operation had failed because of fault simulation,
+			 * repeat it without simulation.
+			 *
+			 * After the test filesystem should be unfreezed in any case.
+			 */
+			if(isFreezed)
+			{
+				Fatal(ioctl(fd, FITHAW, 0) == -1, "Failed to unfreeze freezed filesystem");
+			}
+			close(fd);
+		</Footer>
 	</Test>
 	<!-- There is no operation supported by all the filesystems to be able to check the EFAULT case -->
 	<!--Test Name="IoctlFault">
