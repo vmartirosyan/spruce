@@ -26,6 +26,7 @@
 	<Requires>sys/user.h</Requires>
 	<Requires>linux/version.h</Requires>
 	<Header>
+/* C++ has stricked type autoconversion, so use ptr-type for MAP_FAILED. */
 #undef MAP_FAILED
 #define MAP_FAILED reinterpret_cast<void*>(-1)
 	</Header>
@@ -33,23 +34,19 @@
 		<Description>map files or devices into memory</Description>
 		<File count="1"/>
 		<Code>
-		const string buff = "abc";
-		Unres(write(FDs[0], buff.c_str(), buff.size()) == -1, "Write failed");
-		
-		size_t length = buff.size();
-		int prot = PROT_READ;
-		int flags = MAP_PRIVATE;
-		off_t offset = 0;
-		
-		void * addr;
-		
-		Fail( ( addr = mmap(0, length, prot, flags, FDs[0], offset)) == MAP_FAILED,
-			"System call mmap failed");
-
-		Check(strncmp(buff.c_str(), static_cast<char *>(addr), length),
-			"System call mmap failed: mapped content differs from file content");
+			const string buff = "abc";
+			Unres(write(FDs[0], buff.c_str(), buff.size()) == -1, "Write failed");
 			
-		munmap(addr, length);
+			size_t length = buff.size();			
+			void * addr;
+			
+			Fail( ( addr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0)) == MAP_FAILED,
+				"mmap() failed.");
+
+			Check(strncmp(buff.c_str(), static_cast<char *>(addr), length),
+				"Mapped content differs from file content");
+			
+			munmap(addr, length);
 		</Code>
 	</Test>
 	<Test Name="MmapWrite" FaultSimulationReady="true">
@@ -65,100 +62,70 @@
 			lseek (FDs[0], 0, SEEK_SET);
 			
 			size_t length = buff.size();			
-			int prot = PROT_WRITE;
-			int flags = MAP_SHARED;
-			off_t offset = 0;
 			
 			char * addr = NULL;
-			Fail ( (addr = static_cast<char*>(mmap(0, length, prot, flags, FDs[0], offset))) == MAP_FAILED, "System call mmap failed");
+			Fail ( (addr = static_cast<char*>(mmap(0, length, PROT_WRITE | PROT_READ, MAP_SHARED, FDs[0], 0))) == MAP_FAILED,
+				"mmap() failed");
 						
 			sprintf(addr, "%s", buff.c_str());
 			munmap(addr, length);
 			
 			Unres( read(FDs[0], buff2, length) == -1, "Cannot read from file." );			
 						
-			Check ( strncmp(buff.c_str(), buff2, length), "System call mmap failed: mapped content differs from file content");
+			Check ( strncmp(buff.c_str(), buff2, length), "Mapped content differs from file content");
 		</Code>
 	</Test>
-	<Test Name="MmapErrInval">
-		<Description>We don't like addr, length, or offset (e.g., they are too large, or not aligned on a page boundary)</Description>
+	<Test Name="MmapErrInval1">
+		<Description>mmap() with offset no aligned on page boundary</Description>
 		<File count="1"/>
 		<Code>		
-		void * addr = 0;
-		size_t length = 10;
-		int prot = PROT_READ;
-		int flags = MAP_PRIVATE;
-		off_t offset = 0;
-		
-		addr = mmap(0, length, prot, flags, FDs[0], ~PAGE_MASK);
-		if(addr != MAP_FAILED || errno != EINVAL)
-		{
-			Error("EINVAL error expected: offset contains invalid value");
-			_TestStatus = Fail;
-		}
-		/*
-	#if  LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,12)
-		addr = mmap(0, 0, prot, flags, FDs[0], offset);
-		if(addr != MAP_FAILED || errno != EINVAL)
-		{
-			Error("EINVAL error expected: length contains 0 value");
-			_TestStatus = Fail;
-		}
-	#endif
-		*/
-		addr = mmap(0, length, prot, MAP_PRIVATE | MAP_SHARED, FDs[0], offset);
-		if(addr != MAP_FAILED || errno != EINVAL)
-		{
-			Error("EINVAL error expected: flags contains invalid value, MAP_PRIVATE and MAP_SHARED are set");
-			_TestStatus = Fail;
-		}
+			ErrorTest(mmap(0, 10, PROT_READ, MAP_PRIVATE, FDs[0], 1),
+				MAP_FAILED, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MmapErrInval2">
+		<Description>mmap() with zero length</Description>
+		<Requires KernelVersion="2.6.12"></Requires>
+		<File count="1"/>
+		<Code>		
+			ErrorTest(mmap(0, 0, PROT_READ, MAP_PRIVATE, FDs[0], 0),
+				MAP_FAILED, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MmapErrInval3">
+		<Description>mmap() with both MAP_PRIVATE and MAP_SHARED flags</Description>
+		<Requires KernelVersion="2.6.12"></Requires>
+		<File count="1"/>
+		<Code>		
+			ErrorTest(mmap(0, 10, PROT_READ, MAP_PRIVATE | MAP_SHARED, FDs[0], 0),
+				MAP_FAILED, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MmapErrInval4">
+		<Description>mmap() with neither MAP_PRIVATE nor MAP_SHARED flags specified</Description>
+		<Requires KernelVersion="2.6.12"></Requires>
+		<File count="1"/>
+		<Code>		
+			ErrorTest(mmap(0, 10, PROT_READ, 0, FDs[0], 0),
+				MAP_FAILED, EINVAL);
+		</Code>
+	</Test>
 
-		addr = mmap(0, length, prot, 0, FDs[0], offset);
-		if(addr != MAP_FAILED || errno != EINVAL)
-		{
-			Error("EINVAL error expected: flags contains 0 value");
-			_TestStatus = Fail;	
-		}
-				
-		</Code>
-	</Test>
-	<Test Name="MmapErrBadF">
-		<Description>fd is not a valid file descriptor  (and  MAP_ANONYMOUS  was  not set)</Description>
-		<Code>
-			
-			size_t length = 10;
-			int prot = PROT_READ;
-			int flags = MAP_PRIVATE;
-			off_t offset = 0;
-			int fd = -1;
-			
-			ErrorTest(mmap(0, length, prot, flags, fd, offset), MAP_FAILED, EBADF);
-		</Code>
-	</Test>
-	<Test Name="MmapErrAcces">
-		<Description>MAP_PRIVATE was requested, but fd is not open for  reading. Or MAP_SHARED was  requested  and  PROT_WRITE  is  set,  but fd is not open in read/write (O_RDWR) mode</Description>
+	<Test Name="MmapErrAcces1">
+		<Description>mmap() with MAP_PRIVATE was requested, but fd is not open for reading.</Description>
 		<File count="1" flags="O_WRONLY | O_CREAT" mode="S_IRUSR | S_IWUSR"/>
 		<Code>
-			void * addr = 0;
-			size_t length = 10;
-			int prot = PROT_READ;
-			int flags = MAP_PRIVATE;
-			off_t offset = 0;
+			ErrorTest(mmap(0, 10, PROT_READ, MAP_PRIVATE, FDs[0], 0),
+				MAP_FAILED, EACCES);
+		</Code>
+	</Test>
 
-			addr = mmap(0, length, prot, flags, FDs[0], offset);		
-			if(addr != MAP_FAILED || errno != EACCES)
-			{
-				Error("EACCES error expected: MAP_PRIVATE was requested, but fd is not opened for reading");
-				_TestStatus = Fail;
-			}
-			
-			addr = mmap(0, length, PROT_WRITE, MAP_SHARED, FDs[0], offset);
-			if(addr != MAP_FAILED || errno != EACCES)
-			{
-				Error("EACCES error expected: fd is not opened in read/write mode");
-				_TestStatus = Fail;
-			}
-			
+	<Test Name="MmapErrAcces2">
+		<Description>mmap() with MAP_SHARED was requested and PROT_WRITE is set, but fd is not open in read/write (O_RDWR) mode</Description>
+		<File count="1" flags="O_WRONLY | O_CREAT" mode="S_IRUSR | S_IWUSR"/>
+		<Code>
+			ErrorTest(mmap(0, 10, PROT_WRITE, MAP_SHARED, FDs[0], 0),
+				MAP_FAILED, EACCES);
 		</Code>
 	</Test>
 	<Test Name="MunmapNormal">
@@ -166,200 +133,128 @@
 		<File count="1"/>
 		<Code>
 			size_t length = 3;
-			int prot = PROT_READ;
-			int flags = MAP_PRIVATE;
-			off_t offset = 0;
 		
-			void * addr; ;
-			Unres( ( addr = mmap(0, length, prot, flags, FDs[0], offset) ) == MAP_FAILED, "System call mmap failed");
+			void * addr;
+			Unres( ( addr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
 		
-			
-			Fail (munmap(addr, length) == -1, "System call munmap failed");
-			
-			
+			Fail (munmap(addr, length) == -1, "munmap() failed");
 		</Code>
 	</Test>
-	<Test Name="MunmapErr">
-		<Description>munmap() returns -1 on failure and errno is set (probably to EINVAL)</Description>
+	<Test Name="MunmapErr1">
+		<Description>munmap() with negative length</Description>
+		<File count="1"/>
+		<Code>
+			void * addr;
+			Unres( (addr = mmap(0, 3, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
+
+			ErrorTest(munmap(addr, -1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MunmapErr2">
+		<Description>munmap() with unaligned address</Description>
 		<File count="1"/>
 		<Code>
 			size_t length = 3;
-			int prot = PROT_READ;
-			int flags = MAP_PRIVATE;
-			off_t offset = 0;
-		
 			void * addr;
-			Unres( (addr = mmap(0, length, prot, flags, FDs[0], offset) ) == MAP_FAILED, "System call mmap failed");
-			
-			Fail(munmap(addr, -1) != -1, "Error expected: length contains invalid value");
-			
-			int pageSize = getpagesize();
-			Fail(munmap(reinterpret_cast<void*>(pageSize + 1), length) != -1, "Error expected: addr contains invalid value");
-			
+			Unres( (addr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
+
+			ErrorTest(munmap((void*)((char*)addr + 1), length - 1), -1, EINVAL);
 		</Code>
 	</Test>
 	<Test Name="Mremap">
-		<Description>remap a virtual memory address</Description>
+		<Description>mremap() a virtual memory address</Description>
 		<File count="1"/>
 		<Code>
-			const string buff = "abc";
+			const string buff(PAGE_SIZE * 2, 'f');
 			Unres(write(FDs[0], buff.c_str(), buff.size()) == -1, "write failed.");
 			
-			size_t length = buff.size();
-			int prot = PROT_READ;
-			int flags = MAP_PRIVATE;
-			off_t offset = 0;
+			size_t oldLength = PAGE_SIZE - 1;
 		
 			void * oldAddr;
-			Unres((oldAddr  = mmap(0, length, prot, flags, FDs[0], offset)) == MAP_FAILED, "System call mmap failed");
+			Unres((oldAddr  = mmap(0, oldLength, PROT_READ, MAP_PRIVATE, FDs[0], 0)) == MAP_FAILED,
+				"mmap() failed");
 			
-			void * newAddr ;
-			Fail( (newAddr = mremap(oldAddr, length, length + 3, MREMAP_MAYMOVE) ) == MAP_FAILED, "System call mremap failed");
+			size_t newLength = PAGE_SIZE + 1;
 			
+			void * newAddr;
+			Fail( (newAddr = mremap(oldAddr, oldLength, newLength, MREMAP_MAYMOVE) ) == MAP_FAILED,
+				"mremap() failed");
 			
-			Check(strncmp(static_cast<char *>(oldAddr), static_cast<char *>(newAddr), strlen(static_cast<char *>(oldAddr))), "System call mmap failed: mapped content differs from initial content");
-			
+			/* 
+			 * It is more interesting when newAddr is differ from oldAddr.
+			 * But no one can garantee that.
+			 *
+			 * Output may be used in futher tests development.
+			 */
+			if(newAddr == oldAddr)
+			{
+				cout << "mremap() didn't move page." << endl;
+			}
+			else
+			{
+				cout << "mremap() moved page." << endl;
+			}
+			Check(strncmp(static_cast<char *>(newAddr), buff.c_str(), newLength),
+				"Remapped content differs from initial content");
 		</Code>
 	</Test>
-	<Test Name="MremapErrInval">
-		<Description>an invalid argument was given</Description>
+	<Test Name="MremapErrInval1">
+		<Description>mremap() with new_address not aligned</Description>
 		<File count="1"/>
 		<Code>
 			size_t length = 3;
-			int prot = PROT_READ;
-			int flags = MAP_PRIVATE;
-			off_t offset = 0;
 		
 			void * oldAddr;
-			Unres( (oldAddr = mmap(0, length, prot, flags, FDs[0], offset) ) == MAP_FAILED, "System call mmap failed");
+			Unres( (oldAddr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
 			
-			void * newAddr = mremap(oldAddr, length, length + 3, MREMAP_MAYMOVE | MREMAP_FIXED);
-			if(newAddr != MAP_FAILED || errno != EINVAL)
-			{
-				Error("EINVAL error expected: flags contain invalid value");
-				_TestStatus = Fail;
-			}
-
-			newAddr = mremap(oldAddr, length, 0, MREMAP_MAYMOVE);
-			if(newAddr != MAP_FAILED || errno != EINVAL)
-			{
-				Error("EINVAL error expected: new size is set to zero");
-				_TestStatus = Fail;
-			}
-			/* //invalid value of newsize is unknown 
-			newAddr = mremap(oldAddr, length, -1, MREMAP_MAYMOVE);
-			if(newAddr != MAP_FAILED || errno != EINVAL)
-			{
-				Error("EINVAL error expected: new size contains invalid value");
-				_TestStatus = Fail;
-			}
-			*/
-			newAddr = mremap(oldAddr, length, length + 3, MREMAP_FIXED);
-			if(newAddr != MAP_FAILED || errno != EINVAL)
-			{
-				Error("EINVAL error expected: MREMAP_FIXED was specified without also specifying MREMAP_MAYMOVE");
-				_TestStatus = Fail;
-			}		
-			
+			ErrorTest(mremap(oldAddr, length, length + 3, MREMAP_MAYMOVE | MREMAP_FIXED, (void*)((char*)oldAddr + 2 * PAGE_SIZE + 1)),
+				MAP_FAILED, EINVAL);
 		</Code>
 	</Test>
-	<Test Name="Mmap2Normal">
-		<Description>the mmap2() system call operates in exactly the same way as mmap, except that the final argument specifies the offset into the file in 4096-byte units</Description>
-		<File count = "1"/>
-		<Code>
-			const string buff = "abc";
-			Unres(write(FDs[0], buff.c_str(), buff.size()) == -1, "Write failed");
-			
-			size_t length = buff.size();
-			int prot = PROT_READ;
-			int flags = MAP_PRIVATE;
-			off64_t offset = 0;
-		
-			void * addr;
-			Fail( ( addr = mmap64(0, length, prot, flags, FDs[0], offset) ) == MAP_FAILED, "System call mmap failed");
-			
-			Check(strncmp(buff.c_str(), static_cast<char *>(addr), buff.size()), "System call mmap failed: mapped content differs from file content");
-		
-		</Code>
-	</Test>
-	<Test Name="Mmap2ErrInval">
-		<Description>offset * 4096 is not a multiple of the system page size</Description>
+	<Test Name="MremapErrInval2">
+		<Description>mremap() with new size equal to zero</Description>
 		<File count="1"/>
 		<Code>
-			void * addr = 0;
-			size_t length = 10;
-			int prot = PROT_READ;
-			int flags = MAP_PRIVATE;
-			off_t offset = 0;
+			size_t length = 3;
+		
+			void * oldAddr;
+			Unres( (oldAddr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
 			
-			addr = mmap64(0, length, prot, flags, FDs[0], ~PAGE_MASK);
-			if(addr != MAP_FAILED || errno != EINVAL)
-			{
-				Error("EINVAL error expected: offset contains invalid value");
-				_TestStatus = Fail;	
-			}
-			/*
-			#if  LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,12)
-			addr = mmap64(0, 0, prot, flags, FDs[0], offset);
-			if(addr != MAP_FAILED || errno != EINVAL)
-			{
-				Error("EINVAL error expected: length contains 0 value");
-				_TestStatus = Fail;	
-			}
-			#endif
-			*/
-			addr = mmap64(0, length, prot, MAP_PRIVATE | MAP_SHARED, FDs[0], offset);
-			if(addr != MAP_FAILED || errno != EINVAL)
-			{
-				Error("EINVAL error expected: flags contain invalid value, MAP_PRIVATE and MAP_SHARED are set");
-				_TestStatus = Fail;	
-			}
-
-			addr = mmap64(0, length, prot, 0, FDs[0], offset);
-			if(addr != MAP_FAILED || errno != EINVAL)
-			{
-				Error("EINVAL error expected: flags contain 0 value");
-				_TestStatus = Fail;	
-			}
-			
+			ErrorTest(mremap(oldAddr, length, 0, MREMAP_MAYMOVE),
+				MAP_FAILED, EINVAL);
 		</Code>
 	</Test>
-	<Test Name="Mmap2ErrBadf">
-		<Description>fd is not a valid file descriptor</Description>
+	<Test Name="MremapErrInval3">
+		<Description>mremap() with new size negative</Description>
+		<File count="1"/>
 		<Code>
-			size_t length = 10;
-			int prot = PROT_READ;
-			int flags = MAP_PRIVATE;
-			off_t offset = 0;
-			int fd = -1;
-			ErrorTest(mmap64(0, length, prot, flags, fd, offset), MAP_FAILED, EBADF);
+			size_t length = 3;
+		
+			void * oldAddr;
+			Unres( (oldAddr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
+			
+			ErrorTest(mremap(oldAddr, length, -1, MREMAP_MAYMOVE),
+				MAP_FAILED, EINVAL);
 		</Code>
 	</Test>
-	<Test Name="Mmap2ErrAcces">
-		<Description>a file descriptor refers to a non-regular file. Or MAP_PRIVATE was requested, but fd is not open for reading. Or MAP_SHARED was requested and PROT_WRITE is set, but fd is not open in read/write (O_RDWR) mode. Or PROT_WRITE is set, but the file is append-only</Description>
-		<File count="1" mode="S_IRUSR | S_IWUSR" flags="O_WRONLY | O_CREAT"/>
+	<Test Name="MremapErrInval4">
+		<Description>mremap() with MREMAP_FIXED but without MREMAP_MAYMOVE</Description>
+		<File count="1"/>
 		<Code>
-			void * addr = 0;
-			size_t length = 10;
-			int prot = PROT_READ;
-			int flags = MAP_PRIVATE;
-			off_t offset = 0;
-
-			addr = mmap64(0, length, prot, flags, FDs[0], offset);		
-			if(addr != MAP_FAILED || errno != EACCES)
-			{
-				Error("EACCES error expected: MAP_PRIVATE was requested, but fd is not opened for reading");
-				_TestStatus = Fail;
-			}
+			size_t length = 3;
+		
+			void * oldAddr;
+			Unres( (oldAddr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
 			
-			addr = mmap64(0, length, PROT_WRITE, MAP_SHARED, FDs[0], offset);
-			if(addr != MAP_FAILED || errno != EACCES)
-			{
-				Error("EACCES error expected: fd is not opened in read/write mode");
-				_TestStatus = Fail;
-			}
-			
+			ErrorTest(mremap(oldAddr, length, length + 3, MREMAP_FIXED),
+				MAP_FAILED, EINVAL);
 		</Code>
 	</Test>
-	
 </TestSet>
