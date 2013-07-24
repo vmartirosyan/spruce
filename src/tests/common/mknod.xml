@@ -35,9 +35,9 @@
 						
 			Unres ( stat( node_name, &st_buf ) == -1, "Error in stat system call");
 			
-			Check ( st_buf.st_uid != getuid(), "Mknod failed. Different user ID.");
+			Check ( st_buf.st_uid != getuid(), "Mknod incorrectly set user ID.");
 			
-			Check ( (st_buf.st_mode & (S_IFREG | 0777)) == 0, "Mknod failed. Wrong mode is set.");
+			Check ( (st_buf.st_mode & (S_IFREG | 0777)) == 0, "Mknod incorrectly set mode.");
 			
 			unlink( node_name );
 		</Code>
@@ -88,12 +88,6 @@
 			}
 		</Code>
 	</Test>
-	<Test Name="MknodPathExists">
-		<Description>Path already exists.</Description>
-		<Code>
-			ErrorTest(mknod("/", 0777, 0), -1, EEXIST);
-		</Code>
-	</Test>
 	<Test Name="MknodSymlink">
 		<Description>Path is a symlink.</Description>
 		<File count="1"/>
@@ -113,12 +107,6 @@
 		<Description>Invalid device number.</Description>
 		<Code>
 			ErrorTest(mknod("some_node", 0777, -1), -1, EINVAL);
-		</Code>
-	</Test>
-	<Test Name="MknodFault">
-		<Description>pathname points outside your accessible address space.</Description>
-		<Code>
-			ErrorTest(mknod(reinterpret_cast<const char *>(-1), 0777, 0), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="MknodTooLongPath">

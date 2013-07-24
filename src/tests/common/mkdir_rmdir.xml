@@ -33,11 +33,11 @@
 			Fail ( mkdir(path, 0777) == -1, "Failed to create directory");
 			
 			struct stat st;
-			Check ( stat(path, &st) != 0 && errno == ENOENT, "The directory was not created.");
+			Check ( stat(path, &st) != 0, "Failed to stat created directory.");
 			
 			Check ( ! S_ISDIR(st.st_mode), "mkdir has created not a directory.");
 			
-			Check ( rmdir(path) != 0, "Cannot remove directory.");
+			Check ( rmdir(path) != 0, "Cannot created remove directory.");
 			
 			Check ( stat(path, &st) == 0 || errno != ENOENT, "The directory should be deleted but it is not.");
 		</Code>
@@ -50,19 +50,16 @@
 		<Code>
 			if ( PartitionManager::IsOptionEnabled("ro") )
 				Unsupp("Read-only file system.");
-			
+			rmdir(path); //Just in case
 			Unres ( mkdir(path, 0777) == -1, "Failed to create directory");
-			
-			struct stat st;
-			Unres ( (stat(path, &st) != 0) && (errno == ENOENT), "The directory was not created.");
-			
-			Unres ( ! S_ISDIR(st.st_mode), "mkdir has created not a directory.");
 			
 			Fail ( rmdir(path) != 0, "Cannot remove directory.");
 			
+			struct stat st;
 			Check ( (stat(path, &st) == 0) || (errno != ENOENT), "The directory should be deleted but it is not.");
 		</Code>
 		<Footer>
+			/* Repeat directory deletion in case previous call fails because of fault simulation */
 			rmdir(path);
 		</Footer>
 	</Test>
@@ -71,12 +68,6 @@
 		<Description>Mkdir: Path is too long.</Description>
 		<Code>
 			ENameTooLongTest(mkdir(path, 0777), -1);
-		</Code>
-	</Test>
-	<Test Name="MkdirNoEnt">
-		<Description>Mkdir: Path does not exist.</Description>
-		<Code>
-			ErrorTest(mkdir("/some_wrong_path/some_dir", 0777), -1, ENOENT);
 		</Code>
 	</Test>
 	<Test Name="MkdirNotDir">
@@ -91,12 +82,6 @@
 		<Dir count="1"/>
 		<Code>
 			ErrorTest(mkdir(DirPaths[0].c_str(), 0777), -1, EEXIST);
-		</Code>
-	</Test>
-	<Test Name="MkdirFault">
-		<Description>Mkdir: pathname points outside your accessible address space.</Description>
-		<Code>
-			ErrorTest(mkdir(reinterpret_cast<char*>(-1), 0777), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="MkdirNoAccess">
@@ -114,12 +99,6 @@
 			ENameTooLongTest(rmdir(path), -1);
 		</Code>
 	</Test>
-	<Test Name="RmdirNoEnt">
-		<Description>Rmdir: Path does not exist.</Description>
-		<Code>
-			ErrorTest(rmdir("/some_wrong_path/some_dir"), -1, ENOENT);
-		</Code>
-	</Test>
 	<Test Name="RmdirNotDir">
 		<Description>Rmdir: A component of path is not a directory.</Description>
 		<File count="1"/>
@@ -131,16 +110,10 @@
 		<Dir count="1">
 			<File count="1"/>
 		</Dir>
-		<Description>Rmdir: The directory already exists.</Description>
+		<Description>Rmdir: The directory is not empty.</Description>
 		<Dir count="1"/>
 		<Code>
 			ErrorTest(rmdir(DirPaths[0].c_str()), -1, ENOTEMPTY);
-		</Code>
-	</Test>
-	<Test Name="RmdirFault">
-		<Description>Rmdir: pathname points outside your accessible address space.</Description>
-		<Code>
-			ErrorTest(rmdir(reinterpret_cast<char*>(-1)), -1, EFAULT);
 		</Code>
 	</Test>
 	<Test Name="RmdirNoAccess">

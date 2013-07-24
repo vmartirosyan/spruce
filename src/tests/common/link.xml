@@ -51,12 +51,6 @@
 			ENameTooLongTest(link("/", path), -1);
 		</Code>
 	</Test>
-	<Test Name="LinkNewPathAlreadyExist">
-		<Description>Newpath already exists.</Description>
-		<Code>
-			ErrorTest(link("/", "/"), -1, EEXIST);
-		</Code>
-	</Test>
 	<Test Name="LinkOldPathIsDirectory">
 		<Description>Oldpath is a directory.</Description>
 		<Code>
