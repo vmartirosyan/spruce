@@ -48,24 +48,11 @@
 				"Different data was retrieved from the new file.");
 		</Code>
 	</Test>
-	<Test Name="LinkatBadFile">
-		<Description></Description>
-		<Code>
-			ErrorTest(linkat(-1, "some_file", -1, "some_link", 0), -1, EBADF);
-		</Code>
-	</Test>
 	<Test Name="LinkatNameTooLong">
 		<Description>Oldpath or newpath was too long.</Description>
 		<Dir count="1"/>
 		<Code>
 			ENameTooLongTest(linkat(DirDs[0], "/", DirDs[0], path, 0), -1);
-		</Code>
-	</Test>
-	<Test Name="LinkatNewPathAlreadyExist">
-		<Description>Newpath already exists.</Description>
-		<Dir count="1"/>
-		<Code>
-			ErrorTest(linkat(DirDs[0], "/", DirDs[0], "/", 0), -1, EEXIST);
 		</Code>
 	</Test>
 	<Test Name="LinkatOldPathIsDirectory">
