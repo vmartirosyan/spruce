@@ -214,8 +214,6 @@
 			
 			if ( SignalNumber != SIGIO )
 				Logger::LogWarn( "The signal for DN_DELETE was not received." );
-			
-			
 		</Code>
 	</Test>
 	<Test Name="FcntlFDNoteFile" FaultSimulationReady="true" Shallow="true">
