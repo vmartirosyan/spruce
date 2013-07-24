@@ -23,43 +23,29 @@
 -->
 
 <TestSet Name="mkdir_rmdir">	
-	<Test Name="MkdirRmdirNormal" FaultSimulationReady="true">
+	<Test Name="MkdirRmdirNormal">
 		<Description>Create and remove a directory.</Description>
+		<Header>
+			const char * path = "MkdirRmdirNormal_dir";
+		</Header>
 		<Code>
 			if ( PartitionManager::IsOptionEnabled("ro") )
 				Unsupp("Read-only file system.");
 			const char * path = "MkdirRmdirNormal_dir";
-			rmdir(path); //Just in case
-			Fail ( mkdir(path, 0777) == -1, "Failed to create directory");
+
+			Fail ( mkdir(path, 0777) != 0, "Failed to create directory");
 			
 			struct stat st;
 			Check ( stat(path, &st) != 0, "Failed to stat created directory.");
 			
 			Check ( ! S_ISDIR(st.st_mode), "mkdir has created not a directory.");
 			
-			Check ( rmdir(path) != 0, "Cannot created remove directory.");
+			Fail ( rmdir(path) != 0, "Failed to remove directory created.");
 			
 			Check ( stat(path, &st) == 0 || errno != ENOENT, "The directory should be deleted but it is not.");
 		</Code>
-	</Test>
-	<Test Name="MkdirRmdirNormal2" FaultSimulationReady="true">
-		<Description>Create and remove a directory.</Description>
-		<Header>
-			const char * path = "MkdirRmdirNormal2_dir";
-		</Header>
-		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
-			rmdir(path); //Just in case
-			Unres ( mkdir(path, 0777) == -1, "Failed to create directory");
-			
-			Fail ( rmdir(path) != 0, "Cannot remove directory.");
-			
-			struct stat st;
-			Check ( (stat(path, &st) == 0) || (errno != ENOENT), "The directory should be deleted but it is not.");
-		</Code>
 		<Footer>
-			/* Repeat directory deletion in case previous call fails because of fault simulation */
+			/* Repeat directory deletion in case previous rmdir() fails because of fault simulation */
 			rmdir(path);
 		</Footer>
 	</Test>

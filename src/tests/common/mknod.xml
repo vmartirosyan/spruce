@@ -23,69 +23,58 @@
 -->
 
 <TestSet Name="mknod">	
-	<Test Name="MknodNormal1" FaultSimulationReady="true">
-		<Description>The system call mknod() creates a file system node (file, device special file or named pipe) named pathname, with attributes specified by mode and dev.</Description>
+	<GlobalHeader>
+/* Test that mknod correctly create node. */
+#define GenericMknodTest(mode, node_descr) 					 			\
+	Unres ( getuid() != 0, "This test should be executed by root."); 	\
+																		\
+	if ( PartitionManager::IsOptionEnabled("ro") )						\
+		Unsupp("Read-only file system.");								\
+																		\
+	const char *node_name = "node_name";								\
+	struct stat st;														\
+																		\
+	/* Just in case. Normally this should go to 'Footer' */				\
+	unlink( node_name );												\
+	errno = 0;/* previous unlink may fail with ENOENTRY, ignore it */	\
+																		\
+	Fail ( mknod( node_name, mode, 0 ) == -1,	 						\
+		"mknod() failed to create " node_descr ".");					\
+																		\
+	Unres ( stat( node_name, &st ) == -1,								\
+		"stat() for node created is failed.");							\
+																		\
+	Check ( st.st_uid != getuid(),										\
+		"mknod incorerctly set user identificator.");					\
+																		\
+	Check( (st.st_mode ^ (mode)) & S_IFMT,								\
+		"Type of node created by mknod differs from requested one.");	\
+																		\
+	Check ( st.st_nlink != 1,											\
+		"mknod create node with number of hard links more that 1.");
+	</GlobalHeader>
+	<Test Name="MknodNormal_REG">
+		<Description>Create regular file with mknod()</Description>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
-			struct stat st_buf;
-			const char *node_name = "nodename";
-			
-			Fail ( mknod( node_name, S_IFREG | 0777, 0 ) == -1, "Mknod failed.");
-						
-			Unres ( stat( node_name, &st_buf ) == -1, "Error in stat system call");
-			
-			Check ( st_buf.st_uid != getuid(), "Mknod incorrectly set user ID.");
-			
-			Check ( (st_buf.st_mode & (S_IFREG | 0777)) == 0, "Mknod incorrectly set mode.");
-			
-			unlink( node_name );
+			GenericMknodTest(S_IFREG | 0777, "ordinary file with mode 0777")
 		</Code>
 	</Test>
-	<Test Name="MknodNormal2" FaultSimulationReady="true">
-		<Description></Description>
+	<Test Name="MknodNormal_FIFO">
+		<Description>Create fifo with mknod()</Description>
 		<Code>
-			Unres ( getuid() != 0, "This test should be executed by root.");
-			
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
-			
-			struct test_cases
-			{
-				int mode;
-				string msg;
-			} Test[] = {
-			{S_IFREG | 0777,	"ordinary file with mode 0777"},
-			{S_IFIFO | 0777,	"fifo special with mode 0777"},
-			{S_IFCHR | 0777,	"character special with mode 0777"},
-			{S_IFBLK | 0777,	"block special with mode 0777 "}
-			};
-			
-			const char *node_name = "node_name";
-			struct stat st;
-			
-			int n = sizeof(Test)/sizeof(test_cases);
-			
-			for ( int i = 0; i < n - 1; ++i )
-			{
-				
-				Fail ( mknod( node_name, Test[i].mode, 0 ) == -1, 
-					(string)"For " + Test[i].msg.c_str() + " mknod failed.");
-				
-				Unres ( stat( node_name, &st ) == -1,
-					(string)"For " + Test[i].msg + " stat failed with error.");
-				
-				Check ( st.st_uid != getuid(),
-					(string)"For " + Test[i].msg.c_str() + " mknod failed. "); 
-					
-				Check( (st.st_mode & Test[i].mode)  == 0,
-					(string)"For " + Test[i].msg.c_str() + " mknod failed. ");
-				
-				Check ( st.st_nlink != 1,
-					(string)"For " + Test[i].msg.c_str() + " mknod failed. ");
-
-				unlink( node_name );
-			}
+			GenericMknodTest(S_IFIFO | 0777, "fifo special with mode 0777")
+		</Code>
+	</Test>
+	<Test Name="MknodNormal_CHR">
+		<Description>Create character device file with mknod()</Description>
+		<Code>
+			GenericMknodTest(S_IFCHR | 0777, "character special with mode 0777")
+		</Code>
+	</Test>
+	<Test Name="MknodNormal_BLK">
+		<Description>Create block device with mknod()</Description>
+		<Code>
+			GenericMknodTest(S_IFBLK | 0777, "block special with mode 0777")
 		</Code>
 	</Test>
 	<Test Name="MknodSymlink">
