@@ -58,10 +58,32 @@ using std::string;
     {Logger::LogError(message); return Fatal; }
 
     
-    <xsl:value-of select="GlobalHeader"/>
     <xsl:for-each select="Requires">
 #include &lt;<xsl:value-of select="." />>
     </xsl:for-each> 
+
+<!-- Check if all the requirements are satisfied -->
+    <xsl:if test="RequiresAll">
+<!-- Use standart 'if(false)' construction for template-generated alternatives -->
+#if 0
+        <xsl:if test="RequiresAll/@KernelVersion!=''">
+#elif LINUX_VERSION_CODE &lt; <xsl:call-template name="kernel-version-value">
+        <xsl:with-param name="version" select="RequiresAll/@KernelVersion"/>
+            </xsl:call-template>
+    EmptyTestSet(<xsl:value-of select="$PackageName" />, <xsl:value-of select="/TestSet/@Name" />, Unsupported, "Testset <xsl:value-of select="/TestSet/@Name" /> is not supported. Kernel version should be at least <xsl:value-of select="RequiresAll/@KernelVersion" />.");
+        </xsl:if>
+        <xsl:if test="RequiresAll/@Defined!=''">
+#elif ! defined <xsl:value-of select="RequiresAll/@Defined" />
+    EmptyTestSet(<xsl:value-of select="$PackageName" />, <xsl:value-of select="/TestSet/@Name" />, Unsupported, "Testset <xsl:value-of select="/TestSet/@Name" /> is not supported. Required macro <xsl:value-of select="RequiresAll/@Defined" /> is not defined.");
+        </xsl:if>            
+        <xsl:if test="RequiresAll/@Condition!=''">
+#elif ! (<xsl:value-of select="RequiresAll/@Condition" />)
+    EmptyTestSet(<xsl:value-of select="$PackageName" />, <xsl:value-of select="/TestSet/@Name" />, Unsupported, "Testset <xsl:value-of select="/TestSet/@Name" /> is not supported. Required condition '<xsl:value-of select="RequiresAll/@Condition" />' is not satisfied.");
+        </xsl:if>            
+#else
+    </xsl:if>
+
+    <xsl:value-of select="GlobalHeader"/>
 
 
 extern char * DeviceName;
@@ -94,7 +116,7 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
         </xsl:if>            
         <xsl:if test="Requires/@Condition!=''">
 #elif ! (<xsl:value-of select="Requires/@Condition" />)
-    Unsupp_direct("Required condition <xsl:value-of select="Requires/@Condition" /> is not satisfied.");
+    Unsupp_direct("Required condition '<xsl:value-of select="Requires/@Condition" />' is not satisfied.");
         </xsl:if>            
 #else
     </xsl:if>
@@ -140,9 +162,6 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
         </xsl:if>
     </xsl:if>
 
-    string _DirPrefix("<xsl:value-of select="$TestSetName" />_<xsl:value-of select="@Name"/>_dir_");
-    string _FilePrefix("<xsl:value-of select="$TestSetName" />_<xsl:value-of select="@Name"/>_file_");
-
     <!-- Generate the test function -->
     Status _TestStatus = <xsl:choose><xsl:when test="@Shallow='true'" >Shallow</xsl:when><xsl:otherwise>Success</xsl:otherwise></xsl:choose>;
     bool _InFooter = false;    
@@ -153,10 +172,8 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
 
     try
     {
-        string DirPrefix = _DirPrefix;
-        DirPrefix.append(static_cast&lt;string>("<xsl:value-of select="@Name" />_"));
-        string FilePrefix = _FilePrefix;
-        FilePrefix.append(static_cast&lt;string>("<xsl:value-of select="@Name" />_"));
+        string DirPrefix = "<xsl:value-of select="$TestSetName" />_<xsl:value-of select="@Name"/>_dir_";
+        string FilePrefix = "<xsl:value-of select="$TestSetName" />_<xsl:value-of select="@Name"/>_file_";
         <xsl:if test="Dir">
         const int DirCount = <xsl:value-of select="Dir/@count"/>;
         string DirPaths[DirCount];
@@ -349,6 +366,11 @@ TestSet Init_<xsl:value-of select="$PackageName" />_<xsl:value-of select="/TestS
 }
 
 <xsl:value-of select="GlobalFooter"/>
+
+<xsl:if test="RequiresAll">
+<!-- Terminate #if directive. -->
+#endif /* RequiresAll */
+</xsl:if>
 
     </xsl:template>
     

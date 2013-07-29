@@ -92,7 +92,6 @@ function (check_include name HAVE_H type)
 	CHECK_INCLUDE_FILES ("${name}" ${HAVE_H})
 	IF (NOT ${HAVE_H})
 		Message(FATAL_ERROR "The '${name}' ${type} wasn't found. Please install it.")
-		#SET(HAVE_XFS_H 0)
 	ENDIF (NOT ${HAVE_H})
 endfunction()
 

@@ -23,33 +23,31 @@
 -->
 
 <TestSet Name="name_to_handle">
-	<GlobalHeader>
-#include <linux/version.h>
-#include <unistd.h>
-#include <sys/syscall.h>
-#if  LINUX_VERSION_CODE < KERNEL_VERSION(2,6,39)
-	EmptyTestSet(common, name_to_handle, Unsupported, "name_to_handle_at or/and open_by_handle_at is/are not supported.")
-#else
-	#if !defined(__NR_name_to_handle_at) || !defined(__NR_open_by_handle_at)
-		EmptyTestSet(common, name_to_handle, Unsupported, "name_to_handle_at or/and open_by_handle_at is/are not supported.")
-	#else
-		#if HAVE_STRUCT_FILE_HANDLE!=1
-		#pragma GCC diagnostic ignored "-pedantic" 
-				struct file_handle {
-					     uint32_t handle_bytes;
-						 int handle_type;
-						 /* file identifier */
-						 unsigned char f_handle[0];
-						 //unsigned char f_handle[1];
-					};
-		#pragma GCC diagnostic warning "-pedantic" 
-		#endif
-	</GlobalHeader>
 	<Requires>unistd.h</Requires>
 	<Requires>sys/syscall.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>stdio.h</Requires>
 	<Requires>stdlib.h</Requires>
+	<GlobalHeader>
+	/* 
+	 * Define struct file_handle if it is not defined in <unistd.h>.
+	 *
+	 */
+	#if ! HAVE_STRUCT_FILE_HANDLE
+	struct file_handle {
+		 uint32_t handle_bytes;
+		 int handle_type;
+		 /* 
+		  * file identifier 
+		  *
+		  * Use trailing array with length 1 because gcc complains
+		  * zeroth length arrays with 'pedantic' diagnostic.
+		  */
+		 unsigned char f_handle[1];
+	};
+	#endif
+	</GlobalHeader>
+	<RequiresAll KernelVersion="2.6.39" Condition="defined(__NR_name_to_handle_at) &amp;&amp; defined(__NR_open_by_handle_at)" />
 	<Test Name="NameToHandleNormalForFile" FaultSimulationReady="true" Shallow="true">
 		<Description>name_to_handle_at: Convert name to handle and open_by_handle_at: Open the file handle</Description>
 		<File count="1"/>
@@ -71,7 +69,7 @@
 		</Code>
 	</Test>
 	<Test Name="NameToHandleNormalForDirectory" FaultSimulationReady="true" Shallow="true">
-		<Description>name_to_handle_at: Convert name to handle and open_by_handle_at: Open the file handle</Description>
+		<Description>name_to_handle_at: Convert name to handle and open_by_handle_at: Open the file handle for directory</Description>
 		<Dir count="1"/>
 		<Code>
 			struct file_handle *fh = static_cast<file_handle*>(malloc(sizeof(struct file_handle)));
@@ -90,10 +88,5 @@
 			Fail ( syscall(__NR_open_by_handle_at, AT_FDCWD, fh, 0) == -1, "open_by_handle_at failed");
 		</Code>
 	</Test>
-	<GlobalFooter>
-	#endif
-#endif
-	</GlobalFooter>
 </TestSet>
-
 
