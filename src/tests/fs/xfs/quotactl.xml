@@ -22,18 +22,11 @@
 -->
 
 <TestSet Name="quotactl">
+	<RequiresAll Condition="HAVE_XFS_H &amp;&amp; QUOTA_ENABLED"/>
 	<GlobalHeader>
-#define DO_EXPAND(VAL)  VAL ## 1
-#define EXPAND(VAL)     DO_EXPAND(VAL)
-
-#if EXPAND(HAVE_XFS_H) == 1
-	EmptyTestSet(xfs, quotactl, Unsupported, "XFS header file is not found in the system. Please install the xfslibs-dev package.")
-#elif QUOTA_ENABLED != 1
-	EmptyTestSet(xfs, quotactl, Unsupported, "quota-tools are not installed.")
-#else
+	#include <sys/quota.h>
+	#include <xfs/xqm.h>
 	</GlobalHeader>	
-	<Requires>sys/quota.h</Requires>
-	<Requires>xfs/xqm.h</Requires>
 	<Header>
 // QFMT_VFS_V0 is defined in linux/quota.h. On 64-bit systems this file cannot be included
 // because quotactl is defined in different ways in those files...
@@ -253,8 +246,5 @@
 			
 		</Code>
 	</Test>
-	<GlobalFooter>
-#endif
-	</GlobalFooter>
 </TestSet>
 
