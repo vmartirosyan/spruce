@@ -58,7 +58,7 @@
 			
 			// Allocate space for memory-mapped write
 			lseek (FDs[0], buff.size() + 1, SEEK_SET);
-			write (FDs[0], "", 1); 
+			Unres(write (FDs[0], "", 1) == -1, "Cannot write to file"); 
 			lseek (FDs[0], 0, SEEK_SET);
 			
 			size_t length = buff.size();			
