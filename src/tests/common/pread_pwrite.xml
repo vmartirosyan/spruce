@@ -23,7 +23,7 @@
 -->
 
 <TestSet Name="pread_pwrite">	
-	<Requires>sys/timerfd.h</Requires>
+	<Requires>unistd.h</Requires>
 	<Test Name="PreadPwriteNormal" FaultSimulationReady="true">
 		<Description>Read from or write to a file descriptor at a given offset.</Description>
 		<File count="1"/>
@@ -41,20 +41,6 @@
 			Check ( ReadBuf[0] != WriteBuf[0], "Different values were written and read.");
 		</Code>
 	</Test>
-	<Test Name="PreadBadFile">
-		<Description>pread: Bad file descriptor.</Description>
-		<Code>
-			char buf[10];
-			ErrorTest(pread(-1, buf, 10, 0), -1, EBADF);
-		</Code>
-	</Test>
-	<Test Name="PwriteBadFile">
-		<Description>pwrite: Bad file descriptor.</Description>
-		<Code>
-			char buf[10];
-			ErrorTest(pwrite(-1, buf, 10, 0), -1, EBADF);
-		</Code>
-	</Test>
 	<Test Name="PreadInvalid">
 		<Description>pread: The resulting file offset would be negative.</Description>
 		<File count="1"/>
@@ -69,42 +55,6 @@
 		<Code>
 			char buf[10];
 			ErrorTest(pwrite(FDs[0], buf, 1, -1), -1, EINVAL);
-		</Code>
-	</Test>
-	<Test Name="PreadPipe">
-		<Description>pread: Fd is associated with a pipe, socket, or FIFO.</Description>
-		<Code>
-			int fds[2];
-			
-			Unres(pipe(fds) == -1, "Cannot create pipe.");
-			char buf[10];
-			ErrorTest(pread(fds[0], buf, 10, 1), -1, ESPIPE);
-		</Code>
-	</Test>
-	<Test Name="PwritePipe">
-		<Description>pwrite: Fd is associated with a pipe, socket, or FIFO.</Description>
-		<Code>
-			int fds[2];
-			
-			Unres(pipe(fds) == -1, "Cannot create pipe.");
-			char buf[10];
-			ErrorTest(pwrite(fds[0], buf, 10, 1), -1, ESPIPE);
-		</Code>
-	</Test>
-	<Test Name="PreadBadFile2">
-		<Description>pread: File is not open for reading.</Description>
-		<File count="1" flags="O_CREAT | O_WRONLY"/>
-		<Code>
-			char buf[10];
-			ErrorTest(pread(FDs[0], buf, 10, 0), -1, EBADF);
-		</Code>
-	</Test>
-	<Test Name="PwriteBadFile2">
-		<Description>pwrite: File is not open for writing.</Description>
-		<File count="1" flags="O_CREAT | O_RDONLY"/>
-		<Code>
-			char buf[10];
-			ErrorTest(pwrite(FDs[0], buf, 10, 0), -1, EBADF);
 		</Code>
 	</Test>
 	<Test Name="PreadIsDir">
