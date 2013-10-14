@@ -33,7 +33,7 @@
 			int ret_val;	
 			
 			Fail( ( ret_val = creat(filename, S_IRWXU) ) == -1, 
-				"creat returned error in case of noraml filename.");
+				"creat returned error in case of normal filename.");
 				
 			close(ret_val);
 			unlink(filename);
