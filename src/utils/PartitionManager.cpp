@@ -40,7 +40,6 @@ std::pair<std::string, unsigned long> map_data[] = {
     std::make_pair("noauto", 0),
     std::make_pair("defaults", 0),
     std::make_pair("group", 0),
-    std::make_pair("iversion", 0),
     std::make_pair("noiversion", 0),
     std::make_pair("loud", 0),
     std::make_pair("nofail", 0),
@@ -50,6 +49,7 @@ std::pair<std::string, unsigned long> map_data[] = {
     std::make_pair("owner", 0),
     std::make_pair("users", 0),
     
+    std::make_pair("iversion", MS_I_VERSION),
     std::make_pair("mand", MS_MANDLOCK),
     std::make_pair("dirsync", MS_DIRSYNC),
     std::make_pair("noatime", MS_NOATIME),
@@ -60,7 +60,7 @@ std::pair<std::string, unsigned long> map_data[] = {
     std::make_pair("ro", MS_RDONLY),
     std::make_pair("relatime", MS_RELATIME),
     std::make_pair("remount", MS_REMOUNT),
-    std::make_pair("silent", MS_SILENT),
+    std::make_pair("quiet", MS_SILENT),
     std::make_pair("strictatime", MS_STRICTATIME),
     std::make_pair("sync", MS_SYNCHRONOUS)    
 };
