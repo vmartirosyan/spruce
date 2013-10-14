@@ -32,7 +32,7 @@
 			
 			int ret_val;
 			
-			Fail( ( ret_val = open(filename, O_CREAT, S_IRUSR)) == -1, "open returned error in case of noraml filename.");
+			Fail( ( ret_val = open(filename, O_CREAT, S_IRUSR)) == -1, "open returned error in case of normal filename.");
 			
 			close(ret_val);
 			unlink(filename);
@@ -50,7 +50,7 @@
 			
 			int ret_val;
 			
-			Fail ( ( ret_val = open(filename, O_CREAT | O_DIRECT, S_IRUSR)) == -1, "open returned error in case of noraml filename.");
+			Fail ( ( ret_val = open(filename, O_CREAT | O_DIRECT, S_IRUSR)) == -1, "open returned error in case of normal filename.");
 			
 			close(ret_val);
 			unlink(filename);			
