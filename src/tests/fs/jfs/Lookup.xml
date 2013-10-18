@@ -21,14 +21,10 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="Lookup">	
+<TestSet Name="Lookup" per-mount-options="false">	
 	<Requires>sys/stat.h</Requires>
-	<StartUp>
-			Skip ( !PartitionManager::NoOptionsEnabled(),
-				"These tests should run only when no options are provided." );
-	</StartUp>
-	<Test Name="LookupLink" FaultSimulationReady="true">
-		<Description>Create files mount, unmount and try to open them.</Description>
+	<Test Name="LookupLink">
+		<Description>Create files, umount, mount and try to open them.</Description>
 		<Dir count="1"/>
 		<File count="1"/>
 		<Header>
@@ -72,7 +68,6 @@
 			open(NewFilePath2,O_RDWR);
 	
 			Fail ( stat( NodeName, &st_buf ) == -1, "Error in stat system call");
-			
 		</Code>
 	</Test>
 	<Footer>
