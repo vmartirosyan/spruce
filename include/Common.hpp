@@ -218,6 +218,72 @@ struct FSimInfo
 #define Unsupp(message)\
 	{ Error(message, Unsupported) }
 
+
+/* 
+ * Evaluate given condition by 'nobody' user.
+ * 
+ * If result of evaluation false, return false.
+ * If result of evaluation true, return true and set errno.
+ * 
+ * If problems arised before evaluating of 'cond' terminate test as
+ * Return(Unresolved). Before termination parentFinalize is evaluated
+ * in void context.
+ */
+#define _EvaluateByNobody(cond, parentFinalize) \
+({\
+	bool result;\
+	pid_t pid = fork();\
+	if(pid == 0) \
+	{ \
+		struct passwd * nobody = getpwnam("nobody"); \
+		if(nobody == NULL) \
+		{ \
+			Logger::LogError("Cannot obtain nobody user information."); \
+			exit(1); \
+		} \
+		if(setuid(nobody->pw_uid) == -1) \
+		{ \
+			Logger::LogError("Cannot set the user ID to nobody."); \
+			exit(1); \
+		} \
+		if(cond) \
+		{ \
+			exit(2 + errno); \
+		} \
+		exit(0); \
+	} \
+	else if(pid == -1) \
+	{ \
+		parentFinalize \
+		Logger::LogError("Fork failed."); \
+		Return(Unresolved); \
+	} \
+	int status; \
+	waitpid(pid, &status, 0); \
+	if(!WIFEXITED(status)) \
+	{ \
+		parentFinalize \
+		Logger::LogError("Child is not exited normally."); \
+		Return(Unresolved); \
+	} \
+	int exitStatus = WEXITSTATUS(status); \
+	if(exitStatus == 0) { result = false; } \
+	else if(exitStatus == 1) \
+	{ \
+		parentFinalize \
+		Return(Unresolved); \
+	} \
+	else {result = true; errno = exitStatus - 2; } \
+	result; \
+})
+
+/* Similar to Fail() macro, but 'cond' is evaluated by 'nobody' user. */
+#define FailByNobody(cond, message) Fail(_EvaluateByNobody(cond, {DisableFaultSim();}), message)
+
+/* Similar to Check() macro, but 'cond' is evaluated by 'nobody' user. */
+#define CheckByNobody(cond, message) Check(_EvaluateByNobody(cond, {}), message)
+
+
 #define ELoopTest(func_call, error_val)\
 {\
 	if ( PartitionManager::IsOptionEnabled("ro") )\

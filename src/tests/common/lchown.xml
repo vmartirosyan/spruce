@@ -47,9 +47,9 @@
 			ret = stat(FilePaths[0].c_str(), &mode);
 			Unres( ret == -1, "stat failed: Aborting test.");
 			
-			Check( user_uid != mode.st_uid, "Lchown failed : lchown should chenge file owner from root to nobody but it does not.");
+			Check( user_uid != mode.st_uid, "Lchown failed : lchown should change file owner from root to nobody but it does not.");
 			
-			Check( user_gid != mode.st_gid, "Lchown failed : lchown should chenge group  from root to nobody but it does not.");
+			Check( user_gid != mode.st_gid, "Lchown failed : lchown should change group  from root to nobody but it does not.");
 		</Code>
 	</Test>
 	<Test Name="LchownSymlink" FaultSimulationReady="true">
