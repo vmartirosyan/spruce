@@ -43,9 +43,7 @@
 			
 			Unres( chown( FilePaths[0].c_str(), nobody->pw_uid, nobody->pw_gid ) == -1, "Cannot change file owner to 'nobody'." );
 			
-			Unres ( setuid(nobody->pw_uid) == -1, "Cannot set the user ID to nobody.");
-			
-			Fail ( access(FilePaths[0].c_str(), R_OK) == -1, "Read permission is granted but access returns error.");
+			FailByNobody( access(FilePaths[0].c_str(), R_OK) == -1, "Read permission is granted but access returns error.");
 		</Code>		
 	</Test>
 	<Test Name="AccessWrite" FaultSimulationReady="true">
@@ -69,9 +67,7 @@
 			
 			Unres( chown( FilePaths[0].c_str(), nobody->pw_uid, nobody->pw_gid ) == -1, "Cannot change file owner to 'nobody'." );
 			
-			Unres ( setuid(nobody->pw_uid) == -1, "Cannot set the user ID to nobody.");
-			
-			Fail (access(FilePaths[0].c_str(), W_OK) == -1, "Write permission is granted but access returns error.");
+			FailByNobody (access(FilePaths[0].c_str(), W_OK) == -1, "Write permission is granted but access returns error.");
 		</Code>		
 	</Test>
 	<Test Name="AccessExec" FaultSimulationReady="true">
@@ -98,9 +94,7 @@
 			
 			Unres( chown( FilePaths[0].c_str(), nobody->pw_uid, nobody->pw_gid ) == -1, "Cannot change file owner to 'nobody'." );
 			
-			Unres ( setuid(nobody->pw_uid) == -1, "Cannot set the user ID to nobody.");
-			
-			Fail (access(FilePaths[0].c_str(), X_OK) == -1, "Execution permission is granted but access returns error.");
+			FailByNobody (access(FilePaths[0].c_str(), X_OK) == -1, "Execution permission is granted but access returns error.");
 		</Code>		
 	</Test>
 	<Test Name="AccessFileExists" FaultSimulationReady="true">
