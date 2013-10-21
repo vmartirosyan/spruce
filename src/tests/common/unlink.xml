@@ -47,43 +47,4 @@
 			Check ( access ( FilePaths[0].c_str(), F_OK ) == -1, "Unlink failed. The original file was deleted.");
 		</Code>
 	</Test>
-	<Test Name="UnlinkNameTooLong">
-		<Description>Pathname is too long.</Description>
-		<Code>
-			ENameTooLongTest(unlink(path), -1);
-		</Code>
-	</Test>
-	<Test Name="UnlinkNotDir">
-		<Description>A component used as a directory in pathname is not, in fact, a directory.</Description>
-		<File count="1"/>
-		<Code>
-			ErrorTest(unlink((FilePaths[0] + "/some_file").c_str()), -1, ENOTDIR);
-		</Code>
-	</Test>
-	<Test Name="UnlinkNotExist">
-		<Description>File does not exist.</Description>
-		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
-			ErrorTest(unlink("non_existing_file"), -1, ENOENT);
-		</Code>
-	</Test> 
-	<Test Name="UnlinkIsDir">
-		<Description>Path is a directory.</Description>
-		<Code>
-			ErrorTest(unlink("."), -1, EISDIR);
-		</Code>
-	</Test> 
-	<Test Name="UnlinkEmptyPath">
-		<Description>Path is an empty string.</Description>
-		<Code>
-			ErrorTest(unlink(""), -1, ENOENT);
-		</Code>
-	</Test> 
-	<Test Name="UnlinkNegativeAddress">
-		<Description>Path has a negative address.</Description>
-		<Code>
-			ErrorTest(unlink(reinterpret_cast<char*>(-1)), -1, EFAULT);
-		</Code>
-	</Test>
 </TestSet>
