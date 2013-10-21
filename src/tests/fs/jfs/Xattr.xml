@@ -22,14 +22,7 @@
 //      MA 02110-1301, USA.
 -->
 <TestSet Name="Xattr">
-	<GlobalHeader>
-#define DO_EXPAND(VAL)  VAL ## 1
-#define EXPAND(VAL)     DO_EXPAND(VAL)
-
-#if EXPAND(HAVE_XATTR_H) == 1
-	EmptyTestSet(syscall, xattr, Unsupported, "Extended attributes are not supported by the system.")
-#else
-	</GlobalHeader>
+	<RequiresAll Defined="HAVE_XATTR_H"/>
 	<Requires>attr/xattr.h</Requires>	
 	<Test Name="XattrGetSetALot" FaultSimulationReady="true">
 		<Description>Set and retrieve an extended attribute value.</Description>
@@ -215,7 +208,4 @@
             }
 		</Code>
 	</Test>
-	<GlobalFooter>
-#endif
-	</GlobalFooter>
 </TestSet>

@@ -27,7 +27,7 @@
 #define INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 #define TEST_TIMEOUT ${TEST_TIMEOUT}
 #define FIFO_PATH "${FIFO_PATH}"
-#define HAVE_XATTR_H ${HAVE_XATTR_H}
+#cmakedefine HAVE_XATTR_H
 #define HAVE_STRUCT_FILE_HANDLE ${HAVE_STRUCT_FILE_HANDLE}
 #define HAVE_XFS_H 1 // we provide own version of xfs library
 #define HAVE_MULTILIB ${HAVE_MULTILIB}
