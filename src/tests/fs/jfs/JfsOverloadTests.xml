@@ -21,10 +21,7 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="JfsOverloadTests">
-	<StartUp>
-		Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");		
-	</StartUp>
+<TestSet Name="JfsOverloadTests" per-mount-options="false">
 	<Test Name="Directories" FaultSimulationReady="true">
 		<Description>Trying to create 1000 opened directories</Description>
 		<Dir count = "1000"/>

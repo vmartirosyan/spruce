@@ -37,7 +37,7 @@ isn't covered as mount options are parsed and checked in super.c-->
         <Requires>sys/mount.h</Requires>
         <Requires>sstream</Requires>
         <Requires>JFSCtl.hpp</Requires>
-        <Test Name="RemountResize" FaultSimulationReady="true">
+        <Test Name="RemountResize">
             <Description>Resize.</Description>              
             <Code>
                 int res;

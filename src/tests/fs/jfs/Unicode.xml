@@ -22,21 +22,17 @@
 --> 
 <TestSet Name="Unicode">
 	<Requires>dirent.h</Requires>
-	<StartUp>
-		// Temporary solution. Should be removed as soon as the logic of test execution is changed.		
-		Skip ( !PartitionManager::NoOptionsEnabled()
-		&amp;&amp; !PartitionManager::IsOptionEnabled("-O", true),
-		 "These tests should run only when no options are provided." );
-	</StartUp>
-	<Test Name="NonUnicodeChars">
-		<Description>Try to create and access files with non-unicode names.</Description>
-		<Code>
-			Unres( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem,true) != PS_Success, "Cannot restore partition." );
 
-			Unres( chdir("/") == -1, "Cannot change directory to root." );
-			
-			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot unmount partition." );
-			
+	<Test Name="NonUnicodeChars" mount-oriented="false" use-mkfs="true">
+		<Description>Try to create and access files with non-unicode names.</Description>
+
+		<Header>
+			// Run tests in two mkfs+mount variants: 1) no options at all 2) format with case insencetive names, mount without options.
+			Skip ( !PartitionManager::NoOptionsEnabled() && !PartitionManager::IsOptionEnabled("-O", true),
+			 "These tests should run only when no mount options are provided and mkfs options either empty or '-O'." );
+		</Header>
+
+		<Code>
 			Unres( PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "iocharset=utf8") == false, 
 				"Cannot mount partition with `utf8` iocharset" );
 			
@@ -73,8 +69,5 @@
 			
 			system("ls .");
 		</Code>
-		<Footer>
-			Fatal( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem) != PS_Success, "Cannot restore partition." );
-		</Footer>
 	</Test>
 </TestSet>

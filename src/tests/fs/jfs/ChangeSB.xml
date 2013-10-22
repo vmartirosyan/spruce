@@ -21,14 +21,113 @@
 //      MA 02110-1301, USA.
 -->
 <TestSet Name="ChangeSB" per-mount-options="false" mount-oriented="false">
-    <StartUp>
-        Skip(LINUX_VERSION_CODE &lt; KERNEL_VERSION(3,0,0), "This testset is not supported on kernels which versions are less than 3.0");
-    </StartUp>
     <Requires>dirent.h</Requires>
     <Requires>jfs_filsys.h</Requires>
     <Requires>JFSCtl.hpp</Requires>
     <Requires>sys/syscall.h</Requires>
     <Requires>attr/xattr.h</Requires>    
+
+    <RequiresAll KernelVersion="3.0.0"/>
+
+    <GlobalHeader>
+        bool OverflowStack(string FilePath)
+        {
+            JFSCtl jfs;
+            int inode_num = jfs.GetInodeNum(FilePath);
+            
+            if(PartitionManager::ReleasePartition(MountPoint) == false)
+                return false;
+            
+            dinode * inode = jfs.GetInode(DeviceName, inode_num);
+            if (inode == NULL)
+                return false;
+            
+            // Add too many levels to the xtree
+            
+            inode->di_size = (1 << 30);
+            
+            xtpage_t * page = (xtpage_t*)&inode->di_xtroot;
+            page->header.flag = BT_ROOT | BT_INTERNAL;
+            
+            // Get the xad describing the data block
+            xad x = ((xad*)inode->di_xtroot)[XTENTRYSTART];
+            
+            int64_t addr = addressXAD(&x);
+            
+            XADoffset(&((xad*)inode->di_xtroot)[XTENTRYSTART], 0);
+            
+            xtpage_t internal_page;
+
+            // The page refers to itself.  During lookup it will cause an infinite loop :)
+            memset(&internal_page, 0, sizeof(xtpage_t));
+            XADoffset(&internal_page.xad[XTENTRYSTART], 0);
+            XADaddress(&internal_page.xad[XTENTRYSTART], addr);
+            internal_page.header.nextindex = XTENTRYSTART + 1;
+            internal_page.header.maxentry = XTPAGEMAXSLOT;
+            internal_page.header.flag = BT_INTERNAL;
+            if ( jfs.WriteBlock(DeviceName, &internal_page, addr) == false )
+                return false;
+                                    
+            if ( jfs.SetInode(DeviceName, inode_num, inode) == false )
+                return false;
+            
+            if (PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false )
+                return false;
+            
+            if (chdir(MountPoint) == -1)
+                return false;
+            
+            return true;
+        }
+    
+        bool OverflowStackDT(string FilePath)
+        {
+            JFSCtl jfs;
+            int inode_num = jfs.GetInodeNum(FilePath);
+            
+            if(PartitionManager::ReleasePartition(MountPoint) == false)
+                return false;
+            
+            dinode * inode = jfs.GetInode(DeviceName, inode_num);
+            if (inode == NULL)
+                return false;
+            
+            // Add too many levels to the dtree
+            
+            
+            dtroot_t * page = (dtroot_t*)&inode->di_dtroot;
+            page->header.flag = BT_ROOT | BT_INTERNAL;
+            
+            // Get the dir_table_slot describing the data block
+            dir_table_slot x = ((dir_table_slot*)&inode->di_dirtable)[DTENTRYSTART];
+            
+            int64_t addr = addressDTS(&x);
+            
+            
+            dtpage_t internal_page;
+
+            // The page refers to itself.  During lookup it will cause an infinite loop :)
+            memset(&internal_page, 0, sizeof(dtpage_t));
+            PXDaddress((pxd_t*)&internal_page.slot[DTENTRYSTART], addr);
+            internal_page.header.nextindex = DTENTRYSTART + 1;
+            internal_page.header.maxslot = DTENTRYSTART;
+            internal_page.header.flag = BT_INTERNAL;
+            if ( jfs.WriteBlock(DeviceName, &internal_page, addr) == false )
+                return false;
+                                    
+            if ( jfs.SetInode(DeviceName, inode_num, inode) == false )
+                return false;
+            
+            if (PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false )
+                return false;
+            
+            if (chdir(MountPoint) == -1)
+                return false;
+            
+            return true;
+        }
+    </GlobalHeader>
+
     <Test Name="JFS_DIR_INDEX" use-mkfs="true">
         <Description>Unset JFS_DIR_INDEX flag and read a directory.</Description>
         <Code>
@@ -2139,102 +2238,4 @@
             close(fd);
         </Footer>
     </Test>
-    <Internal>
-        bool OverflowStack(string FilePath)
-        {
-            JFSCtl jfs;
-            int inode_num = jfs.GetInodeNum(FilePath);
-            
-            if(PartitionManager::ReleasePartition(MountPoint) == false)
-                return false;
-            
-            dinode * inode = jfs.GetInode(DeviceName, inode_num);
-            if (inode == NULL)
-                return false;
-            
-            // Add too many levels to the xtree
-            
-            inode->di_size = (1 << 30);
-            
-            xtpage_t * page = (xtpage_t*)&inode->di_xtroot;
-            page->header.flag = BT_ROOT | BT_INTERNAL;
-            
-            // Get the xad describing the data block
-            xad x = ((xad*)inode->di_xtroot)[XTENTRYSTART];
-            
-            int64_t addr = addressXAD(&x);
-            
-            XADoffset(&((xad*)inode->di_xtroot)[XTENTRYSTART], 0);
-            
-            xtpage_t internal_page;
-
-            // The page refers to itself.  During lookup it will cause an infinite loop :)
-            memset(&internal_page, 0, sizeof(xtpage_t));
-            XADoffset(&internal_page.xad[XTENTRYSTART], 0);
-            XADaddress(&internal_page.xad[XTENTRYSTART], addr);
-            internal_page.header.nextindex = XTENTRYSTART + 1;
-            internal_page.header.maxentry = XTPAGEMAXSLOT;
-            internal_page.header.flag = BT_INTERNAL;
-            if ( jfs.WriteBlock(DeviceName, &internal_page, addr) == false )
-                return false;
-                                    
-            if ( jfs.SetInode(DeviceName, inode_num, inode) == false )
-                return false;
-            
-            if (PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false )
-                return false;
-            
-            if (chdir(MountPoint) == -1)
-                return false;
-            
-            return true;
-        }
-    
-        bool OverflowStackDT(string FilePath)
-        {
-            JFSCtl jfs;
-            int inode_num = jfs.GetInodeNum(FilePath);
-            
-            if(PartitionManager::ReleasePartition(MountPoint) == false)
-                return false;
-            
-            dinode * inode = jfs.GetInode(DeviceName, inode_num);
-            if (inode == NULL)
-                return false;
-            
-            // Add too many levels to the dtree
-            
-            
-            dtroot_t * page = (dtroot_t*)&inode->di_dtroot;
-            page->header.flag = BT_ROOT | BT_INTERNAL;
-            
-            // Get the dir_table_slot describing the data block
-            dir_table_slot x = ((dir_table_slot*)&inode->di_dirtable)[DTENTRYSTART];
-            
-            int64_t addr = addressDTS(&x);
-            
-            
-            dtpage_t internal_page;
-
-            // The page refers to itself.  During lookup it will cause an infinite loop :)
-            memset(&internal_page, 0, sizeof(dtpage_t));
-            PXDaddress((pxd_t*)&internal_page.slot[DTENTRYSTART], addr);
-            internal_page.header.nextindex = DTENTRYSTART + 1;
-            internal_page.header.maxslot = DTENTRYSTART;
-            internal_page.header.flag = BT_INTERNAL;
-            if ( jfs.WriteBlock(DeviceName, &internal_page, addr) == false )
-                return false;
-                                    
-            if ( jfs.SetInode(DeviceName, inode_num, inode) == false )
-                return false;
-            
-            if (PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false )
-                return false;
-            
-            if (chdir(MountPoint) == -1)
-                return false;
-            
-            return true;
-        }
-    </Internal>
 </TestSet>
