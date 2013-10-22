@@ -40,6 +40,32 @@
 #define cmd_on (PartitionManager::IsUserQuotaEnabled() ? QCMD(Q_QUOTAON, USRQUOTA) : QCMD(Q_QUOTAON, GRPQUOTA))
 #define cmd_off (PartitionManager::IsUserQuotaEnabled() ? QCMD(Q_QUOTAOFF, USRQUOTA) : QCMD(Q_QUOTAOFF, GRPQUOTA))
 #define QuotaFile (string(MountPoint) + (PartitionManager::IsUserQuotaEnabled() ? "/aquota.user" : "/aquota.group"))
+
+bool Prepare(void)
+{
+	UnixCommand* quotacheck;
+	ProcessResult * res;
+	vector<string> args;
+	
+	// Create the quota files
+	quotacheck = new UnixCommand(QUOTACHECK_PATH);
+	
+	args.push_back("-c");
+	args.push_back("-u");
+	args.push_back("-g");
+	//args.push_back("-F");
+	args.push_back(MountPoint);
+	
+	res = quotacheck->Execute(args);
+	delete quotacheck;
+	if( res == NULL || res->GetStatus() != Success)
+	{
+		Error("Cannot execute 'quotacheck' command to create the quota file.\n" + res->GetOutput() );
+		return false;
+	}
+	
+	return true;
+}
 	</GlobalHeader>
 	
 	<Header>
@@ -48,33 +74,6 @@
 	if ( !PartitionManager::IsUserQuotaEnabled() && !PartitionManager::IsGroupQuotaEnabled())
 		Unsupp("quota mount option is not provided.");
 	</Header>
-	<Internal>
-		bool Prepare(void)
-		{
-			UnixCommand* quotacheck;
-			ProcessResult * res;
-			vector<string> args;
-			
-			// Create the quota files
-			quotacheck = new UnixCommand(QUOTACHECK_PATH);
-			
-			args.push_back("-c");
-			args.push_back("-u");
-			args.push_back("-g");
-			//args.push_back("-F");
-			args.push_back(MountPoint);
-			
-			res = quotacheck->Execute(args);
-			delete quotacheck;
-			if( res == NULL || res->GetStatus() != Success)
-			{
-				Error("Cannot execute 'quotacheck' command to create the quota file.\n" + res->GetOutput() );
-				return false;
-			}
-			
-			return true;
-		}
-	</Internal>
 	<Test Name="QuotactlQuotaOnOff" FaultSimulationReady="true">
 		<Description>Turn on and off quotas for a file system.</Description>		
 		<Code>

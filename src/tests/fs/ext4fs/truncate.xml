@@ -25,7 +25,7 @@
 	<StartUp>
 		Skip ( !PartitionManager::NoOptionsEnabled()
 				&amp;&amp; !PartitionManager::IsOptionEnabled("-t ext2", true),
-			"These tests should run only when no options are provided." );
+			"These tests should run only when no options are provided or when formatted for ext2." );
 	</StartUp>
 	<Test Name="TruncateNormalIncreaseALot" FaultSimulationReady="true">
 		<Description>Truncate a file to a great size and then back to initial.</Description>

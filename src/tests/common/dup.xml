@@ -26,7 +26,7 @@
 	<Requires>unistd.h</Requires>
 	<Requires>fcntl.h</Requires>
 	<Requires>linux/kdev_t.h</Requires>
-	<Internal>
+	<GlobalHeader>
 		bool statsEqual(struct stat stat1, struct stat stat2)
 		{	
 			//dev_t st_dev
@@ -129,7 +129,7 @@
 			
 			return true;
 		}	
-	</Internal>
+	</GlobalHeader>
 	<Test Name="DupNormal" FaultSimulationReady="true">
 		<Description>dup() duplicates a file descriptor</Description>
 		<File count="1"/>

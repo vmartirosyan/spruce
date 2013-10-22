@@ -83,16 +83,15 @@ using std::string;
 #else
     </xsl:if>
 
-    <xsl:value-of select="GlobalHeader"/>
-
-
 extern char * DeviceName;
 extern char * MountPoint;
 extern char * FileSystem;
 
 extern bool terminate_process;
 
-    <xsl:variable name="TestSetName" select="@Name" />
+<xsl:value-of select="GlobalHeader"/>
+
+<xsl:variable name="TestSetName" select="@Name" />
     
 <xsl:value-of select="/TestSet/Internal"/>
     

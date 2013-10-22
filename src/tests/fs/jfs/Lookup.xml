@@ -69,8 +69,8 @@
 	
 			Fail ( stat( NodeName, &st_buf ) == -1, "Error in stat system call");
 		</Code>
+		<Footer>
+				unlink(NodeName);
+		</Footer>
 	</Test>
-	<Footer>
-			unlink(NodeName);
-	</Footer>
 </TestSet>
