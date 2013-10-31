@@ -171,6 +171,30 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
 
     try
     {
+        <xsl:if test="Dev">
+        const int DevCount = <xsl:choose><xsl:when test="count"><xsl:value-of select="@count"/></xsl:when><xsl:otherwise>1</xsl:otherwise></xsl:choose>;
+        string DevPaths[DevCount];
+        {
+            <!-- Check that additional devices are available and prepare them for use. -->
+            if(KedrIntegrator::DoesModuleExist("brd"))
+            {
+                Unsupp_direct("To run this test rebuild the kernel with CONFIG_BLK_DEV_RAM:=y configuration option.");
+            }
+            UnixCommand modprobe("modprobe");
+                        
+            vector&lt;string&gt; args(1, "brd");
+            ProcessResult * res = modprobe.Execute(args);
+            Unres_direct(res->GetStatus() != Success, "Cannot load \"brd\" module into kernel: " + res->GetOutput() );
+            delete res;
+        }
+        for(int i = 0; i &lt; DevCount; i++)
+        {
+            ostringstream devname;
+            
+            devname &lt;&lt; "/dev/ram" &lt;&lt; i;
+            DevPaths[i] = devname.str();
+        }
+        </xsl:if>
         string DirPrefix = "<xsl:value-of select="$TestSetName" />_<xsl:value-of select="@Name"/>_dir_";
         string FilePrefix = "<xsl:value-of select="$TestSetName" />_<xsl:value-of select="@Name"/>_file_";
         <xsl:if test="Dir">
@@ -190,8 +214,7 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
         Directory DirDirs[DirDirCount];
         int DirDDs[DirDirCount];
         </xsl:if>
-        
-        
+
         for ( int i = 0 ; i &lt; DirCount; ++i )
         {
             const int size = 10;
@@ -239,8 +262,6 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
         </xsl:if>
         
         </xsl:if>
-        
-        
         <xsl:if test="File">
         const int FileCount = <xsl:value-of select="File/@count"/>;
         int FileFlags = <xsl:choose><xsl:when test="File/@flags != ''"><xsl:value-of select="File/@flags"/></xsl:when><xsl:otherwise>O_CREAT | O_RDWR</xsl:otherwise></xsl:choose>;

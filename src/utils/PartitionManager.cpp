@@ -260,7 +260,6 @@ retry:
 
 bool PartitionManager::Mount(string DeviceName,string MountPoint,string FileSystem,string Options, unsigned long Flags)
 {			
-	
 	if ( Options[Options.length() - 1] == ',' )
 		Options.erase(Options.begin() + Options.length() - 1);
 	

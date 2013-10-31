@@ -481,7 +481,7 @@ public:
 		return (((string)buf).find(LastFaultMsgNone) == string::npos);
 	}
 	
-	static void DoesModuleExist(string module)
+	static bool DoesModuleExist(string module)
 	{
 		struct utsname buf;
 		if (uname(&buf) == -1)
@@ -502,9 +502,7 @@ public:
 		string str = res->GetOutput();
 		// Trim
 		str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
-		if (str == "")
-			throw(Exception("Cannot find module " + module + "."));
-		
+		return !str.empty();
 	}
 	
 	
