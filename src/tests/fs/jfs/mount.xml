@@ -194,53 +194,44 @@ isn't covered as mount options are parsed and checked in super.c-->
             </Code>
         </Test>        
         <Test Name="MultipleExternalLogs" per-mount-options="false">
-            <Dev count="4"/>
+            <Dev count="3"/>
             <Description>Create multiple jfs partiotions with external log</Description>
+            <Header>
+                string ExtJournalName = DevPaths[0];
+               
+                string Device1 = DevPaths[1];
+                string ExtJournalName1 = DevPaths[2];
+                const char* MountPoint1 = "/tmp/MultipleExternalLogs_MountPoint1";
+            </Header>
             <Code>
                 //TODO: Process module unloading or remove that unloading
                 //system("rmmod jfs.ko");
                
-                string Device0 = DevPaths[0];
-                string ExtJournalName0 = DevPaths[1];
+                Unres(mkdir(MountPoint1, S_IRUSR | S_IWUSR) == -1 && errno != EEXIST, "Cannot create mount directory for second filesystem");
                
-                string Device1 = DevPaths[2];
-                string ExtJournalName1 = DevPaths[3];
-               
-                string MountPoint0 = string("/tmp/MultipleExternalLogs_MountPoint0");
-                string MountPoint1 = string("/tmp/MultipleExternalLogs_MountPoint1");
-                Directory dir1(MountPoint0);
-                Directory dir2(MountPoint1);
-               
-                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device0, false, string("-j ") + ExtJournalName0), "Failed to create filesystem")
-                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device1, false, string("-j ") + ExtJournalName1), "Failed to create fs");
+                Unres(!PartitionManager:: CreateFilesystem(FileSystem, DeviceName, false, string("-j ") + ExtJournalName), "Failed to create filesystem");
+                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device1, false, string("-j ") + ExtJournalName1), "Failed to create second filesystem");
                                
-                Unres(mount(Device0.c_str(), MountPoint0.c_str(), FileSystem, 0, "") == -1, "Failed to mount");
-                Unres(mount(Device1.c_str(), MountPoint1.c_str(), FileSystem, 0, "") == -1, "Failed to mount");
-               
-                Unres(umount(MountPoint0.c_str()) == -1, "Failed to release partition");
-                Unres(umount(MountPoint1.c_str()) == -1, "Failed to release partition");
+                Unres(mount(DeviceName, MountPoint, FileSystem, 0, "") == -1, "Failed to mount");
+                Unres(mount(Device1.c_str(), MountPoint1, FileSystem, 0, "") == -1, "Failed to mount second filesystem");
             </Code>
+            <Footer>
+                Fatal(umount(MountPoint1) == -1 && errno != EINVAL, "Failed to release second partition");
+                Fatal(rmdir(MountPoint1) == -1 && errno != EINVAL, "Failed to remove mount directory for second partition");
+            </Footer>
         </Test>
         <Test Name="SingleExternalLog" per-mount-options="false">
-            <Description>Create and mount jfs partiotions with external log</Description>
-            <Dev count="2"/>
+            <Description>Create and mount jfs partiotion with external log</Description>
+            <Dev/>
             <Code>
                 //TODO: Process module unloading or remove that unloading
                 //system("rmmod jfs.ko");
                
-                string Device0 = DevPaths[0];
-                string ExtJournalName0 = DevPaths[1];
+                string ExtJournalName = DevPaths[0];
                               
-                string MountPoint0 = string("/tmp/MultipleExternalLogs_MountPoint0");
-                Directory dir1(MountPoint0);
+                Unres(!PartitionManager:: CreateFilesystem(FileSystem, DeviceName, false, string("-j ") + ExtJournalName), "Failed to create filesystem");
                 
-                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device0, false, string("-j ") + ExtJournalName0), "Failed to create filesystem")
-                
-                EnableFaultSim();
-                mount(Device0.c_str(), MountPoint0.c_str(), FileSystem, 0, "");
-                DisableFaultSim();
-                
-                Unres(!PartitionManager:: ReleasePartition(MountPoint0.c_str()) == -1, "Failed to release partition");
+                Fail(mount(DeviceName, MountPoint, FileSystem, 0, "") == -1, "Mount failed");
             </Code>
         </Test>
 
@@ -248,31 +239,30 @@ isn't covered as mount options are parsed and checked in super.c-->
         <!--Test covers code in jfs/jfs_logmgr.c file-->
         <Test Name="MultiplePartitionsSingleLog" per-mount-options="false">
         <Dangerous/>
-            <Description>Create multiple jfs partiotions with single log</Description>
+            <Description>Create multiple jfs partiotions with single external log</Description>
             <Dev count="2"/>
+            <Header>
+                string ExtJournalName = DevPaths[0];
+               
+                string Device1 = DevPaths[1];
+                const char* MountPoint1 = "/tmp/MultipleExternalLogs_MountPoint1";
+            </Header>
             <Code>
                 //TODO: Process module unloading or remove that unloading
                 //system("rmmod jfs.ko");
                
-                string Device0 = DevPaths[0];
-                string ExtJournalName0 = DevPaths[1];
+                Unres(mkdir(MountPoint1, S_IRUSR | S_IWUSR) == -1 && errno != EEXIST, "Cannot create mount directory for second filesystem");
                
-                string Device1 = DevPaths[2];
-                
-                string MountPoint0 = string("/tmp/MultipleExternalLogs_MountPoint0");
-                string MountPoint1 = string("/tmp/MultipleExternalLogs_MountPoint1");
-                Directory dir1(MountPoint0);
-                Directory dir2(MountPoint1);
-               
-                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device0, false, string("-j ") + ExtJournalName0), "Failed to create filesystem")
-                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device1, false, string("-j ") + ExtJournalName0), "Failed to create filesystem");
+                Unres(!PartitionManager:: CreateFilesystem(FileSystem, DeviceName, false, string("-j ") + ExtJournalName), "Failed to create filesystem")
+                Unres(!PartitionManager:: CreateFilesystem(FileSystem, Device1, false, string("-j ") + ExtJournalName), "Failed to create second filesystem");
                                
-                Unres(mount(Device0.c_str(), MountPoint0.c_str(), FileSystem, 0, "") == -1, "Failed to mount");
-                Unres(mount(Device1.c_str(), MountPoint1.c_str(), FileSystem, 0, "") == -1, "Failed to mount");
-               
-                Unres(umount(MountPoint0.c_str()) == -1, "Failed to release partition");
-                Unres(umount(MountPoint1.c_str()) == -1, "Failed to release partition");
+                Unres(mount(DeviceName, MountPoint, FileSystem, 0, "") == -1, "Failed to mount");
+                Unres(mount(Device1.c_str(), MountPoint1, FileSystem, 0, "") == -1, "Failed to mount second filesystem");
             </Code>
+            <Footer>
+                Fatal(umount(MountPoint1) == -1 && errno != EINVAL, "Failed to release second partition");
+                Fatal(rmdir(MountPoint1) == -1 && errno != EINVAL, "Failed to remove mount directory for second partition");
+            </Footer>
         </Test>
         <Test Name="NoIntegrityOption1" use-mount="true">
             <Description>Mount with no integrity option and remount without it.</Description>

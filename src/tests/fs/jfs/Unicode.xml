@@ -25,7 +25,7 @@
 
 	<StartUp>
 		// Run tests in two mkfs+mount variants: 1) no options at all 2) format with case insencetive names, mount without options.
-		Skip ( !PartitionManager::NoOptionsEnabled() && !PartitionManager::IsOptionEnabled("-O", true),
+		Skip ( !PartitionManager::NoOptionsEnabled() &amp;&amp; !PartitionManager::IsOptionEnabled("-O", true),
 		 "These tests should run only when no mount options are provided and mkfs options either empty or '-O'." );
 	</StartUp>
 
