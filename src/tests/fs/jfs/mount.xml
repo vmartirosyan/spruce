@@ -216,6 +216,8 @@ isn't covered as mount options are parsed and checked in super.c-->
                 Unres(mount(Device1.c_str(), MountPoint1, FileSystem, 0, "") == -1, "Failed to mount second filesystem");
             </Code>
             <Footer>
+                Fatal(umount(MountPoint) == -1 && errno != EINVAL, "Failed to release partition");
+                
                 Fatal(umount(MountPoint1) == -1 && errno != EINVAL, "Failed to release second partition");
                 Fatal(rmdir(MountPoint1) == -1 && errno != EINVAL, "Failed to remove mount directory for second partition");
             </Footer>
@@ -233,6 +235,9 @@ isn't covered as mount options are parsed and checked in super.c-->
                 
                 Fail(mount(DeviceName, MountPoint, FileSystem, 0, "") == -1, "Mount failed");
             </Code>
+            <Footer>
+                Fatal(umount(MountPoint) == -1 && errno != EINVAL, "Failed to release second partition");
+            </Footer>
         </Test>
 
         <!--This test causes fatal error, because of BUG-->
@@ -260,6 +265,8 @@ isn't covered as mount options are parsed and checked in super.c-->
                 Unres(mount(Device1.c_str(), MountPoint1, FileSystem, 0, "") == -1, "Failed to mount second filesystem");
             </Code>
             <Footer>
+                Fatal(umount(MountPoint) == -1 && errno != EINVAL, "Failed to release partition");
+                
                 Fatal(umount(MountPoint1) == -1 && errno != EINVAL, "Failed to release second partition");
                 Fatal(rmdir(MountPoint1) == -1 && errno != EINVAL, "Failed to remove mount directory for second partition");
             </Footer>
