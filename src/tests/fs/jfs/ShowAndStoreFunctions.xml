@@ -28,72 +28,68 @@
         <Requires>pwd.h</Requires>
         <Requires>inttypes.h</Requires>
         <Requires>ext4.hpp</Requires>
-        <Requires>PartitionManager.hpp</Requires>
         <Requires>dirent.h</Requires>
-                
-      
         <Test Name="ProcfsTests">
 			<Description>Read procfs files.</Description>
 			<Code>
-					DIR * dir;
-					string devname = (string)DeviceName;
-					string path = "/proc/fs/jfs/";
-					
-					dir = opendir(path.c_str());
-					if(dir == 0)
-						Unsupp("Cannot open directory");
-					
-					struct dirent *ent;
-					char buf[1024]; 
-					
-					while(true)
+				DIR * dir;
+				string devname = (string)DeviceName;
+				string path = "/proc/fs/jfs/";
+				
+				dir = opendir(path.c_str());
+				if(dir == 0)
+					Unsupp("Cannot open directory");
+				
+				struct dirent *ent;
+				char buf[1024]; 
+				
+				while(true)
+				{
+					errno = 0;
+					ent = readdir(dir);
+					if(ent == 0)
 					{
-						errno = 0;
-						ent = readdir(dir);
-						if(ent == 0)
-						{
-							Unres(errno != 0, "Cannot readdir");
-							break;
-						}
-						if(!strcmp(ent->d_name, ".") 
-							|| !strcmp(ent->d_name, ".") 
-							)
-							continue;							
-						
-						int fd;
-						if((fd = open((path + "/" + ent->d_name).c_str(), O_RDONLY)) == -1)
-						{
-							Logger::LogError("Cannot open file.");
-							continue;
-						}
-						if(read(fd, buf, 1024) == -1)
-						{
-							Logger::LogError( "Cannot read from file");
-							close(fd);
-							continue;
-						} 
-						close(fd);
-						
-						// open for write 
-						if((fd = open((path + "/" + ent->d_name).c_str(), O_WRONLY)) == -1)
-						{
-							Logger::LogError("Can not open file for write " + (string)ent->d_name);
-							continue;
-						}
-						
-						int t = 1024;
-						if(write(fd, &t, sizeof(t)) == -1)
-						{
-							Logger::LogError( "Cannot write to file "  + (string)ent->d_name);
-							close(fd);
-							continue;
-						} 
-						close(fd);
+						Unres(errno != 0, "Cannot readdir");
+						break;
 					}
-					closedir(dir);
+					if(!strcmp(ent->d_name, ".") 
+						|| !strcmp(ent->d_name, ".") 
+						)
+						continue;							
+					
+					int fd;
+					if((fd = open((path + "/" + ent->d_name).c_str(), O_RDONLY)) == -1)
+					{
+						Logger::LogError("Cannot open file.");
+						continue;
+					}
+					if(read(fd, buf, 1024) == -1)
+					{
+						Logger::LogError( "Cannot read from file");
+						close(fd);
+						continue;
+					} 
+					close(fd);
+					
+					// open for write 
+					if((fd = open((path + "/" + ent->d_name).c_str(), O_WRONLY)) == -1)
+					{
+						Logger::LogError("Can not open file for write " + (string)ent->d_name);
+						continue;
+					}
+					
+					int t = 1024;
+					if(write(fd, &t, sizeof(t)) == -1)
+					{
+						Logger::LogError( "Cannot write to file "  + (string)ent->d_name);
+						close(fd);
+						continue;
+					} 
+					close(fd);
+				}
+				closedir(dir);
 			</Code>
         </Test>
-
         <Test Name="SetLoglevel">
 			<Description>Write to loglevel file.</Description>
 			<Code>
@@ -114,5 +110,4 @@
 				close(fd);
 			</Code>
         </Test>
-
 </TestSet>
