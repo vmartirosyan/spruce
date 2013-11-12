@@ -21,8 +21,21 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="WriteDirect">	
-	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
+<TestSet Name="WriteDirect">
+	<GlobalHeader>
+		/* 
+		 * Return minimal address p1 >= p, which is aligned on 'value'.
+		 *
+		 * The maximum value of difference (p1 - p) is (value - 1).
+		 */
+		static void* align_address(void *p, int value)
+		{
+			unsigned long addr = (unsigned long)p;
+			unsigned long addr1 = (addr + value - 1) & ~((unsigned long)(value - 1));
+			return (void*)addr1;
+		}
+	</GlobalHeader>
+	<Test Name="ReadWriteDirect">
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
 		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
 		<Code>
@@ -33,12 +46,12 @@
 			BlockSize = sb.s_bsize;
 			AGSize = sb.s_agsize;
 			int size = (AGSize+1)*BlockSize;
-			char* WriteBuf = new char[size];
+			char* WriteBuf = new char[size + BlockSize];
 			// Align to block size
-			char * WriteStart = reinterpret_cast<char*>(((reinterpret_cast<long>(WriteBuf) / BlockSize) + 1) * BlockSize);
+			char * WriteStart = reinterpret_cast<char*>(align_address(WriteBuf, BlockSize));
 			
 			char* ReadBuf = new char[2*BlockSize];
-			char * ReadStart = reinterpret_cast<char*>(((reinterpret_cast<long>(ReadBuf) / BlockSize) + 1) * BlockSize);
+			char * ReadStart = reinterpret_cast<char*>(align_address(ReadBuf, BlockSize));
 			
 			Fail ( write(FDs[0], WriteStart, size) == -1, "Cannot write to file.");
 			
@@ -47,7 +60,6 @@
 			Fail( read(FDs[0], ReadStart, BlockSize) == -1, "Cannot read from file.");
 			
 			Check( ReadStart[0] != WriteStart[0], "Different values were written and read.");
-
 		</Code>
 	</Test>
 	<Test Name="dbAllocNext" FaultSimulationReady="true">
@@ -62,9 +74,9 @@
 			const int BlockSize = 4096;
 			int size = 250*30*BlockSize;
 			
-			char* WriteBuf = new char[size];
+			char* WriteBuf = new char[size + BlockSize];
 			// Align to block size
-			char * WriteStart = reinterpret_cast<char*>(((reinterpret_cast<long>(WriteBuf) / BlockSize) + 1) * BlockSize);
+			char * WriteStart = reinterpret_cast<char*>(align_address(WriteBuf, BlockSize));
 			
 			Check ( write(f.GetFileDescriptor(), WriteStart, size) == -1, "Cannot write to file.");
 		</Code>
