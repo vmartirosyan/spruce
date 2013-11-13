@@ -22,6 +22,7 @@
 -->
 
 <TestSet Name="WriteDirect">
+	<Requires>jfs_superblock.h</Requires>
 	<GlobalHeader>
 		/* 
 		 * Return minimal address p1 >= p, which is aligned on 'value'.
