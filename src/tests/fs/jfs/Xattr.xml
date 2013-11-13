@@ -27,97 +27,62 @@
 	<Test Name="XattrGetSetALot" FaultSimulationReady="true">
 		<Description>Set and retrieve an extended attribute value.</Description>
 		<File count="1"/>
-		<Code>
+		<Header>
 			const char * AttrName = "user.XattrSetGetTest";
-			char * ValueSet = new char[5000];
-			for(int i = 0;i < 5000;++i)
-			{
-				ValueSet[i] = 'a'; 
-			}		
 			const int ValueLen = 5000;
-			char * ValueGot = new char[5000];
+			char * ValueSet = NULL;
+			char * ValueGot = NULL;
+		</Header>
+		<Code>
+			ValueSet = new char[ValueLen];
+			memset(ValueSet, 'a', ValueLen);
 			
-			if ( removexattr(FilePaths[0].c_str(), AttrName) == -1 && errno != ENOATTR )
-			{
-				if ( errno == ENOTSUP )
-				{
-					Error("Xattrs are not supported.", Unsupported);
-				}
-				Unres(true, "Cannot remove xattr.");
-			}
+			ValueGot = new char[ValueLen];
 			
 			Fail ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
 			
 			Fail ( getxattr(FilePaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
 		</Code>
+		<Footer>
+			delete [] ValueSet;
+			delete [] ValueGot;
+		</Footer>
 	</Test>
 	<Test Name="XattrGetSetEmptyValueUser" FaultSimulationReady="true">
         <Description>Set and retrieve an empty extended attribute value.</Description>
         <File count="1"/>
         <Code>
             const char * AttrName = "user.";
-            const char * ValueSet = 0;   
-            const int ValueLen = 0;
-            char * ValueGot = new char[1];
+
+            Fail ( setxattr(FilePaths[0].c_str(), AttrName, NULL, 0, 0) == -1, "Cannot set xattr.");
            
-            if ( removexattr(FilePaths[0].c_str(), AttrName) == -1 && errno != ENOATTR )
-            {
-                if ( errno == ENOTSUP )
-                {
-                    Error("Xattrs are not supported.", Unsupported);
-                }
-                Unres(true, "Cannot remove xattr.");
-            }
-            Fail ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, 0) == -1, "Cannot set xattr.");
-           
-            Fail ( getxattr(FilePaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");
-           
-            Fail ( strncmp(ValueSet, ValueGot, ValueLen ), static_cast<string>("Different xattr values: ") + ValueSet + " : " + ValueGot );
+            Fail ( getxattr(FilePaths[0].c_str(), AttrName, NULL, 0) != 0, "Cannot get xattr.");
         </Code>
     </Test>
     	<Test Name="XattrGetSetOS2" FaultSimulationReady="true">
 		<Description>Set and retrieve an extended attribute value.</Description>
 		<File count="1"/>
 		<Code>
-			const char * AttrName = "os2.XattrSetGetTest";
-			const char * ValueSet = "asdf";		
-			const int ValueLen = strlen(ValueSet);
-			char * ValueGot = new char[strlen(ValueSet)];
-			
-			if ( removexattr(FilePaths[0].c_str(), AttrName) == -1 && errno != ENOATTR )
-			{
-				if ( errno == ENOTSUP )
-				{
-					Error("Xattrs are not supported.", Unsupported);
-				}
-				Unres(true, "Cannot remove xattr.");
-			}
-			
+			const char * AttrName = "os2.XattrSetGet2Test";
+			const char ValueSet[] = "asdf";		
+			const int ValueLen = sizeof(ValueSet) - 1;
+			char ValueGot[ValueLen];
+
 			Fail ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
 			
 			Fail ( getxattr(FilePaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");
 			
-			Check ( strncmp(ValueSet, ValueGot, ValueLen ), static_cast<string>("Different xattr values: ") + ValueSet + " : " + ValueGot );
-			
+			Check ( memcmp(ValueSet, ValueGot, ValueLen ), static_cast<string>("Different xattr values: ") + ValueSet + " : " + ValueGot );
 		</Code>
 		</Test>
 	<Test Name="XattrListOS2" FaultSimulationReady="true">
 		<Description>List extended attribute names.</Description>
 		<File count="1"/>
 		<Code>
-			const char * AttrName = "os2.XattrSetGetTest";
-			const char * ValueSet = "asdf";
-			const int ValueLen = strlen(ValueSet);			
+			const char * AttrName = "os2.XattrListOS2";
+			const char ValueSet[] = "asdf";
+			const int ValueLen = sizeof(ValueSet) - 1;			
 						
-			if ( removexattr(FilePaths[0].c_str(), AttrName) == -1 && errno != ENOATTR )
-			{
-				if ( errno == ENOTSUP )
-				{					
-					Error("Xattrs are not supported.", Unsupported);
-				}
-				Unres(true, "Cannot remove xattr.");
-			}
-			
 			Unres ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
 			
 			char ValueGot[1000];
@@ -142,70 +107,39 @@
 		<Description>Twice gets and sets user xattr of a directory.</Description>
 		<Dir count="1"/>
 		<Code>
-				const char * AttrName = "user.x";
-			char * ValueSet = new char[50];
-			for(int i = 0;i < 50;++i)
-			{
-				ValueSet[i] = 'a'; 
-			}		
+			const char * AttrName = "user.x";
 			const int ValueLen = 50;
-			char * ValueGot = new char[50];
+
+			char ValueSet[ValueLen];
+			char ValueGot[ValueLen];
 	
-			
+			memset(ValueSet, 'a', ValueLen);
 			Fail ( setxattr(DirPaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
-			
 			Fail ( getxattr(DirPaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
 
-			for(int i = 0;i < 50;++i)
-			{
-				ValueSet[i] = 'b'; 
-			}		
-		
-			
-		
+			memset(ValueSet, 'b', ValueLen);
 			Fail ( setxattr(DirPaths[0].c_str(), "user.y", ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
-			
 			Fail ( getxattr(DirPaths[0].c_str(), "user.y", static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
-				
-			
 		</Code>
 	</Test>
 	<Test Name="XattrReadInline" FaultSimulationReady="true">
 		<Description>Twice gets and sets user xattr of a file.</Description>
 		<File count="1"/>
 		<Code>
-			const char * AttrName = "user.x";
-			char * ValueSet = new char[100];
-			for(int i = 0;i < 100;++i)
-			{
-				ValueSet[i] = 'a'; 
-			}		
+			const char * AttrName1 = "user.x";
+			const char * AttrName2 = "user.y";
 			const int ValueLen = 100;
-			char * ValueGot = new char[100];
+			
+			char ValueSet[ValueLen];
+			char ValueGot[ValueLen];
 	
-			
-			Fail ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
-			
-			Fail ( getxattr(FilePaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
+			memset(ValueSet, 'a', ValueLen);
+			Fail ( setxattr(FilePaths[0].c_str(), AttrName1, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			Fail ( getxattr(FilePaths[0].c_str(), AttrName1, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
 
-			for(int i = 0;i < 100;++i)
-			{
-				ValueSet[i] = 'b'; 
-			}		
-		
-			
-		
-			Fail ( setxattr(FilePaths[0].c_str(), "user.y", ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
-			
-			Fail ( getxattr(FilePaths[0].c_str(), "user.y", static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
-			if ( removexattr(FilePaths[0].c_str(), AttrName) == -1 && errno != ENOATTR )
-            {
-                if ( errno == ENOTSUP )
-                {
-                    Error("Xattrs are not supported.", Unsupported);
-                }
-                Unres(true, "Cannot remove xattr.");
-            }
+			memset(ValueSet, 'b', ValueLen);
+			Fail ( setxattr(FilePaths[0].c_str(), AttrName2, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			Fail ( getxattr(FilePaths[0].c_str(), AttrName2, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
 		</Code>
 	</Test>
 </TestSet>
