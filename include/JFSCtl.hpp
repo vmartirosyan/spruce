@@ -60,7 +60,7 @@ public:
 	void SetInode(int InodeNum, const struct dinode * inode);	
 
 	/* Return inode number for given file. */
-	static int GetInodeNum(string FilePath);
+	static int GetInodeNum(const std::string& FilePath);
 	
 	/* Fill dinomap structure with content of inode map control page. */
 	void GetIAGCP(struct dinomap *);
