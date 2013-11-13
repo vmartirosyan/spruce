@@ -61,7 +61,7 @@ void JFSCtl::WriteBlock(uint64_t block_no, const void * buf, size_t size)
 }
 
 
-int JFSCtl::GetInodeNum(string FilePath)
+int JFSCtl::GetInodeNum(const string& FilePath)
 {
 	struct stat st;
 	if ( stat(FilePath.c_str(), &st) == -1 )
