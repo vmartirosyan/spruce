@@ -145,17 +145,17 @@
 			int length_after_truncate = 5;
 			
 			Unres ( write(fd, buf.c_str(), length) != length, "Cannot write  to the file.");
-			JFSCtl jfs;
+			JFSCtl jfs(DeviceName);
 			int inode_num = jfs.GetInodeNum(FilePath);
 			close(fd);
 			Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
 			
-			dinode * inode = jfs.GetInode(DeviceName, inode_num);
-			Unres(inode == NULL, "Cannot get inode.");
+			dinode inode;
+			jfs.GetInode(inode_num, &inode);
 			
-			xtpage_t * page = (xtpage_t*)&inode->di_xtroot;
+			xtpage_t * page = (xtpage_t*)&inode.di_xtroot;
 			page->header.nextindex = 0;
-			Unres( jfs.SetInode(DeviceName, inode_num, inode) == false, "Setting the inode failed." );
+			jfs.SetInode(inode_num, &inode);
 			
 			Unres (PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Mount failed." );
 	

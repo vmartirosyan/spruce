@@ -31,40 +31,84 @@
 #include <jfs_dmap.h>
 #include <map>
 #include <string>
-using namespace std;
 
 class JFSCtl
 {
 public:
-	JFSCtl();
-	JFSCtl(const JFSCtl&);
-	void * ReadBlock(string DeviceName, uint64_t block_no);
-	bool WriteBlock(string DeviceName, void * buf, uint64_t block_no);
-	struct dinode * GetInode(string DeviceName, string FilePath, bool ReloadFromDisk = false);
-	bool SetInode(string DeviceName, string FilePath, struct dinode * inode);	
-	struct dinode * GetInode(string DeviceName, int InodeNum, bool ReloadFromDisk = false);
-	bool SetInode(string DeviceName, int InodeNum, struct dinode * inode);	
-	struct jfs_superblock * GetSuperBlock(string DeviceName, bool ReloadFromDisk = false);
-	bool SetSuperBlock(string DeviceName, struct jfs_superblock * SuperBlock);
-	int GetInodeNum(string FilePath);
-	struct dinomap * GetIAGCP(string);
-	bool SetIAGCP(string, dinomap*);
-	struct iag * GetIAG(string, int);
-	bool SetIAG(string, int, iag*);
-	struct dinode * GetAggregateInode(string , int);
-	bool SetAggregateInode(string, dinode*, int);
-	bool SetBmap(string, dbmap_disk *);
-	struct dbmap_disk * GetBmap(string);
-	bool SetFirstDmap(string, dmap *);
-	struct dmap * GetFirstDmap(string);
-	bool SetDmapCtl(string, dmapctl *);
-	struct dmapctl * GetDmapCtl(string);
-	JFSCtl& operator=(const JFSCtl&);
+	/* Create object controlled given device. */
+	JFSCtl(const std::string& DeviceName);
+
+	/* 
+	 * Write content of block with given number into user-provided buffer.
+	 * 
+	 * Only 'size' bytes will be written.
+	 */
+	void ReadBlock(uint64_t block_no, void * buf, size_t size);
+	
+	/*
+	 * Write block with given number.
+	 * 
+	 * Only 'size' bytes will be read from buffer, content of other
+	 * 4096-size bytes is unspecified.
+	 */
+	void WriteBlock(uint64_t block_no, const void * buf, size_t size);
+	
+	/* Fill dinode structure with content of inode with given number. */
+	void GetInode(int InodeNum, struct dinode * inode);
+
+	/* Write inode with given number to device. */
+	void SetInode(int InodeNum, const struct dinode * inode);	
+
+	/* Return inode number for given file. */
+	static int GetInodeNum(string FilePath);
+	
+	/* Fill dinomap structure with content of inode map control page. */
+	void GetIAGCP(struct dinomap *);
+	/* Write inode map control page */
+	void SetIAGCP(const struct dinomap *);
+	
+	/* 
+	 * Fill dinomap structure with content of allocation group page
+	 * for inode with given number.
+	 */
+	void GetIAG(int, struct iag *);
+	/* Write allocation group page for given inode. */
+	void SetIAG(int, const struct iag *);
+	
+	/* 
+	 * Fill dinode structure with content of aggregate inode with
+	 * given number.
+	 */
+	void GetAggregateInode(int, struct dinode *);
+	/* Write aggregate inode with given number. */
+	void SetAggregateInode(int, const struct dinode *);
+	
+	/* 
+	 * Fill dbmap_disk structure with content of aggregate disk
+	 * allocation map descriptor.
+	 */
+	void GetBmap(struct dbmap_disk *);
+	/* Write aggregate disk allocation map descriptor. */
+	void SetBmap(const struct dbmap_disk *);
+	
+	/* 
+	 * Fill dmap structure with content of [first?] aggregate disk
+	 * allocation map descriptor.
+	 */
+	void GetFirstDmap(struct dmap *);
+	/* Write [first?] aggregate disk allocation map descriptor. */
+	void SetFirstDmap(const struct dmap *);
+	
+	/* Fill dmapctl structure with content of disk map control page. */
+	void GetDmapCtl(struct dmapctl *);
+	/* Write disk map control page. */
+	void SetDmapCtl(const struct dmapctl *);
+
 private:
-	off64_t LocateInode(string, int);
-	off64_t LocateIAGCP(string);
-	uint64_t LocateFSIAG(string, int);
-	uint64_t LocateBlockMap(string);
-	map<int, struct dinode *> _InodeCache;
-	struct jfs_superblock * _SuperBlock;
+	std::string DeviceName;
+	
+	off64_t LocateInode(int);
+	off64_t LocateIAGCP(void);
+	uint64_t LocateFSIAG(int);
+	uint64_t LocateBlockMap(void);
 };

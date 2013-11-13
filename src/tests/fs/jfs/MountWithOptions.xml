@@ -38,32 +38,31 @@
 	<Test Name="lmLogInitFail1">
 		<Description>Fail lmLogInit because of wrong magic number.</Description>              
 		<Code>
-			JFSCtl jfs;
+			JFSCtl jfs("/dev/ram0");
 			
-			logsuper * sb;
+			logsuper sb;
 			
-			Unres( (sb = (logsuper*)jfs.ReadBlock("/dev/ram0", LOGSUPER_B)) == NULL, "Cannot read log superblock." );
+			jfs.ReadBlock(LOGSUPER_B, &sb, sizeof(sb));
 			
-			sb->magic = 1;
+			sb.magic = 1;
 			
-			Unres( jfs.WriteBlock("/dev/ram0", sb, LOGSUPER_B) == false, "Cannot write log superblock." );
+			jfs.WriteBlock(LOGSUPER_B, &sb, sizeof(sb));
 			
 			Check( mount( DeviceName, MountPoint, FileSystem, 0, 0) == 0, "Mount should fail.");
 		</Code>
 	</Test>
 	<Test Name="lmLogInitFail2">
 		<Description>Fail lmLogInit because of bad state.</Description>              
-		<Header>
-			logsuper * sb;
-		</Header>
 		<Code>
-			JFSCtl jfs;
+			JFSCtl jfs("/dev/ram0");
 			
-			Unres( (sb = (logsuper*)jfs.ReadBlock("/dev/ram0", LOGSUPER_B)) == NULL, "Cannot read log superblock." );
+			logsuper sb;
 			
-			sb->state = LOGREDONE + 1;
+			jfs.ReadBlock(LOGSUPER_B, &sb, sizeof(sb));
 			
-			Unres( jfs.WriteBlock("/dev/ram0", sb, LOGSUPER_B) == false, "Cannot write log superblock." );
+			sb.state = LOGREDONE + 1;
+			
+			jfs.WriteBlock(LOGSUPER_B, &sb, sizeof(sb));
 			
 			Check( mount( DeviceName, MountPoint, FileSystem, 0, 0) == 0, "Mount should fail.");
 		</Code>
@@ -72,15 +71,15 @@
 		<Dangerous/>
 		<Description>Fail lmLogInit because of wrong UUID.</Description>              
 		<Code>
-			JFSCtl jfs;
+			JFSCtl jfs("/dev/ram0");
 			
-			logsuper * sb;
+			logsuper sb;
 			
-			Unres( (sb = (logsuper*)jfs.ReadBlock("/dev/ram0", LOGSUPER_B)) == NULL, "Cannot read log superblock." );
+			jfs.ReadBlock(LOGSUPER_B, &sb, sizeof(sb));
 			
-			memcpy(sb->uuid, "abracadabra12345", 16);
+			memcpy(sb.uuid, "abracadabra12345", 16);
 			
-			Unres( jfs.WriteBlock("/dev/ram0", sb, LOGSUPER_B) == false, "Cannot write log superblock." );
+			jfs.WriteBlock(LOGSUPER_B, &sb, sizeof(sb));
 			
 			Check( mount( DeviceName, MountPoint, FileSystem, 0, 0) == 0, "Mount should fail.");
 		</Code>

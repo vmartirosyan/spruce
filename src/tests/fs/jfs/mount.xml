@@ -60,7 +60,7 @@ isn't covered as mount options are parsed and checked in super.c-->
                 <Description>Resize.</Description>              
                 <Code>
                         int res;
-                        JFSCtl jfs;
+                        JFSCtl jfs(DeviceName);
                         res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
                         if( res!= PS_Success )
                         {
@@ -81,11 +81,12 @@ isn't covered as mount options are parsed and checked in super.c-->
                         Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
                         
                         
-                        iag * iag = jfs.GetIAG(DeviceName, inode_num);
+                        iag iag;
+                        jfs.GetIAG(inode_num, &iag);
+
+                        iag.nfreeexts = EXTSPERIAG;
+                        jfs.SetIAG(inode_num, &iag);
                         
-                        Unres(iag == NULL, "Cannot get IAG.");
-                        iag->nfreeexts = EXTSPERIAG;
-                        Unres(jfs.SetIAG(DeviceName, inode_num, iag) == false, "Cannot set IAG.");    
                         Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
             
                         Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
