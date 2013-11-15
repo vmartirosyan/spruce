@@ -21,7 +21,8 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="mount">	
+<TestSet Name="mount">
+	<Requires>ext4.hpp</Requires>
 	<StartUp>
 		Skip ( !PartitionManager::NoOptionsEnabled(),
 			"These tests should run only when no options are provided." );

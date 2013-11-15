@@ -107,6 +107,23 @@ void ProcessSignalHandler(int signum)
 	
 }
 
+Process::Process():
+	EnableAlarm(false),
+	_Timeout(0),
+	_mode(ProcessForeground)		
+{
+	sigemptyset (&BlockSignalMask);
+}
+
+Process::Process(int timeout):
+	EnableAlarm(true),
+	_Timeout(timeout),
+	_mode(ProcessForeground)
+{
+	sigemptyset (&BlockSignalMask);
+}
+
+
 ProcessResult * Process::Execute(ProcessFunc func, vector<string> args)
 {
 	if ( _mode & ProcessNoCaptureOutput )
