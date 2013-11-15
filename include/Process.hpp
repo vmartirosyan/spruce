@@ -108,21 +108,8 @@ public:
 	
 	int SetBlockSignalMask(int signum) { return sigaddset (&BlockSignalMask, signum);};
 	
-	Process():
-		EnableAlarm(false),
-		_Timeout(0),
-		_mode(ProcessForeground)		
-	{
-		sigemptyset (&BlockSignalMask);
-	}
-	
-	Process(int timeout):
-		EnableAlarm(true),
-		_Timeout(timeout),
-		_mode(ProcessForeground)
-	{
-		sigemptyset (&BlockSignalMask);
-	}
+	Process();
+	Process(int timeout);
 	
 	virtual ~Process() 
 	{
