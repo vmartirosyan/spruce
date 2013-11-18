@@ -24,6 +24,12 @@
 #include <PartitionManager.hpp>
 #include <algorithm>
 
+#include <ext4.hpp>
+#include <jfs_superblock.h>
+#include <ctree.h>
+#include <xfs/xfs_sb.h>
+
+
 using std::merge;
 
 std::pair<std::string, unsigned long> map_data[] = {

@@ -36,6 +36,7 @@
 #include &lt;KedrIntegrator.hpp>
 #include &lt;File.hpp>
 #include &lt;Directory.hpp>
+#include &lt;linux/version.h>
 using std::map;
 using std::string;
 
