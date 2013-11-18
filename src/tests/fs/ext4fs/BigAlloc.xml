@@ -22,6 +22,7 @@
 -->
 
 <TestSet Name="BigAlloc" per-mount-options="false" mount-oriented="false">
+	<Requires>ext4.hpp</Requires>
 	<StartUp>
 			Unres(!PartitionManager::CreateFilesystem(FileSystem, DeviceName, false, string("-O bigalloc")), "Failed to create filesystem with bigalloc mkfs option.");
             Unres( mount(DeviceName, MountPoint, FileSystem, 0, "") == -1, "Failed to mount.");	
