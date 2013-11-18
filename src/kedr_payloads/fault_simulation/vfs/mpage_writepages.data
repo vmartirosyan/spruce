@@ -1,0 +1,18 @@
+[group]
+	# Name and return type of the target function
+	function.name = mpage_writepages
+	returnType = int
+
+	# Names and types of the arguments of the target function
+	arg.type = struct address_space *
+	arg.name = mapping
+
+	arg.type = struct writeback_control *
+	arg.name = wbc
+
+	arg.type = get_block_t *
+	arg.name = get_block
+	
+	# Fault Simulation
+	fpoint.fault_code =	ret_val = -EIO;
+#######################################################################

@@ -1,0 +1,87 @@
+<!--    MountWithOptions.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//      	Vahram Martirosyan <vmartirosyan@gmail.com>
+//
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="MountWithOptions" mount-oriented="false" use-mkfs="true">
+	<Requires>sys/mount.h</Requires>
+	<Requires>JFSCtl.hpp</Requires>
+	<Requires>jfs_logmgr.h</Requires>
+	<Requires>sstream</Requires>
+	<StartUp>
+		Skip ( !PartitionManager::IsOptionEnabled("-j", true), "These tests run only when external log option is enabled." );
+	</StartUp>
+	<Test Name="MountExternalLogs">
+		<Description>Mount the device with external log enabled.</Description>              
+		<Code>
+			Fail( mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed.");
+		</Code>
+	</Test>
+	<Test Name="lmLogInitFail1">
+		<Description>Fail lmLogInit because of wrong magic number.</Description>              
+		<Code>
+			JFSCtl jfs("/dev/ram0");
+			
+			logsuper sb;
+			
+			jfs.ReadBlock(LOGSUPER_B, &sb, sizeof(sb));
+			
+			sb.magic = 1;
+			
+			jfs.WriteBlock(LOGSUPER_B, &sb, sizeof(sb));
+			
+			Check( mount( DeviceName, MountPoint, FileSystem, 0, 0) == 0, "Mount should fail.");
+		</Code>
+	</Test>
+	<Test Name="lmLogInitFail2">
+		<Description>Fail lmLogInit because of bad state.</Description>              
+		<Code>
+			JFSCtl jfs("/dev/ram0");
+			
+			logsuper sb;
+			
+			jfs.ReadBlock(LOGSUPER_B, &sb, sizeof(sb));
+			
+			sb.state = LOGREDONE + 1;
+			
+			jfs.WriteBlock(LOGSUPER_B, &sb, sizeof(sb));
+			
+			Check( mount( DeviceName, MountPoint, FileSystem, 0, 0) == 0, "Mount should fail.");
+		</Code>
+	</Test>
+	<Test Name="lmLogInitFail3">
+		<Dangerous/>
+		<Description>Fail lmLogInit because of wrong UUID.</Description>              
+		<Code>
+			JFSCtl jfs("/dev/ram0");
+			
+			logsuper sb;
+			
+			jfs.ReadBlock(LOGSUPER_B, &sb, sizeof(sb));
+			
+			memcpy(sb.uuid, "abracadabra12345", 16);
+			
+			jfs.WriteBlock(LOGSUPER_B, &sb, sizeof(sb));
+			
+			Check( mount( DeviceName, MountPoint, FileSystem, 0, 0) == 0, "Mount should fail.");
+		</Code>
+	</Test>
+</TestSet>

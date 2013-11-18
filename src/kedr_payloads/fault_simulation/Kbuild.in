@@ -1,0 +1,5 @@
+ccflags-y := -I@KEDR_INSTALL_PREFIX@/include
+
+obj-m := @name@.o
+
+@name@-y := payload.o functions_support.o

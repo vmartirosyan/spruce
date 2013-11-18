@@ -1,0 +1,7 @@
+Check, that test, corresponded to LeakChecker, has 'Failed' status
+in case of leaks detected by KEDR LeakChecker.
+
+For simulate leaks, additional KEDR LeakCheck payload is used for process
+bio_alloc() calls as allocation.
+
+It is assumed that btrfs driver uses that function when new files are created.

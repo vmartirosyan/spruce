@@ -1,0 +1,21 @@
+[group]
+	# Name and return type of the target function
+	function.name = bio_add_page
+	returnType = int
+
+	# Names and types of the arguments of the target function
+	arg.type = struct bio *
+	arg.name = bio
+	
+	arg.type = struct page *
+	arg.name = page
+	
+	arg.type = unsigned int
+	arg.name = len
+	
+	arg.type = unsigned int
+	arg.name = offset
+	
+	# Fault Simulation
+	# TODO: Addition of single page into empty bio always succeed.
+	fpoint.fault_code = ret_val = 0;

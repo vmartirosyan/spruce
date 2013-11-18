@@ -1,0 +1,41 @@
+//      config.hpp.in
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+
+#ifndef PLAFTORM_CONFIG_H
+#define PLATFORM_CONFIG_H
+
+#define OS_32_BITS ${OS_32_BITS}
+#define INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
+#define TEST_TIMEOUT ${TEST_TIMEOUT}
+#define FIFO_PATH "${FIFO_PATH}"
+#cmakedefine HAVE_XATTR_H
+#define HAVE_STRUCT_FILE_HANDLE ${HAVE_STRUCT_FILE_HANDLE}
+#define HAVE_XFS_H 1 // we provide own version of xfs library
+#define HAVE_MULTILIB ${HAVE_MULTILIB}
+#define KEDR_PATH "${KEDR_PATH}"
+#define KEDR_INSTALLED 1 // non-optional at the moment
+#define QUOTA_ENABLED 1 // non-optional at the moment
+#define QUOTACHECK_PATH "${QUOTACHECK_PATH}"
+#define HG_REV "${HG_REV}"
+#define FAULT_SIMULATION_CUSTOM_PAYLOADS "${FAULT_SIMULATION_CUSTOM_PAYLOADS}"
+
+#endif

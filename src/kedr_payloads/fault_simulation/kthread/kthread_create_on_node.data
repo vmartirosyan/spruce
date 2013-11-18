@@ -1,0 +1,37 @@
+[group]
+	# Since 2.6.39
+	# Name and return type of the target function
+	function.name = kthread_create_on_node
+	returnType = struct task_struct *
+
+	# Names and types of the arguments of the target function
+	arg.type = threadfn_t
+	arg.name = threadfn
+	
+	arg.type = void*
+	arg.name = data
+	
+	arg.type = int
+	arg.name = node
+	
+	arg.type = const char*
+	arg.name = namefmt
+	
+	ellipsis = true
+	last_arg = namefmt
+	original_code =>>
+		char* name = kvasprintf(GFP_KERNEL, namefmt, args);
+		if(name)
+		{
+			ret_val = kthread_create_on_node(threadfn, data, node, "%s", name);
+			kfree(name);
+		}
+		else
+		{
+			ret_val = ERR_PTR(-ENOMEM);
+		}
+	<< 
+	
+	# Fault Simulation
+	fpoint.fault_code =	ret_val = ERR_PTR(-ENOMEM);
+#######################################################################

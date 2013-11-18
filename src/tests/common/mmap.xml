@@ -1,0 +1,260 @@
+<!--    mmap.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Ruzanna Karakozova <r.karakozova@gmail.com>			
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="mmap">
+	<Requires>sys/mman.h</Requires>
+	<Requires>sys/user.h</Requires>
+	<Requires>linux/version.h</Requires>
+	<Header>
+/* C++ has stricked type autoconversion, so use ptr-type for MAP_FAILED. */
+#undef MAP_FAILED
+#define MAP_FAILED reinterpret_cast<void*>(-1)
+	</Header>
+	<Test Name="MmapNormal" FaultSimulationReady="true">
+		<Description>map files or devices into memory</Description>
+		<File count="1"/>
+		<Code>
+			const string buff = "abc";
+			Unres(write(FDs[0], buff.c_str(), buff.size()) == -1, "Write failed");
+			
+			size_t length = buff.size();			
+			void * addr;
+			
+			Fail( ( addr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0)) == MAP_FAILED,
+				"mmap() failed.");
+
+			Check(strncmp(buff.c_str(), static_cast<char *>(addr), length),
+				"Mapped content differs from file content");
+			
+			munmap(addr, length);
+		</Code>
+	</Test>
+	<Test Name="MmapWrite" FaultSimulationReady="true">
+		<Description>Try to read and write to memory mapped file.</Description>
+		<File count="1"/>
+		<Code>			
+			const string buff = "abc";
+			char buff2[3];
+			
+			// Allocate space for memory-mapped write
+			lseek (FDs[0], buff.size() + 1, SEEK_SET);
+			Unres(write (FDs[0], "", 1) == -1, "Cannot write to file"); 
+			lseek (FDs[0], 0, SEEK_SET);
+			
+			size_t length = buff.size();			
+			
+			char * addr = NULL;
+			Fail ( (addr = static_cast<char*>(mmap(0, length, PROT_WRITE | PROT_READ, MAP_SHARED, FDs[0], 0))) == MAP_FAILED,
+				"mmap() failed");
+						
+			sprintf(addr, "%s", buff.c_str());
+			munmap(addr, length);
+			
+			Unres( read(FDs[0], buff2, length) == -1, "Cannot read from file." );			
+						
+			Check ( strncmp(buff.c_str(), buff2, length), "Mapped content differs from file content");
+		</Code>
+	</Test>
+	<Test Name="MmapErrInval1">
+		<Description>mmap() with offset no aligned on page boundary</Description>
+		<File count="1"/>
+		<Code>		
+			ErrorTest(mmap(0, 10, PROT_READ, MAP_PRIVATE, FDs[0], 1),
+				MAP_FAILED, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MmapErrInval2">
+		<Description>mmap() with zero length</Description>
+		<Requires KernelVersion="2.6.12"></Requires>
+		<File count="1"/>
+		<Code>		
+			ErrorTest(mmap(0, 0, PROT_READ, MAP_PRIVATE, FDs[0], 0),
+				MAP_FAILED, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MmapErrInval3">
+		<Description>mmap() with both MAP_PRIVATE and MAP_SHARED flags</Description>
+		<Requires KernelVersion="2.6.12"></Requires>
+		<File count="1"/>
+		<Code>		
+			ErrorTest(mmap(0, 10, PROT_READ, MAP_PRIVATE | MAP_SHARED, FDs[0], 0),
+				MAP_FAILED, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MmapErrInval4">
+		<Description>mmap() with neither MAP_PRIVATE nor MAP_SHARED flags specified</Description>
+		<Requires KernelVersion="2.6.12"></Requires>
+		<File count="1"/>
+		<Code>		
+			ErrorTest(mmap(0, 10, PROT_READ, 0, FDs[0], 0),
+				MAP_FAILED, EINVAL);
+		</Code>
+	</Test>
+
+	<Test Name="MmapErrAcces1">
+		<Description>mmap() with MAP_PRIVATE was requested, but fd is not open for reading.</Description>
+		<File count="1" flags="O_WRONLY | O_CREAT" mode="S_IRUSR | S_IWUSR"/>
+		<Code>
+			ErrorTest(mmap(0, 10, PROT_READ, MAP_PRIVATE, FDs[0], 0),
+				MAP_FAILED, EACCES);
+		</Code>
+	</Test>
+
+	<Test Name="MmapErrAcces2">
+		<Description>mmap() with MAP_SHARED was requested and PROT_WRITE is set, but fd is not open in read/write (O_RDWR) mode</Description>
+		<File count="1" flags="O_WRONLY | O_CREAT" mode="S_IRUSR | S_IWUSR"/>
+		<Code>
+			ErrorTest(mmap(0, 10, PROT_WRITE, MAP_SHARED, FDs[0], 0),
+				MAP_FAILED, EACCES);
+		</Code>
+	</Test>
+	<Test Name="MunmapNormal">
+		<Description>munmap files or devices into memory</Description>
+		<File count="1"/>
+		<Code>
+			size_t length = 3;
+		
+			void * addr;
+			Unres( ( addr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
+		
+			Fail (munmap(addr, length) == -1, "munmap() failed");
+		</Code>
+	</Test>
+	<Test Name="MunmapErr1">
+		<Description>munmap() with negative length</Description>
+		<File count="1"/>
+		<Code>
+			void * addr;
+			Unres( (addr = mmap(0, 3, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
+
+			ErrorTest(munmap(addr, -1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MunmapErr2">
+		<Description>munmap() with unaligned address</Description>
+		<File count="1"/>
+		<Code>
+			size_t length = 3;
+			void * addr;
+			Unres( (addr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
+
+			ErrorTest(munmap((void*)((char*)addr + 1), length - 1), -1, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="Mremap">
+		<Description>mremap() a virtual memory address</Description>
+		<File count="1"/>
+		<Code>
+			const string buff(PAGE_SIZE * 2, 'f');
+			Unres(write(FDs[0], buff.c_str(), buff.size()) == -1, "write failed.");
+			
+			size_t oldLength = PAGE_SIZE - 1;
+		
+			void * oldAddr;
+			Unres((oldAddr  = mmap(0, oldLength, PROT_READ, MAP_PRIVATE, FDs[0], 0)) == MAP_FAILED,
+				"mmap() failed");
+			
+			size_t newLength = PAGE_SIZE + 1;
+			
+			void * newAddr;
+			Fail( (newAddr = mremap(oldAddr, oldLength, newLength, MREMAP_MAYMOVE) ) == MAP_FAILED,
+				"mremap() failed");
+			
+			/* 
+			 * It is more interesting when newAddr is differ from oldAddr.
+			 * But no one can garantee that.
+			 *
+			 * Output may be used in futher tests development.
+			 */
+			if(newAddr == oldAddr)
+			{
+				cout << "mremap() didn't move page." << endl;
+			}
+			else
+			{
+				cout << "mremap() moved page." << endl;
+			}
+			Check(strncmp(static_cast<char *>(newAddr), buff.c_str(), newLength),
+				"Remapped content differs from initial content");
+		</Code>
+	</Test>
+	<Test Name="MremapErrInval1">
+		<Description>mremap() with new_address not aligned</Description>
+		<File count="1"/>
+		<Code>
+			size_t length = 3;
+		
+			void * oldAddr;
+			Unres( (oldAddr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
+			
+			ErrorTest(mremap(oldAddr, length, length + 3, MREMAP_MAYMOVE | MREMAP_FIXED, (void*)((char*)oldAddr + 2 * PAGE_SIZE + 1)),
+				MAP_FAILED, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MremapErrInval2">
+		<Description>mremap() with new size equal to zero</Description>
+		<File count="1"/>
+		<Code>
+			size_t length = 3;
+		
+			void * oldAddr;
+			Unres( (oldAddr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
+			
+			ErrorTest(mremap(oldAddr, length, 0, MREMAP_MAYMOVE),
+				MAP_FAILED, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MremapErrInval3">
+		<Description>mremap() with new size negative</Description>
+		<File count="1"/>
+		<Code>
+			size_t length = 3;
+		
+			void * oldAddr;
+			Unres( (oldAddr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
+			
+			ErrorTest(mremap(oldAddr, length, -1, MREMAP_MAYMOVE),
+				MAP_FAILED, EINVAL);
+		</Code>
+	</Test>
+	<Test Name="MremapErrInval4">
+		<Description>mremap() with MREMAP_FIXED but without MREMAP_MAYMOVE</Description>
+		<File count="1"/>
+		<Code>
+			size_t length = 3;
+		
+			void * oldAddr;
+			Unres( (oldAddr = mmap(0, length, PROT_READ, MAP_PRIVATE, FDs[0], 0) ) == MAP_FAILED,
+				"mmap() failed");
+			
+			ErrorTest(mremap(oldAddr, length, length + 3, MREMAP_FIXED),
+				MAP_FAILED, EINVAL);
+		</Code>
+	</Test>
+</TestSet>

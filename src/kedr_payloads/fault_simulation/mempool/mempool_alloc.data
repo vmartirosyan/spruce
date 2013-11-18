@@ -1,0 +1,15 @@
+[group]
+    # Name and return type of the target function
+    function.name = mempool_alloc
+    returnType = void*
+
+    # Names and types of the arguments of the target function
+    arg.type = mempool_t *
+    arg.name = pool
+    
+    arg.type = gfp_t
+    arg.name = mask
+
+	# Fault Simulation
+    # TODO: Function shouldn't fail with GFP_ATOMIC flag.
+	fpoint.fault_code =	ret_val = NULL;

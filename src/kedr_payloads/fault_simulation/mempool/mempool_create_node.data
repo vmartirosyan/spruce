@@ -1,0 +1,27 @@
+[group]
+	# Name and return type of the target function
+	function.name = mempool_create_node
+	returnType = mempool_t *
+
+	# Names and types of the arguments of the target function
+	arg.type = int
+	arg.name = min_nr
+	
+	arg.type = mempool_alloc_t *
+	arg.name = alloc_fn
+	
+	arg.type = mempool_free_t *
+	arg.name = free_fn
+	
+	arg.type = void *
+	arg.name = pool_data
+	
+	# Uncomment following lines on kernels >= 3.6.0
+	#arg.type = gfp_t
+	#arg.name = gfp_mask
+	
+	arg.type = int
+	arg.name = node_id
+	
+	# Fault Simulation
+	fpoint.fault_code =	ret_val = NULL;

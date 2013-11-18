@@ -1,0 +1,133 @@
+<TestSet Name="MoveExtent">
+        <Requires>sys/ioctl.h</Requires>
+        <Requires>linux/fs.h</Requires>
+        <Requires>fcntl.h</Requires>
+        <Requires>ext4.hpp</Requires>   
+        <Requires>pwd.h</Requires>
+        <Requires>linux/version.h</Requires>
+        <Requires>inttypes.h</Requires>
+        <Requires>ext4.hpp</Requires>
+        <Requires>PartitionManager.hpp</Requires>
+
+		<StartUp>
+			Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");		
+		</StartUp>
+		
+        <Test Name="MoveExtent1" FaultSimulationReady="true" Shallow="true">
+                <Description>Move extent.</Description>
+                <File count="2"/>
+                <Code>                       
+                        Unres ( fallocate(FDs[0], 0, 0, 32000*2*4096), "Cannot allocate space for donor file.");
+                        
+                        Unres ( fallocate(FDs[1], 0, 0, 32000*2*4096), "Cannot allocate space for original file.");
+                                                
+                        struct move_extent me;
+                        memset(&me, 0, sizeof(me));
+                        me.donor_fd = FDs[0];
+                        me.orig_start = 0;
+                        me.donor_start = 0;
+                        me.len = 2;
+                        me.moved_len = 0;                        
+                        
+                        Fail ( ioctl(FDs[1], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
+                </Code>
+        </Test>
+        
+        <Test Name="MoveExtent2" FaultSimulationReady="true" Shallow="true">
+                <Description>Move extent new.</Description>
+                <File count="2"/>
+                <Code>                       
+                        Unres ( fallocate(FDs[0], 0, 0, 32000*4096), "Cannot allocate space for donor file.");
+                        
+                        Unres ( fallocate(FDs[1], 0, 0, 32000*4096), "Cannot allocate space for original file.");
+                        
+                        
+                        struct move_extent me;                       
+                        memset(&me, 0, sizeof(me));
+                        me.donor_fd = FDs[0];
+                        me.orig_start = 32000-1;
+                        me.donor_start = 32000-1;
+                        me.len = 1;
+                        me.moved_len = 0;                   
+                        
+                        Fail ( ioctl(FDs[1], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
+                </Code>
+        </Test>
+        
+
+        <Test Name="MoveExtent3" FaultSimulationReady="true" Shallow="true">
+                <Description>Move extent new.</Description>
+                <File count="2"/>
+                <Code>                       
+                        Unres ( fallocate(FDs[0], 0, 0, 10000*4096), "Cannot allocate space for donor file.");
+                        
+                        Unres ( fallocate(FDs[1], 0, 0, 10000*4096), "Cannot allocate space for original file.");
+                        
+                        
+                        struct move_extent me;                       
+                        memset(&me, 0, sizeof(me));
+                        me.donor_fd = FDs[1];
+                        me.orig_start = 5000;
+                        me.donor_start = 5000;
+                        me.len = 5000;
+                        me.moved_len = 0;                   
+                        
+                        Check ( ioctl(FDs[0], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
+                </Code>
+        </Test>
+        
+        
+        <Test Name="MoveExtent4" FaultSimulationReady="true" Shallow="true">
+                <Description>Move big extent.</Description>
+                <File count="2"/>
+                <Code>                       
+                        char *buf = new char[1024*1024];
+						memcpy(buf, "asdfg", 5);
+							
+						for (int i = 0 ; i < 60000; ++i)
+						{
+							Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+							Unres(write(FDs[0], buf, 1) == -1, "Write failed.");
+							Unres(lseek64(FDs[1], 10000, SEEK_CUR) == -1, "Lseek failed.");
+							Unres(write(FDs[1], buf, 1) == -1, "Write failed.");
+													
+						}
+						sync();
+						
+						Unres(lseek64(FDs[0], 5000, SEEK_SET) == -1, "Lseek failed.");
+						
+						for (int i = 0; i < 5000; ++i)
+						{
+							Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed");
+							Unres(write(FDs[0], buf, 1) == -1, "Write failed");
+							Unres(lseek64(FDs[1], 10000, SEEK_CUR) == -1, "Lseek failed");
+							Unres(write(FDs[1], buf, 1) == -1, "Write failed");
+						}		
+						sync();
+						
+						Unres(lseek64(FDs[0], 0, SEEK_SET) == -1, "Lseek failed.");
+						for (int i = 0; i < 1000; ++i)
+						{
+							Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed");
+							Unres(write(FDs[0], buf, 1) == -1, "Write failed");
+							Unres(lseek64(FDs[1], 10000, SEEK_CUR) == -1, "Lseek failed");
+							Unres(write(FDs[1], buf, 1) == -1, "Write failed");
+						}		
+						sync();
+									
+						delete buf;
+                        
+                        
+                        struct move_extent me;                       
+                        memset(&me, 0, sizeof(me));
+                        me.donor_fd = FDs[0];
+                        me.orig_start = 5000;
+                        me.donor_start = 5000;
+                        me.len = 5000;
+                        me.moved_len = 0;                   
+                        
+                        Check ( ioctl(FDs[1], EXT4_IOC_MOVE_EXT, &me) == -1 , "Error moving extent.");
+                </Code>
+        </Test>
+</TestSet>
+
