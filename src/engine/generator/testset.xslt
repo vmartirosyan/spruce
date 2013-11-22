@@ -122,8 +122,13 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
     </xsl:if>
 
     <xsl:if test="@per-mount-options='false'">
-    Skip_direct ( !PartitionManager::NoOptionsEnabled(), "Test <xsl:value-of select="@Name" /> is executed only when no options are provided.")
+    Skip_direct ( !PartitionManager::NoOptionsEnabled(), "Test <xsl:value-of select="@Name" /> is executed only when no options are provided.");
     </xsl:if>
+
+    <xsl:if test="@driver='private' or @driver='none' or /TestSet/@driver='private'  or /TestSet/@driver='none'">
+    Skip_direct( !KedrIntegrator::DoesModuleExist(FileSystem), "Test is executed only when filesystem driver is compiled as module.");
+    </xsl:if>
+
 
     Test const * obj = dynamic_cast&lt;Test const*>(param);
     // Use the obj to prevent unused variable warning
@@ -149,6 +154,17 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
     if( !PartitionManager::ReleasePartition(MountPoint))
         Fatal_direct ("Failed to umount partition before non-mount-oriented test");
 
+        
+        <xsl:if test="@driver='private' or @driver='none' or /TestSet/@driver='private'  or /TestSet/@driver='none'">
+    if(!KedrIntegrator::UnloadModule(FileSystem))
+        Fatal_direct ("Failed to unload filesystem driver before test.");
+            <xsl:if test="@driver='private' or /TestSet/@driver='private'">
+    if(!system((string("modprobe ") + FileSystem).c_str()))
+        Fatal_direct ("Failed to load filesystem driver before test.");
+
+            </xsl:if>
+        </xsl:if>
+        
         <xsl:if test="@use-mount='true' or /TestSet/@use-mount='true' or @use-mkfs='true' or /TestSet/@use-mkfs='false'">
         <!-- Test use clean formatted device. -->
     if( !PartitionManager::CreateFilesystem(FileSystem, DeviceName, false, getenv("MkfsOpts")))
@@ -304,6 +320,14 @@ Footer:
 
     <xsl:if test="@mount-oriented='false' or /TestSet/@mount-oriented='false'">
     <!-- Test is not a mount-oriented. Restore filesystem after test execution. -->
+        <xsl:if test="@driver='private' or @driver='none' or /TestSet/@driver='private'  or /TestSet/@driver='none'">
+    if(!KedrIntegrator::UnloadModule(FileSystem))
+    {
+        Error ("Failed to unload filesystem driver after test.");
+        _exit(Fatal);
+    }
+        </xsl:if>
+
     if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success )
     {
         Error("Failed to restore partition after non-mount-oriented test");

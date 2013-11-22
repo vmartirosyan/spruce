@@ -414,6 +414,25 @@ public:
 		return true;
 	}
 	
+	static bool IsModuleLoaded(string module)
+	{
+		ifstream modules("/proc/modules");
+		
+		string str;
+		while ( modules.good() )
+		{
+			modules >> str;
+			if (str == module)
+			{
+				modules.close();
+				return true;
+			}
+		}
+		
+		modules.close();
+		return false;
+	}	
+
 	static void ResetLastFaultMsg()
 	{
 		// Clear the last_fault file.
@@ -533,27 +552,6 @@ protected:
 	{
 		return (access(KEDR_PATH, F_OK) == 0);
 	}
-	
-	
-	
-	static bool IsModuleLoaded(string module)
-	{
-		ifstream modules("/proc/modules");
-		
-		string str;
-		while ( modules.good() )
-		{
-			modules >> str;
-			if (str == module)
-			{
-				modules.close();
-				return true;
-			}
-		}
-		
-		modules.close();
-		return false;
-	}	
 	
 	// Loads the common, kmalloc and capable indicators into the kernel
 	static void LoadIndicators()
