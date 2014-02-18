@@ -25,9 +25,10 @@
 <TestSet Name="open">	
 	<Test Name="OpenNormal" FaultSimulationReady="true">
 		<Description>Open and possibly create a file or device.</Description>
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
 			const char * filename = "openNormal.txt";
 			
 			int ret_val;
@@ -40,12 +41,13 @@
 	</Test>
 	<Test Name="OpenDirect" FaultSimulationReady="true">
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
+		<RunIf message="OpenDirect with  mount option  data=journal is not supported.">
+			!PartitionManager::IsOptionEnabled("data=journal")
+		</RunIf>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
-			if ( PartitionManager::IsOptionEnabled("data=journal") )
-				Unsupp("OpenDirect with  mount option  data=journal is not supported.");
-				
 			const char * filename = "openDirect.txt";
 			
 			int ret_val;
@@ -105,9 +107,10 @@
 	</Test>
 	<Test Name="OpenENXIO1">
 		<Description> O_NONBLOCK | O_WRONLY is set, the named file is a  FIFO  and  no process has the file open for reading.</Description>
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
 			const char * FileName = "OpenNoDev_FIFO";
 			Unres( mkfifo(FileName, 0666) == -1, "Cannot create FIFO.");
 			
@@ -116,20 +119,17 @@
 	</Test>
 	<Test Name="OpenENXIO2">
 		<Description>pathname  refers  to  a device special file and no corresponding device exists.</Description>
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
+		<RunIf message="Device files are not supported with 'nodev' mount option.">
+			PartitionManager::IsOptionEnabled("nodev")
+		</RunIf>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
-			if( PartitionManager::IsOptionEnabled("nodev") )
-			{
-				Error("Device files not supported", Unsupported);
-			}
-			else
-			{	
-				const char * FileName = "OpenNoDev_Nod";
-				Unres( mknod(FileName, S_IFCHR, 0666) == -1, "Cannot create device file.");
-				
-				ErrorTest(open( FileName, O_WRONLY ), -1, ENXIO);
-			}
+			const char * FileName = "OpenNoDev_Nod";
+			Unres( mknod(FileName, S_IFCHR, 0666) == -1, "Cannot create device file.");
+			
+			ErrorTest(open( FileName, O_WRONLY ), -1, ENXIO);
 		</Code>
 	</Test>
 </TestSet>

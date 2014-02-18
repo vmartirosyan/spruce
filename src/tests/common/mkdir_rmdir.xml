@@ -28,9 +28,10 @@
 		<Header>
 			const char * path = "MkdirRmdirNormal_dir";
 		</Header>
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
 			const char * path = "MkdirRmdirNormal_dir";
 
 			Fail ( mkdir(path, 0777) != 0, "Failed to create directory");

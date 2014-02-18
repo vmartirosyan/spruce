@@ -73,10 +73,10 @@
 	<Test Name="AccessExec" FaultSimulationReady="true">
 		<Description>access()  checks  whether the calling process can access the file pathname.</Description>
 		<File count="1" mode="0777" />
+		<RunIf message="With 'noexec' mount option 'exec' access always failed.">
+			!PartitionManager::IsOptionEnabled("noexec")
+		</RunIf>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("noexec") )
-				Unsupp("The noexec option is enabled.");
-			
 			struct stat parent_st;
 			
 			Unres ( stat(".", &parent_st) == -1, "Cannot get parent folder stat." );

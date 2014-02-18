@@ -21,12 +21,8 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="Lookup">	
+<TestSet Name="Lookup" per-mount-options="false" mount-oriented="false" use-mount="true">
 	<Requires>sys/stat.h</Requires>
-	<StartUp>
-			Skip ( !PartitionManager::NoOptionsEnabled(),
-				"These tests should run only when no options are provided." );
-	</StartUp>
 	<Test Name="LookupLink" FaultSimulationReady="true">
 		<Description>Create files mount, unmount and try to open them.</Description>
 		<Dir count="1"/>
@@ -54,25 +50,14 @@
 			close(DirDs[0]);
 			Unres ( chdir("/") == -1, "Cannot change directory." );
 			int res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem);
-			if( res!= PS_Success )
-			{
-				if( res == PS_Fatal )
-				{
-					Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
-					Error("Device too small.");
-					Return(Unresolved);
-				}	
-				Unres ( chdir(MountPoint) == -1, "Cannot change directory." );					
-				Error("Partition mount or umount failed");
-				Return(Unresolved);	
-			}
+			Unres( res!= PS_Success,  res == PS_Fatal ? "Device too small" : "Partition mount or umount failed");
+
 			Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
 			
 			open(NewFilePath,O_RDWR);
 			open(NewFilePath2,O_RDWR);
 	
 			Fail ( stat( NodeName, &st_buf ) == -1, "Error in stat system call");
-			
 		</Code>
 	</Test>
 	<Footer>

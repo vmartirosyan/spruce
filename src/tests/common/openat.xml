@@ -88,9 +88,10 @@
 	</Test>
 	<Test Name="OpenAtENXIO1">
 		<Description> O_NONBLOCK | O_WRONLY is set, the named file is a  FIFO  and  no process has the file open for reading.</Description>
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
 			const char * FileName = "OpenAtNoDev_FIFO";
 			Unres( mkfifo(FileName, 0666) == -1, "Cannot create FIFO.");			
 			ErrorTest(openat( AT_FDCWD, FileName, O_WRONLY | O_NONBLOCK ), -1, ENXIO);
@@ -98,20 +99,17 @@
 	</Test>
 	<Test Name="OpenAtENXIO2">
 		<Description>pathname  refers  to  a device special file and no corresponding device exists.</Description>
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
+		<RunIf message="Device files are not supported with 'nodev' mount option.">
+			!PartitionManager::IsOptionEnabled("nodev")
+		</RunIf>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
-			if( PartitionManager::IsOptionEnabled("nodev") )
-			{
-				Error("Device files not supported", Unsupported);
-			}
-			else
-			{
-				const char * FileName = "OpenAtNoDev_Nod";
-				Unres( mknod(FileName, S_IFCHR, 0666) == -1, "Cannot create device file.");
-				
-				ErrorTest(openat( AT_FDCWD, FileName, O_WRONLY ), -1, ENXIO);
-			}
+			const char * FileName = "OpenAtNoDev_Nod";
+			Unres( mknod(FileName, S_IFCHR, 0666) == -1, "Cannot create device file.");
+			
+			ErrorTest(openat( AT_FDCWD, FileName, O_WRONLY ), -1, ENXIO);
 		</Code>
 	</Test>
 </TestSet>

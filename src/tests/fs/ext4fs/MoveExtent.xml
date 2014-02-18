@@ -1,4 +1,4 @@
-<TestSet Name="MoveExtent">
+<TestSet Name="MoveExtent" per-mount-options="false">
         <Requires>sys/ioctl.h</Requires>
         <Requires>linux/fs.h</Requires>
         <Requires>fcntl.h</Requires>
@@ -9,10 +9,6 @@
         <Requires>ext4.hpp</Requires>
         <Requires>PartitionManager.hpp</Requires>
 
-		<StartUp>
-			Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");		
-		</StartUp>
-		
         <Test Name="MoveExtent1" FaultSimulationReady="true" Shallow="true">
                 <Description>Move extent.</Description>
                 <File count="2"/>

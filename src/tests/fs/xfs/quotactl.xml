@@ -27,16 +27,16 @@
 	#include <sys/quota.h>
 	#include <xfs/xqm.h>
 	</GlobalHeader>	
+	<RunIf message="quota mount option is not provided.">
+		!PartitionManager::IsOptionEnabled("noquota") &&
+			( PartitionManager::IsGroupQuotaEnabled() || PartitionManager::IsUserQuotaEnabled() || PartitionManager::IsProjectQuotaEnabled() )
+	</RunIf>
 	<Header>
 // QFMT_VFS_V0 is defined in linux/quota.h. On 64-bit systems this file cannot be included
 // because quotactl is defined in different ways in those files...
 #ifndef QFMT_VFS_V0
 #define QFMT_VFS_V0 2
 #endif	
-			if ( PartitionManager::IsOptionEnabled("noquota") ||
-			( !PartitionManager::IsGroupQuotaEnabled() && !PartitionManager::IsUserQuotaEnabled() && !PartitionManager::IsProjectQuotaEnabled() ))
-				Error("quota mount option is not provided.", Unsupported);
-
 	</Header>
 	<Test Name="QuotactlXQuotaOn" FaultSimulationReady="true">
 		<Description>Turn on quotas for an XFS file system.</Description>		
@@ -211,8 +211,8 @@
 			
 		</Code>
 	</Test>
-	<!-- Must be called after QuotactlXQuotaOff -->
-	<Test Name="QuotactlXQuotaRm" FaultSimulationReady="true" Shallow="true">
+	<!-- Need to be refactored. Must be called after QuotactlXQuotaOff -->
+	<!--Test Name="QuotactlXQuotaRm" FaultSimulationReady="true" Shallow="true">
 		<Description>Free the disk space taken by disk quotas. Quotas must have already been turned off.</Description>
 		<Code>
 			int flag;
@@ -245,6 +245,6 @@
 		//	Fail( quotactl(cmd_rm, DeviceName, 0, reinterpret_cast<caddr_t>( &flag )) == -1, "Cannot remove quotas." );
 			
 		</Code>
-	</Test>
+	</Test-->
 </TestSet>
 

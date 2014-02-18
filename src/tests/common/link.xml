@@ -53,9 +53,10 @@
 	</Test>
 	<Test Name="LinkOldPathIsDirectory">
 		<Description>Oldpath is a directory.</Description>
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
 			ErrorTest(link(".", "some_link"), -1, EPERM);
 		</Code>
 	</Test>

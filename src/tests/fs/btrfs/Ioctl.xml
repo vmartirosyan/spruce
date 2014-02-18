@@ -260,13 +260,13 @@
 
 	<Test Name="DefragFile" Shallow="true">
         <Description>Defragment file.</Description>
+        <RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+        </RunIf>
+        <RunIf message="Test is meaningless when filesystem compression algorithm is 'zlib'">
+			!PartitionManager::IsOptionEnabled("compress=zlib") && !PartitionManager::IsOptionEnabled("compress-force")
+        </RunIf>
         <Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
-				
-			Skip( PartitionManager::IsOptionEnabled("compress=zlib") || PartitionManager::IsOptionEnabled("compress-force"),
-				"The test is meaningless.");
-				
             uint64_t DeviceSize = 0;
             // Get the real free space.
             struct statvfs stat;

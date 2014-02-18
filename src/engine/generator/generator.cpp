@@ -118,23 +118,32 @@ int main(int argc, char ** argv)
 		
 		string contents(read_buf);
 			
-		const int CODE_TAGS_NUM = 5;
-		string code_tags[CODE_TAGS_NUM];		
-		code_tags[0] = "Code";
-		code_tags[1] = "Header";
-		code_tags[2] = "Footer";
-		code_tags[3] = "Internal";
-		code_tags[4] = "GlobalHeader";
+		string code_tags[] =
+		{
+			"Code",
+			"Header",
+			"Footer",
+			"Internal",
+			"GlobalHeader",
+			"RunIf",
+		};
+
+		const int CODE_TAGS_NUM = sizeof(code_tags)/sizeof(code_tags[0]);
+
 		for(int i = 0; i < CODE_TAGS_NUM; i++)
 		{
 			size_t pos1 = 0, pos2;
 			//cerr << "Processing tag " << code_tags[i] << endl;
 			do
 			{
-				pos1 = contents.find("<" + code_tags[i]+ ">", pos1);
+				pos1 = contents.find("<" + code_tags[i], pos1);
 				if ( pos1 == string::npos )
 					break;
-				pos1 += 6;
+				pos1 += 1 + code_tags[i].size();
+				pos1 = contents.find(">", pos1);
+				if ( pos1 == string::npos )
+					break;
+				pos1 ++;
 				pos2 = contents.find("</" + code_tags[i] + ">", pos1);
 				
 				//cout << "pos1 " << pos1 << "\tpos2 " << pos2 << endl;

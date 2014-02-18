@@ -115,15 +115,14 @@
 	</Test>
 	<Test Name="IoctlFIEMAPWithXattrFlag" FaultSimulationReady="true" Shallow="true">
 		<Description>Ioctl FIEMAP test with FIEMAP_FLAG_XATTR flag set.</Description>
+		<RunIf message="FIEMAP_FLAG_XATTR flag is not supported on ext2 and ext3 file systems">
+			!PartitionManager::IsOptionEnabled("-t ext2", true) && !PartitionManager::IsOptionEnabled("-t ext3", true)
+		</RunIf>
+		<RunIf message="Test is not implemented for btrfs filesystem.">
+			strcmp(FileSystem, "btrfs")
+		</RunIf>
 		<File count="1"/>
 		<Code>
-			if(PartitionManager::IsOptionEnabled("-t ext2", true) || PartitionManager::IsOptionEnabled("-t ext3", true))
-			{
-				Unsupp("FIEMAP_FLAG_XATTR flag is not supported on ext2 and ext3 file systems");
-			}
-			
-			Skip(!strcmp(FileSystem, "btrfs"), "Test is not implemented.");
-			
 			struct fiemap arg;
 			memset(&arg, 0, sizeof(arg));
 			arg.fm_length = 1;
@@ -135,10 +134,11 @@
 	</Test>
 	<Test Name="IoctlFIBMAP" FaultSimulationReady="true" Shallow="true">
 		<Description>Ioctl FIBMAP.</Description>
+		<RunIf message="FIBMAP not supported in btrfs.">
+			strcmp(FileSystem, "btrfs")
+		</RunIf>
 		<File count="1"/>
 		<Code>
-			if ( ! strcmp(FileSystem, "btrfs") )
-				Unsupp("FIBMAP not supported in btrfs.");
 			int Block = 1;
 			
 			Fail(ioctl(FDs[0], FIBMAP, &Block) == -1, "FIBMAP operation failed." );

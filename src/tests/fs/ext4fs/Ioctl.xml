@@ -40,21 +40,18 @@
                         Check ( get_flags != set_flags, "Set and Get flags mismatch");
                 </Code>
         </Test>
-         <Test Name="SetAllFlags" FaultSimulationReady="true">              
+         <Test Name="SetAllFlags" FaultSimulationReady="true" per-mount-options="false">
                 <Description>Try to set and get some flag values.</Description>
                 <Dir count="1"/>
-                <Code>   
-                        Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");                  
-                        int set_flags = EXT4_EXTENTS_FL | EXT4_IMMUTABLE_FL | EXT4_SECRM_FL | EXT4_SYNC_FL | EXT4_APPEND_FL | EXT4_NOATIME_FL | EXT4_DIRSYNC_FL;                     
-                        Fail ( ioctl(DirDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
-                     
+                <Code>
+                    int set_flags = EXT4_EXTENTS_FL | EXT4_IMMUTABLE_FL | EXT4_SECRM_FL | EXT4_SYNC_FL | EXT4_APPEND_FL | EXT4_NOATIME_FL | EXT4_DIRSYNC_FL;                     
+                    Fail ( ioctl(DirDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");
                 </Code>
         </Test>
-        <Test Name="SetJournalDataFlag" FaultSimulationReady="true">              
+        <Test Name="SetJournalDataFlag" FaultSimulationReady="true" per-mount-options="false">
                 <Description>Try to set EXT4_JOURNAL_DATA_FL flag.</Description>
                 <Dir count="1"/>
                 <Code>  
-                        Skip(!PartitionManager::NoOptionsEnabled(), "These tests should run only when no options are provided.");        
                         int set_flags = EXT4_EXTENTS_FL | EXT4_JOURNAL_DATA_FL;                     
                         Fail ( ioctl(DirDs[0], EXT4_IOC_SETFLAGS, &set_flags ) == -1, "Error setting new flag values.");                    
                 </Code>
@@ -141,27 +138,14 @@
 #endif
                 </Code>         
         </Test-->
-        <Test Name="GroupExtend" FaultSimulationReady="true">
+        <Test Name="GroupExtend" FaultSimulationReady="true" per-mount-options="false" mount-oriented="false">
                 <Description>Group extend.</Description>
-                <Header>            
-                          Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
-
-                </Header>
                 <Code>
                         int res;
                         ext4_super_block sb;
-                        Unres ( chdir("/") == -1, "Cannot change directory." );
                         res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
-                        if( res!= PS_Success )
-                        {
-                                if( res == PS_Fatal )
-                                {
-                                        Error("Device too small.");
-                                        Return(Unresolved);
-                                }                                               
-                                Error("Partition mount or umount failed");
-                                Return(Unresolved);     
-                        }                       
+                        Unres(res!= PS_Success, (res == PS_Fatal) ? "Device too small." : "Partition mount or umount failed");
+
                         Unres( !PartitionManager::GetSuperBlock(&sb, sizeof(sb)), "Cannot read superblock" );
                         int BlockSize = (1 << (sb.s_log_block_size+10));
                         Unres(!BlockSize, "Block size is zero");
@@ -173,34 +157,14 @@
                         Fail(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks) == -1,
                             "Error during online resize. ");
                 </Code>
-                <Footer>
-                        if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
-                        {
-                                Error("Restoring Partition failed!");
-                                Return(Fatal);
-                        }
-                </Footer>
         </Test>
-        <Test Name="GroupExtendFail" FaultSimulationReady="true" Shallow="true">
+        <Test Name="GroupExtendFail" FaultSimulationReady="true" Shallow="true" per-mount-options="false" mount-oriented="false">
                 <Description>Group extend.</Description>
-				<Header>            
-					  	Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
-
-				</Header>
                 <Code>
                         int res;     
-                        Unres ( chdir("/") == -1, "Cannot change directory." );
                         res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
-                        if( res!= PS_Success )
-                        {
-                                if( res == PS_Fatal )
-                                {
-                                        Error("Device too small.");
-                                        Return(Unresolved);
-                                }                                               
-                                Error("Partition mount or umount failed");
-                                Return(Unresolved);     
-                        }        
+                        Unres(res!= PS_Success, (res == PS_Fatal) ? "Device too small." : "Partition mount or umount failed");
+                        
                         ext4_super_block sb;
 						Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.");
 						Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
@@ -215,37 +179,16 @@
                         int NewPartitionSizeInBlocks = PartitionManager::GetDeviceSize(DeviceName)/BlockSize - 50000;
                         ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks);//will fail
                 </Code>
-                <Footer>
-                        if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
-                        {
-                                Error("Restoring Partition failed!");
-                                Return(Fatal);
-                        }
-                </Footer>
         </Test>
          
-        <Test Name="ResizeFS" FaultSimulationReady="true" Shallow="true">
+        <Test Name="ResizeFS" FaultSimulationReady="true" Shallow="true" per-mount-options="false" mount-oriented="false">
                 <Requires KernelVersion="3.3.0" />
                 <Description>Resize FS.</Description>
-                <Header>            
-                           Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
-
-                </Header>
                 <Code>  
                         int res;
                         ext4_super_block sb;
-                        Unres ( chdir("/") == -1, "Cannot change directory." );
                         res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
-                        if( res!= PS_Success )
-                        {
-                                if( res == PS_Fatal )
-                                {
-                                        Error("Device too small.");
-                                        Return(Unresolved);
-                                }                                               
-                                Error("Partition mount or umount failed");
-                                Return(Unresolved);     
-                        }                       
+                        Unres(res!= PS_Success, (res == PS_Fatal) ? "Device too small." : "Partition mount or umount failed");
                         
                         Unres ( chdir(MountPoint) == -1, "Cannot change directory." );
                         File file("ResizeFSfile");
@@ -273,35 +216,15 @@
                         __u64 BlockCount = DeviceSize / BlockSize;
                         Fail(ioctl(file.GetFileDescriptor(), EXT4_IOC_RESIZE_FS, &BlockCount) == -1, "Resize FS failed");
                 </Code>
-                <Footer>
-                        if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
-                        {
-                                Error("Restoring Partition failed!");
-                                Return(Fatal);
-                        }
-                </Footer>
         </Test>
-         <Test Name="GroupAddDebug" FaultSimulationReady="true" Shallow="true">
-                <Description>Group add.</Description>
-                 <Header>            
-                      	Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
-
-                </Header>
+         <Test Name="GroupAddDebug" FaultSimulationReady="true" Shallow="true" per-mount-options="false" mount-oriented="false">
+                <Description>Group add in debug mode.</Description>
                 <Code>
                         int res;
                         ext4_super_block sb;
-                        Unres ( chdir("/") == -1, "Cannot change directory." );
                         res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
-                        if( res!= PS_Success )
-                        {
-                                if( res == PS_Fatal )
-                                {
-                                        Error("Device too small.");
-                                        Return(Unresolved);
-                                }                                               
-                                Error("Partition mount or umount failed");
-                                Return(Unresolved);     
-                        }                       
+                        Unres(res!= PS_Success, (res == PS_Fatal) ? "Device too small." : "Partition mount or umount failed");
+                        
 						Unres( !PartitionManager::ReleasePartition(MountPoint), "Cannot unmount.");
 						Unres(!PartitionManager::GetSuperBlock(&sb,sizeof(sb)),"Cannot read superblock.");
 						sb.s_default_mount_opts |= EXT4_DEFM_DEBUG;
@@ -340,37 +263,16 @@
                         input.inode_table = blockCount + 3;
                         
                         Check(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input) == -1, "Error adding Group");
-                        
                 </Code>
-                <Footer>
-						if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
-						{
-								Error("Restoring Partition failed!");
-								Return(Fatal);
-						}
-                </Footer>
         </Test>
-        <Test Name="GroupAdd" FaultSimulationReady="true" Shallow="true">
+        <Test Name="GroupAdd" FaultSimulationReady="true" Shallow="true" per-mount-options="false" mount-oriented="false">
                 <Description>Group add.</Description>
-                 <Header>            
-                          Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
-
-                </Header>
                 <Code>
                         int res;
                         ext4_super_block sb;
-                        Unres ( chdir("/") == -1, "Cannot change directory." );
                         res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
-                        if( res!= PS_Success )
-                        {
-                                if( res == PS_Fatal )
-                                {
-                                        Error("Device too small.");
-                                        Return(Unresolved);
-                                }                                               
-                                Error("Partition mount or umount failed");
-                                Return(Unresolved);     
-                        }                       
+                        Unres(res!= PS_Success, (res == PS_Fatal) ? "Device too small." : "Partition mount or umount failed");
+                        
                         Unres( !PartitionManager::GetSuperBlock(&sb, sizeof(sb)), "Cannot read superblock" );
                         int BlockSize = (1 << (sb.s_log_block_size+10));
                         Unres(!BlockSize, "Block size is zero");
@@ -405,38 +307,17 @@
                         input.inode_table = blockCount + 3;
                         
                         Fail(ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input) == -1, "Error adding Group");
-                        
                 </Code>
-                <Footer>
-                        if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
-                        {
-                                Error("Restoring Partition failed!");
-                                Return(Fatal);
-                        }
-                </Footer>
         </Test>
         
-          <Test Name="GroupAdd1" FaultSimulationReady="true" Shallow="true">
-                <Description>Group add.</Description>
-                 <Header>            
-                          Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
-
-                </Header>
+          <Test Name="GroupAdd1" FaultSimulationReady="true" Shallow="true" per-mount-options="false" mount-oriented="false">
+                <Description>Group add(1).</Description>
                 <Code>
                         int res;
                         ext4_super_block sb;
-                        Unres ( chdir("/") == -1, "Cannot change directory." );
                         res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
-                        if( res!= PS_Success )
-                        {
-                                if( res == PS_Fatal )
-                                {
-                                        Error("Device too small.");
-                                        Return(Unresolved);
-                                }                                               
-                                Error("Partition mount or umount failed");
-                                Return(Unresolved);     
-                        }                       
+                        Unres(res!= PS_Success, (res == PS_Fatal) ? "Device too small." : "Partition mount or umount failed");
+                        
                         Unres( !PartitionManager::GetSuperBlock(&sb, sizeof(sb)), "Cannot read superblock" );
                         int BlockSize = (1 << (sb.s_log_block_size+10));
                         Unres(!BlockSize, "Block size is zero");
@@ -480,38 +361,17 @@
                         ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
                         input.inode_table = blockCount + 3;
                         ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
-                       
                 </Code>
-                <Footer>
-                        if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
-                        {
-                                Error("Restoring Partition failed!");
-                                Return(Fatal);
-                        }
-                </Footer>
         </Test>
      
-        <Test Name="GroupAdd2" FaultSimulationReady="true" Shallow="true">
-            <Description>Group add.</Description>
-             <Header>            
-                    Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
-
-            </Header>
+        <Test Name="GroupAdd2" FaultSimulationReady="true" Shallow="true" per-mount-options="false" mount-oriented="false">
+            <Description>Group add(2).</Description>
             <Code>
                     int res;
                     ext4_super_block sb;
-                    Unres ( chdir("/") == -1, "Cannot change directory." );
                     res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
-                    if( res!= PS_Success )
-                    {
-                            if( res == PS_Fatal )
-                            {
-                                    Error("Device too small.");
-                                    Return(Unresolved);
-                            }                                               
-                            Error("Partition mount or umount failed");
-                            Return(Unresolved);     
-                    }                       
+                    Unres(res!= PS_Success, (res == PS_Fatal) ? "Device too small." : "Partition mount or umount failed");
+                    
                     Unres( !PartitionManager::GetSuperBlock(&sb, sizeof(sb)), "Cannot read superblock" );
                     int BlockSize = (1 << (sb.s_log_block_size+10));
                     Unres(!BlockSize, "Block size is zero");
@@ -562,27 +422,14 @@
                     input.inode_bitmap = blockCount + 20;
                     input.inode_table = blockCount + 3;
                     ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
-                   
             </Code>
-            <Footer>
-                    if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem)!= PS_Success )
-                    {
-                            Error("Restoring Partition failed!");
-                            Return(Fatal);
-                    }
-            </Footer>
     </Test>
 
-        <Test Name="Migrate" FaultSimulationReady="true" Shallow="true">
+        <Test Name="Migrate" FaultSimulationReady="true" Shallow="true" per-mount-options="false" mount-oriented="false">
                 <Requires Condition="!defined(COMPAT)"/>
                 <Description>Migrate an Ext3 partition to Ext4</Description>
                 <Header>
                         int _file = -1;
-                    
-                        // Temporary solution. Should be removed as soon as the logic of test execution is changed.             
-                          Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );
-                       
-                        Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!");
                 </Header>
                 <Code>                                 
                         UnixCommand mkfs("mkfs.ext3");
@@ -638,25 +485,17 @@
                 <Footer>
                         if (_file != -1)
                                 close(_file);
-                        if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success )
-                        {
-                                Error("Restore failed!");
-                                _exit(Fatal);
-                        }
                 </Footer>
         </Test>
-        <Test Name="MigrateFile" FaultSimulationReady="true" Shallow="true">
+        <Test Name="MigrateFile" FaultSimulationReady="true" Shallow="true" per-mount-options="false" mount-oriented="false">
             <Requires Condition="!defined(COMPAT)"/>
                 <Description>Migrate a large Ext3 file to Ext4</Description>
                 <Header>
                         int fd = -1;
                         char FilePath[] = "Migrate_file";            
-                        // Temporary solution. Should be removed as soon as the logic of test execution is changed.             
-                          Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );                          
                 </Header>
                 <Code>
                         char *WriteBuf = new char[64000*4096];
-                        Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!"); 
                         UnixCommand mkfs("mkfs.ext3");
                         vector<string> args;
                         args.push_back("-F");
@@ -704,30 +543,21 @@
                         
                         // No meaning in Fail. It just brings to lots of skippings of the test.
                         Check ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
-                        
                 </Code>
                 <Footer>       
                         unlink(FilePath);
                         close(fd);
-                        if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success )
-                        {
-                                Error("Restore failed!");
-                                _exit(Fatal);
-                        }
                 </Footer>
         </Test>
-        <Test Name="MigrateFileWithXattr1" FaultSimulationReady="true" Shallow="true">
+        <Test Name="MigrateFileWithXattr1" FaultSimulationReady="true" Shallow="true" per-mount-options="false" mount-oriented="false">
             <Requires Condition="!defined(COMPAT)"/>
 				<Description>Migrate an Ext3 file with extended attributes to Ext4</Description>
                 <Header>
                         int fd = -1;
                         char FilePath[] = "Migrate_file";            
-                        // Temporary solution. Should be removed as soon as the logic of test execution is changed.             
-                        Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );                          
                 </Header>
                 <Code>
                         char *WriteBuf = new char[4096];  
-                        Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!"); 
                         UnixCommand mkfs("mkfs.ext3");
                         vector<string> args;
                         args.push_back("-F");
@@ -773,30 +603,21 @@
                         Unres( (fd = open(FilePath, O_RDONLY)) == -1, "Cannot open file");
                         
                         Fail ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
-                        
                 </Code>
                 <Footer>       
                         unlink(FilePath);
                         close(fd);
-                        if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success )
-                        {
-                                Error("Restore failed!");
-                                _exit(Fatal);
-                        }
                 </Footer>
         </Test>
-        <Test Name="MigrateFileWithXattr2" FaultSimulationReady="true" Shallow="true">
+        <Test Name="MigrateFileWithXattr2" FaultSimulationReady="true" Shallow="true" per-mount-options="false" mount-oriented="false">
             <Requires Condition="!defined(COMPAT)"/>
 				<Description>Migrate an Ext3 file with extended attributes to Ext4</Description>
                 <Header>
                         int fd = -1;
                         char FilePath[] = "Migrate_file";            
-                        // Temporary solution. Should be removed as soon as the logic of test execution is changed.             
-                          Skip ( !PartitionManager::NoOptionsEnabled(), "Works only with no mount options." );                          
                 </Header>
                 <Code>
                         char *WriteBuf = new char[4096];  
-                        Unres ( !PartitionManager::ReleasePartition(MountPoint) , "Unmount failed!"); 
                         UnixCommand mkfs("mkfs.ext3");
                         vector<string> args;
                         args.push_back("-F");
@@ -842,16 +663,10 @@
                         Unres( (fd = open(FilePath, O_RDONLY)) == -1, "Cannot open file");
                         
                         Fail ( ioctl(fd, EXT4_IOC_MIGRATE, 0) == -1,"Error migrating!" );
-                        
                 </Code>
                 <Footer>       
                         unlink(FilePath);
                         close(fd);
-                        if( PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true)!= PS_Success )
-                        {
-                                Error("Restore failed!");
-                                _exit(Fatal);
-                        }
                 </Footer>
         </Test>
         <Test Name="AllocDABlocks" FaultSimulationReady="true" Shallow="true">

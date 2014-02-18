@@ -125,6 +125,16 @@ int <xsl:value-of select="$PackageName" />_<xsl:value-of select="$TestSetName" /
     Skip_direct ( !PartitionManager::NoOptionsEnabled(), "Test <xsl:value-of select="@Name" /> is executed only when no options are provided.")
     </xsl:if>
 
+    <xsl:for-each select="../RunIf">
+    Skip_direct(!(<xsl:call-template name="trim"><xsl:with-param name="text" select="."/></xsl:call-template>),
+        "<xsl:choose><xsl:when test="@message"><xsl:value-of select="@message"/></xsl:when><xsl:otherwise>Testset is not run in that conditions.</xsl:otherwise></xsl:choose>");
+    </xsl:for-each>
+
+    <xsl:for-each select="RunIf">
+    Skip_direct(!(<xsl:call-template name="trim"><xsl:with-param name="text" select="."/></xsl:call-template>),
+        "<xsl:choose><xsl:when test="@message"><xsl:value-of select="@message"/></xsl:when><xsl:otherwise>Test is not run in that conditions.</xsl:otherwise></xsl:choose>");
+    </xsl:for-each>
+    
     Test const * obj = dynamic_cast&lt;Test const*>(param);
     // Use the obj to prevent unused variable warning
     obj = obj;
@@ -413,6 +423,47 @@ TestSet Init_<xsl:value-of select="$PackageName" />_<xsl:value-of select="/TestS
       <xsl:value-of select="$text"/>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+
+
+
+<xsl:template name="ltrim">
+  <xsl:param name="text"/>
+  <xsl:variable name="spaceChars" select="' &#9;&#10;&#13;'"/>
+  <xsl:variable name="nonWs" select="translate($text, $spaceChars, '')"/>
+  <xsl:if test="$nonWs">
+    <xsl:variable name="firstNonWs" select="substring($nonWs, 1, 1)"/>
+    <xsl:value-of select="concat($firstNonWs, substring-after($text, $firstNonWs))"/>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="rtrim">
+  <xsl:param name="text"/>
+  <xsl:variable name="len" select="string-length($text)"/>
+  <xsl:variable name="lastChar" select="substring($text, $len)"/>
+  <xsl:choose>
+  <xsl:when test="not($lastChar)"/>
+  <xsl:when test="normalize-space($lastChar)">
+    <xsl:value-of select="$text"/>
+  </xsl:when>
+  <xsl:otherwise>
+    <xsl:call-template name="rtrim">
+        <xsl:with-param name="text" select="substring($text, 1, $len - 1)"/>
+    </xsl:call-template>
+  </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+
+<xsl:template name="trim">
+  <xsl:param name="text"/>
+  <xsl:call-template name="rtrim">
+    <xsl:with-param name="text">
+        <xsl:call-template name="ltrim">
+            <xsl:with-param name="text" select="$text"/>
+        </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
 </xsl:template>
 
 

@@ -43,10 +43,9 @@
 	</Test>
 	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
 		<Description>Try  to  minimize cache effects of the I/O to and from this file.</Description>
-		<Header>
-			if ( PartitionManager::IsOptionEnabled("data=journal") )
-				Unsupp("ReadWriteDirect with  mount option  data=journal is not supported.");
-		</Header>
+		<RunIf message="ReadWriteDirect with  mount option  data=journal is not supported.">
+			!PartitionManager::IsOptionEnabled("data=journal")
+		</RunIf>
 		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
 		<Code>				
 			const int BlockSize = 512;

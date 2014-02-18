@@ -26,10 +26,9 @@
 	<Requires>sys/mman.h</Requires>
 	<Test Name="ReadWriteDirect" FaultSimulationReady="true">
 		<Description>Rewrite after seek to the beginning in the O_DIRECT mode</Description>
-		<Header>
-			if ( PartitionManager::IsOptionEnabled("data=journal") )
-				Unsupp("ReadWriteDirect with  mount option  data=journal is not supported.");
-		</Header>
+		<RunIf message="ReadWriteDirect with  mount option 'data=journal' is not supported.">
+			PartitionManager::IsOptionEnabled("data=journal")
+		</RunIf>
 		<File count="1" flags="O_CREAT | O_RDWR | O_DIRECT"/>
 		<Code>
 			const int BlockSize = 512;

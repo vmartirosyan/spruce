@@ -29,11 +29,9 @@
 It seems the part of resize.c refering to invalid block number checks 
 isn't covered as mount options are parsed and checked in super.c-->
 <TestSet Name="mount" mount-oriented="false">
-    <StartUp>
-        Skip ( !PartitionManager::NoOptionsEnabled()
-                &amp;&amp; !PartitionManager::IsOptionEnabled("-j", true),
-            "Testset mount is executed only when no options are provided or with journal enabled." );
-    </StartUp>
+    <RunIf message="Testset 'mount' is executed only when no options are provided or with journal enabled.">
+        PartitionManager::NoOptionsEnabled() || PartitionManager::IsOptionEnabled("-j", true)
+    </RunIf>
         <Requires>sys/mount.h</Requires>
         <Requires>sstream</Requires>
         <Requires>JFSCtl.hpp</Requires>
@@ -42,57 +40,40 @@ isn't covered as mount options are parsed and checked in super.c-->
             <Code>
                 int res;
                 res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
-                if( res!= PS_Success )
-                {
-                    if( res == PS_Fatal )
-                    {
-                        Error("Device too small.");
-                        Return(Unresolved);
-                    }                        
-                    Error("Partition mount or umount failed");
-                    Return(Unresolved);    
-                }
+                Unres( res!= PS_Success,  res == PS_Fatal ? "Device too small" : "Partition mount or umount failed");
                             
                 Fail( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize") == -1, "Mount failed.");                    
             </Code>
         </Test>
         <Test Name="RemountResizeModifyIAG" FaultSimulationReady="true">
-                <Description>Resize.</Description>              
-                <Code>
-                        int res;
-                        JFSCtl jfs(DeviceName);
-                        res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
-                        if( res!= PS_Success )
-                        {
-                            if( res == PS_Fatal )
-                            {
-                                Error("Device too small.");
-                                Return(Unresolved);
-                            }                        
-                            Error("Partition mount or umount failed");
-                            Return(Unresolved);    
-                        }
-                        Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-                        int fd = creat("a",0777);
-                        fsync(fd);
-                        int inode_num = jfs.GetInodeNum("a");
-                        close(fd);
+            <Description>Resize.</Description>              
+            <Code>
+                int res;
+                JFSCtl jfs(DeviceName);
+                res = PartitionManager::RestorePartition(DeviceName, MountPoint, FileSystem, true, true);
+                Unres( res!= PS_Success,  res == PS_Fatal ? "Device too small" : "Partition mount or umount failed");
+                
+                Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+                int fd = creat("a",0777);
+                fsync(fd);
+                int inode_num = jfs.GetInodeNum("a");
+                close(fd);
 
-                        Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
-                        
-                        
-                        iag iag;
-                        jfs.GetIAG(inode_num, &iag);
+                Unres(PartitionManager::ReleasePartition(MountPoint) == false, "Cannot release partition.");
+                
+                
+                iag iag;
+                jfs.GetIAG(inode_num, &iag);
 
-                        iag.nfreeexts = EXTSPERIAG;
-                        jfs.SetIAG(inode_num, &iag);
-                        
-                        Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
-            
-                        Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
-            
-                        mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize");                    
-                </Code>
+                iag.nfreeexts = EXTSPERIAG;
+                jfs.SetIAG(inode_num, &iag);
+                
+                Unres(PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "", 0) == false, "Cannot mount partition back.");
+    
+                Unres(chdir(MountPoint) == -1, "Cannot chdir to mount point.");
+    
+                mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "resize");                    
+            </Code>
         </Test>
         <Test Name="MultipleResize" FaultSimulationReady="true">
 			<Dangerous check="stability" />

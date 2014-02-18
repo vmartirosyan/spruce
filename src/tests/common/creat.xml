@@ -25,9 +25,10 @@
 <TestSet Name="creat">		
 	<Test Name="CreatNormal" FaultSimulationReady="true">
 		<Description>Open and possibly create a file or device.</Description>			
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
 			const char * filename = "creatNormal.txt";
 			
 			int ret_val;	
@@ -47,9 +48,10 @@
 	</Test>
 	<Test Name="CreatMaxProcessFilesOpen">
 		<Description>The process already has the maximum number of files open.</Description>			
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
 			EMaxFilesOpenTest(creat(path, S_IRUSR), -1);
 		</Code>
 	</Test>

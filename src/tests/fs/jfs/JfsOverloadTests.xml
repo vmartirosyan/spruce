@@ -274,14 +274,14 @@
 	
 	<Test Name="TooManySmallWrittenFiles">
 		<Description>Trying to create too many small files, and write the data.</Description>
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
 		<Header>
 			const int dataSize = 1024 - 10;
 			char * data = NULL;
 		</Header>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
-				
 			string filename = "file";
 			data = new char[dataSize];
 			memset(data, 'a', dataSize);

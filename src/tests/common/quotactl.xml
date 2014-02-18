@@ -68,12 +68,12 @@ bool Prepare(void)
 }
 	</GlobalHeader>
 	
-	<Header>
-	if ( ! strcmp(FileSystem, "xfs") )
-		Unsupp("XFS use its own quotactl requests.");	
-	if ( !PartitionManager::IsUserQuotaEnabled() && !PartitionManager::IsGroupQuotaEnabled())
-		Unsupp("quota mount option is not provided.");
-	</Header>
+	<RunIf message="XFS use its own quotactl requests.">
+		strcmp(FileSystem, "xfs")
+	</RunIf>
+	<RunIf message="quota mount option is not provided.">
+		PartitionManager::IsUserQuotaEnabled() || PartitionManager::IsGroupQuotaEnabled()
+	</RunIf>
 	<Test Name="QuotactlQuotaOnOff" FaultSimulationReady="true">
 		<Description>Turn on and off quotas for a file system.</Description>		
 		<Code>

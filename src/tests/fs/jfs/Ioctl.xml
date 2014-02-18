@@ -99,10 +99,10 @@
 	</Test>		
 	<Test Name="SetFlagsOnROFS" >
 		<Description>Try to set and get some flag values.</Description>	
+		<RunIf message="These tests should run only with 'ro' mount option.">
+			PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
 		<Code>
-			Skip (!PartitionManager::IsOptionEnabled("ro"),
-			"These tests should run only with ro mount option." );	
-			
 			int set_flags = 1; 
 			int get_flags = 0;
 			int fd = open(".", O_RDONLY | O_DIRECTORY, 0777);

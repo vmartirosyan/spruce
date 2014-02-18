@@ -399,9 +399,10 @@
 	</Test>
 	<Test Name="FcntlFDTooManyOpenedFiles">
 		<Description>For F_DUPFD, the process already has the maximum number of file descriptors open.</Description>
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
 		<Code>
-			if ( PartitionManager::IsOptionEnabled("ro") )
-				Unsupp("Read-only file system.");
 			EMaxFilesOpenTest(fcntl(1, F_DUPFD, 1), -1);
 		</Code>
 	</Test>
