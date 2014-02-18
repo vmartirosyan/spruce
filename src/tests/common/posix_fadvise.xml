@@ -1,0 +1,46 @@
+<TestSet Name="posix_fadvise">
+	<Requires>fcntl.h</Requires>
+	<Test Name="Posix_fadviseNormal">
+		<File count="1"/>
+		<Code>
+			Fail(posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_NORMAL) != 0, 
+				"posix_fadvise with POSIX_FADV_NORMAL advise failed.");
+		</Code>
+	</Test>
+	<Test Name="Posix_fadviseSequential">
+		<File count="1"/>
+		<Code>
+			Fail(posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_SEQUENTIAL) != 0, 
+				"posix_fadvise with POSIX_FADV_SEQUENTIAL advise failed.");
+		</Code>
+	</Test>
+	<Test Name="Posix_fadviseRandom">
+		<File count="1"/>
+		<Code>
+			Fail(posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_RANDOM) != 0, 
+				"posix_fadvise with POSIX_FADV_RANDOM advise failed.");
+		</Code>
+	</Test>
+	<!--Really, this advice is no-op since kernel 2.6.18 -->
+	<Test Name="Posix_fadviseNoreuse">
+		<File count="1"/>
+		<Code>
+			Fail(posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_NOREUSE) != 0, 
+				"posix_fadvise with POSIX_FADV_NOREUSE advise failed.");
+		</Code>
+	</Test>
+	<Test Name="Posix_fadviseWillneed">
+		<File count="1"/>
+		<Code>
+			Fail(posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_WILLNEED) != 0, 
+				"posix_fadvise with POSIX_FADV_WILLNEED advise failed.");
+		</Code>
+	</Test>
+	<Test Name="Posix_fadviseDontneed">
+		<File count="1"/>
+		<Code>
+			Fail(posix_fadvise(FDs[0], 0, getpagesize(), POSIX_FADV_DONTNEED) != 0, 
+				"posix_fadvise with POSIX_FADV_DONTNEED advise failed.");
+		</Code>
+	</Test>
+</TestSet>

@@ -1,0 +1,87 @@
+<!--    mount.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Karen Tsirunyan <ktsirunyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="BigAlloc" per-mount-options="false" mount-oriented="false">
+	<Requires>ext4.hpp</Requires>
+	<StartUp>
+			Unres(!PartitionManager::CreateFilesystem(FileSystem, DeviceName, false, string("-O bigalloc")), "Failed to create filesystem with bigalloc mkfs option.");
+            Unres( mount(DeviceName, MountPoint, FileSystem, 0, "") == -1, "Failed to mount.");	
+            Unres( chdir(MountPoint) == -1, "Failed to chdir to mount point.");	
+	</StartUp>
+	<Test Name="bigAlloc_GROUP_EXTEND">
+		<Description>groupExtend with bigalloc mkfs option.</Description>              
+		<Code>
+				ext4_super_block sb;
+				Unres( !PartitionManager::GetSuperBlock(&sb, sizeof(sb)), "Cannot read superblock" );
+				int BlockSize = (1 << (sb.s_log_block_size+10));
+				Unres(!BlockSize, "Block size is zero");
+				Unres ( chdir(MountPoint) == -1, "Cannot change directory." ); 
+				File file("GroupExtendBigAllocfile");
+			
+				int NewPartitionSizeInBlocks = PartitionManager::GetDeviceSize(DeviceName)/BlockSize - 50000;
+				int ret = ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_EXTEND, &NewPartitionSizeInBlocks);
+				Check((ret != -1) || (errno != ENOTSUP) ,"Function Should return not supported for bigalloc, but it did not. ");
+		</Code>
+     </Test>
+     <Test Name="bigAlloc_GROUP_ADD">
+		<Description>Move extent with bigalloc mkfs option.</Description>
+		<Code>                       
+			 File file("BigAllocGroupAddfile");
+			 #ifndef COMPAT
+				ext4_new_group_input input;
+					
+			 #else
+				compat_ext4_new_group_input input;
+                        
+			 #endif
+			 memset(&input, 0, sizeof(input));
+			 int ret = ioctl(file.GetFileDescriptor(), EXT4_IOC_GROUP_ADD, &input);
+		     Check((ret != -1) || (errno != ENOTSUP), "Function Should return not supported for bigalloc, but it did not.");
+        </Code>
+	</Test>
+	<Test Name="bigAllocWrite" FaultSimulationReady="true">
+		<Description>Trying to split the parent page.</Description>
+		<File count = "1"/>
+		<Code>
+			char *buf = new char[1024*1024];
+			memcpy(buf, "asdfg", 5);
+				
+			for (int i = 0 ; i < 10; ++i)
+			{	
+				for (int i = 0 ; i < 1000; ++i)
+				{
+					Unres(lseek64(FDs[0], 10000, SEEK_CUR) == -1, "Lseek failed.");
+					Unres(write(FDs[0], buf, 5) == -1, "Write failed.");
+			
+				}
+				sync();
+				Unres(lseek64(FDs[0], 1000, SEEK_SET) == -1, "Lseek failed.");
+				sync();
+			}
+			
+						
+			delete buf;
+		</Code>
+	</Test>			
+</TestSet>
+

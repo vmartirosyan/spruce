@@ -1,0 +1,145 @@
+<!--    Xattr.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Nellie Danielyan <Nellie.92.d@gmail.com>
+//      	Ruzanna Karakozova <r.karakozova@gmail.com>
+//
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+<TestSet Name="Xattr">
+	<RequiresAll Defined="HAVE_XATTR_H"/>
+	<Requires>attr/xattr.h</Requires>	
+	<Test Name="XattrGetSetALot" FaultSimulationReady="true">
+		<Description>Set and retrieve an extended attribute value.</Description>
+		<File count="1"/>
+		<Header>
+			const char * AttrName = "user.XattrSetGetTest";
+			const int ValueLen = 5000;
+			char * ValueSet = NULL;
+			char * ValueGot = NULL;
+		</Header>
+		<Code>
+			ValueSet = new char[ValueLen];
+			memset(ValueSet, 'a', ValueLen);
+			
+			ValueGot = new char[ValueLen];
+			
+			Fail ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			
+			Fail ( getxattr(FilePaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
+		</Code>
+		<Footer>
+			delete [] ValueSet;
+			delete [] ValueGot;
+		</Footer>
+	</Test>
+	<Test Name="XattrGetSetEmptyValueUser" FaultSimulationReady="true">
+        <Description>Set and retrieve an empty extended attribute value.</Description>
+        <File count="1"/>
+        <Code>
+            const char * AttrName = "user.";
+
+            Fail ( setxattr(FilePaths[0].c_str(), AttrName, NULL, 0, 0) == -1, "Cannot set xattr.");
+           
+            Fail ( getxattr(FilePaths[0].c_str(), AttrName, NULL, 0) != 0, "Cannot get xattr.");
+        </Code>
+    </Test>
+    	<Test Name="XattrGetSetOS2" FaultSimulationReady="true">
+		<Description>Set and retrieve an extended attribute value.</Description>
+		<File count="1"/>
+		<Code>
+			const char * AttrName = "os2.XattrSetGet2Test";
+			const char ValueSet[] = "asdf";		
+			const int ValueLen = sizeof(ValueSet) - 1;
+			char ValueGot[ValueLen];
+
+			Fail ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			
+			Fail ( getxattr(FilePaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");
+			
+			Check ( memcmp(ValueSet, ValueGot, ValueLen ), static_cast<string>("Different xattr values: ") + ValueSet + " : " + ValueGot );
+		</Code>
+		</Test>
+	<Test Name="XattrListOS2" FaultSimulationReady="true">
+		<Description>List extended attribute names.</Description>
+		<File count="1"/>
+		<Code>
+			const char * AttrName = "os2.XattrListOS2";
+			const char ValueSet[] = "asdf";
+			const int ValueLen = sizeof(ValueSet) - 1;			
+						
+			Unres ( setxattr(FilePaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			
+			char ValueGot[1000];
+			
+			int size = 0;
+			Fail ( (size = listxattr(FilePaths[0].c_str(), ValueGot, 1000 )) < 1, "Cannot list xattrs.");
+			
+			// Merge the attribute names
+			for (  int i = 0; i < size; ++i )
+			{
+				if ( ValueGot[i] == '\0' )
+				{
+					ValueGot[i] = ';';					
+				}
+			}
+			
+			string XattrList = ValueGot;			
+			Check( XattrList.find(AttrName) == string::npos, "The attribute name is not listed." );			
+		</Code>
+	</Test>
+	<Test Name="XattrWriteInline" FaultSimulationReady="true">
+		<Description>Twice gets and sets user xattr of a directory.</Description>
+		<Dir count="1"/>
+		<Code>
+			const char * AttrName = "user.x";
+			const int ValueLen = 50;
+
+			char ValueSet[ValueLen];
+			char ValueGot[ValueLen];
+	
+			memset(ValueSet, 'a', ValueLen);
+			Fail ( setxattr(DirPaths[0].c_str(), AttrName, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			Fail ( getxattr(DirPaths[0].c_str(), AttrName, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
+
+			memset(ValueSet, 'b', ValueLen);
+			Fail ( setxattr(DirPaths[0].c_str(), "user.y", ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			Fail ( getxattr(DirPaths[0].c_str(), "user.y", static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
+		</Code>
+	</Test>
+	<Test Name="XattrReadInline" FaultSimulationReady="true">
+		<Description>Twice gets and sets user xattr of a file.</Description>
+		<File count="1"/>
+		<Code>
+			const char * AttrName1 = "user.x";
+			const char * AttrName2 = "user.y";
+			const int ValueLen = 100;
+			
+			char ValueSet[ValueLen];
+			char ValueGot[ValueLen];
+	
+			memset(ValueSet, 'a', ValueLen);
+			Fail ( setxattr(FilePaths[0].c_str(), AttrName1, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			Fail ( getxattr(FilePaths[0].c_str(), AttrName1, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
+
+			memset(ValueSet, 'b', ValueLen);
+			Fail ( setxattr(FilePaths[0].c_str(), AttrName2, ValueSet, ValueLen, XATTR_CREATE) == -1, "Cannot set xattr.");
+			Fail ( getxattr(FilePaths[0].c_str(), AttrName2, static_cast<void*>(ValueGot), ValueLen ) != ValueLen, "Cannot get xattr.");				
+		</Code>
+	</Test>
+</TestSet>

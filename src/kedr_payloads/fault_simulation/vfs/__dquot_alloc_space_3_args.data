@@ -1,0 +1,19 @@
+[group]
+	# Name and return type of the target function
+	function.name = __dquot_alloc_space
+	returnType = int
+
+	# Names and types of the arguments of the target function
+	arg.type = struct inode *
+	arg.name = inode
+
+	arg.type = qsize_t 
+	arg.name = number
+
+	arg.type = int
+	arg.name = flags
+	
+	# Fault Simulation
+	# TODO: Check code
+	fpoint.fault_code =	ret_val = -EDQUOT;
+#######################################################################

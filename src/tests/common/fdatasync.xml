@@ -1,0 +1,49 @@
+<!--    fdatasync.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Suren Grigoryan <suren.grigoryan@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="fdatasync">
+	<Test Name="FdatasyncNormal" FaultSimulationReady="true">
+	<Dangerous check="stability" fs="ext4"/>
+		<Description>Synchronize a file's in-core state with storage device.</Description>
+		<File count="1" />
+		<Code>
+			const char * buf = "abcdefg";
+			Unres (write (FDs[0], buf, strlen(buf)) == -1, "Cannot write to file.");
+			
+			struct stat stat_buf_old, stat_buf_new;
+			
+			Unres( stat (FilePaths[0].c_str(), &stat_buf_old) == -1, "Cannot get file stat before data sync.");
+			
+			Fail ( fdatasync (FDs[0]) != 0, "fdatasync failed.");
+			
+			Unres( stat (FilePaths[0].c_str(), &stat_buf_new) == -1, "stat failed.");
+			
+			Check (stat_buf_old.st_atime != stat_buf_new.st_atime, "fdatasync updated last access time of the file");
+			
+			Check (stat_buf_old.st_mtime != stat_buf_new.st_mtime, "fdatasync updated last modification time of the file");
+		</Code>
+	</Test>
+</TestSet>
+
+

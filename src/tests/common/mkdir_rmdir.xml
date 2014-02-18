@@ -1,0 +1,118 @@
+<!--    mkdir_rmdir.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Giorgi Gulabyan <gulabyang@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="mkdir_rmdir">	
+	<Test Name="MkdirRmdirNormal">
+		<Description>Create and remove a directory.</Description>
+		<Header>
+			const char * path = "MkdirRmdirNormal_dir";
+		</Header>
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
+		<Code>
+			const char * path = "MkdirRmdirNormal_dir";
+
+			Fail ( mkdir(path, 0777) != 0, "Failed to create directory");
+			
+			struct stat st;
+			Check ( stat(path, &st) != 0, "Failed to stat created directory.");
+			
+			Check ( ! S_ISDIR(st.st_mode), "mkdir has created not a directory.");
+			
+			Fail ( rmdir(path) != 0, "Failed to remove directory created.");
+			
+			Check ( stat(path, &st) == 0 || errno != ENOENT, "The directory should be deleted but it is not.");
+		</Code>
+		<Footer>
+			/* Repeat directory deletion in case previous rmdir() fails because of fault simulation */
+			rmdir(path);
+		</Footer>
+	</Test>
+	<!-- mkdir error cases -->
+	<Test Name="MkdirNameTooLong">
+		<Description>Mkdir: Path is too long.</Description>
+		<Code>
+			ENameTooLongTest(mkdir(path, 0777), -1);
+		</Code>
+	</Test>
+	<Test Name="MkdirNotDir">
+		<Description>Mkdir: A component of path is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+			ENotDirTest(mkdir(path, 0777), -1);
+		</Code>
+	</Test>
+	<Test Name="MkdirDirExists">
+		<Description>Mkdir: The directory already exists.</Description>
+		<Dir count="1"/>
+		<Code>
+			ErrorTest(mkdir(DirPaths[0].c_str(), 0777), -1, EEXIST);
+		</Code>
+	</Test>
+	<Test Name="MkdirNoAccess">
+		<Description>Mkdir: access denied.</Description>
+		<Dir count="1"/>
+		<Code>
+			Unres( chmod(DirPaths[0].c_str(), 0700) == -1, "Cannot change directory permissions." );
+			ENoAccessTest(mkdir((DirPaths[0] + "/some_dir").c_str(), 0777), -1);
+		</Code>
+	</Test>
+	<!-- rmdir error cases -->
+	<Test Name="RmdirNameTooLong">
+		<Description>Rmdir: Path is too long.</Description>
+		<Code>
+			ENameTooLongTest(rmdir(path), -1);
+		</Code>
+	</Test>
+	<Test Name="RmdirNotDir">
+		<Description>Rmdir: A component of path is not a directory.</Description>
+		<File count="1"/>
+		<Code>
+			ENotDirTest(rmdir(path), -1);
+		</Code>
+	</Test>
+	<Test Name="RmdirNotEmpty">
+		<Dir count="1">
+			<File count="1"/>
+		</Dir>
+		<Description>Rmdir: The directory is not empty.</Description>
+		<Dir count="1"/>
+		<Code>
+			ErrorTest(rmdir(DirPaths[0].c_str()), -1, ENOTEMPTY);
+		</Code>
+	</Test>
+	<Test Name="RmdirNoAccess">
+		<Description>Rmdir: access denied.</Description>
+		<Dir count="1"/>
+		<Code>
+			Unres( chmod(DirPaths[0].c_str(), 0700) == -1, "Cannot change directory permissions." );
+			Unres( chdir( DirPaths[0].c_str() ) == -1, "Cannot change directory.");
+			const char * path = "some_dir";
+			Directory d(path);			
+			
+			ENoAccessTest(rmdir(path), -1);
+		</Code>
+	</Test>
+</TestSet>

@@ -1,0 +1,69 @@
+<!--    OverloadTests.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Author:
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+--> 
+<TestSet Name="Unicode">
+	<Requires>dirent.h</Requires>
+	<RunIf message="These tests should run only when no mount options are provided and mkfs options either empty or '-O'.">
+		// Run tests in two mkfs+mount variants: 1) no options at all 2) format with case insencetive names, mount without options.
+		PartitionManager::NoOptionsEnabled() || PartitionManager::IsOptionEnabled("-O", true)
+	</RunIf>
+	<Test Name="NonUnicodeChars" mount-oriented="false" use-mkfs="true">
+		<Description>Try to create and access files with non-unicode names.</Description>
+		<Code>
+			Unres( PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "iocharset=utf8") == false, 
+				"Cannot mount partition with `utf8` iocharset" );
+			
+			Unres( chdir(MountPoint) == -1, "Cannot change directory to mount point." );
+			
+			const char * FileNameCyr = "Кириллица";
+			const char * FileNameArm = "Հայերեն";
+			
+			File File_Cyrillic(FileNameCyr);
+			File File_Armenian(FileNameArm);
+			
+			close(File_Cyrillic.GetFileDescriptor());
+			close(File_Armenian.GetFileDescriptor());
+			
+			Unres( chdir("/") == -1, "Cannot change directory to root." );
+			
+			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot unmount partition." );
+			
+			Unres( PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "iocharset=none") == false, 
+				"Cannot mount partition with `none` iocharset" );
+				
+			Unres( chdir(MountPoint) == -1, "Cannot change directory to mount point." );
+			
+			system("ls .");
+			
+			Unres( chdir("/") == -1, "Cannot change directory to root." );
+			
+			Unres( PartitionManager::ReleasePartition(MountPoint) == false, "Cannot unmount partition." );
+			
+			Unres( PartitionManager::Mount(DeviceName, MountPoint, FileSystem, "iocharset=ascii") == false, 
+				"Cannot mount partition with `ascii` iocharset" );
+				
+			Unres( chdir(MountPoint) == -1, "Cannot change directory to mount point." );
+			
+			system("ls .");
+		</Code>
+	</Test>
+</TestSet>

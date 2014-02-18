@@ -1,0 +1,4 @@
+Different kernel modules used for testing Spruce.
+
+NB: Some of this modules are oneshot, them cannot be loaded twice in one
+system session.

@@ -1,0 +1,270 @@
+<!--    rename.xml
+//      
+//      Copyright (C) 2011, Institute for System Programming
+//                          of the Russian Academy of Sciences (ISPRAS)
+//      Authors:
+//			Eduard Bagrov <ebagrov@gmail.com>
+//			Vahram Martirosyan <vmartirosyan@gmail.com>
+//      
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
+//      
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
+//      
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+//      MA 02110-1301, USA.
+-->
+
+<TestSet Name="rename">
+	<Test Name="RenameNormal1" FaultSimulationReady="true">
+		<Description>Change the name or location of a file.</Description>
+		<File count="1"/>
+		<Code>
+			const char * NewFileName = "RenameNormal1_new";
+			
+			Fail ( rename(FilePaths[0].c_str(), NewFileName) == -1, "Rename failed." );
+			
+			Check ( access(NewFileName, F_OK) == -1, "The new file is not created." );
+			
+			unlink(NewFileName);
+			
+			Check ( access(FilePaths[0].c_str(), F_OK) == 0 ,"The old file is still there.");
+			
+		</Code>
+	</Test>
+	<Test Name="RenameNormal2" FaultSimulationReady="true">
+		<Description>If newpath already exists it will be atomically replaced.</Description>
+		<File count="2"/>
+		<Code>
+			Check ( rename(FilePaths[0].c_str(), FilePaths[1].c_str()) == -1, "Rename failed." );
+			
+			Check ( access(FilePaths[1].c_str(), F_OK) == -1, "The new file is not created." );
+			
+			Check ( access(FilePaths[0].c_str(), F_OK) == 0, "The old file is still there." );
+			
+		</Code>
+	</Test>
+		<Test Name="RenameNormalDir1" FaultSimulationReady="true">
+		<Description>Change the name or location of a directory.</Description>
+		<Dir count="1"/>
+		<Header>
+			const char * NewDirName = "RenameNormalDir_new";
+		</Header>
+		<Code>
+			Fail ( rename(DirPaths[0].c_str(), NewDirName) == -1, "Rename failed." );
+			
+			Check ( access(NewDirName, F_OK) == -1, "The new directory is not created." );
+			
+			Check ( access(DirPaths[0].c_str(), F_OK) == 0, "The old directory is still there." );
+		</Code>
+		<Footer>
+			rmdir(NewDirName);
+		</Footer>
+	</Test>
+	<Test Name="RenameNormalDir2" FaultSimulationReady="true">
+		<Description>If new directory already exists it will be atomically replaced.</Description>
+		<Dir count="2"/>
+		<Code>
+			Fail ( rename(DirPaths[0].c_str(), DirPaths[1].c_str()) == -1, "Rename failed." );
+			
+			Check ( access(DirPaths[1].c_str(), F_OK) == -1, "The new directory is not created." );
+			
+			Check ( access(DirPaths[0].c_str(), F_OK) == 0, "The old directory is still there." );
+			
+		</Code>
+	</Test>
+	<Test Name="RenameNormalDir3" FaultSimulationReady="true">
+		<Description>Change the location of a directory.</Description>
+		<Dir count="1">
+			<Dir count="1"/>
+		</Dir>
+		<Code>
+			Check ( rename(DirDirPaths[0].c_str(), "New") == -1, "Rename failed." );
+			
+			Check ( access("New", F_OK) == -1, "The new directory is not created." );
+			
+			Check ( access(DirDirPaths[0].c_str(), F_OK) == 0, "The old directory is still there." );
+			
+		</Code>
+	</Test>
+	<Test Name="RenameNormalHardLink" FaultSimulationReady="true">
+		<Description>If  oldpath  and  newpath are existing hard links referring to the same file, then rename() does nothing, and returns a success status.</Description>
+		<File count="1"/>
+		<Header>
+			const char * Link1 = "RenameNormal3_link1";
+			const char * Link2 = "RenameNormal3_link2";
+			unlink(Link1);
+			unlink(Link2);
+		</Header>
+		<Code>
+			Unres(link(FilePaths[0].c_str(), Link1) == -1, "Cannot create the first hard link.");
+			Unres(link(FilePaths[0].c_str(), Link2) == -1, "Cannot create the second hard link.");
+			
+			Fail ( rename(Link1, Link2) == -1, "Rename failed.");
+		</Code>
+		<Footer>
+			unlink(Link1);
+			unlink(Link2);
+		</Footer>
+	</Test>
+	<Test Name="RenameNormalSoftLink1" FaultSimulationReady="true">
+		<Description>If  oldpath  refers  to a symbolic link the link is renamed.</Description>
+		<File count="1"/>
+		<Header>
+			const char * Link = "RenameNormalSoftLink1_link";
+			const char * NewLink = "RenameNormalSoftLink1_link_new";
+		</Header>
+		<Code>
+			Unres(symlink(FilePaths[0].c_str(), Link) == -1, "Cannot create the link.");
+			
+			Fail ( rename(Link, NewLink) == -1, "Rename failed.");
+			
+			Check ( access(NewLink, F_OK) == -1, "The new link is not created.");
+			
+			Check ( access(Link, F_OK) == 0, "The old file is still there.");
+			
+		</Code>
+		<Footer>
+			unlink(Link);
+			unlink(NewLink);
+		</Footer>
+	</Test>
+	<Test Name="RenameNormalSoftLink2" FaultSimulationReady="true">
+		<Description>If newpath refers to a symbolic link the link will be overwritten.</Description>
+		<File count="1"/>
+		<Code>
+			const char * Link = "RenameNormalSoftLink2_link";
+			unlink(Link);
+			Unres(symlink(FilePaths[0].c_str(), Link) == -1, "Cannot create the link.");
+			
+			Check ( rename(FilePaths[0].c_str(), Link) == -1, "Rename failed." );
+			
+			Check ( access(Link, F_OK) == -1, "The new file is not created." );
+			
+			unlink(Link);
+			Check ( access(FilePaths[0].c_str(), F_OK) == 0, "The old file is still there." );
+			
+		</Code>
+	</Test>
+	<Test Name="RenameFault1">
+		<Description>oldpath points outside your accessible address space.</Description>
+		<Code>
+			ErrorTest(rename(reinterpret_cast<char*>(-1), "some_file"), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="RenameFault2">
+		<Description>newpath points outside your accessible address space.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(rename(FilePaths[0].c_str(),reinterpret_cast<char*>(-1)), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="RenameFault3">
+		<Description>oldpath and newpath point outside your accessible address space.</Description>
+		<Code>
+			ErrorTest(rename(NULL, NULL), -1, EFAULT);
+		</Code>
+	</Test>
+	<Test Name="RenameBusy">
+		<Description>The  rename fails because oldpath or newpath is a directory that is in use by some process.</Description>
+		<Code>
+			ErrorTest(rename(".", "new_name"), -1, EBUSY);
+		</Code>
+	</Test>
+	<Test Name="RenameNameTooLong1">
+		<Description>Oldpath is to long.</Description>
+		<Code>
+			ENameTooLongTest(rename(path, "new_name"), -1);
+		</Code>
+	</Test>
+	<Test Name="RenameNameTooLong2">
+		<Description>Newpath is to long.</Description>
+		<File count="1"/>
+		<Code>
+			ENameTooLongTest(rename(FilePaths[0].c_str(), path), -1);
+		</Code>
+	</Test>
+	<Test Name="RenameIsDir">
+		<Description>Newpath is an existing directory, but oldpath is not a directory.</Description>
+		<File count="1"/>
+		<Dir count="1"/>
+		<Code>
+			ErrorTest(rename(FilePaths[0].c_str(), DirPaths[0].c_str()), -1, EISDIR);
+		</Code>
+	</Test>
+	<Test Name="RenameInval">
+		<Description>An attempt was made to make a directory a subdirectory of itself.</Description>
+		<Dir count="1"/>
+		<Code>
+			ErrorTest(rename(DirPaths[0].c_str(), (DirPaths[0] + "/subdir").c_str()), -1, EINVAL);
+		</Code>
+	</Test>
+<!--
+	<Test Name="RenameLoop">
+		<Description>Too many symbolic links were encountered in resolving oldpath.</Description>
+		<File count="1"/>
+		<Code>
+			ELoopTest(rename(FilePaths[0].c_str(), "new_name"), -1);
+		</Code>
+	</Test>
+-->
+	<Test Name="RenameNotEmpty">
+		<Description>Newpath is a nonempty directory.</Description>
+		<Dir count="2">
+			<File count="1"/>
+		</Dir>		
+		<Code>
+			EnableFaultSim();
+			int res = rename(DirPaths[1].c_str(), DirPaths[0].c_str());
+			int errno_stored = errno;
+			DisableFaultSim();
+	
+			Check(res != -1, "Function should return error it did not." );
+
+			Check((errno_stored != ENOTEMPTY) && (errno_stored != EEXIST), "Function should return EEXIST or ENOTEMPTY errors but it did not." );
+		</Code>
+	</Test>
+	<Test Name="RenameXDev">
+		<Description>oldpath and newpath are not on the  same  mounted  file  system.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(rename(FilePaths[0].c_str(), "/someFile"), -1, EXDEV);
+		</Code>
+	</Test>
+	<Test Name="RenameNoEnt1">
+		<Description>The link named by oldpath does not exist.</Description>
+		<RunIf>
+			!PartitionManager::IsOptionEnabled("ro")
+		</RunIf>
+		<Code>
+			ErrorTest(rename("non_existing_file", "someFile"), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="RenameNoEnt2">
+		<Description>The link named by oldpath does not exist.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(rename(FilePaths[0].c_str(), "./non_existing_dir/some_file"), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="RenameNoEnt3">
+		<Description>The oldpath is an empty string.</Description>
+		<Code>
+			ErrorTest(rename("", "some_file"), -1, ENOENT);
+		</Code>
+	</Test>
+	<Test Name="RenameNoEnt4">
+		<Description>The newpath is an empty string.</Description>
+		<File count="1"/>
+		<Code>
+			ErrorTest(rename(FilePaths[0].c_str(), ""), -1, ENOENT);
+		</Code>
+	</Test>
+</TestSet>
