@@ -160,22 +160,20 @@ isn't covered as mount options are parsed and checked in super.c-->
             <Description>Mount with wrong umask.</Description>
             <Code>
                 Check( mount( DeviceName, MountPoint, FileSystem, MS_REMOUNT, "umask=07777") != -1,
-                    "Remount didn't failt with wrong value of 'umask' option");
+                    "Remount didn't fail with wrong value of 'umask' option");
             </Code>
         </Test>
         
-        <Test Name="NoIntegrityOption" use-mkfs="true">
+        <Test Name="NoIntegrityOption" use-mkfs="true" driver="private">
             <Dangerous/>
             <Description>Mount with nointegrity option</Description>
             <Code>                
-                //TODO: Correctly process module unloading
-                //system("rmmod jfs.ko");
                 EnableFaultSim();
                 mount(DeviceName, MountPoint, FileSystem, 0, "nointegrity");
                 DisableFaultSim();
             </Code>
         </Test>        
-        <Test Name="MultipleExternalLogs" per-mount-options="false">
+        <Test Name="MultipleExternalLogs" per-mount-options="false" driver="private">
             <Dev count="3"/>
             <Description>Create multiple jfs partiotions with external log</Description>
             <Header>
@@ -186,9 +184,6 @@ isn't covered as mount options are parsed and checked in super.c-->
                 const char* MountPoint1 = "/tmp/MultipleExternalLogs_MountPoint1";
             </Header>
             <Code>
-                //TODO: Process module unloading or remove that unloading
-                //system("rmmod jfs.ko");
-               
                 Unres(mkdir(MountPoint1, S_IRUSR | S_IWUSR) == -1 && errno != EEXIST, "Cannot create mount directory for second filesystem");
                
                 Unres(!PartitionManager:: CreateFilesystem(FileSystem, DeviceName, false, string("-j ") + ExtJournalName), "Failed to create filesystem");
@@ -204,13 +199,10 @@ isn't covered as mount options are parsed and checked in super.c-->
                 Fatal(rmdir(MountPoint1) == -1 && errno != EINVAL, "Failed to remove mount directory for second partition");
             </Footer>
         </Test>
-        <Test Name="SingleExternalLog" per-mount-options="false">
+        <Test Name="SingleExternalLog" per-mount-options="false" driver="private">
             <Description>Create and mount jfs partiotion with external log</Description>
             <Dev/>
             <Code>
-                //TODO: Process module unloading or remove that unloading
-                //system("rmmod jfs.ko");
-               
                 string ExtJournalName = DevPaths[0];
                               
                 Unres(!PartitionManager:: CreateFilesystem(FileSystem, DeviceName, false, string("-j ") + ExtJournalName), "Failed to create filesystem");
@@ -224,7 +216,7 @@ isn't covered as mount options are parsed and checked in super.c-->
 
         <!--This test causes fatal error, because of BUG-->
         <!--Test covers code in jfs/jfs_logmgr.c file-->
-        <Test Name="MultiplePartitionsSingleLog" per-mount-options="false">
+        <Test Name="MultiplePartitionsSingleLog" per-mount-options="false" driver="private">
         <Dangerous/>
             <Description>Create multiple jfs partiotions with single external log</Description>
             <Dev count="2"/>
@@ -235,9 +227,6 @@ isn't covered as mount options are parsed and checked in super.c-->
                 const char* MountPoint1 = "/tmp/MultipleExternalLogs_MountPoint1";
             </Header>
             <Code>
-                //TODO: Process module unloading or remove that unloading
-                //system("rmmod jfs.ko");
-               
                 Unres(mkdir(MountPoint1, S_IRUSR | S_IWUSR) == -1 && errno != EEXIST, "Cannot create mount directory for second filesystem");
                
                 Unres(!PartitionManager:: CreateFilesystem(FileSystem, DeviceName, false, string("-j ") + ExtJournalName), "Failed to create filesystem")

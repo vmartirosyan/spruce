@@ -21,24 +21,34 @@
 //      MA 02110-1301, USA.
 -->
 
-<TestSet Name="MountWithOptions" mount-oriented="false" use-mkfs="true">
+<TestSet Name="MountWithOptions" mount-oriented="false" per-mount-options="false">
 	<Requires>sys/mount.h</Requires>
 	<Requires>JFSCtl.hpp</Requires>
 	<Requires>jfs_logmgr.h</Requires>
 	<Requires>sstream</Requires>
+
 	<RunIf message="These tests run only when external log option is enabled.">
 		PartitionManager::IsOptionEnabled("-j", true)
 	</RunIf>
+
+	<!-- All tests in that testset should use additional devices, first such device is used as journal. -->
+	<Header>
+		Unres(!PartitionManager::CreateFilesystem(FileSystem, DeviceName, false, "-j " + DevPaths[0]),
+			"Cannot create filesystem with journal");
+	</Header>
+
 	<Test Name="MountExternalLogs">
-		<Description>Mount the device with external log enabled.</Description>              
+		<Description>Mount the device with external log enabled.</Description>
+		<Dev/>
 		<Code>
 			Fail( mount( DeviceName, MountPoint, FileSystem, 0, 0) == -1, "Mount failed.");
 		</Code>
 	</Test>
 	<Test Name="lmLogInitFail1">
 		<Description>Fail lmLogInit because of wrong magic number.</Description>              
+		<Dev/>
 		<Code>
-			JFSCtl jfs("/dev/ram0");
+			JFSCtl jfs(DevPaths[0]);
 			
 			logsuper sb;
 			
@@ -52,9 +62,10 @@
 		</Code>
 	</Test>
 	<Test Name="lmLogInitFail2">
-		<Description>Fail lmLogInit because of bad state.</Description>              
+		<Description>Fail lmLogInit because of bad state.</Description>
+		<Dev/>
 		<Code>
-			JFSCtl jfs("/dev/ram0");
+			JFSCtl jfs(DevPaths[0]);
 			
 			logsuper sb;
 			
@@ -69,9 +80,10 @@
 	</Test>
 	<Test Name="lmLogInitFail3">
 		<Dangerous/>
-		<Description>Fail lmLogInit because of wrong UUID.</Description>              
+		<Description>Fail lmLogInit because of wrong UUID.</Description>
+		<Dev/>
 		<Code>
-			JFSCtl jfs("/dev/ram0");
+			JFSCtl jfs(DevPaths[0]);
 			
 			logsuper sb;
 			
