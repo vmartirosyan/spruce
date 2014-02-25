@@ -31,7 +31,7 @@
 		<Description>Gets or sets file's ACL by file discriptor.</Description>		
 		<Dir count="1" />
 		<Header>
-			acl_t acl;
+			acl_t acl = NULL;
 		</Header>
 		<Code>
 			Fail ( (acl = acl_get_fd(DirDs[0])) == NULL, "Cannot get file's ACL." );
@@ -50,7 +50,7 @@
 		<Description>Set user-defined acl for file and extract it.</Description>		
 		<File count="1" />
 		<Header>
-			acl_t acl, acl_file = NULL;
+			acl_t acl = NULL, acl_file = NULL;
 		</Header>
 		<Code>
 			acl = acl_from_text("u::r,u:nobody:r,g::r,m::r,o::r");
@@ -95,7 +95,7 @@
 		<Dangerous check="stability" fs="ext4"/>
 		<Dir count="1" />
 		<Header>
-			acl_t acl;
+			acl_t acl = NULL;
 			int fd = -1;
 		</Header>
 		<Code>
@@ -142,7 +142,7 @@
 		<Description>Intialize an ACL, set and mount-umount to get not cached acl.</Description>		
 		<File count="1" />
 		<Header>
-			acl_t acl, acl_file = NULL;
+			acl_t acl = NULL, acl_file = NULL;
 		</Header>
 		<Code>
 			acl = acl_from_text("u::r,u:nobody:r,g::r,m::r,o::r");
@@ -198,7 +198,7 @@
 		<Description>Set and get default acl to a file not to a directory.</Description>
 		<File count="1" />
 		<Header>
-			acl_t acl;
+			acl_t acl = NULL;
 		</Header>
 		<Code>
 			acl = acl_from_text("u::r,u:nobody:r,g::r,m::r,o::r");
